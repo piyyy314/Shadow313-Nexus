@@ -29,7 +29,9 @@ def test_deploy_workflow_targets_repo_root_static_site():
     quality_steps = workflow["jobs"]["quality"]["steps"]
     required_step = next(step for step in quality_steps if step.get("name") == "Verify required files exist")
     assert required_step.get("working-directory") is None
-    required_paths = set(re.findall(r'"([^"]+)"', required_step["run"]))
+    required_block = re.search(r'required=\(\s*(.*?)\s*\)', required_step["run"], re.DOTALL)
+    assert required_block is not None
+    required_paths = set(re.findall(r'"([^"]+)"', required_block.group(1)))
 
     for path in (
         "index.html",
