@@ -1,527 +1,503 @@
 """
 Tests for shadow313.v4.temporal_binding.supply_chain_simulation
 
-Covers all three supply chain attack scenarios:
-  1. Key Theft
-  2. Key Compromise via CI/CD
-  3. Plugin Backdoor
-
-And the plugin signing integration (HMAC-SHA256 + cosign).
+Covers the 313-BIND supply chain attack simulation:
+  1. Clean release — no alerts
+  2. Workflow injection — WHEEL_HASH_MISMATCH
+  3. Dependency confusion — DEP_HASH_MISMATCH + INSTALL_AFTER_VERIFICATION_FAILURE
+  4. Receipt deletion — OUT_OF_ORDER_BIND_INDEX
+  5. OIDC token replay — DUPLICATE_VERSION_RELEASE
 """
 from __future__ import annotations
-import json
+
 import pytest
-import sys
-import os
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
 from shadow313.v4.temporal_binding.supply_chain_simulation import (
-    KeyInfrastructure,
-    create_receipt_with_key,
-    verify_receipt_chain_with_key_audit,
-    run_supply_chain_simulation,
-    _IPFS_STORE,
+    ReceiptChain,
+    Receipt,
+    SupplyChainDetector,
+    AlertSeverity,
+    Alert,
+    build_clean_release,
+    build_workflow_injection,
+    build_dep_confusion,
+    build_oidc_replay,
+    CLEAN_WHEEL_SHA,
+    MALICIOUS_WHEEL_SHA,
+    PYYAML_GOOD_SHA,
 )
-import shadow313.v4.temporal_binding.supply_chain_simulation as sim_module
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
-@pytest.fixture(autouse=True)
-def reset_ipfs():
-    """Reset global IPFS store and bind counter before each test."""
-    sim_module._IPFS_STORE   = {}
-    sim_module._BIND_COUNTER = 0
-    yield
-    sim_module._IPFS_STORE   = {}
-    sim_module._BIND_COUNTER = 0
-
+@pytest.fixture
+def chain():
+    return ReceiptChain()
 
 @pytest.fixture
-def key_infra():
-    return KeyInfrastructure()
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# KEY INFRASTRUCTURE TESTS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestKeyInfrastructure:
-
-    def test_legitimate_and_shadow_keys_are_different(self, key_infra):
-        assert key_infra.legitimate_private_key != key_infra.shadow_private_key
-        assert key_infra.legitimate_public_key  != key_infra.shadow_public_key
-        assert key_infra.legitimate_fingerprint != key_infra.shadow_fingerprint
-
-    def test_sign_and_verify_legitimate(self, key_infra):
-        msg = b"test message"
-        sig, fp = key_infra.sign_legitimate(msg)
-        assert key_infra.verify_legitimate(msg, sig)
-        assert not key_infra.verify_shadow(msg, sig)
-
-    def test_sign_and_verify_shadow(self, key_infra):
-        msg = b"test message"
-        sig, fp = key_infra.sign_shadow(msg)
-        assert key_infra.verify_shadow(msg, sig)
-        assert not key_infra.verify_legitimate(msg, sig)
-
-    def test_fingerprint_length(self, key_infra):
-        assert len(key_infra.legitimate_fingerprint) == 16
-        assert len(key_infra.shadow_fingerprint)     == 16
-
-    def test_plugin_trust_registry_contains_legitimate_key(self, key_infra):
-        result = key_infra.verify_plugin_trust(
-            "shadow313-temporal",
-            key_infra.legitimate_public_key,
-        )
-        assert result["trusted"] is True
-
-    def test_plugin_trust_registry_rejects_shadow_key(self, key_infra):
-        result = key_infra.verify_plugin_trust(
-            "shadow313-temporal",
-            key_infra.shadow_public_key,
-        )
-        assert result["trusted"] is False
-        assert "mismatch" in result["reason"].lower() or "mismatch" in result.get("forensic_detail", "").lower()
-
-    def test_plugin_trust_registry_rejects_unknown_plugin(self, key_infra):
-        result = key_infra.verify_plugin_trust(
-            "shadow313-unknown-plugin",
-            key_infra.legitimate_public_key,
-        )
-        assert result["trusted"] is False
-
-    def test_cosign_verifies_legitimate_key(self, key_infra):
-        result = key_infra.verify_cosign(key_infra.legitimate_public_key)
-        assert result["valid"] is True
-
-    def test_cosign_rejects_shadow_key(self, key_infra):
-        result = key_infra.verify_cosign(key_infra.shadow_public_key)
-        assert result["valid"] is False
-        assert "supply chain" in result.get("forensic_detail", "").lower()
-
-    def test_cosign_signature_is_deterministic(self, key_infra):
-        # Same key → same cosign signature
-        sig1 = key_infra._cosign_sign(
-            key_infra.legitimate_public_key,
-            {"version": "4.0.0", "commit": "abc123", "builder": "github-actions"},
-        )
-        sig2 = key_infra._cosign_sign(
-            key_infra.legitimate_public_key,
-            {"version": "4.0.0", "commit": "abc123", "builder": "github-actions"},
-        )
-        assert sig1 == sig2
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# RECEIPT CREATION TESTS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestReceiptCreation:
-
-    def test_legitimate_receipt_has_correct_fingerprint(self, key_infra):
-        r = create_receipt_with_key(
-            {"action": "scan"}, bind_index=1, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        assert r["key_fingerprint"] == key_infra.legitimate_fingerprint
-
-    def test_shadow_receipt_has_shadow_fingerprint(self, key_infra):
-        r = create_receipt_with_key(
-            {"action": "scan"}, bind_index=1, key_infra=key_infra,
-            use_shadow=True, verbose=False,
-        )
-        assert r["key_fingerprint"] == key_infra.shadow_fingerprint
-
-    def test_timestamp_ends_in_313(self, key_infra):
-        for i in range(1, 4):
-            r = create_receipt_with_key(
-                {"action": f"scan_{i}"}, bind_index=i, key_infra=key_infra,
-                use_shadow=False, verbose=False,
-            )
-            assert r["timestamp"] % 1000 == 313, f"Receipt {i} ts_mod={r['timestamp'] % 1000}"
-
-    def test_receipt_has_ipfs_cid(self, key_infra):
-        r = create_receipt_with_key(
-            {"action": "scan"}, bind_index=1, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        assert "ipfs_cid" in r
-        assert r["ipfs_cid"].startswith("Qm")
-
-    def test_receipt_stored_in_ipfs(self, key_infra):
-        r = create_receipt_with_key(
-            {"action": "scan"}, bind_index=1, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        assert r["ipfs_cid"] in sim_module._IPFS_STORE
-
-    def test_receipt_has_sha3_512(self, key_infra):
-        r = create_receipt_with_key(
-            {"action": "scan"}, bind_index=1, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        assert "sha3_512" in r
-        assert len(r["sha3_512"]) == 128  # SHA3-512 hex = 128 chars
-
-    def test_receipt_bind_index_matches(self, key_infra):
-        for i in [1, 5, 10, 100]:
-            r = create_receipt_with_key(
-                {"action": "scan"}, bind_index=i, key_infra=key_infra,
-                use_shadow=False, verbose=False,
-            )
-            assert r["bind_index"] == i
-
-    def test_different_content_produces_different_sha3(self, key_infra):
-        r1 = create_receipt_with_key(
-            {"action": "scan_a"}, bind_index=1, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        r2 = create_receipt_with_key(
-            {"action": "scan_b"}, bind_index=2, key_infra=key_infra,
-            use_shadow=False, verbose=False,
-        )
-        assert r1["sha3_512"] != r2["sha3_512"]
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# VERIFICATION TESTS — CLEAN CHAIN
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestVerificationCleanChain:
-
-    def _make_chain(self, key_infra, n: int, use_shadow: bool = False) -> list:
-        return [
-            create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=use_shadow, verbose=False,
-            )
-            for i in range(1, n + 1)
-        ]
-
-    def test_clean_legitimate_chain_passes(self, key_infra):
-        chain  = self._make_chain(key_infra, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["valid"] is True
-        assert result["layer1_timestamp"]["passed"]
-        assert result["layer2_signature"]["passed"]
-        assert result["layer2_bind_index"]["passed"]
-        assert result["layer2_key_fingerprint"]["passed"]
-        assert result["layer3_ipfs"]["passed"]
-        assert result["layer4_plugin_trust"]["passed"]
-        assert result["forensic_evidence"] == []
-
-    def test_clean_chain_has_single_fingerprint(self, key_infra):
-        chain  = self._make_chain(key_infra, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert len(result["key_fingerprints_seen"]) == 1
-        assert key_infra.legitimate_fingerprint in result["key_fingerprints_seen"]
-
-    def test_empty_chain_passes(self, key_infra):
-        result = verify_receipt_chain_with_key_audit([], key_infra)
-        assert result["valid"] is True
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# SCENARIO 1: KEY THEFT DETECTION
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestScenario1KeyTheft:
-    """
-    Key theft: attacker uses the legitimate key externally.
-    The fraudulent receipt has a valid signature and correct fingerprint.
-    Detection is limited — requires semantic audit.
-    """
-
-    def test_fraudulent_receipt_with_legitimate_key_passes_crypto_checks(self, key_infra):
-        """
-        This is the KEY THEFT limitation: if the attacker uses the legitimate key,
-        the receipt is cryptographically indistinguishable from a real one.
-        """
-        legit_chain = [
-            create_receipt_with_key(
-                {"id": i, "result": "finding"}, bind_index=i, key_infra=key_infra,
-                use_shadow=False, verbose=False,
-            )
-            for i in range(1, 6)
-        ]
-        # Attacker creates fraudulent receipt 6 with stolen legitimate key
-        fraudulent = create_receipt_with_key(
-            {"id": 6, "result": "no_findings"},  # Hides a finding
-            bind_index=6, key_infra=key_infra,
-            use_shadow=False,  # Uses legitimate key
-            verbose=False,
-        )
-        chain  = legit_chain + [fraudulent]
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        # Key theft with legitimate key passes all cryptographic checks
-        assert result["layer2_signature"]["passed"]
-        assert result["layer2_key_fingerprint"]["passed"]
-        assert not result["key_substitution_detected"]
-
-    def test_key_theft_fingerprint_is_consistent(self, key_infra):
-        """All receipts have the same fingerprint — no anomaly detectable."""
-        chain = [
-            create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=False, verbose=False,
-            )
-            for i in range(1, 8)
-        ]
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert len(result["key_fingerprints_seen"]) == 1
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# SCENARIO 2: KEY COMPROMISE VIA CI/CD
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestScenario2KeyCompromise:
-    """
-    Key compromise: attacker injects shadow key via malicious CI/CD step.
-    Receipts before compromise use legitimate key; after use shadow key.
-    Detection: key fingerprint changes at the compromise point.
-    """
-
-    def _make_mixed_chain(self, key_infra, legit_count: int, shadow_count: int) -> list:
-        chain = []
-        for i in range(1, legit_count + 1):
-            chain.append(create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=False, verbose=False,
-            ))
-        for i in range(legit_count + 1, legit_count + shadow_count + 1):
-            chain.append(create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=True, verbose=False,
-            ))
-        return chain
-
-    def test_mixed_chain_is_detected(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 5, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["valid"] is False
-
-    def test_key_substitution_detected(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 5, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["key_substitution_detected"] is True
-
-    def test_two_fingerprints_detected(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 5, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert len(result["key_fingerprints_seen"]) == 2
-        assert key_infra.legitimate_fingerprint in result["key_fingerprints_seen"]
-        assert key_infra.shadow_fingerprint      in result["key_fingerprints_seen"]
-
-    def test_compromise_point_identified(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 5, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        failures = result["layer2_key_fingerprint"]["failures"]
-        assert len(failures) >= 1
-        # The key change should be detected at receipt 6 (first shadow receipt)
-        assert failures[0]["bind_index"] == 6
-
-    def test_l2a_signature_detects_shadow_key(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 3, 3)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["layer2_signature"]["passed"] is False
-        # Failures should reference the shadow-signed receipts
-        shadow_failures = [f for f in result["layer2_signature"]["failures"]
-                           if "SHADOW" in f.get("detail", "")]
-        assert len(shadow_failures) >= 1
-
-    def test_l4_plugin_trust_fails_for_shadow_key(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 3, 3)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["layer4_plugin_trust"]["passed"] is False
-
-    def test_forensic_evidence_contains_key_change_point(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 5, 5)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        layers = [ev["layer"] for ev in result["forensic_evidence"]]
-        assert "L2_KEY_CHANGE_POINT" in layers or "L2_KEY_FINGERPRINT_INCONSISTENCY" in layers
-
-    def test_forensic_evidence_severity_is_critical(self, key_infra):
-        chain  = self._make_mixed_chain(key_infra, 3, 3)
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        for ev in result["forensic_evidence"]:
-            assert ev["severity"] in ("CRITICAL", "HIGH")
-
-    def test_single_shadow_receipt_in_chain_detected(self, key_infra):
-        """Even a single compromised receipt in a long chain is detected."""
-        chain = []
-        for i in range(1, 10):
-            use_shadow = (i == 5)  # Only receipt 5 is compromised
-            chain.append(create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=use_shadow, verbose=False,
-            ))
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["valid"] is False
-        assert result["key_substitution_detected"] is True
-
-    def test_all_shadow_receipts_detected(self, key_infra):
-        """Complete key replacement (all receipts use shadow key) is detected."""
-        chain = [
-            create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=True, verbose=False,
-            )
-            for i in range(1, 6)
-        ]
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["valid"] is False
-        assert result["key_substitution_detected"] is True
-        # Should detect wrong fingerprint (not inconsistency, but wrong key)
-        layers = [ev["layer"] for ev in result["forensic_evidence"]]
-        assert any("KEY_FINGERPRINT" in l for l in layers)
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# SCENARIO 3: PLUGIN BACKDOOR
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestScenario3PluginBackdoor:
-
-    def test_malicious_plugin_blocked_by_trust_registry(self, key_infra):
-        result = key_infra.verify_plugin_trust(
-            "shadow313-temporal",
-            key_infra.shadow_public_key,
-        )
-        assert result["trusted"] is False
-
-    def test_malicious_plugin_blocked_by_cosign(self, key_infra):
-        result = key_infra.verify_cosign(key_infra.shadow_public_key)
-        assert result["valid"] is False
-
-    def test_backdoored_receipts_detected_via_fingerprint(self, key_infra):
-        """If plugin bypasses trust check, key fingerprint audit still detects it."""
-        chain = [
-            create_receipt_with_key(
-                {"id": i}, bind_index=i, key_infra=key_infra,
-                use_shadow=True, verbose=False,
-            )
-            for i in range(1, 6)
-        ]
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["valid"] is False
-        assert result["layer4_plugin_trust"]["passed"] is False
-
-    def test_legitimate_plugin_passes_all_checks(self, key_infra):
-        trust  = key_infra.verify_plugin_trust("shadow313-temporal", key_infra.legitimate_public_key)
-        cosign = key_infra.verify_cosign(key_infra.legitimate_public_key)
-        assert trust["trusted"]  is True
-        assert cosign["valid"]   is True
-
-    def test_unknown_plugin_rejected(self, key_infra):
-        result = key_infra.verify_plugin_trust(
-            "shadow313-evil-plugin",
-            key_infra.legitimate_public_key,
-        )
-        assert result["trusted"] is False
-        assert "not in trust registry" in result["reason"].lower()
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# BIND INDEX GAP DETECTION
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestBindIndexGapDetection:
-
-    def test_gap_in_bind_index_detected(self, key_infra):
-        r1 = create_receipt_with_key({"id": 1}, bind_index=1, key_infra=key_infra, use_shadow=False, verbose=False)
-        r2 = create_receipt_with_key({"id": 2}, bind_index=2, key_infra=key_infra, use_shadow=False, verbose=False)
-        r4 = create_receipt_with_key({"id": 4}, bind_index=4, key_infra=key_infra, use_shadow=False, verbose=False)
-        result = verify_receipt_chain_with_key_audit([r1, r2, r4], key_infra)
-        assert result["layer2_bind_index"]["passed"] is False
-        failures = result["layer2_bind_index"]["failures"]
-        assert any(3 in f.get("missing", []) for f in failures)
-
-    def test_no_gap_passes(self, key_infra):
-        chain = [
-            create_receipt_with_key({"id": i}, bind_index=i, key_infra=key_infra, use_shadow=False, verbose=False)
-            for i in range(1, 6)
-        ]
-        result = verify_receipt_chain_with_key_audit(chain, key_infra)
-        assert result["layer2_bind_index"]["passed"] is True
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# IPFS ORPHAN DETECTION
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestIPFSOrphanDetection:
-
-    def test_deleted_receipt_leaves_ipfs_orphan(self, key_infra):
-        chain = [
-            create_receipt_with_key({"id": i}, bind_index=i, key_infra=key_infra, use_shadow=False, verbose=False)
-            for i in range(1, 6)
-        ]
-        # Attacker deletes receipt 3 from the chain
-        chain_without_3 = [r for r in chain if r["bind_index"] != 3]
-        result = verify_receipt_chain_with_key_audit(chain_without_3, key_infra)
-        # Should detect both the bind_index gap AND the IPFS orphan
-        assert result["layer2_bind_index"]["passed"] is False
-        assert result["layer3_ipfs"]["passed"] is False
-        orphan_evidence = [ev for ev in result["forensic_evidence"] if "ORPHAN" in ev["layer"]]
-        assert len(orphan_evidence) >= 1
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# FULL SIMULATION INTEGRATION TEST
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestFullSimulation:
-
-    def test_simulation_runs_without_error(self):
-        report = run_supply_chain_simulation(verbose=False)
-        assert "scenarios" in report
-        assert "summary"   in report
-
-    def test_simulation_has_three_scenarios(self):
-        report = run_supply_chain_simulation(verbose=False)
-        assert len(report["scenarios"]) == 3
-
-    def test_key_compromise_scenario_detected(self):
-        report = run_supply_chain_simulation(verbose=False)
-        s2 = report["scenarios"][1]
-        assert s2["scenario"] == "Key Compromise via CI/CD"
-        assert s2["detected"] is True
-
-    def test_plugin_backdoor_scenario_detected(self):
-        report = run_supply_chain_simulation(verbose=False)
-        s3 = report["scenarios"][2]
-        assert s3["scenario"] == "Plugin Backdoor"
-        assert s3["detected"] is True
-
-    def test_summary_counts_are_correct(self):
-        report = run_supply_chain_simulation(verbose=False)
-        summary = report["summary"]
-        assert summary["scenarios_simulated"] == 3
-        # Key compromise and plugin backdoor are always detected
-        assert summary["key_compromise_detected"]  is True
-        assert summary["plugin_backdoor_detected"] is True
-
-    def test_summary_identifies_key_theft_gap(self):
-        report = run_supply_chain_simulation(verbose=False)
-        summary = report["summary"]
-        assert "key theft" in summary["critical_gap"].lower() or \
-               "legitimate key" in summary["critical_gap"].lower()
-
-    def test_plugin_signing_closes_gap(self):
-        report = run_supply_chain_simulation(verbose=False)
-        assert report["summary"]["plugin_signing_closes_gap"] is True
-
-    def test_all_scenarios_have_forensic_evidence_or_key_insight(self):
-        report = run_supply_chain_simulation(verbose=False)
-        for s in report["scenarios"]:
-            assert "key_insight" in s
-            assert len(s["key_insight"]) > 10
-
-    def test_report_is_json_serializable(self):
-        report = run_supply_chain_simulation(verbose=False)
-        serialized = json.dumps(report, default=str)
-        parsed     = json.loads(serialized)
-        assert parsed["summary"]["scenarios_simulated"] == 3
+def detector():
+    return SupplyChainDetector()
+
+@pytest.fixture
+def clean_chain_and_receipts():
+    c = ReceiptChain()
+    rs = build_clean_release(c)
+    return c, rs
+
+
+# ── ReceiptChain tests ────────────────────────────────────────────────────────
+
+class TestReceiptChain:
+
+    def test_instantiates(self, chain):
+        assert chain is not None
+
+    def test_bind_returns_receipt(self, chain):
+        r = chain.bind("TEST_EVENT", {"key": "value"})
+        assert isinstance(r, Receipt)
+
+    def test_bind_index_increments(self, chain):
+        r1 = chain.bind("EVENT_A", {})
+        r2 = chain.bind("EVENT_B", {})
+        r3 = chain.bind("EVENT_C", {})
+        assert r1.bind_index == 1
+        assert r2.bind_index == 2
+        assert r3.bind_index == 3
+
+    def test_timestamp_ends_in_313(self, chain):
+        r = chain.bind("TEST", {})
+        assert str(r.timestamp_ns).endswith("313")
+
+    def test_chain_hash_format(self, chain):
+        r = chain.bind("TEST", {})
+        assert r.chain_hash.startswith("sha3_512:")
+
+    def test_payload_hash_format(self, chain):
+        r = chain.bind("TEST", {})
+        assert r.payload_hash.startswith("sha3_256:")
+
+    def test_prev_chain_hash_links(self, chain):
+        r1 = chain.bind("FIRST", {})
+        r2 = chain.bind("SECOND", {})
+        assert r2.prev_chain_hash == r1.chain_hash
+
+    def test_first_receipt_prev_hash_is_zeros(self, chain):
+        r = chain.bind("FIRST", {})
+        assert r.prev_chain_hash == "0" * 128
+
+    def test_receipts_property(self, chain):
+        chain.bind("A", {})
+        chain.bind("B", {})
+        assert len(chain.receipts) == 2
+
+    def test_seq_property(self, chain):
+        chain.bind("A", {})
+        chain.bind("B", {})
+        assert chain.seq == 2
+
+    def test_different_payloads_different_hashes(self, chain):
+        r1 = chain.bind("EVENT", {"data": "foo"})
+        r2 = chain.bind("EVENT", {"data": "bar"})
+        assert r1.payload_hash != r2.payload_hash
+
+    def test_receipt_to_dict(self, chain):
+        r = chain.bind("TEST", {"key": "val"})
+        d = r.to_dict()
+        assert isinstance(d, dict)
+        assert d["event"] == "TEST"
+        assert d["bind_index"] == 1
+
+    def test_bind_id_format(self, chain):
+        r = chain.bind("TEST", {})
+        assert r.bind_id.startswith("313-SC-")
+
+    def test_signature_present(self, chain):
+        r = chain.bind("TEST", {})
+        assert len(r.signature) > 0
+
+    def test_multiple_receipts_unique_chain_hashes(self, chain):
+        hashes = [chain.bind(f"EVENT_{i}", {"i": i}).chain_hash for i in range(10)]
+        assert len(set(hashes)) == 10
+
+
+# ── Clean release tests ───────────────────────────────────────────────────────
+
+class TestCleanRelease:
+
+    def test_clean_release_produces_8_receipts(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        assert len(receipts) == 8
+
+    def test_clean_release_events_in_order(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        events = [r.event for r in receipts]
+        assert "DEPENDENCY_AUDIT_STARTED" in events
+        assert "DEPENDENCY_AUDIT_PASSED" in events
+        assert "BUILD_STARTED" in events
+        assert "TESTS_PASSED" in events
+        assert "DIST_BUILT" in events
+        assert "PACKAGE_RELEASE" in events
+
+    def test_clean_release_no_alerts(self, clean_chain_and_receipts, detector):
+        _, receipts = clean_chain_and_receipts
+        alerts = detector.analyze(receipts)
+        assert len(alerts) == 0
+
+    def test_clean_release_wheel_hashes_match(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        dist_built = next(r for r in receipts if r.event == "DIST_BUILT")
+        release    = next(r for r in receipts if r.event == "PACKAGE_RELEASE")
+        assert dist_built.payload["wheel_sha256"] == release.payload["wheel_sha256"]
+
+    def test_clean_release_sequential_indices(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        for i, r in enumerate(receipts, start=1):
+            assert r.bind_index == i
+
+    def test_clean_release_all_timestamps_end_313(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        for r in receipts:
+            assert str(r.timestamp_ns).endswith("313")
+
+    def test_clean_release_chain_links_correct(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        for i in range(1, len(receipts)):
+            assert receipts[i].prev_chain_hash == receipts[i-1].chain_hash
+
+    def test_clean_release_pyyaml_verified(self, clean_chain_and_receipts):
+        _, receipts = clean_chain_and_receipts
+        dep_receipts = [r for r in receipts if r.event == "TRANSITIVE_DEP_VERIFIED"]
+        pyyaml = next((r for r in dep_receipts if r.payload.get("package") == "pyyaml"), None)
+        assert pyyaml is not None
+        assert pyyaml.payload["match"] is True
+
+
+# ── Workflow injection tests ──────────────────────────────────────────────────
+
+class TestWorkflowInjection:
+
+    def test_injection_produces_wheel_hash_mismatch_alert(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        all_receipts = clean + attack
+        alerts = detector.analyze(all_receipts)
+        mismatch_alerts = [a for a in alerts if a.gap_type == "WHEEL_HASH_MISMATCH"]
+        assert len(mismatch_alerts) >= 1
+
+    def test_injection_alert_is_critical(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        mismatch = next(a for a in alerts if a.gap_type == "WHEEL_HASH_MISMATCH")
+        assert mismatch.severity == AlertSeverity.CRITICAL
+
+    def test_injection_alert_has_correct_technique(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        mismatch = next(a for a in alerts if a.gap_type == "WHEEL_HASH_MISMATCH")
+        assert "T1195.001" in mismatch.attack_technique
+
+    def test_injection_evidence_shows_different_hashes(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        mismatch = next(a for a in alerts if a.gap_type == "WHEEL_HASH_MISMATCH")
+        assert mismatch.evidence["dist_built_sha256"] != mismatch.evidence["release_sha256"]
+
+    def test_injection_automated_action_contains_yank(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        mismatch = next(a for a in alerts if a.gap_type == "WHEEL_HASH_MISMATCH")
+        assert "YANK" in mismatch.automated_action.upper()
+
+    def test_injection_dist_built_has_clean_hash(self):
+        chain = ReceiptChain()
+        build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        dist_built = next(r for r in attack if r.event == "DIST_BUILT")
+        assert dist_built.payload["wheel_sha256"] == CLEAN_WHEEL_SHA
+
+    def test_injection_release_has_malicious_hash(self):
+        chain = ReceiptChain()
+        build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        release = next(r for r in attack if r.event == "PACKAGE_RELEASE")
+        assert release.payload["wheel_sha256"] == MALICIOUS_WHEEL_SHA
+
+
+# ── Dependency confusion tests ────────────────────────────────────────────────
+
+class TestDependencyConfusion:
+
+    def test_dep_confusion_produces_hash_mismatch_alert(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        dep_alerts = [a for a in alerts if a.gap_type == "DEP_HASH_MISMATCH"]
+        assert len(dep_alerts) >= 1
+
+    def test_dep_confusion_produces_install_after_failure_alert(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        install_alerts = [a for a in alerts if a.gap_type == "INSTALL_AFTER_VERIFICATION_FAILURE"]
+        assert len(install_alerts) >= 1
+
+    def test_dep_confusion_hash_mismatch_is_high_severity(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        dep_alert = next(a for a in alerts if a.gap_type == "DEP_HASH_MISMATCH")
+        assert dep_alert.severity == AlertSeverity.HIGH
+
+    def test_dep_confusion_install_after_failure_is_critical(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        install_alert = next(a for a in alerts if a.gap_type == "INSTALL_AFTER_VERIFICATION_FAILURE")
+        assert install_alert.severity == AlertSeverity.CRITICAL
+
+    def test_dep_confusion_identifies_wrong_version(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        dep_alert = next(a for a in alerts if a.gap_type == "DEP_HASH_MISMATCH")
+        assert dep_alert.evidence["installed_version"] == "99.0.0"
+        assert dep_alert.evidence["expected_version"] == "1.2.3"
+
+    def test_dep_confusion_identifies_package_name(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        dep_alert = next(a for a in alerts if a.gap_type == "DEP_HASH_MISMATCH")
+        assert dep_alert.evidence["package"] == "shadow313-internal"
+
+    def test_dep_confusion_abort_action(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        dep_alert = next(a for a in alerts if a.gap_type == "DEP_HASH_MISMATCH")
+        assert "ABORT" in dep_alert.automated_action.upper()
+
+    def test_dep_confusion_quarantine_action(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_dep_confusion(chain)
+        alerts = detector.analyze(clean + attack)
+        install_alert = next(a for a in alerts if a.gap_type == "INSTALL_AFTER_VERIFICATION_FAILURE")
+        assert "QUARANTINE" in install_alert.automated_action.upper()
+
+
+# ── Receipt deletion tests ────────────────────────────────────────────────────
+
+class TestReceiptDeletion:
+
+    def test_deletion_produces_out_of_order_alert(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack, _ = build_receipt_deletion_scenario(chain)
+        alerts = detector.analyze(clean + attack)
+        gap_alerts = [a for a in alerts if a.gap_type == "OUT_OF_ORDER_BIND_INDEX"]
+        assert len(gap_alerts) >= 1
+
+    def test_deletion_alert_is_critical(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack, _ = build_receipt_deletion_scenario(chain)
+        alerts = detector.analyze(clean + attack)
+        gap_alert = next(a for a in alerts if a.gap_type == "OUT_OF_ORDER_BIND_INDEX")
+        assert gap_alert.severity == AlertSeverity.CRITICAL
+
+    def test_deletion_alert_has_correct_technique(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack, _ = build_receipt_deletion_scenario(chain)
+        alerts = detector.analyze(clean + attack)
+        gap_alert = next(a for a in alerts if a.gap_type == "OUT_OF_ORDER_BIND_INDEX")
+        assert "T1070.004" in gap_alert.attack_technique
+
+    def test_deletion_evidence_shows_missing_count(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack, _ = build_receipt_deletion_scenario(chain)
+        alerts = detector.analyze(clean + attack)
+        gap_alert = next(a for a in alerts if a.gap_type == "OUT_OF_ORDER_BIND_INDEX")
+        assert gap_alert.evidence["missing_count"] >= 1
+
+    def test_deletion_block_action(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack, _ = build_receipt_deletion_scenario(chain)
+        alerts = detector.analyze(clean + attack)
+        gap_alert = next(a for a in alerts if a.gap_type == "OUT_OF_ORDER_BIND_INDEX")
+        assert "BLOCK" in gap_alert.automated_action.upper()
+
+
+# ── OIDC token replay tests ───────────────────────────────────────────────────
+
+class TestOIDCTokenReplay:
+
+    def test_replay_produces_duplicate_version_alert(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alerts = [a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE"]
+        assert len(dup_alerts) >= 1
+
+    def test_replay_alert_is_critical(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alert = next(a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE")
+        assert dup_alert.severity == AlertSeverity.CRITICAL
+
+    def test_replay_alert_has_correct_technique(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alert = next(a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE")
+        assert "T1588.001" in dup_alert.attack_technique
+
+    def test_replay_evidence_shows_different_hashes(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alert = next(a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE")
+        assert dup_alert.evidence["first_sha256"] != dup_alert.evidence["second_sha256"]
+
+    def test_replay_evidence_shows_same_version(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alert = next(a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE")
+        assert dup_alert.evidence["version"] == "4.0.5"
+
+    def test_replay_yank_action(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_oidc_replay(chain)
+        alerts = detector.analyze(clean + attack)
+        dup_alert = next(a for a in alerts if a.gap_type == "DUPLICATE_VERSION_RELEASE")
+        assert "YANK" in dup_alert.automated_action.upper()
+
+
+# ── Detector tests ────────────────────────────────────────────────────────────
+
+class TestSupplyChainDetector:
+
+    def test_empty_receipts_no_alerts(self, detector):
+        alerts = detector.analyze([])
+        assert alerts == []
+
+    def test_single_receipt_no_alerts(self, detector):
+        chain = ReceiptChain()
+        r = chain.bind("TEST", {})
+        alerts = detector.analyze([r])
+        assert alerts == []
+
+    def test_alerts_sorted_by_bind_index(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack2 = build_workflow_injection(chain)
+        attack3 = build_dep_confusion(chain)
+        all_receipts = clean + attack2 + attack3
+        alerts = detector.analyze(all_receipts)
+        indices = [a.bind_index_from for a in alerts]
+        assert indices == sorted(indices)
+
+    def test_alert_has_all_required_fields(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        assert len(alerts) > 0
+        a = alerts[0]
+        assert hasattr(a, 'severity')
+        assert hasattr(a, 'gap_type')
+        assert hasattr(a, 'bind_index_from')
+        assert hasattr(a, 'bind_index_to')
+        assert hasattr(a, 'attack_technique')
+        assert hasattr(a, 'description')
+        assert hasattr(a, 'evidence')
+        assert hasattr(a, 'recommendation')
+        assert hasattr(a, 'automated_action')
+
+    def test_alert_display_returns_string(self, detector):
+        chain = ReceiptChain()
+        clean = build_clean_release(chain)
+        attack = build_workflow_injection(chain)
+        alerts = detector.analyze(clean + attack)
+        display = alerts[0].display()
+        assert isinstance(display, str)
+        assert len(display) > 0
+
+    def test_full_simulation_detects_all_attacks(self, detector):
+        """Full simulation: all 5 scenarios, all attacks detected."""
+        chain = ReceiptChain()
+        all_receipts = []
+        all_receipts.extend(build_clean_release(chain))
+        all_receipts.extend(build_workflow_injection(chain))
+        all_receipts.extend(build_dep_confusion(chain))
+        attack4, _ = build_receipt_deletion_scenario(chain)
+        all_receipts.extend(attack4)
+        all_receipts.extend(build_oidc_replay(chain))
+
+        alerts = detector.analyze(all_receipts)
+        gap_types = {a.gap_type for a in alerts}
+
+        assert "WHEEL_HASH_MISMATCH" in gap_types
+        assert "DEP_HASH_MISMATCH" in gap_types
+        assert "INSTALL_AFTER_VERIFICATION_FAILURE" in gap_types
+        assert "OUT_OF_ORDER_BIND_INDEX" in gap_types
+        assert "DUPLICATE_VERSION_RELEASE" in gap_types
+
+    def test_release_without_pipeline_detected(self, detector):
+        """A PACKAGE_RELEASE with no preceding pipeline receipts fires alert."""
+        chain = ReceiptChain()
+        # Publish directly without any pipeline receipts
+        r = chain.bind("PACKAGE_RELEASE", {
+            "version": "9.9.9",
+            "wheel_sha256": MALICIOUS_WHEEL_SHA,
+            "publisher": "attacker",
+        })
+        alerts = detector.analyze([r])
+        pipeline_alerts = [a for a in alerts if a.gap_type == "RELEASE_WITHOUT_PIPELINE"]
+        assert len(pipeline_alerts) >= 1
+        assert pipeline_alerts[0].severity == AlertSeverity.CRITICAL
+
+
+# ── Helper for receipt deletion scenario ─────────────────────────────────────
+
+def build_receipt_deletion_scenario(chain: ReceiptChain):
+    """Build a receipt deletion scenario — returns (receipts, prev_seq)."""
+    chain.bind("DEPENDENCY_AUDIT_PASSED", {"packages_checked": 47})
+    chain.bind("BUILD_STARTED", {"git_commit": "mno345pqr678901", "git_tag": "v4.0.4"})
+    prev_seq = chain.seq
+    chain.bind("TESTS_PASSED", {"total": 2648, "passed": 2648})
+    # Simulate deletion by skipping 2 indices
+    chain._seq += 2
+    rs = [chain.bind("PACKAGE_RELEASE", {
+        "version": "4.0.4",
+        "wheel_sha256": MALICIOUS_WHEEL_SHA,
+        "publisher": "github-actions-oidc",
+        "note": "RECEIPTS_DELETED_TO_COVER_TRACKS",
+    })]
+    return rs, prev_seq

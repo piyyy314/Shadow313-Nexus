@@ -13,14 +13,14 @@ from shadow313.modules.cicd.cicd import (
 class TestSecretScanner:
     def test_aws_key_detection(self, tmp_path):
         f = tmp_path / "config.py"
-        f.write_text('AWS_ACCESS_KEY_ID = "EXAMPLEAWSKEY00000001"\n')
+        f.write_text('AWS_ACCESS_KEY_ID = "' + 'AKIA' + 'A' * 16 + '"\n')
         scanner  = SecretScanner()
         findings = scanner.scan_directory(str(tmp_path))
         assert any(r["rule_id"] == "SECRET-AWS-KEY" for r in findings)
 
     def test_github_token_detection(self, tmp_path):
         f = tmp_path / "deploy.sh"
-        f.write_text('TOKEN="test_github_token_placeholder_not_real"\n')
+        f.write_text('TOKEN="' + 'ghp_' + 'a' * 36 + '"\n')
         scanner  = SecretScanner()
         findings = scanner.scan_directory(str(tmp_path))
         assert any(r["rule_id"] == "SECRET-GITHUB-TOKEN" for r in findings)
@@ -79,7 +79,7 @@ class TestSecretScanner:
 
     def test_stripe_key_detection(self, tmp_path):
         f = tmp_path / "payment.py"
-        f.write_text('STRIPE_KEY = "test_stripe_key_placeholder_not_real"\n')
+        f.write_text('STRIPE_KEY = "' + 'sk_live_' + 'a' * 24 + '"\n')
         scanner  = SecretScanner()
         findings = scanner.scan_directory(str(tmp_path))
         assert any(r["rule_id"] == "SECRET-STRIPE-KEY" for r in findings)
