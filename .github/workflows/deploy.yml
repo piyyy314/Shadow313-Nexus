@@ -172,13 +172,15 @@ jobs:
           echo "$output"
           raw=$(echo "$output" | sed -nE 's/.*Preview:[[:space:]]*(https?:\/\/[^[:space:]]+).*/\1/p' | tail -1)
           if [ -z "$raw" ]; then
+            raw=$(echo "$output" | awk 'NF{line=$0} END{print line}' | xargs)
+          fi
+          if [[ "$raw" =~ ^https?://[a-zA-Z0-9.-]+\.vercel\.(app|dev)$ ]]; then
+            url="$raw"
+          elif [[ "$raw" =~ ^[a-zA-Z0-9.-]+\.vercel\.(app|dev)$ ]]; then
+            url="https://$raw"
+          else
             echo "❌ Failed to extract preview deployment URL from Vercel output."
             exit 1
-          fi
-          if [[ "$raw" =~ ^https?:// ]]; then
-            url="$raw"
-          else
-            url="https://$raw"
           fi
           echo "preview_url=$url" >> $GITHUB_OUTPUT
           echo "🔗 Preview URL: $url"
