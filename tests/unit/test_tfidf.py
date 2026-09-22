@@ -1,6 +1,6 @@
 """Unit tests — shadow313.v2.rag TF-IDF vector store v4"""
 import pytest
-from shadow313.v2.rag.rag_engine import TFIDFVectorStore, SecurityKnowledgeBase
+from shadow313.v2.rag.rag_engine import RAGEngine, TFIDFVectorStore, SecurityKnowledgeBase
 
 
 class TestTFIDFVectorStore:
@@ -105,3 +105,45 @@ class TestSecurityKnowledgeBase:
         stats = kb.stats()
         for ns in ("cve", "mitre", "owasp", "session", "general"):
             assert ns in stats["namespaces"]
+
+
+class _FakeAI:
+    def __init__(self):
+        self.prompts = []
+
+    def chat(self, user_prompt, system_prompt=None):
+        self.prompts.append((user_prompt, system_prompt))
+        return "stub response"
+
+
+class _FakeKB:
+    def query(self, query, namespace="cve", top_k=5):
+        return [{
+            "id": "doc1",
+            "text": "Apache HTTP Server vulnerability context",
+            "namespace": namespace,
+            "score": 0.75,
+        }]
+
+    def query_all(self, query, top_k=5):
+        return []
+
+
+class TestRAGEngine:
+    def test_chat_with_context_includes_history(self):
+        ai = _FakeAI()
+        rag = RAGEngine(ai)
+        rag.kb = _FakeKB()
+        rag._hist = [
+            {"role": "user", "content": "Earlier question"},
+            {"role": "assistant", "content": "Earlier answer"},
+        ]
+
+        answer = rag.chat_with_context("What CVEs affect Apache?")
+
+        assert answer == "stub response"
+        prompt, system_prompt = ai.prompts[0]
+        assert "RETRIEVED CONTEXT:" in prompt
+        assert "CONVERSATION HISTORY:\nUser: Earlier question\nAssistant: Earlier answer\n\n" in prompt
+        assert "QUESTION: What CVEs affect Apache?" in prompt
+        assert system_prompt is not None

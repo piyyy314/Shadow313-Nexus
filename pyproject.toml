@@ -48,7 +48,7 @@ full = [
 ]
 dev = [
     "pytest>=7.0","pytest-asyncio>=0.23","black>=24.0",
-    "ruff>=0.4","mypy>=1.10","coverage>=7.0",
+    "ruff>=0.4","mypy>=1.10","coverage>=7.0","numpy>=1.26",
 ]
 
 [project.scripts]
@@ -66,8 +66,10 @@ target-version = ["py311"]
 
 [tool.ruff]
 line-length = 100
-select      = ["E","F","W","I","N","UP","S","B","A","C4"]
-ignore      = ["S101","S603","S607","S608","S324","S311","S506","UP007"]
+
+[tool.ruff.lint]
+select = ["E","F","W","I","N","UP","S","B","A","C4"]
+ignore = ["S101","S603","S607","S608","S324","S311","S506","UP007"]
 
 [tool.mypy]
 python_version         = "3.11"
