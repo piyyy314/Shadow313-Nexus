@@ -170,7 +170,7 @@ jobs:
         run: |
           output=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
           echo "$output"
-          raw=$(echo "$output" | grep -Eo 'https?://[a-zA-Z0-9.-]+\.vercel\.app|[a-zA-Z0-9-]+\.vercel\.app' | tail -1)
+          raw=$(echo "$output" | grep -Eo 'https?://[a-zA-Z0-9.-]+\.vercel\.(app|dev)|[a-zA-Z0-9-]+\.vercel\.(app|dev)' | tail -1)
           if [ -z "$raw" ]; then
             echo "❌ Failed to extract preview deployment URL from Vercel output."
             exit 1
