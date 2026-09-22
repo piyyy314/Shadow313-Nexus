@@ -14,12 +14,13 @@ Routes:
 from __future__ import annotations
 
 import hashlib
+from importlib.util import find_spec
 import json
 import logging
 import math
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 logger = logging.getLogger("shadow313.api.audit_server")
 
@@ -34,17 +35,13 @@ except ImportError:
     BaseModel = object  # type: ignore
 
 # ── Optional binder ───────────────────────────────────────────────────────────
-try:
-    from shadow313.core.binding_sdk.binder import Binder313, AppIdentity
-    HAS_BINDER = True
-except ImportError:
-    HAS_BINDER = False
+HAS_BINDER = find_spec("shadow313.core.binding_sdk.binder") is not None
 
 # ── In-memory audit chain ─────────────────────────────────────────────────────
-_audit_chain: List[Dict[str, Any]] = []
+_audit_chain: list[dict[str, Any]] = []
 
 
-def _add_to_chain(payload: dict, bind_id: Optional[str] = None) -> dict:
+def _add_to_chain(payload: dict[str, Any], bind_id: str | None = None) -> dict[str, Any]:
     """Add a receipt to the in-memory 313-BIND audit chain."""
     ts = time.time_ns()
     ts = int(str(ts)[:-3] + "313")
@@ -61,7 +58,7 @@ def _add_to_chain(payload: dict, bind_id: Optional[str] = None) -> dict:
         "bind_index": idx,
         "bind_id": bind_id or f"313-API-{idx:08d}",
         "timestamp_ns": ts,
-        "timestamp_iso": datetime.now(timezone.utc).isoformat(),
+        "timestamp_iso": datetime.now(UTC).isoformat(),
         "payload_hash": payload_hash,
         "chain_hash": chain_hash,
         "signature_algorithm": "SLH-DSA-SHAKE-128f (FIPS 205) — simulated",
@@ -149,9 +146,24 @@ def create_app() -> Any:
         code = req.code
         # Patterns split to avoid triggering Shadow313 security scanner  # nosec
         _pats = [
-            ("os.system" + "(", "CWE-78", "HIGH", "Insecure command execution via os.system()"),
-            ("subprocess.call" + "(", "CWE-78", "MEDIUM", "subprocess.call() — prefer subprocess.run()"),
-            ("shell" + chr(61) + "True", "CWE-78", "HIGH", "shell equals True bypasses argument isolation"),  # nosec
+            (
+                "os.system" + "(",
+                "CWE-78",
+                "HIGH",
+                "Insecure command execution via os.system()",
+            ),
+            (
+                "subprocess.call" + "(",
+                "CWE-78",
+                "MEDIUM",
+                "subprocess.call() — prefer subprocess.run()",
+            ),
+            (
+                "shell" + chr(61) + "True",
+                "CWE-78",
+                "HIGH",
+                "shell equals True bypasses argument isolation",
+            ),  # nosec
             ("eval" + "(", "CWE-95", "CRITICAL", "eval() allows arbitrary code execution"),
             ("exec" + "(", "CWE-95", "CRITICAL", "exec() allows arbitrary code execution"),
             ("pickle" + ".loads(", "CWE-502", "HIGH", "Unsafe deserialization via pickle"),  # nosec
@@ -261,8 +273,14 @@ def create_app() -> Any:
             "algorithm": "SLH-DSA-SHAKE-128f",
             "standard": "NIST FIPS 205",
             "key_size_bytes": 32,
-            "note": "Production key stored in HSM. Contact security@shadow313.dev for verification.",
-            "fingerprint": "313-PK-" + hashlib.sha3_256(b"shadow313-nexus-pubkey").hexdigest()[:16].upper(),
+            "note": (
+                "Production key stored in HSM. "
+                "Contact security@shadow313.dev for verification."
+            ),
+            "fingerprint": (
+                "313-PK-"
+                + hashlib.sha3_256(b"shadow313-nexus-pubkey").hexdigest()[:16].upper()
+            ),
         }
 
     @app.get("/api/health")
@@ -275,7 +293,7 @@ def create_app() -> Any:
             "audit_chain_length": len(_audit_chain),
             "fastapi_available": HAS_FASTAPI,
             "binder_available": HAS_BINDER,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     return app
@@ -285,6 +303,6 @@ if __name__ == "__main__":
     try:
         import uvicorn
         app = create_app()
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+        uvicorn.run(app, host="127.0.0.1", port=8000)
     except ImportError:
         print("[!] uvicorn not installed. Run: pip install uvicorn")

@@ -18,15 +18,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import secrets
 import time
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 try:
-    from fastapi import FastAPI, HTTPException, Depends, Header
+    from fastapi import Depends, FastAPI, Header, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import JSONResponse
     from pydantic import BaseModel
     import uvicorn
     HAS_FASTAPI = True
@@ -44,27 +44,27 @@ if HAS_FASTAPI:
 
     class WebShellScanRequest(BaseModel):
         content: str
-        file_path: Optional[str] = None
+        file_path: str | None = None
         mode: str = "content"  # content | access_log
 
     class BindCreateRequest(BaseModel):
         payload: dict[str, Any]
-        metadata: Optional[dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
 
     class ReconRequest(BaseModel):
         target: str
         mode: str = "passive"
-        ports: Optional[str] = None
+        ports: str | None = None
 
     class VulnRequest(BaseModel):
-        target: Optional[str] = None
-        cve_id: Optional[str] = None
-        from_session: Optional[str] = None
+        target: str | None = None
+        cve_id: str | None = None
+        from_session: str | None = None
 
 
 # ── App factory ───────────────────────────────────────────────────
 
-def create_app(api_key: Optional[str] = None) -> "FastAPI":
+def create_app(api_key: str | None = None) -> FastAPI:
     if not HAS_FASTAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
@@ -95,7 +95,7 @@ def create_app(api_key: Optional[str] = None) -> "FastAPI":
     _receipts: dict[str, dict] = {}
 
     # ── Auth dependency ───────────────────────────────────────────
-    def verify_api_key(x_api_key: Optional[str] = Header(None)):
+    def verify_api_key(x_api_key: str | None = Header(None)):
         if api_key and x_api_key != api_key:
             raise HTTPException(status_code=401, detail="Invalid API key")
         return x_api_key
@@ -108,7 +108,7 @@ def create_app(api_key: Optional[str] = None) -> "FastAPI":
             "status":    "operational",
             "version":   __version__,
             "service":   "shadow313-nexus-api",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "modules": {
                 "recon":    True,
                 "vuln":     True,
@@ -173,7 +173,7 @@ def create_app(api_key: Optional[str] = None) -> "FastAPI":
         return {
             "event":     req.event,
             "results":   results,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     @app.post("/api/webshell/scan")
@@ -206,7 +206,7 @@ def create_app(api_key: Optional[str] = None) -> "FastAPI":
                 "Reconnaissance":       {"covered": 2, "total": 5, "pct": 40.0},
                 "Collection":           {"covered": 1, "total": 5, "pct": 20.0},
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     @app.post("/api/bind/create")
@@ -231,7 +231,7 @@ def create_app(api_key: Optional[str] = None) -> "FastAPI":
         receipt = {
             "bind_id":             bind_id,
             "timestamp_ns":        ts,
-            "timestamp_iso":       datetime.now(timezone.utc).isoformat(),
+            "timestamp_iso":       datetime.now(UTC).isoformat(),
             "payload_hash":        payload_hash,
             "chain_hash":          chain_hash,
             "prev_chain_hash":     prev_hash,
@@ -275,7 +275,6 @@ def main():
         print("ERROR: fastapi and uvicorn required — pip install fastapi uvicorn")
         return 1
 
-    import os
     api_key = args.api_key or os.environ.get("SHADOW313_API_KEY")
     app = create_app(api_key=api_key)
 
