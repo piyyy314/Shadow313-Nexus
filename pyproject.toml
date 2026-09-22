@@ -56,8 +56,9 @@ shadow313 = "shadow313.cli.main:main"
 
 [project.urls]
 Homepage   = "https://shadow313.dev"
-Repository = "https://github.com/shadow313/shadow313"
-Issues     = "https://github.com/shadow313/shadow313/issues"
+Repository = "https://github.com/piyyy314/Shadow313-Nexus"
+Issues     = "https://github.com/piyyy314/Shadow313-Nexus/issues"
+Changelog  = "https://github.com/piyyy314/Shadow313-Nexus/blob/master/CHANGELOG.md"
 
 [tool.black]
 line-length    = 100
