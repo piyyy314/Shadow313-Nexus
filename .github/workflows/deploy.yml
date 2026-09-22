@@ -358,7 +358,7 @@ jobs:
     name: Notify on Failure
     runs-on: ubuntu-latest
     needs: [quality, production]
-    if: failure() && github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
+    if: github.event_name == 'push' && failure() && github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
     steps:
       - name: Post failure summary
         uses: actions/github-script@v7
