@@ -168,7 +168,18 @@ jobs:
       - name: Deploy Preview
         id: deploy
         run: |
-          url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
+          output=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
+          echo "$output"
+          raw=$(echo "$output" | grep -Eo 'https?://[^[:space:]]+|[a-zA-Z0-9-]+\.vercel\.app' | tail -1)
+          if [ -z "$raw" ]; then
+            echo "❌ Failed to extract preview deployment URL from Vercel output."
+            exit 1
+          fi
+          if [[ "$raw" =~ ^https?:// ]]; then
+            url="$raw"
+          else
+            url="https://$raw"
+          fi
           echo "preview_url=$url" >> $GITHUB_OUTPUT
           echo "🔗 Preview URL: $url"
 
