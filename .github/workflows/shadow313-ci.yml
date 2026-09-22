@@ -58,7 +58,7 @@ jobs:
       - name: Install Shadow313 + test deps
         run: |
           pip install -e ".[dev]"
-          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx
+          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn
       - name: Run tests
         run: |
           pytest tests/ -q --tb=short \

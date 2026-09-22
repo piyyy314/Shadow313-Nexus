@@ -1,0 +1,48 @@
+# Shadow313 NEXUS — Git line ending configuration
+# Ensures shell scripts always use LF regardless of OS
+
+# Default: normalize all text files to LF on checkout
+* text=auto eol=lf
+
+# Shell scripts — always LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Python — always LF
+*.py text eol=lf
+
+# Config files — always LF
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.conf text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.env text eol=lf
+
+# HTML/CSS/JS — always LF
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+
+# Binary files — no line ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.pdf binary
+*.pptx binary
+*.docx binary
+*.xlsx binary
