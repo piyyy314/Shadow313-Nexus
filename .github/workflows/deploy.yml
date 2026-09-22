@@ -172,9 +172,6 @@ jobs:
           echo "$output"
           raw=$(echo "$output" | sed -nE 's/.*Preview:[[:space:]]*(https?:\/\/[^[:space:]]+).*/\1/p' | tail -1)
           if [ -z "$raw" ]; then
-            raw=$(echo "$output" | grep -Eo 'https?://[a-zA-Z0-9.-]+\.vercel\.(app|dev)|[a-zA-Z0-9-]+\.vercel\.(app|dev)' | head -1)
-          fi
-          if [ -z "$raw" ]; then
             echo "❌ Failed to extract preview deployment URL from Vercel output."
             exit 1
           fi
