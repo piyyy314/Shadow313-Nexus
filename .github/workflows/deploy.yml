@@ -198,7 +198,11 @@ jobs:
           )
           failed=0
           for route in "${routes[@]}"; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$base$route" || echo "000")
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$base$route")
+            curl_status=$?
+            if [ $curl_status -ne 0 ] || ! [[ "$code" =~ ^[0-9]{3}$ ]]; then
+              code="000"
+            fi
             if [ "$code" = "200" ]; then
               echo "  ✓ $code  $base$route"
             else
@@ -299,7 +303,11 @@ jobs:
           )
           failed=0
           for route in "${routes[@]}"; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$base$route" || echo "000")
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$base$route")
+            curl_status=$?
+            if [ $curl_status -ne 0 ] || ! [[ "$code" =~ ^[0-9]{3}$ ]]; then
+              code="000"
+            fi
             if [ "$code" = "200" ]; then
               echo "  ✓ $code  $base$route"
             else
