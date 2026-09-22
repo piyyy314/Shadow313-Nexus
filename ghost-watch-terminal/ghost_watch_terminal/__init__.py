@@ -1,0 +1,1 @@
+"""Ghost-Watch Terminal package."""

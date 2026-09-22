@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shadow313 NEXUS v4 — Architecture Dashboard</title>
+<style>
+:root {
+  --bg: #020617; --bg2: #0a1628; --bg3: #0d1f3c;
+  --green: #22c55e; --cyan: #06b6d4; --amber: #f59e0b;
+  --purple: #a78bfa; --red: #ef4444; --blue: #3b82f6;
+  --pink: #ec4899; --orange: #f97316;
+  --text: #e2e8f0; --muted: #64748b; --dim: #334155;
+  --border: rgba(34,197,94,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ── Header ── */
+.header { background: linear-gradient(135deg, #020617, #0a1628); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--green); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 14px; }
+.logo-text { font-size: 15px; font-weight: 700; color: var(--green); letter-spacing: .04em; }
+.logo-sub { font-size: 10px; color: var(--muted); font-family: monospace; }
+.header-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge { font-size: 9px; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .08em; }
+.badge-green { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.25); }
+.badge-cyan { background: rgba(6,182,212,.12); color: var(--cyan); border: 1px solid rgba(6,182,212,.25); }
+.badge-amber { background: rgba(245,158,11,.12); color: var(--amber); border: 1px solid rgba(245,158,11,.25); }
+.badge-purple { background: rgba(167,139,250,.12); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+
+/* ── Main layout ── */
+.main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+
+/* ── Section title ── */
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--dim); }
+
+/* ── Architecture canvas ── */
+.arch-canvas { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; overflow: hidden; }
+.arch-canvas::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(34,197,94,.03) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(6,182,212,.03) 0%, transparent 60%); pointer-events: none; }
+
+/* ── Trust boundary zones ── */
+.zone { border-radius: 12px; padding: 16px; margin-bottom: 16px; position: relative; }
+.zone-internet { background: rgba(167,139,250,.04); border: 1px dashed rgba(167,139,250,.3); }
+.zone-windows { background: rgba(59,130,246,.04); border: 1px dashed rgba(59,130,246,.3); }
+.zone-wsl2 { background: rgba(245,158,11,.04); border: 1px dashed rgba(245,158,11,.3); }
+.zone-docker { background: rgba(6,182,212,.04); border: 1px dashed rgba(6,182,212,.3); }
+.zone-vpn { background: rgba(34,197,94,.04); border: 1px dashed rgba(34,197,94,.3); }
+.zone-label { position: absolute; top: -10px; left: 16px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: 2px 10px; border-radius: 10px; }
+.zone-internet .zone-label { background: rgba(167,139,250,.15); color: var(--purple); border: 1px solid rgba(167,139,250,.3); }
+.zone-windows .zone-label { background: rgba(59,130,246,.15); color: var(--blue); border: 1px solid rgba(59,130,246,.3); }
+.zone-wsl2 .zone-label { background: rgba(245,158,11,.15); color: var(--amber); border: 1px solid rgba(245,158,11,.3); }
+.zone-docker .zone-label { background: rgba(6,182,212,.15); color: var(--cyan); border: 1px solid rgba(6,182,212,.3); }
+.zone-vpn .zone-label { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+
+/* ── Component grid ── */
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.comp { background: rgba(0,0,0,.4); border-radius: 10px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.06); cursor: pointer; transition: all .2s; position: relative; }
+.comp:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.comp.active { border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 8px 24px rgba(34,197,94,.15); }
+.comp-icon { font-size: 22px; margin-bottom: 6px; }
+.comp-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.comp-port { font-size: 10px; font-family: monospace; color: var(--green); margin-bottom: 4px; }
+.comp-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
+.comp-status { position: absolute; top: 10px; right: 10px; width: 7px; height: 7px; border-radius: 50%; }
+.status-live { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+.status-ready { background: var(--amber); }
+.status-planned { background: var(--dim); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── Data flow arrows ── */
+.flow-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 11px; font-family: monospace; }
+.flow-from { color: var(--cyan); font-weight: 700; min-width: 160px; }
+.flow-arrow { color: var(--green); font-size: 14px; }
+.flow-to { color: var(--amber); font-weight: 700; min-width: 160px; }
+.flow-port { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); border-radius: 4px; padding: 1px 7px; font-size: 9px; font-weight: 700; }
+.flow-proto { color: var(--purple); font-size: 9px; }
+.flow-note { color: var(--muted); font-size: 9px; font-family: 'Segoe UI', sans-serif; }
+
+/* ── 313-BIND chain ── */
+.bind-chain { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 16px 0; }
+.bind-step { background: rgba(0,0,0,.4); border: 1px solid rgba(34,197,94,.2); border-radius: 8px; padding: 10px 14px; min-width: 140px; text-align: center; flex-shrink: 0; }
+.bind-step-num { font-size: 9px; color: var(--muted); font-family: monospace; margin-bottom: 4px; }
+.bind-step-name { font-size: 11px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
+.bind-step-detail { font-size: 9px; color: var(--muted); line-height: 1.4; }
+.bind-arrow { color: var(--green); font-size: 18px; padding: 0 6px; flex-shrink: 0; opacity: .6; }
+
+/* ── Port table ── */
+.port-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.port-table th { background: rgba(0,0,0,.3); padding: 8px 12px; text-align: left; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); border-bottom: 1px solid var(--dim); }
+.port-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.04); font-family: monospace; }
+.port-table tr:hover td { background: rgba(34,197,94,.03); }
+.port-num { color: var(--green); font-weight: 700; }
+.port-service { color: var(--cyan); }
+.port-proto { color: var(--purple); }
+.port-trust { font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 700; }
+.trust-local { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+.trust-vpn { background: rgba(6,182,212,.1); color: var(--cyan); border: 1px solid rgba(6,182,212,.2); }
+.trust-internet { background: rgba(167,139,250,.1); color: var(--purple); border: 1px solid rgba(167,139,250,.2); }
+.trust-encrypted { background: rgba(245,158,11,.1); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+
+/* ── Detail panel ── */
+.detail-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+.detail-panel.visible { display: block; }
+.detail-title { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.detail-item { background: rgba(0,0,0,.3); border-radius: 8px; padding: 10px 12px; }
+.detail-item-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.detail-item-value { font-size: 12px; color: var(--text); font-family: monospace; }
+
+/* ── Stats row ── */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: center; }
+.stat-num { font-size: 26px; font-weight: 700; line-height: 1; }
+.stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+
+/* ── Responsive ── */
+@media(max-width:700px) { .main { padding: 12px; } .comp-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<!-- ── HEADER ── -->
+<div class="header">
+<div class="logo">
+<div class="logo-icon">⬡</div>
+<div>
+<div class="logo-text">SHADOW313 NEXUS v4</div>
+<div class="logo-sub">Architecture &amp; Data Flow Dashboard</div>
+</div>
+</div>
+<div class="header-badges">
+<span class="badge badge-green">2648 Tests GREEN</span>
+<span class="badge badge-cyan">29 Detectors</span>
+<span class="badge badge-amber">313-BIND Active</span>
+<span class="badge badge-purple">Post-Quantum</span>
+</div>
+</div>
+<div class="main">
+<!-- ── STATS ── -->
+<div class="stats-row">
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">2648</div><div class="stat-label">Tests Passing</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--cyan)">29</div><div class="stat-label">Active Detectors</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--amber)">35</div><div class="stat-label">Security Tools</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--purple)">28</div><div class="stat-label">CLI Modules</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">4</div><div class="stat-label">AI Models</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--blue)">16GB</div><div class="stat-label">RAM Available</div></div>
+</div>
+<!-- ── ARCHITECTURE CANVAS ── -->
+<div class="section-title">Trust Boundary Architecture</div>
+<div class="arch-canvas">
+<!-- INTERNET ZONE -->
+<div class="zone zone-internet">
+<span class="zone-label">☁️ Internet / Cloud</span>
+<div class="comp-grid">
+<div class="comp" onclick="showDetail('claude')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🤖</div>
+<div class="comp-name">Claude (Anthropic)</div>
+<div class="comp-port">api.anthropic.com:443</div>
+<div class="comp-desc">This chat. Cloud AI. No security data transmitted.</div>
+</div>
+<div class="comp" onclick="showDetail('ollama-com')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🦙</div>
+<div class="comp-name">Ollama.com Registry</div>
+<div class="comp-port">ollama.com:443</div>
+<div class="comp-desc">matarmohamad313/shadow313-nexus model hosted here.</div>
+</div>
+<div class="comp" onclick="showDetail('github')">
+<div class="comp-status status-ready"></div>
+<div class="comp-icon">🐙</div>
+<div class="comp-name">GitHub</div>
+<div class="comp-port">github.com:443</div>
+<div class="comp-desc">piyyy314/Shadow313-Nexus repo. CI/CD via Actions.</div>
+</div>
+<div class="comp" onclick="showDetail('ipfs')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🌐</div>
+<div class="comp-name">IPFS Network</div>
+<div class="comp-port">ipfs.io:443</div>
+<div class="comp-desc">313-BIND receipt anchoring. Public data only.</div>
+</div>
+<div class="comp" onclick="showDetail('hetzner')">
+<div class="comp-status status-ready"></div>
+<div class="comp-icon">🖥️</div>
+<div class="comp-name">Hetzner VPS</div>
+<div class="comp-port">UDP:51820 / 443</div>
+<div class="comp-desc">WireGuard VPN server. Bug bounty tools. €3.29/mo.</div>
+</div>
+</div>
+</div>
+<!-- WINDOWS HOST ZONE -->
+<div class="zone zone-windows" style="margin-top:16px">
+<span class="zone-label">🪟 Windows 11 Pro Host — Dell Latitude 5490 (16GB RAM)</span>
+<div class="comp-grid">
+<div class="comp" onclick="showDetail('ollama')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🦙</div>
+<div class="comp-name">Ollama Engine</div>
+<div class="comp-port">localhost:11434</div>
+<div class="comp-desc">4 models: llama3.2:3b, mistral:7b, codellama:7b, shadow313-nexus</div>
+</div>
+<div class="comp" onclick="showDetail('wireguard')">
+<div class="comp-status status-ready"></div>
+<div class="comp-icon">🛡️</div>
+<div class="comp-name">WireGuard Client</div>
+<div class="comp-port">UDP:51820</div>
+<div class="comp-desc">Encrypted tunnel to Hetzner VPS. Kill-switch capable.</div>
+</div>
+<div class="comp" onclick="showDetail('docker-desktop')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🐳</div>
+<div class="comp-name">Docker Desktop</div>
+<div class="comp-port">host.docker.internal</div>
+<div class="comp-desc">WSL2 backend. Manages all containers.</div>
+</div>
+<div class="comp" onclick="showDetail('burp')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🔍</div>
+<div class="comp-name">Burp Suite 2026</div>
+<div class="comp-port">localhost:8080</div>
+<div class="comp-desc">HTTP proxy for web app security testing.</div>
+</div>
+<div class="comp" onclick="showDetail('dns')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🔐</div>
+<div class="comp-name">Quad9 DoH DNS</div>
+<div class="comp-port">9.9.9.9:443</div>
+<div class="comp-desc">Encrypted DNS. Malware blocking. All queries encrypted.</div>
+</div>
+</div>
+</div>
+<!-- WSL2 ZONE -->
+<div class="zone zone-wsl2" style="margin-top:16px">
+<span class="zone-label">🐧 WSL2 — Ubuntu 24.04 + Kali Linux 2026.2</span>
+<div class="comp-grid">
+<div class="comp" onclick="showDetail('shadow313-cli')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">⬡</div>
+<div class="comp-name">Shadow313 CLI v4</div>
+<div class="comp-port">/workspace/</div>
+<div class="comp-desc">28 modules. 2648 tests GREEN. 29 detectors active.</div>
+</div>
+<div class="comp" onclick="showDetail('fastapi')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">⚡</div>
+<div class="comp-name">FastAPI Event Bus</div>
+<div class="comp-port">localhost:8000</div>
+<div class="comp-desc">NEXUS detection pipeline REST API. Audit server.</div>
+</div>
+<div class="comp" onclick="showDetail('nexus-engine')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🧠</div>
+<div class="comp-name">NEXUS ML Engine</div>
+<div class="comp-port">Internal</div>
+<div class="comp-desc">Isolation Forest + RF + Quantum scorer. 29 detectors.</div>
+</div>
+<div class="comp" onclick="showDetail('313-bind')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🔗</div>
+<div class="comp-name">313-BIND Protocol</div>
+<div class="comp-port">Internal + IPFS</div>
+<div class="comp-desc">SLH-DSA + SHA3-512 + nanosecond ...313 timestamp.</div>
+</div>
+<div class="comp" onclick="showDetail('kali')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🐉</div>
+<div class="comp-name">Kali Linux 2026.2</div>
+<div class="comp-port">wsl -d kali-linux</div>
+<div class="comp-desc">Metasploit, nmap 7.99, wordlists. shia313 user.</div>
+</div>
+<div class="comp" onclick="showDetail('ollama-wsl')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🔌</div>
+<div class="comp-name">Ollama API Access</div>
+<div class="comp-port">host.docker.internal:11434</div>
+<div class="comp-desc">WSL2 reaches Windows Ollama via gateway IP.</div>
+</div>
+</div>
+</div>
+<!-- DOCKER ZONE -->
+<div class="zone zone-docker" style="margin-top:16px">
+<span class="zone-label">🐳 Docker Containers</span>
+<div class="comp-grid">
+<div class="comp" onclick="showDetail('open-webui')">
+<div class="comp-status status-ready"></div>
+<div class="comp-icon">💬</div>
+<div class="comp-name">Open WebUI</div>
+<div class="comp-port">localhost:3000</div>
+<div class="comp-desc">ChatGPT-like UI for local Ollama models. Install pending.</div>
+</div>
+<div class="comp" onclick="showDetail('shadow313-api')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🔌</div>
+<div class="comp-name">Shadow313 API</div>
+<div class="comp-port">localhost:8000</div>
+<div class="comp-desc">FastAPI audit server. 6 routes. 313-BIND receipts.</div>
+</div>
+<div class="comp" onclick="showDetail('postgres')">
+<div class="comp-status status-live"></div>
+<div class="comp-icon">🗄️</div>
+<div class="comp-name">PostgreSQL</div>
+<div class="comp-port">localhost:5432</div>
+<div class="comp-desc">Metasploit database backend. Initialized in Kali.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ── DETAIL PANEL ── -->
+<div class="detail-panel" id="detail-panel">
+<div class="detail-title" id="detail-title">Component Details</div>
+<div class="detail-grid" id="detail-grid"></div>
+</div>
+<!-- ── 313-BIND CHAIN ── -->
+<div class="section-title">313-BIND Temporal Binding Protocol — Receipt Chain</div>
+<div class="arch-canvas">
+<div class="bind-chain">
+<div class="bind-step">
+<div class="bind-step-num">STEP 1</div>
+<div class="bind-step-name">Payload Input</div>
+<div class="bind-step-detail">Security finding, audit event, or module output dict</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 2</div>
+<div class="bind-step-name">Timestamp ...313</div>
+<div class="bind-step-detail">time.time_ns() nudged to end in ...313 (~1ms entropy)</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 3</div>
+<div class="bind-step-name">SHA3-256 Hash</div>
+<div class="bind-step-detail">payload_hash = sha3_256(canonical_json)</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 4</div>
+<div class="bind-step-name">SHA3-512 Chain</div>
+<div class="bind-step-detail">chain_hash = sha3_512(payload_hash + prev_hash + ts)</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 5</div>
+<div class="bind-step-name">SLH-DSA Sign</div>
+<div class="bind-step-detail">FIPS 205 signature over chain_hash (pyspx or HMAC fallback)</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 6</div>
+<div class="bind-step-name">BindReceipt</div>
+<div class="bind-step-detail">Immutable receipt: bind_id, ts_ns, hashes, signature</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step">
+<div class="bind-step-num">STEP 7</div>
+<div class="bind-step-name">IPFS Anchor</div>
+<div class="bind-step-detail">Optional: CIDv1 anchor for external verification</div>
+</div>
+<div class="bind-arrow">→</div>
+<div class="bind-step" style="border-color:rgba(34,197,94,.5)">
+<div class="bind-step-num">VERIFY</div>
+<div class="bind-step-name">Gap Detection</div>
+<div class="bind-step-detail">bind_index must be sequential — deletion detected instantly</div>
+</div>
+</div>
+</div>
+<!-- ── DATA FLOWS ── -->
+<div class="section-title">Data Flow Map — All Connections</div>
+<div class="arch-canvas">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Inbound Flows</div>
+<div class="flow-row"><span class="flow-from">Browser</span><span class="flow-arrow">→</span><span class="flow-to">Claude API</span><span class="flow-port">443</span><span class="flow-proto">HTTPS</span></div>
+<div class="flow-row"><span class="flow-from">Open WebUI</span><span class="flow-arrow">→</span><span class="flow-to">Ollama</span><span class="flow-port">11434</span><span class="flow-proto">HTTP</span></div>
+<div class="flow-row"><span class="flow-from">Ubuntu WSL2</span><span class="flow-arrow">→</span><span class="flow-to">Ollama</span><span class="flow-port">11434</span><span class="flow-proto">HTTP</span></div>
+<div class="flow-row"><span class="flow-from">Shadow313 AI</span><span class="flow-arrow">→</span><span class="flow-to">Ollama</span><span class="flow-port">11434</span><span class="flow-proto">REST</span></div>
+<div class="flow-row"><span class="flow-from">Browser</span><span class="flow-arrow">→</span><span class="flow-to">Open WebUI</span><span class="flow-port">3000</span><span class="flow-proto">HTTP</span></div>
+<div class="flow-row"><span class="flow-from">Browser</span><span class="flow-arrow">→</span><span class="flow-to">Burp Proxy</span><span class="flow-port">8080</span><span class="flow-proto">HTTP</span></div>
+<div class="flow-row"><span class="flow-from">Kali Tools</span><span class="flow-arrow">→</span><span class="flow-to">PostgreSQL</span><span class="flow-port">5432</span><span class="flow-proto">TCP</span></div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Outbound Flows</div>
+<div class="flow-row"><span class="flow-from">WireGuard</span><span class="flow-arrow">→</span><span class="flow-to">Hetzner VPS</span><span class="flow-port">51820</span><span class="flow-proto">UDP/Enc</span></div>
+<div class="flow-row"><span class="flow-from">313-BIND</span><span class="flow-arrow">→</span><span class="flow-to">IPFS</span><span class="flow-port">443</span><span class="flow-proto">HTTPS</span></div>
+<div class="flow-row"><span class="flow-from">Windows DNS</span><span class="flow-arrow">→</span><span class="flow-to">Quad9</span><span class="flow-port">443</span><span class="flow-proto">DoH</span></div>
+<div class="flow-row"><span class="flow-from">Ollama</span><span class="flow-arrow">→</span><span class="flow-to">Ollama.com</span><span class="flow-port">443</span><span class="flow-proto">HTTPS</span></div>
+<div class="flow-row"><span class="flow-from">Git Push</span><span class="flow-arrow">→</span><span class="flow-to">GitHub</span><span class="flow-port">443</span><span class="flow-proto">HTTPS</span></div>
+<div class="flow-row"><span class="flow-from">Shadow313 Recon</span><span class="flow-arrow">→</span><span class="flow-to">Target</span><span class="flow-port">Various</span><span class="flow-proto">TCP</span></div>
+<div class="flow-row"><span class="flow-from">Docker</span><span class="flow-arrow">→</span><span class="flow-to">Docker Hub</span><span class="flow-port">443</span><span class="flow-proto">HTTPS</span></div>
+</div>
+</div>
+</div>
+<!-- ── PORT TABLE ── -->
+<div class="section-title">Port &amp; Service Registry</div>
+<div class="arch-canvas" style="padding:0;overflow:hidden">
+<table class="port-table">
+<thead>
+<tr><th>Port</th><th>Service</th><th>Protocol</th><th>Direction</th><th>Trust Zone</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td class="port-num">11434</td><td class="port-service">Ollama AI Engine</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Bound to 127.0.0.1 — never exposed externally</td></tr>
+<tr><td class="port-num">3000</td><td class="port-service">Open WebUI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Docker container — localhost access only</td></tr>
+<tr><td class="port-num">8000</td><td class="port-service">Shadow313 FastAPI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Audit server + event bus REST API</td></tr>
+<tr><td class="port-num">8080</td><td class="port-service">Burp Suite Proxy</td><td class="port-proto">HTTP</td><td>Intercept</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Configure browser proxy → 127.0.0.1:8080</td></tr>
+<tr><td class="port-num">5432</td><td class="port-service">PostgreSQL (Metasploit)</td><td class="port-proto">TCP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Kali Linux Metasploit database</td></tr>
+<tr><td class="port-num">51820</td><td class="port-service">WireGuard VPN</td><td class="port-proto">UDP</td><td>Outbound</td><td><span class="port-trust trust-encrypted">ENCRYPTED</span></td><td style="color:var(--muted);font-size:10px">Tunnel to Hetzner VPS — or port 443 obfuscated</td></tr>
+<tr><td class="port-num">443</td><td class="port-service">HTTPS (various)</td><td class="port-proto">TLS 1.3</td><td>Outbound</td><td><span class="port-trust trust-internet">INTERNET</span></td><td style="color:var(--muted);font-size:10px">Claude, GitHub, Ollama.com, IPFS, Quad9 DoH</td></tr>
+<tr><td class="port-num">9.9.9.9</td><td class="port-service">Quad9 DNS-over-HTTPS</td><td class="port-proto">DoH</td><td>Outbound</td><td><span class="port-trust trust-encrypted">ENCRYPTED</span></td><td style="color:var(--muted);font-size:10px">All DNS queries encrypted — malware blocking</td></tr>
+</tbody>
+</table>
+</div>
+<!-- ── DETECTOR MAP ── -->
+<div class="section-title">Shadow313 v4 Detector Stack — 29 Active Detectors</div>
+<div class="arch-canvas">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+<div>
+<div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">APT Hardening (FIX-12 → FIX-21)</div>
+<div style="font-size:10px;font-family:monospace;line-height:2;color:var(--muted)">
+<span style="color:var(--green)">FIX-12</span> ValidAccountsDetector → <span style="color:var(--cyan)">T1078</span><br/>
+<span style="color:var(--green)">FIX-13</span> C2ProtocolAnalyzer → <span style="color:var(--cyan)">T1071/T1041</span><br/>
+<span style="color:var(--green)">FIX-14</span> CredentialDumpingDetector → <span style="color:var(--cyan)">T1003</span><br/>
+<span style="color:var(--green)">FIX-15</span> SessionHijackDetector → <span style="color:var(--cyan)">T1539/T1557</span><br/>
+<span style="color:var(--green)">FIX-16</span> SpearphishingEnhancer → <span style="color:var(--cyan)">T1566.001</span><br/>
+<span style="color:var(--green)">FIX-17</span> ImpossibleTravelDetector → <span style="color:var(--cyan)">T1078</span><br/>
+<span style="color:var(--green)">FIX-18</span> AdaptiveBeaconDetector → <span style="color:var(--cyan)">T1071</span><br/>
+<span style="color:var(--green)">FIX-19</span> HardenedCredDumpDetector → <span style="color:var(--cyan)">T1003</span><br/>
+<span style="color:var(--green)">FIX-20</span> AdvancedSessionGuard → <span style="color:var(--cyan)">T1539/T1557</span><br/>
+<span style="color:var(--green)">FIX-21</span> AttachmentDeepInspector → <span style="color:var(--cyan)">T1566.001</span>
+</div>
+</div>
+<div>
+<div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">Identity Layer (IDENTITY-1 → IDENTITY-8)</div>
+<div style="font-size:10px;font-family:monospace;line-height:2;color:var(--muted)">
+<span style="color:var(--purple)">ID-1</span> BehaviouralBiometricProfiler → Insider<br/>
+<span style="color:var(--purple)">ID-2</span> ZeroTrustNetworkAccessEngine → <span style="color:var(--cyan)">T1557</span><br/>
+<span style="color:var(--purple)">ID-3</span> OAuthTokenAnomalyDetector → <span style="color:var(--cyan)">T1528</span><br/>
+<span style="color:var(--purple)">ID-4</span> MFAChallengeOrchestrator → MFA<br/>
+<span style="color:var(--purple)">ID-5</span> HardwareTokenBindingVerifier → <span style="color:var(--cyan)">T1556</span><br/>
+<span style="color:var(--purple)">ID-6</span> MLAnomalyProfiler → Insider/Context<br/>
+<span style="color:var(--purple)">ID-7</span> LOTLAuthBypassDetector → <span style="color:var(--cyan)">T1550/T1558</span><br/>
+<span style="color:var(--purple)">ID-8</span> TLSInspectionEngine → <span style="color:var(--cyan)">T1071</span>
+</div>
+</div>
+<div>
+<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">PQC Stack (FIPS 203/204/205)</div>
+<div style="font-size:10px;font-family:monospace;line-height:2;color:var(--muted)">
+<span style="color:var(--cyan)">FIPS 203</span> ML-KEM-768 → Key Encapsulation<br/>
+<span style="color:var(--cyan)">FIPS 204</span> ML-DSA-65 → Digital Signatures<br/>
+<span style="color:var(--cyan)">FIPS 205</span> SLH-DSA-SHAKE-128f → Root of Trust<br/>
+<span style="color:var(--green)">313-BIND</span> ts...313 + SHA3-512 + IPFS<br/>
+<span style="color:var(--amber)">HNDL</span> Harvest-Now-Decrypt-Later defense<br/>
+<span style="color:var(--red)">CRQC</span> Timeline: 2030-2035 (plan NOW)<br/>
+<span style="color:var(--green)">pyspx</span> SLH-DSA signing (installed)<br/>
+<span style="color:var(--amber)">DW-1</span> liboqs ML-DSA-65 → Q4 2026
+      </div>
+</div>
+</div>
+</div>
+<!-- ── FOOTER ── -->
+<div style="text-align:center;padding:20px 0;font-size:10px;color:var(--dim);font-family:monospace">
+  Shadow313 NEXUS v4.0.0 · Architecture Dashboard · Ottawa, ON, Canada · 2026 · 
+  <span style="color:var(--green)">2648 tests GREEN</span> · 
+  <span style="color:var(--cyan)">313-BIND Active</span>
+</div>
+</div><!-- /main -->
+<script>
+const DETAILS = {
+  'claude': { title: '🤖 Claude (Anthropic)', items: [
+    {label:'Type', value:'Cloud AI — this chat'},
+    {label:'URL', value:'api.anthropic.com'},
+    {label:'Port', value:'443 HTTPS'},
+    {label:'Data sent', value:'Chat messages only — NO security data'},
+    {label:'Privacy', value:'No Shadow313 findings transmitted'},
+    {label:'Status', value:'✅ Active'},
+  ]},
+  'ollama-com': { title: '🦙 Ollama.com Registry', items: [
+    {label:'Model', value:'matarmohamad313/shadow313-nexus'},
+    {label:'Base', value:'dolphin-mistral (4.1GB, uncensored)'},
+    {label:'URL', value:'ollama.com/matarmohamad313/shadow313-nexus'},
+    {label:'Pull command', value:'ollama pull matarmohamad313/shadow313-nexus'},
+    {label:'ATT&CK coverage', value:'100+ techniques across 14 tactics'},
+    {label:'Status', value:'✅ Live and pushed'},
+  ]},
+  'github': { title: '🐙 GitHub Repository', items: [
+    {label:'Repo', value:'piyyy314/Shadow313-Nexus'},
+    {label:'CI/CD', value:'.github/workflows/shadow313-ci.yml'},
+    {label:'Pipeline', value:'lint → test → security scan → Docker → PyPI'},
+    {label:'Status', value:'⏳ Needs PAT to push codebase'},
+    {label:'Action', value:'github.com/settings/tokens → generate PAT'},
+    {label:'Branch', value:'main'},
+  ]},
+  'ipfs': { title: '🌐 IPFS Network', items: [
+    {label:'Purpose', value:'313-BIND receipt anchoring'},
+    {label:'Data', value:'Public chain hashes only — no sensitive data'},
+    {label:'CID format', value:'CIDv1 (SHA-256 content addressing)'},
+    {label:'Verification', value:'Anyone can verify receipts independently'},
+    {label:'Status', value:'✅ Active (optional anchoring)'},
+    {label:'Post-CRQC', value:'CIDv2 with SHA-3 recommended for 2030+'},
+  ]},
+  'hetzner': { title: '🖥️ Hetzner VPS', items: [
+    {label:'Plan', value:'CX22 — 2 vCPU, 4GB RAM'},
+    {label:'Cost', value:'€3.29/month'},
+    {label:'Location', value:'Nuremberg, Germany'},
+    {label:'OS', value:'Ubuntu 22.04 LTS'},
+    {label:'Services', value:'WireGuard VPN + Bug Bounty tools + Shadow313 CLI'},
+    {label:'Status', value:'⏳ Not yet rented — SHA-24 in Linear'},
+  ]},
+  'ollama': { title: '🦙 Ollama Engine', items: [
+    {label:'Version', value:'0.34.2'},
+    {label:'Port', value:'localhost:11434 (127.0.0.1 only)'},
+    {label:'Models', value:'llama3.2:3b, mistral:7b, codellama:7b, shadow313-nexus'},
+    {label:'RAM usage', value:'~4-5GB per 7B model'},
+    {label:'API', value:'REST — /api/generate, /api/chat, /api/tags'},
+    {label:'Status', value:'✅ Installed and running'},
+  ]},
+  'wireguard': { title: '🛡️ WireGuard VPN', items: [
+    {label:'Client', value:'WireGuard for Windows v1.1'},
+    {label:'Protocol', value:'WireGuard (UDP 51820 or 443 obfuscated)'},
+    {label:'Server', value:'Hetzner VPS (not yet set up)'},
+    {label:'Encryption', value:'ChaCha20-Poly1305 + Curve25519'},
+    {label:'Kill switch', value:'Configurable — blocks all traffic if VPN drops'},
+    {label:'Status', value:'⏳ Client installed — server pending (SHA-25)'},
+  ]},
+  'docker-desktop': { title: '🐳 Docker Desktop', items: [
+    {label:'Version', value:'29.7.2'},
+    {label:'Backend', value:'WSL2 (Ubuntu-24.04)'},
+    {label:'Status', value:'✅ Installed — needs to be started'},
+    {label:'Next step', value:'Open Docker Desktop → docker login'},
+    {label:'Then run', value:'Open WebUI container (SHA-6 in Linear)'},
+    {label:'Memory', value:'WSL2 capped at 4GB via .wslconfig'},
+  ]},
+  'burp': { title: '🔍 Burp Suite 2026', items: [
+    {label:'Version', value:'2026.3.3 Community Edition'},
+    {label:'Port', value:'localhost:8080 (HTTP proxy)'},
+    {label:'Purpose', value:'Web application security testing'},
+    {label:'Usage', value:'Configure browser proxy → 127.0.0.1:8080'},
+    {label:'Status', value:'✅ Installed'},
+    {label:'Bug bounty', value:'Primary tool for web app testing'},
+  ]},
+  'dns': { title: '🔐 Quad9 DoH DNS', items: [
+    {label:'Primary', value:'9.9.9.9 (DoH port 443)'},
+    {label:'Secondary', value:'149.112.112.112'},
+    {label:'Protocol', value:'DNS-over-HTTPS (encrypted)'},
+    {label:'Features', value:'Malware blocking, privacy, no logging'},
+    {label:'IPv6', value:'2620:fe::fe'},
+    {label:'Status', value:'✅ Active on all adapters'},
+  ]},
+  'shadow313-cli': { title: '⬡ Shadow313 CLI v4', items: [
+    {label:'Version', value:'4.0.0'},
+    {label:'Location', value:'/workspace/'},
+    {label:'Tests', value:'2648 passing / 0 failing'},
+    {label:'Modules', value:'28 (v1+v2) + v3/v4 NEXUS stack'},
+    {label:'Detectors', value:'29 active (FIX-12 → IDENTITY-8)'},
+    {label:'Tools', value:'35 (red/blue/purple/AI categories)'},
+  ]},
+  'fastapi': { title: '⚡ FastAPI Event Bus', items: [
+    {label:'Port', value:'localhost:8000'},
+    {label:'Routes', value:'POST /api/audit-code, GET /api/audit/chain, POST /api/link-budget'},
+    {label:'Purpose', value:'313-BIND audit server + NEXUS event bus'},
+    {label:'Auth', value:'None (localhost only)'},
+    {label:'Status', value:'✅ Implemented and tested'},
+    {label:'File', value:'shadow313/api/audit_server.py'},
+  ]},
+  'nexus-engine': { title: '🧠 NEXUS ML Engine', items: [
+    {label:'Models', value:'Isolation Forest + Random Forest + Quantum scorer'},
+    {label:'Features', value:'37-dimensional feature vectors'},
+    {label:'Detection rate', value:'~77.6% mean across 500 actors'},
+    {label:'APT coverage', value:'51.4% ATT&CK techniques'},
+    {label:'File', value:'nexus_toolkit/engine_v2.py'},
+    {label:'Status', value:'✅ Active'},
+  ]},
+  '313-bind': { title: '🔗 313-BIND Protocol', items: [
+    {label:'Algorithm', value:'SLH-DSA-SHAKE-128f (FIPS 205)'},
+    {label:'Chain hash', value:'SHA3-512 linked chain'},
+    {label:'Timestamp', value:'Nanosecond ending in ...313'},
+    {label:'Gap detection', value:'bind_index sequential verification'},
+    {label:'IPFS anchor', value:'Optional CIDv1 external anchor'},
+    {label:'Attack resistance', value:'0.2199ms SHA-3 bypass: BLOCKED'},
+  ]},
+  'kali': { title: '🐉 Kali Linux 2026.2', items: [
+    {label:'User', value:'shia313'},
+    {label:'Python', value:'3.13.12'},
+    {label:'Nmap', value:'7.99'},
+    {label:'Metasploit', value:'Initialized with PostgreSQL'},
+    {label:'Wordlists', value:'dirb, dirbuster, dnsmap, fasttrack, fern-wifi'},
+    {label:'Shell', value:'bash (fix: chsh -s /usr/bin/zsh)'},
+  ]},
+  'ollama-wsl': { title: '🔌 Ollama Access from WSL2', items: [
+    {label:'Method', value:'host.docker.internal:11434'},
+    {label:'Alternative', value:'$(cat /etc/resolv.conf | grep nameserver | awk \'{print $2}\'):11434'},
+    {label:'Test', value:'curl http://host.docker.internal:11434/api/tags'},
+    {label:'Python', value:'import ollama; ollama.chat(model="shadow313-nexus", ...)'},
+    {label:'Status', value:'✅ Accessible from Ubuntu and Kali'},
+    {label:'Note', value:'Windows Ollama serves WSL2 via gateway IP'},
+  ]},
+  'open-webui': { title: '💬 Open WebUI', items: [
+    {label:'Port', value:'localhost:3000'},
+    {label:'Docker image', value:'ghcr.io/open-webui/open-webui:main'},
+    {label:'Connects to', value:'Ollama at host.docker.internal:11434'},
+    {label:'Install command', value:'docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main'},
+    {label:'Status', value:'⏳ Not yet deployed (SHA-6 in Linear)'},
+    {label:'After install', value:'Open http://localhost:3000 in browser'},
+  ]},
+  'shadow313-api': { title: '🔌 Shadow313 API Container', items: [
+    {label:'Port', value:'localhost:8000'},
+    {label:'Framework', value:'FastAPI 0.116.1'},
+    {label:'Routes', value:'6 endpoints (audit, link-budget, health, public-key)'},
+    {label:'Auth', value:'None required (localhost)'},
+    {label:'Status', value:'✅ Implemented'},
+    {label:'File', value:'shadow313/api/audit_server.py'},
+  ]},
+  'postgres': { title: '🗄️ PostgreSQL', items: [
+    {label:'Port', value:'localhost:5432'},
+    {label:'Purpose', value:'Metasploit Framework database'},
+    {label:'Initialized', value:'Yes — via msfdb init in Kali setup'},
+    {label:'User', value:'msf'},
+    {label:'Databases', value:'msf, msf_test'},
+    {label:'Status', value:'✅ Running in Kali WSL2'},
+  ]},
+};
+
+function showDetail(id) {
+  const data = DETAILS[id];
+  if (!data) return;
+  const panel = document.getElementById('detail-panel');
+  const title = document.getElementById('detail-title');
+  const grid = document.getElementById('detail-grid');
+  title.textContent = data.title;
+  grid.innerHTML = data.items.map(item => `
+    <div class="detail-item">
+      <div class="detail-item-label">${item.label}</div>
+      <div class="detail-item-value">${item.value}</div>
+    </div>
+  `).join('');
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  // Highlight active comp
+  document.querySelectorAll('.comp').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>

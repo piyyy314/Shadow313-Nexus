@@ -1,0 +1,141 @@
+version: "3.9"
+
+# Shadow313 NEXUS v4.0.0 — Docker Compose
+# Services: shadow313-cli, dashboard, ollama, chromadb, nginx
+
+services:
+  shadow313-cli:
+    build:
+      context: .
+      target: nexus
+    image: shadow313/shadow313:4.0.0-nexus
+    container_name: shadow313-cli
+    volumes:
+      - shadow313_data:/home/shadow313/.shadow313
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker sandbox support
+    environment:
+      - SHADOW313_AI_ENDPOINT=http://ollama:11434
+      - SHADOW313_AI_BACKEND=ollama
+      - SHADOW313_AI_MODEL=mistral:7b
+    depends_on:
+      - ollama
+    stdin_open: true
+    tty: true
+    networks:
+      - shadow313_net
+
+  dashboard:
+    build:
+      context: .
+      target: nexus
+    image: shadow313/shadow313:4.0.0-nexus
+    container_name: shadow313-dashboard
+    command: ["serve", "--host", "0.0.0.0", "--port", "7313", "--no-browser"]
+    ports:
+      - "7313:7313"
+    volumes:
+      - shadow313_data:/home/shadow313/.shadow313
+    environment:
+      - SHADOW313_AI_ENDPOINT=http://ollama:11434
+      - SHADOW313_AI_BACKEND=ollama
+    depends_on:
+      - ollama
+    networks:
+      - shadow313_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7313/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mobile-api:
+    build:
+      context: .
+      target: nexus
+    image: shadow313/shadow313:4.0.0-nexus
+    container_name: shadow313-mobile-api
+    command: ["mobile-api", "--host", "0.0.0.0", "--port", "7314"]
+    ports:
+      - "7314:7314"
+    volumes:
+      - shadow313_data:/home/shadow313/.shadow313
+    environment:
+      - SHADOW313_AI_ENDPOINT=http://ollama:11434
+      - SHADOW313_AI_BACKEND=ollama
+    depends_on:
+      - ollama
+    networks:
+      - shadow313_net
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: shadow313-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - shadow313_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Remove the deploy section above if no GPU available
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: shadow313-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+    networks:
+      - shadow313_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: shadow313-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - dashboard
+      - ollama
+    networks:
+      - shadow313_net
+
+volumes:
+  shadow313_data:
+    driver: local
+  ollama_data:
+    driver: local
+  chroma_data:
+    driver: local
+
+networks:
+  shadow313_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  # Isolated sandbox network for CVE reproduction
+  sandbox:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

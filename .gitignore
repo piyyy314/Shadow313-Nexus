@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+*.log.*
+
+# Sensitive / local only
+.env
+.env.local
+*.backup
+*.v4backup
+uploaded_files/
+tmp/
+lost+found/
+shadow313_manifest.json
+nextgen_threat_report.json
+global_threat_simulation_report.json
+shadow313_attack_layer.json
+
+# Large files
+*.zip
+*.tar.gz
+*.gz
+
+# OS
+.DS_Store
+Thumbs.db

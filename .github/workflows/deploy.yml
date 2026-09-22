@@ -1,0 +1,373 @@
+name: Shadow313 NEXUS — Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 1 — Quality Checks (runs on every push + PR)
+  # ════════════════════════════════════════════════════════════════════════════
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify required files exist
+        run: |
+          echo "🔍 Checking required files..."
+          required=(
+            "index.html"
+            "vercel.json"
+            "tools/index.html"
+            "tools/aegis-nexus.html"
+            "tools/sovereign-shield.html"
+            "tools/vsat-tactical-suite.html"
+            "marketplace/index.html"
+            "marketplace/analytics.html"
+            "marketplace/analytics-live.html"
+            "docs/index.html"
+            "about/index.html"
+          )
+          missing=0
+          for f in "${required[@]}"; do
+            if [ -f "$f" ]; then
+              echo "  ✓ $f"
+            else
+              echo "  ✗ MISSING: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "❌ $missing required file(s) missing. Aborting."
+            exit 1
+          fi
+          echo "✅ All required files present."
+        working-directory: shadow313-landing
+
+      - name: Validate vercel.json
+        run: |
+          echo "🔍 Validating vercel.json..."
+          python3 -c "
+          import json, sys
+
+          with open('vercel.json') as f:
+              cfg = json.load(f)
+
+          assert cfg.get('version') == 2,        'version must be 2'
+          assert cfg.get('name'),                 'name is required'
+          assert isinstance(cfg.get('rewrites'), list), 'rewrites must be a list'
+
+          # Verify all rewrite destinations exist
+          missing = []
+          for r in cfg['rewrites']:
+              dest = r['destination'].lstrip('/')
+              import os
+              if not os.path.exists(dest):
+                  missing.append(dest)
+
+          if missing:
+              print('❌ Rewrite destinations not found:')
+              for m in missing:
+                  print(f'   {m}')
+              sys.exit(1)
+
+          print(f'✅ vercel.json valid — {len(cfg[\"rewrites\"])} routes, {len(cfg.get(\"redirects\", []))} redirects')
+          "
+        working-directory: shadow313-landing
+
+      - name: Check HTML files are non-empty and well-formed
+        run: |
+          echo "🔍 Checking HTML files..."
+          errors=0
+          while IFS= read -r -d '' file; do
+            size=$(wc -c < "$file")
+            if [ "$size" -lt 100 ]; then
+              echo "  ✗ Too small ($size bytes): $file"
+              errors=$((errors + 1))
+              continue
+            fi
+            # Check for basic HTML structure
+            if ! grep -q "<!DOCTYPE\|<html" "$file" 2>/dev/null; then
+              echo "  ✗ Missing DOCTYPE/html tag: $file"
+              errors=$((errors + 1))
+              continue
+            fi
+            echo "  ✓ $file ($size bytes)"
+          done < <(find . -name "*.html" -print0)
+
+          if [ $errors -gt 0 ]; then
+            echo "❌ $errors HTML file(s) failed checks."
+            exit 1
+          fi
+          echo "✅ All HTML files valid."
+        working-directory: shadow313-landing
+
+      - name: Check for exposed secrets in HTML
+        run: |
+          echo "🔍 Scanning for exposed secrets..."
+          patterns=(
+            "client_secret"
+            "AKIA[0-9A-Z]{16}"
+            "sk-[a-zA-Z0-9]{32}"
+            "ghp_[a-zA-Z0-9]{36}"
+            "xoxb-[0-9]+-[0-9]+-[a-zA-Z0-9]+"
+            "-----BEGIN RSA PRIVATE KEY-----"
+            "-----BEGIN OPENSSH PRIVATE KEY-----"
+          )
+          found=0
+          for pattern in "${patterns[@]}"; do
+            matches=$(grep -rE "$pattern" --include="*.html" --include="*.js" --include="*.json" . 2>/dev/null | grep -v ".github" || true)
+            if [ -n "$matches" ]; then
+              echo "  ⚠️  Potential secret pattern '$pattern' found:"
+              echo "$matches" | head -3
+              found=$((found + 1))
+            fi
+          done
+          if [ $found -gt 0 ]; then
+            echo "❌ Potential secrets detected. Review before deploying."
+            exit 1
+          fi
+          echo "✅ No exposed secrets detected."
+        working-directory: shadow313-landing
+
+      - name: Validate robots.txt and sitemap.xml
+        run: |
+          echo "🔍 Checking SEO files..."
+          [ -f robots.txt ]  && echo "  ✓ robots.txt"  || echo "  ⚠ robots.txt missing (not blocking)"
+          [ -f sitemap.xml ] && echo "  ✓ sitemap.xml" || echo "  ⚠ sitemap.xml missing (not blocking)"
+          echo "✅ SEO check complete."
+        working-directory: shadow313-landing
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 2 — Preview Deployment (PRs only)
+  # ════════════════════════════════════════════════════════════════════════════
+  preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: quality
+    if: github.event_name == 'pull_request'
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.preview_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: shadow313-landing
+
+      - name: Deploy Preview
+        id: deploy
+        run: |
+          url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
+          echo "preview_url=$url" >> $GITHUB_OUTPUT
+          echo "🔗 Preview URL: $url"
+        working-directory: shadow313-landing
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.preview_url }}';
+            const body = [
+              '## 🚀 Preview Deployment Ready',
+              '',
+              `**URL:** ${url}`,
+              '',
+              '| Page | Link |',
+              '|------|------|',
+              `| Home | [shadow313.dev](${url}/) |`,
+              `| Tools | [/tools](${url}/tools) |`,
+              `| Marketplace | [/marketplace](${url}/marketplace) |`,
+              `| Docs | [/docs](${url}/docs) |`,
+              `| About | [/about](${url}/about) |`,
+              '',
+              `*Deployed from commit \`${{ github.sha }}\` at ${new Date().toUTCString()}*`
+            ].join('\n');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 3 — Production Deployment (main branch only)
+  # ════════════════════════════════════════════════════════════════════════════
+  production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: quality
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://shadow313.dev
+    outputs:
+      deployment_url: ${{ steps.deploy.outputs.deployment_url }}
+      deployment_id:  ${{ steps.deploy.outputs.deployment_id }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: shadow313-landing
+
+      - name: Deploy to Production
+        id: deploy
+        run: |
+          output=$(vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
+          echo "$output"
+          url=$(echo "$output" | grep -E "^https://" | tail -1)
+          # Extract deployment ID from URL
+          dep_id=$(echo "$url" | grep -oE '[a-z0-9]+-[a-z0-9]+-[a-z0-9]+\.vercel\.app' | head -1 || echo "unknown")
+          echo "deployment_url=$url" >> $GITHUB_OUTPUT
+          echo "deployment_id=$dep_id" >> $GITHUB_OUTPUT
+          echo "🚀 Production URL: $url"
+        working-directory: shadow313-landing
+
+      - name: Smoke test production deployment
+        id: smoke
+        run: |
+          echo "🔍 Running smoke tests against production..."
+          base="https://shadow313.dev"
+          routes=(
+            "/"
+            "/tools"
+            "/tools/aegis"
+            "/tools/vsat"
+            "/tools/sovereign-shield"
+            "/marketplace"
+            "/analytics"
+            "/docs"
+            "/about"
+          )
+          failed=0
+          for route in "${routes[@]}"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$base$route" || echo "000")
+            if [ "$code" = "200" ]; then
+              echo "  ✓ $code  $base$route"
+            else
+              echo "  ✗ $code  $base$route  ← FAILED"
+              failed=$((failed + 1))
+            fi
+          done
+
+          if [ $failed -gt 0 ]; then
+            echo "❌ $failed route(s) failed smoke test."
+            echo "smoke_failed=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "✅ All routes passed smoke test."
+          echo "smoke_failed=false" >> $GITHUB_OUTPUT
+
+      - name: Rollback on smoke test failure
+        if: failure() && steps.smoke.outputs.smoke_failed == 'true'
+        run: |
+          echo "⏪ Smoke tests failed — initiating rollback..."
+          # List recent deployments and promote the previous one
+          prev=$(vercel ls shadow313-nexus --token=${{ secrets.VERCEL_TOKEN }} --json 2>/dev/null | \
+                 python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          deps = [d for d in data if d.get('state') == 'READY']
+          # Skip the most recent (just deployed), get the one before
+          if len(deps) > 1:
+              print(deps[1].get('url', ''))
+          " || echo "")
+
+          if [ -n "$prev" ]; then
+            echo "  Rolling back to: $prev"
+            vercel promote "$prev" --token=${{ secrets.VERCEL_TOKEN }} --scope=shadow313-nexus || true
+            echo "⏪ Rollback attempted. Check Vercel dashboard to confirm."
+          else
+            echo "⚠️  No previous deployment found for rollback. Manual intervention required."
+          fi
+
+      - name: Create GitHub deployment status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            const url   = '${{ steps.deploy.outputs.deployment_url }}' || 'https://shadow313.dev';
+
+            await github.rest.repos.createDeploymentStatus({
+              owner:           context.repo.owner,
+              repo:            context.repo.repo,
+              deployment_id:   context.payload.deployment?.id || 0,
+              state,
+              environment_url: 'https://shadow313.dev',
+              log_url:         `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description:     state === 'success'
+                ? `Deployed to shadow313.dev (${url})`
+                : 'Deployment failed — check logs',
+            }).catch(() => {
+              // Deployment status API requires a deployment object — skip if not available
+              console.log('Skipping deployment status (no deployment object in context)');
+            });
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 4 — Notify on failure
+  # ════════════════════════════════════════════════════════════════════════════
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [quality, production]
+    if: failure() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Post failure summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha     = context.sha.slice(0, 7);
+            const runUrl  = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const message = [
+              '## ❌ Shadow313 NEXUS — Deployment Failed',
+              '',
+              `**Branch:** \`main\``,
+              `**Commit:** \`${sha}\``,
+              `**Run:** [View logs](${runUrl})`,
+              '',
+              'The production deployment to `shadow313.dev` failed.',
+              'The previous deployment remains live. Check the logs above for details.',
+            ].join('\n');
+
+            // Create a commit comment with failure details
+            await github.rest.repos.createCommitComment({
+              owner:      context.repo.owner,
+              repo:       context.repo.repo,
+              commit_sha: context.sha,
+              body:       message,
+            });

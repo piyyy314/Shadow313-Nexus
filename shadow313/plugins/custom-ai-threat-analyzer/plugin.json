@@ -1,0 +1,43 @@
+{
+  "plugin_id": "custom-ai-threat-analyzer",
+  "version": "1.0.0",
+  "display_name": "Custom AI Threat Analyzer",
+  "description": "Custom AI-powered vulnerability or payload analyzer.",
+  "category": "Analysis",
+  "execution_mode": "AI_PROMPT",
+  "icon": "Radar",
+  "author": "Shadow313 Core Team",
+  "require_signed": true,
+  "inputs": [
+    {
+      "id": "target_artifact",
+      "label": "Target Artifact or Code Snippet",
+      "type": "textarea"
+    },
+    {
+      "id": "analysis_depth",
+      "label": "Analysis Depth",
+      "type": "select",
+      "options": [
+        "tactical",
+        "strategic",
+        "deep"
+      ]
+    }
+  ],
+  "permissions": {
+    "network": false,
+    "filesystem": false,
+    "session_read": true,
+    "session_write": true,
+    "execute": false,
+    "subprocess": false,
+    "kernel": false
+  },
+  "hooks": [
+    "vuln.post",
+    "output.transform"
+  ],
+  "entry": "analyzer.py",
+  "shadow313_min_version": "3.0.0"
+}

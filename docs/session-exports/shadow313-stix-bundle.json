@@ -1,0 +1,26 @@
+{
+  "type": "bundle",
+  "id": "bundle--s313-1784435865500",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "indicator",
+      "id": "indicator--a1b2c3",
+      "name": "Cobalt Strike C2",
+      "pattern": "[ipv4-addr:value = '185.220.100.252']",
+      "valid_from": "2024-06-01T00:00:00Z",
+      "labels": [
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "malware",
+      "id": "malware--d4e5f6",
+      "name": "Log4Shell Exploit",
+      "is_family": false,
+      "malware_types": [
+        "exploit-kit"
+      ]
+    }
+  ]
+}

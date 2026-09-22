@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shadow313 — Full AI Stack Architecture</title>
+<style>
+  :root {
+    --bg: #050a05;
+    --bg2: #0a1a0a;
+    --bg3: #0d2a0d;
+    --green: #22c55e;
+    --green2: #16a34a;
+    --cyan: #06b6d4;
+    --amber: #f59e0b;
+    --purple: #a78bfa;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --pink: #ec4899;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: rgba(34,197,94,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: linear-gradient(135deg, #0a1a0a, #0d2a0d);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .header h1 { font-size: 22px; color: var(--green); letter-spacing: .06em; }
+  .header .sub { font-size: 12px; color: var(--muted); margin-top: 6px; font-family: monospace; }
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    margin: 4px 3px;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .badge-green  { background: rgba(34,197,94,.15);  color: var(--green);  border: 1px solid rgba(34,197,94,.3); }
+  .badge-cyan   { background: rgba(6,182,212,.15);  color: var(--cyan);   border: 1px solid rgba(6,182,212,.3); }
+  .badge-amber  { background: rgba(245,158,11,.15); color: var(--amber);  border: 1px solid rgba(245,158,11,.3); }
+  .badge-purple { background: rgba(167,139,250,.15);color: var(--purple); border: 1px solid rgba(167,139,250,.3); }
+  .badge-blue   { background: rgba(59,130,246,.15); color: var(--blue);   border: 1px solid rgba(59,130,246,.3); }
+
+  /* ── Main grid ── */
+  .stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Layer card ── */
+  .layer {
+    border-radius: 12px;
+    border: 1px solid;
+    overflow: hidden;
+  }
+  .layer-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .layer-icon { font-size: 20px; }
+  .layer-body {
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  /* Layer colours */
+  .layer-cloud   { border-color: rgba(167,139,250,.3); }
+  .layer-cloud .layer-header   { background: rgba(167,139,250,.08); color: var(--purple); }
+  .layer-windows { border-color: rgba(59,130,246,.3); }
+  .layer-windows .layer-header { background: rgba(59,130,246,.08); color: var(--blue); }
+  .layer-wsl     { border-color: rgba(245,158,11,.3); }
+  .layer-wsl .layer-header     { background: rgba(245,158,11,.08); color: var(--amber); }
+  .layer-ollama  { border-color: rgba(34,197,94,.3); }
+  .layer-ollama .layer-header  { background: rgba(34,197,94,.08); color: var(--green); }
+  .layer-docker  { border-color: rgba(6,182,212,.3); }
+  .layer-docker .layer-header  { background: rgba(6,182,212,.08); color: var(--cyan); }
+  .layer-shadow  { border-color: rgba(34,197,94,.5); }
+  .layer-shadow .layer-header  { background: rgba(34,197,94,.12); color: var(--green); }
+
+  /* ── Component box ── */
+  .comp {
+    background: rgba(0,0,0,.35);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255,255,255,.06);
+    position: relative;
+  }
+  .comp-name {
+    font-size: 13px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .comp-desc {
+    font-size: 11px; color: var(--muted);
+    line-height: 1.5;
+  }
+  .comp-port {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    font-family: monospace;
+    padding: 2px 8px; border-radius: 4px;
+    margin-top: 6px;
+    background: rgba(0,0,0,.4);
+  }
+  .port-green  { color: var(--green);  border: 1px solid rgba(34,197,94,.3); }
+  .port-cyan   { color: var(--cyan);   border: 1px solid rgba(6,182,212,.3); }
+  .port-amber  { color: var(--amber);  border: 1px solid rgba(245,158,11,.3); }
+  .port-purple { color: var(--purple); border: 1px solid rgba(167,139,250,.3); }
+  .port-blue   { color: var(--blue);   border: 1px solid rgba(59,130,246,.3); }
+  .port-red    { color: var(--red);    border: 1px solid rgba(239,68,68,.3); }
+
+  /* ── Arrow connectors ── */
+  .arrow-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 4px 0;
+    font-size: 11px; color: var(--muted);
+    font-family: monospace;
+  }
+  .arrow-line {
+    flex: 1; max-width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    position: relative;
+  }
+  .arrow-label {
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 10px; color: var(--green);
+    white-space: nowrap;
+  }
+  .arrow-down {
+    text-align: center;
+    font-size: 18px; color: var(--green);
+    opacity: .6;
+    padding: 2px 0;
+  }
+
+  /* ── Connection table ── */
+  .conn-table {
+    max-width: 1100px; margin: 24px auto 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .conn-table-header {
+    background: rgba(34,197,94,.08);
+    padding: 12px 18px;
+    font-size: 13px; font-weight: 700;
+    color: var(--green); text-transform: uppercase; letter-spacing: .08em;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: rgba(0,0,0,.3);
+    padding: 10px 14px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); text-align: left;
+  }
+  td {
+    padding: 10px 14px;
+    font-size: 11px;
+    border-top: 1px solid rgba(255,255,255,.04);
+    font-family: monospace;
+  }
+  tr:hover td { background: rgba(34,197,94,.03); }
+  .from { color: var(--cyan); }
+  .to   { color: var(--amber); }
+  .port-cell { color: var(--green); font-weight: 700; }
+  .proto { color: var(--purple); }
+  .note { color: var(--muted); font-family: 'Segoe UI', sans-serif; font-size: 10px; }
+
+  /* ── RAM guide ── */
+  .ram-guide {
+    max-width: 1100px; margin: 16px auto 0;
+    border-radius: 12px;
+    border: 1px solid rgba(6,182,212,.3);
+    overflow: hidden;
+  }
+  .ram-header {
+    background: rgba(6,182,212,.08);
+    padding: 12px 18px;
+    font-size: 13px; font-weight: 700;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: .08em;
+  }
+  .ram-body { padding: 16px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .model-card {
+    background: rgba(0,0,0,.3);
+    border-radius: 8px; padding: 12px;
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .model-name { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+  .model-size { font-size: 10px; color: var(--amber); font-family: monospace; margin-bottom: 6px; }
+  .model-use  { font-size: 11px; color: var(--muted); }
+  .model-rec  { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
+  .rec-yes  { background: rgba(34,197,94,.15);  color: var(--green);  border: 1px solid rgba(34,197,94,.3); }
+  .rec-good { background: rgba(245,158,11,.15); color: var(--amber);  border: 1px solid rgba(245,158,11,.3); }
+  .rec-no   { background: rgba(239,68,68,.15);  color: var(--red);    border: 1px solid rgba(239,68,68,.3); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center; margin-top: 24px;
+    font-size: 10px; color: var(--muted);
+    font-family: monospace;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .layer-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<!-- ── HEADER ── -->
+<div class="header">
+<h1>⬡ Shadow313 NEXUS — Full AI Stack Architecture</h1>
+<div class="sub">Dell Latitude 5490 · Intel 8th Gen · 16GB RAM · Windows 11 Pro 25H2</div>
+<div style="margin-top:10px;">
+<span class="badge badge-green">Ollama Local AI</span>
+<span class="badge badge-cyan">Docker</span>
+<span class="badge badge-amber">WSL2 Ubuntu + Kali</span>
+<span class="badge badge-purple">Claude API</span>
+<span class="badge badge-blue">Windows Host</span>
+</div>
+</div>
+<div class="stack">
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 0 — CLOUD / EXTERNAL
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-cloud">
+<div class="layer-header">
+<span class="layer-icon">☁️</span>
+<span>Layer 0 — Cloud &amp; External APIs</span>
+<span class="badge badge-purple" style="margin-left:auto;">INTERNET</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--purple);">Claude (Anthropic)</div>
+<div class="comp-desc">This chat. Cloud-based. No local install needed. Accessed via browser or API key.</div>
+<span class="comp-port port-purple">api.anthropic.com · HTTPS 443</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--purple);">OpenAI / GPT-4</div>
+<div class="comp-desc">Optional cloud AI. Used via API key in Shadow313 config. Never receives security data.</div>
+<span class="comp-port port-purple">api.openai.com · HTTPS 443</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--purple);">Hugging Face</div>
+<div class="comp-desc">Model downloads only. Pull models once, run offline forever via Ollama.</div>
+<span class="comp-port port-purple">huggingface.co · HTTPS 443</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--purple);">Docker Hub</div>
+<div class="comp-desc">Pull container images (Open WebUI, etc). Login with your Docker account.</div>
+<span class="comp-port port-purple">hub.docker.com · HTTPS 443</span>
+</div>
+</div>
+</div>
+<div class="arrow-row">
+<div class="arrow-line"></div>
+<div class="arrow-label">↕ HTTPS / TLS 1.3 — Internet traffic through your router (Rogers / jiji)</div>
+<div class="arrow-line"></div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 1 — WINDOWS HOST
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-windows">
+<div class="layer-header">
+<span class="layer-icon">🪟</span>
+<span>Layer 1 — Windows 11 Pro Host (shiatoali)</span>
+<span class="badge badge-blue" style="margin-left:auto;">192.168.x.x / 10.0.0.107</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">Ollama for Windows</div>
+<div class="comp-desc">Runs AI models locally. Starts automatically as a Windows service. Accessible from WSL2 and Docker.</div>
+<span class="comp-port port-green">localhost:11434 · HTTP</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">Docker Desktop</div>
+<div class="comp-desc">Manages containers. Uses WSL2 backend. Shares network with Ubuntu via host.docker.internal.</div>
+<span class="comp-port port-cyan">host.docker.internal · various ports</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">WireGuard VPN</div>
+<div class="comp-desc">Your personal VPN client. Tunnels traffic to your Hetzner VPS. Kill-switch capable.</div>
+<span class="comp-port port-amber">UDP 51820 (or 443 obfuscated)</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">Windows Terminal</div>
+<div class="comp-desc">Unified terminal: PowerShell 7, Ubuntu-24.04, Kali tabs all in one window.</div>
+<span class="comp-port port-blue">Local process — no port</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">Burp Suite / Wireshark</div>
+<div class="comp-desc">Security tools running natively on Windows. Wireshark captures on physical adapter.</div>
+<span class="comp-port port-amber">Burp: 8080 proxy · Wireshark: promiscuous</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--blue);">DNS — Quad9 DoH</div>
+<div class="comp-desc">Encrypted DNS on host. All Windows DNS queries go through 9.9.9.9 over HTTPS.</div>
+<span class="comp-port port-green">9.9.9.9 · DoH port 443</span>
+</div>
+</div>
+</div>
+<div class="arrow-row">
+<div class="arrow-line"></div>
+<div class="arrow-label">↕ WSL2 Virtual Network — 172.x.x.x bridge · localhost forwarding</div>
+<div class="arrow-line"></div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 2 — WSL2
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-wsl">
+<div class="layer-header">
+<span class="layer-icon">🐧</span>
+<span>Layer 2 — WSL2 Linux Environments</span>
+<span class="badge badge-amber" style="margin-left:auto;">172.x.x.x virtual network</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--amber);">Ubuntu 24.04 (shiatoali)</div>
+<div class="comp-desc">Primary dev environment. Python 3.12, pip, nmap, impacket, pyspx, pwntools, SecLists all installed.</div>
+<span class="comp-port port-amber">wsl -d Ubuntu-24.04</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--amber);">Kali Linux 2026.2 (shia313)</div>
+<div class="comp-desc">Penetration testing distro. Metasploit, nmap 7.99, wordlists, full kali-linux-default tools.</div>
+<span class="comp-port port-red">wsl -d kali-linux</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--amber);">Shadow313 Workspace</div>
+<div class="comp-desc">/workspace/ — all v1→v4 Python source, tests, detectors, nexus_toolkit. Run pytest here.</div>
+<span class="comp-port port-green">/workspace/ · python3 -m shadow313</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--amber);">Ollama Access from WSL2</div>
+<div class="comp-desc">WSL2 can reach Windows Ollama via host.docker.internal or the WSL2 gateway IP.</div>
+<span class="comp-port port-green">http://host.docker.internal:11434</span>
+</div>
+</div>
+</div>
+<div class="arrow-row">
+<div class="arrow-line"></div>
+<div class="arrow-label">↕ Docker socket / bridge network — containers talk to host via host.docker.internal</div>
+<div class="arrow-line"></div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 3 — DOCKER CONTAINERS
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-docker">
+<div class="layer-header">
+<span class="layer-icon">🐳</span>
+<span>Layer 3 — Docker Containers</span>
+<span class="badge badge-cyan" style="margin-left:auto;">bridge network · host.docker.internal</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--cyan);">Open WebUI</div>
+<div class="comp-desc">ChatGPT-like web interface for your local Ollama models. Access in browser. Connects to Ollama on host.</div>
+<span class="comp-port port-cyan">localhost:3000 · HTTP</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--cyan);">Shadow313 API Container</div>
+<div class="comp-desc">FastAPI event bus for Shadow313 NEXUS. Runs detection pipeline, serves findings via REST.</div>
+<span class="comp-port port-green">localhost:8000 · HTTP</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--cyan);">PostgreSQL (Metasploit DB)</div>
+<div class="comp-desc">Database backend for Metasploit Framework. Already initialized in Kali setup.</div>
+<span class="comp-port port-amber">localhost:5432 · TCP</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--cyan);">Future: Wazuh / Suricata</div>
+<div class="comp-desc">IDS/SIEM containers for VPS hardening. Can also run locally for Shadow313 log ingestion.</div>
+<span class="comp-port port-purple">1514/1515 · 9200 (Elastic)</span>
+</div>
+</div>
+</div>
+<div class="arrow-row">
+<div class="arrow-line"></div>
+<div class="arrow-label">↕ Ollama REST API — models served at :11434 — consumed by Shadow313 AI modules</div>
+<div class="arrow-line"></div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 4 — OLLAMA AI ENGINE
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-ollama">
+<div class="layer-header">
+<span class="layer-icon">🤖</span>
+<span>Layer 4 — Ollama Local AI Engine</span>
+<span class="badge badge-green" style="margin-left:auto;">localhost:11434 · 100% Offline</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">llama3.2:3b</div>
+<div class="comp-desc">Fastest model. Best for quick triage, CVE summaries, real-time chat.</div>
+<div class="comp-port port-green">~2GB RAM · Recommended ✅</div>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">mistral:7b</div>
+<div class="comp-desc">Balanced model. Great for threat analysis, report generation, ATT&amp;CK mapping.</div>
+<div class="comp-port port-green">~4GB RAM · Recommended ✅</div>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">codellama:7b</div>
+<div class="comp-desc">Code-specialized. Best for Shadow313 code review, CVE PoC analysis, Python debugging.</div>
+<div class="comp-port port-green">~4GB RAM · Recommended ✅</div>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">deepseek-coder:6.7b</div>
+<div class="comp-desc">Excellent for security code analysis. Understands exploit patterns, crypto code.</div>
+<div class="comp-port port-amber">~4GB RAM · Optional</div>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">llama3.1:8b</div>
+<div class="comp-desc">Best general-purpose model for 16GB RAM. Use for complex reasoning tasks.</div>
+<div class="comp-port port-amber">~5GB RAM · Optional (leaves 11GB free)</div>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--muted);">llama3:70b ❌</div>
+<div class="comp-desc">Too large for 16GB RAM. Needs 48GB+. Skip this one.</div>
+<div class="comp-port port-red">~40GB RAM · NOT COMPATIBLE</div>
+</div>
+</div>
+</div>
+<div class="arrow-row">
+<div class="arrow-line"></div>
+<div class="arrow-label">↕ Python ollama client / HTTP REST — Shadow313 AI modules call Ollama for inference</div>
+<div class="arrow-line"></div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+       LAYER 5 — SHADOW313 AI MODULES
+  ══════════════════════════════════════════════════════════ -->
+<div class="layer layer-shadow">
+<div class="layer-header">
+<span class="layer-icon">⬡</span>
+<span>Layer 5 — Shadow313 NEXUS AI Modules</span>
+<span class="badge badge-green" style="margin-left:auto;">v4 · 29 Detectors · 35 Tools</span>
+</div>
+<div class="layer-body">
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">nexusrag.py</div>
+<div class="comp-desc">RAG engine — feeds threat intel context into Ollama for grounded AI responses.</div>
+<span class="comp-port port-green">→ Ollama :11434</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">threatnarrator.py</div>
+<div class="comp-desc">Converts raw detection events into human-readable threat narratives using local LLM.</div>
+<span class="comp-port port-green">→ Ollama :11434</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">explaincve.py</div>
+<div class="comp-desc">Takes a CVE ID, fetches EPSS/KEV data, asks Ollama to explain impact and remediation.</div>
+<span class="comp-port port-green">→ Ollama :11434 + EPSS API</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">rulesmith.py</div>
+<div class="comp-desc">AI-generated Sigma/YARA/KQL detection rules from natural language descriptions.</div>
+<span class="comp-port port-green">→ Ollama :11434</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">313-BIND Receipt Chain</div>
+<div class="comp-desc">Every AI finding is cryptographically timestamped with SLH-DSA + IPFS anchor.</div>
+<span class="comp-port port-purple">SLH-DSA (FIPS 205) · SHA3-512</span>
+</div>
+<div class="comp">
+<div class="comp-name" style="color:var(--green);">NEXUS Engine v2</div>
+<div class="comp-desc">Isolation Forest + Random Forest + Quantum scorer. Feeds into Ollama for triage.</div>
+<span class="comp-port port-green">→ Ollama :11434 · FastAPI :8000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+     CONNECTION TABLE
+══════════════════════════════════════════════════════════ -->
+<div class="conn-table">
+<div class="conn-table-header">⬡ Full Connection Map — Who Talks to Who</div>
+<table>
+<thead>
+<tr>
+<th>FROM</th>
+<th>TO</th>
+<th>PORT / PROTOCOL</th>
+<th>DIRECTION</th>
+<th>NOTE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="from">Your Browser (Firefox/Brave)</td>
+<td class="to">Claude (Anthropic)</td>
+<td class="port-cell">443 HTTPS</td>
+<td class="proto">↑ Outbound</td>
+<td class="note">Cloud AI — this chat</td>
+</tr>
+<tr>
+<td class="from">Open WebUI (Docker :3000)</td>
+<td class="to">Ollama (Windows :11434)</td>
+<td class="port-cell">11434 HTTP</td>
+<td class="proto">↑ Internal</td>
+<td class="note">via host.docker.internal</td>
+</tr>
+<tr>
+<td class="from">Ubuntu WSL2</td>
+<td class="to">Ollama (Windows :11434)</td>
+<td class="port-cell">11434 HTTP</td>
+<td class="proto">↑ Internal</td>
+<td class="note">via $(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')</td>
+</tr>
+<tr>
+<td class="from">Shadow313 AI modules</td>
+<td class="to">Ollama :11434</td>
+<td class="port-cell">11434 HTTP REST</td>
+<td class="proto">↑ Internal</td>
+<td class="note">Python ollama client library</td>
+</tr>
+<tr>
+<td class="from">Shadow313 FastAPI</td>
+<td class="to">Browser / Dashboard</td>
+<td class="port-cell">8000 HTTP</td>
+<td class="proto">↓ Inbound</td>
+<td class="note">NEXUS event bus REST API</td>
+</tr>
+<tr>
+<td class="from">Burp Suite (Windows)</td>
+<td class="to">Target web apps</td>
+<td class="port-cell">8080 HTTP proxy</td>
+<td class="proto">↕ Intercept</td>
+<td class="note">Configure browser proxy → 127.0.0.1:8080</td>
+</tr>
+<tr>
+<td class="from">WireGuard (Windows)</td>
+<td class="to">Hetzner VPS</td>
+<td class="port-cell">UDP 51820 / 443</td>
+<td class="proto">↑ Encrypted tunnel</td>
+<td class="note">Your personal VPN — all traffic routed through VPS</td>
+</tr>
+<tr>
+<td class="from">Kali Linux (WSL2)</td>
+<td class="to">Target networks</td>
+<td class="port-cell">Various</td>
+<td class="proto">↑ Outbound</td>
+<td class="note">Metasploit, nmap — authorized testing only</td>
+</tr>
+<tr>
+<td class="from">313-BIND receipts</td>
+<td class="to">IPFS Network</td>
+<td class="port-cell">443 HTTPS</td>
+<td class="proto">↑ Outbound</td>
+<td class="note">Public data only — cryptographic anchoring</td>
+</tr>
+<tr>
+<td class="from">Windows DNS</td>
+<td class="to">Quad9 (9.9.9.9)</td>
+<td class="port-cell">443 DoH</td>
+<td class="proto">↑ Encrypted</td>
+<td class="note">All DNS queries encrypted — malware blocking enabled</td>
+</tr>
+<tr>
+<td class="from">Docker Desktop</td>
+<td class="to">Docker Hub</td>
+<td class="port-cell">443 HTTPS</td>
+<td class="proto">↑ Pull only</td>
+<td class="note">Login with your Docker account to pull images</td>
+</tr>
+<tr>
+<td class="from">Ollama</td>
+<td class="to">Hugging Face / Ollama registry</td>
+<td class="port-cell">443 HTTPS</td>
+<td class="proto">↑ Pull only</td>
+<td class="note">One-time model download — runs offline after</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+     RAM / MODEL GUIDE
+══════════════════════════════════════════════════════════ -->
+<div class="ram-guide">
+<div class="ram-header">🧠 16GB RAM Model Guide — Dell Latitude 5490</div>
+<div class="ram-body">
+<div class="model-card">
+<div class="model-name">llama3.2:3b</div>
+<div class="model-size">~2GB VRAM/RAM · 3 billion params</div>
+<div class="model-use">Fast triage, CVE summaries, quick Q&amp;A. Best for real-time use.</div>
+<span class="model-rec rec-yes">✅ INSTALL FIRST</span>
+</div>
+<div class="model-card">
+<div class="model-name">mistral:7b</div>
+<div class="model-size">~4GB RAM · 7 billion params</div>
+<div class="model-use">Threat analysis, ATT&amp;CK mapping, report writing. Excellent quality.</div>
+<span class="model-rec rec-yes">✅ RECOMMENDED</span>
+</div>
+<div class="model-card">
+<div class="model-name">codellama:7b</div>
+<div class="model-size">~4GB RAM · 7 billion params</div>
+<div class="model-use">Code review, exploit analysis, Shadow313 debugging. Code-specialized.</div>
+<span class="model-rec rec-yes">✅ RECOMMENDED</span>
+</div>
+<div class="model-card">
+<div class="model-name">deepseek-coder:6.7b</div>
+<div class="model-size">~4GB RAM · 6.7 billion params</div>
+<div class="model-use">Security code analysis, crypto review. Alternative to codellama.</div>
+<span class="model-rec rec-good">⚡ OPTIONAL</span>
+</div>
+<div class="model-card">
+<div class="model-name">llama3.1:8b</div>
+<div class="model-size">~5GB RAM · 8 billion params</div>
+<div class="model-use">Best reasoning on 16GB. Use for complex multi-step analysis.</div>
+<span class="model-rec rec-good">⚡ OPTIONAL</span>
+</div>
+<div class="model-card">
+<div class="model-name">llama3:70b ❌</div>
+<div class="model-size">~40GB RAM · 70 billion params</div>
+<div class="model-use">Way too large. Needs 48GB+ RAM. Will crash your system.</div>
+<span class="model-rec rec-no">❌ SKIP</span>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════════════════════
+     QUICK SETUP COMMANDS
+══════════════════════════════════════════════════════════ -->
+<div class="conn-table" style="margin-top:16px;">
+<div class="conn-table-header">⚡ Quick Setup Commands — Run These Next</div>
+<table>
+<thead>
+<tr><th>STEP</th><th>WHERE</th><th>COMMAND</th><th>WHAT IT DOES</th></tr>
+</thead>
+<tbody>
+<tr>
+<td class="port-cell">1</td>
+<td class="from">PowerShell Admin</td>
+<td class="proto" style="font-size:10px;">winget install Ollama.Ollama</td>
+<td class="note">Install Ollama on Windows</td>
+</tr>
+<tr>
+<td class="port-cell">2</td>
+<td class="from">PowerShell</td>
+<td class="proto" style="font-size:10px;">ollama pull llama3.2:3b</td>
+<td class="note">Download first AI model (2GB)</td>
+</tr>
+<tr>
+<td class="port-cell">3</td>
+<td class="from">PowerShell</td>
+<td class="proto" style="font-size:10px;">ollama pull mistral:7b</td>
+<td class="note">Download analysis model (4GB)</td>
+</tr>
+<tr>
+<td class="port-cell">4</td>
+<td class="from">Ubuntu WSL2</td>
+<td class="proto" style="font-size:10px;">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main</td>
+<td class="note">Launch Open WebUI (ChatGPT UI for local models)</td>
+</tr>
+<tr>
+<td class="port-cell">5</td>
+<td class="from">Browser</td>
+<td class="proto" style="font-size:10px;">http://localhost:3000</td>
+<td class="note">Open your local AI chat interface</td>
+</tr>
+<tr>
+<td class="port-cell">6</td>
+<td class="from">Ubuntu WSL2</td>
+<td class="proto" style="font-size:10px;">pip install ollama &amp;&amp; python3 -c "import ollama; print(ollama.chat(model='llama3.2:3b', messages=[{'role':'user','content':'Hello Shadow313'}]))"</td>
+<td class="note">Test Shadow313 → Ollama Python connection</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="footer" style="margin-top:24px;">
+  Shadow313 NEXUS · AI Stack Architecture · Dell Latitude 5490 · 16GB RAM · Ottawa, ON, Canada · 2026
+</div>
+</body>
+</html>

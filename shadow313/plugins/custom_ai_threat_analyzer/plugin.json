@@ -1,0 +1,77 @@
+{
+  "plugin_id":    "custom-ai-threat-analyzer",
+  "version":      "1.0.0",
+  "display_name": "Custom AI Threat Analyzer",
+  "description":  "AI-powered vulnerability and payload analyzer with MITRE ATT&CK mapping, CVSS scoring, and parameterized defensive patches.",
+  "category":     "Analysis",
+  "execution_mode": "AI_PROMPT",
+  "icon_key":     "Radar",
+  "author":       "Shadow313 Core Team",
+  "min_version":  "4.0.0",
+  "require_signed": true,
+  "inputs": [
+    {
+      "field_id":    "target_artifact",
+      "label":       "Target Artifact or Code Snippet",
+      "type":        "textarea",
+      "required":    true,
+      "placeholder": "Paste source code, network logs, or suspicious artifacts...",
+      "max_length":  32000
+    },
+    {
+      "field_id": "analysis_depth",
+      "label":    "Analysis Depth",
+      "type":     "select",
+      "required": true,
+      "options": [
+        {"value": "tactical",   "label": "Tactical — quick triage, key vectors only"},
+        {"value": "strategic",  "label": "Strategic — full ATT&CK mapping + mitigations"},
+        {"value": "forensic",   "label": "Forensic — deep static analysis + exploit PoC review"},
+        {"value": "executive",  "label": "Executive — risk summary for non-technical audience"}
+      ],
+      "default": "tactical"
+    },
+    {
+      "field_id": "artifact_type",
+      "label":    "Artifact Type",
+      "type":     "select",
+      "required": false,
+      "options": [
+        {"value": "auto",        "label": "Auto-detect"},
+        {"value": "sql",         "label": "SQL Query"},
+        {"value": "python",      "label": "Python Source"},
+        {"value": "javascript",  "label": "JavaScript Source"},
+        {"value": "bash",        "label": "Bash/Shell Script"},
+        {"value": "network_log", "label": "Network Log / PCAP Summary"},
+        {"value": "binary_hex",  "label": "Binary / Hex Dump"},
+        {"value": "config",      "label": "Configuration File"},
+        {"value": "nmea",        "label": "NMEA / GPS Telemetry"},
+        {"value": "smtlib2",     "label": "SMT-LIB2 / Formal Spec"}
+      ],
+      "default": "auto"
+    }
+  ],
+  "output_schema": {
+    "vulnerability_name": "string",
+    "cwe_id":             "string",
+    "cvss_score":         "number",
+    "cvss_vector":        "string",
+    "severity":           "string",
+    "attack_techniques":  "array",
+    "exploit_vectors":    "array",
+    "mitigations":        "array",
+    "risk_summary":       "string",
+    "313_bind_receipt":   "string"
+  },
+  "permissions": {
+    "network":     false,
+    "filesystem":  false,
+    "subprocess":  false,
+    "kernel":      false
+  },
+  "sandbox": {
+    "memory_limit_mb":  256,
+    "timeout_seconds":  30,
+    "allow_imports":    ["re", "json", "hashlib", "hmac", "datetime"]
+  }
+}
