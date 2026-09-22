@@ -32,15 +32,12 @@ jobs:
           required=(
             "index.html"
             "vercel.json"
-            "tools/index.html"
-            "tools/aegis-nexus.html"
-            "tools/sovereign-shield.html"
-            "tools/vsat-tactical-suite.html"
-            "marketplace/index.html"
-            "marketplace/analytics.html"
-            "marketplace/analytics-live.html"
             "docs/index.html"
-            "about/index.html"
+            "docs/shadow313-nexus-dashboard.html"
+            "docs/S313-Nexus-Dashboard-v3.html"
+            "docs/S313-SSP-Dashboard.html"
+            "docs/shadow313-nexus-architecture.html"
+            "docs/shadow313-ai-stack-map.html"
           )
           missing=0
           for f in "${required[@]}"; do
@@ -56,7 +53,6 @@ jobs:
             exit 1
           fi
           echo "✅ All required files present."
-        working-directory: shadow313-landing
 
       - name: Validate vercel.json
         run: |
@@ -87,7 +83,6 @@ jobs:
 
           print(f'✅ vercel.json valid — {len(cfg[\"rewrites\"])} routes, {len(cfg.get(\"redirects\", []))} redirects')
           "
-        working-directory: shadow313-landing
 
       - name: Check HTML files are non-empty and well-formed
         run: |
@@ -114,7 +109,6 @@ jobs:
             exit 1
           fi
           echo "✅ All HTML files valid."
-        working-directory: shadow313-landing
 
       - name: Check for exposed secrets in HTML
         run: |
@@ -142,7 +136,6 @@ jobs:
             exit 1
           fi
           echo "✅ No exposed secrets detected."
-        working-directory: shadow313-landing
 
       - name: Validate robots.txt and sitemap.xml
         run: |
@@ -150,7 +143,6 @@ jobs:
           [ -f robots.txt ]  && echo "  ✓ robots.txt"  || echo "  ⚠ robots.txt missing (not blocking)"
           [ -f sitemap.xml ] && echo "  ✓ sitemap.xml" || echo "  ⚠ sitemap.xml missing (not blocking)"
           echo "✅ SEO check complete."
-        working-directory: shadow313-landing
 
   # ════════════════════════════════════════════════════════════════════════════
   # JOB 2 — Preview Deployment (PRs only)
@@ -176,7 +168,6 @@ jobs:
 
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: shadow313-landing
 
       - name: Deploy Preview
         id: deploy
@@ -184,7 +175,6 @@ jobs:
           url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
           echo "preview_url=$url" >> $GITHUB_OUTPUT
           echo "🔗 Preview URL: $url"
-        working-directory: shadow313-landing
 
       - name: Comment preview URL on PR
         uses: actions/github-script@v7
@@ -199,10 +189,12 @@ jobs:
               '| Page | Link |',
               '|------|------|',
               `| Home | [shadow313.dev](${url}/) |`,
-              `| Tools | [/tools](${url}/tools) |`,
-              `| Marketplace | [/marketplace](${url}/marketplace) |`,
               `| Docs | [/docs](${url}/docs) |`,
-              `| About | [/about](${url}/about) |`,
+              `| Dashboard | [/dashboard](${url}/dashboard) |`,
+              `| Dashboard v3 | [/dashboard-v3](${url}/dashboard-v3) |`,
+              `| SSP | [/ssp](${url}/ssp) |`,
+              `| Architecture | [/architecture](${url}/architecture) |`,
+              `| AI Stack | [/ai-stack](${url}/ai-stack) |`,
               '',
               `*Deployed from commit \`${{ github.sha }}\` at ${new Date().toUTCString()}*`
             ].join('\n');
@@ -242,7 +234,6 @@ jobs:
 
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: shadow313-landing
 
       - name: Deploy to Production
         id: deploy
@@ -255,7 +246,6 @@ jobs:
           echo "deployment_url=$url" >> $GITHUB_OUTPUT
           echo "deployment_id=$dep_id" >> $GITHUB_OUTPUT
           echo "🚀 Production URL: $url"
-        working-directory: shadow313-landing
 
       - name: Smoke test production deployment
         id: smoke
@@ -264,14 +254,12 @@ jobs:
           base="https://shadow313.dev"
           routes=(
             "/"
-            "/tools"
-            "/tools/aegis"
-            "/tools/vsat"
-            "/tools/sovereign-shield"
-            "/marketplace"
-            "/analytics"
             "/docs"
-            "/about"
+            "/dashboard"
+            "/dashboard-v3"
+            "/ssp"
+            "/architecture"
+            "/ai-stack"
           )
           failed=0
           for route in "${routes[@]}"; do
