@@ -12,6 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  DEFAULT_BRANCH:   master
   VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -237,7 +238,7 @@ jobs:
     name: Deploy Production
     runs-on: ubuntu-latest
     needs: quality
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
     environment:
       name: production
       url: https://shadow313.dev
@@ -357,7 +358,7 @@ jobs:
     name: Notify on Failure
     runs-on: ubuntu-latest
     needs: [quality, production]
-    if: failure() && github.ref == 'refs/heads/master'
+    if: failure() && github.ref == format('refs/heads/{0}', env.DEFAULT_BRANCH)
     steps:
       - name: Post failure summary
         uses: actions/github-script@v7
@@ -368,7 +369,7 @@ jobs:
             const message = [
               '## ❌ Shadow313 NEXUS — Deployment Failed',
               '',
-              `**Branch:** \`master\``,
+              `**Branch:** \`${{ env.DEFAULT_BRANCH }}\``,
               `**Commit:** \`${sha}\``,
               `**Run:** [View logs](${runUrl})`,
               '',
