@@ -1,6 +1,7 @@
 {
   "name": "shadow313-nexus",
   "version": 2,
+  "name": "shadow313-nexus",
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/docs", "destination": "/docs/index.html" },
