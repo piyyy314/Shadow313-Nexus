@@ -7,7 +7,7 @@
 ## Quick Start (3 commands)
 
 ```bash
-git clone https://github.com/shadow313/shadow313.git
+git clone https://github.com/piyyy314/Shadow313-Nexus.git
 cd shadow313
 pip install -e . && shadow313
 ```
@@ -36,12 +36,12 @@ If you see project files → already cloned. If "No such file or directory" → 
 ```bash
 # Linux / macOS
 cd ~
-git clone https://github.com/shadow313/shadow313.git
+git clone https://github.com/piyyy314/Shadow313-Nexus.git
 cd shadow313
 
 # Windows (PowerShell)
 cd $HOME
-git clone https://github.com/shadow313/shadow313.git
+git clone https://github.com/piyyy314/Shadow313-Nexus.git
 cd shadow313
 ```
 

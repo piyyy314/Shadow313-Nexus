@@ -1,93 +1,154 @@
+# ══════════════════════════════════════════════════════════════════
+# Shadow313 NEXUS v4.0.0 — Docker Compose
+# Services: shadow313-cli · shadow313-api · open-webui · ollama
+#           chromadb · nginx
+# ══════════════════════════════════════════════════════════════════
+
 version: "3.9"
 
-# Shadow313 NEXUS v4.0.0 — Docker Compose
-# Services: shadow313-cli, dashboard, ollama, chromadb, nginx
-
 services:
+
+  # ── Ollama — Local LLM inference engine ──────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: shadow313-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_NUM_PARALLEL=2
+    networks:
+      - shadow313_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    # GPU support — remove deploy block if no NVIDIA GPU
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # ── Ollama model puller — runs once on startup ────────────────────
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: shadow313-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./docker/ollama/init.sh:/init.sh:ro
+    entrypoint: ["/bin/sh", "/init.sh"]
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - shadow313_net
+    restart: "no"
+
+  # ── Open WebUI — AI chat interface for Shadow313 model ───────────
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: shadow313-open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    volumes:
+      - openwebui_data:/app/backend/data
+      - ./docker/openwebui/config.json:/app/backend/data/config.json:ro
+    environment:
+      # Connect to Ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Disable signup for private deployment
+      - WEBUI_AUTH=true
+      - WEBUI_NAME=Shadow313 NEXUS AI
+      - WEBUI_URL=http://localhost:3000
+      # Default model
+      - DEFAULT_MODELS=matarmohamad313/shadow313-nexus
+      # Security
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-shadow313-nexus-secret-change-me}
+      # Disable telemetry
+      - SCARF_NO_ANALYTICS=true
+      - DO_NOT_TRACK=true
+      - ANONYMIZED_TELEMETRY=false
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - shadow313_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── Shadow313 CLI container ───────────────────────────────────────
   shadow313-cli:
     build:
       context: .
       target: nexus
-    image: shadow313/shadow313:4.0.0-nexus
+    image: piyyy314/shadow313-nexus:4.0.0
     container_name: shadow313-cli
+    restart: unless-stopped
     volumes:
       - shadow313_data:/home/shadow313/.shadow313
-      - /var/run/docker.sock:/var/run/docker.sock  # Docker sandbox support
+      - ./:/workspace:ro
     environment:
       - SHADOW313_AI_ENDPOINT=http://ollama:11434
       - SHADOW313_AI_BACKEND=ollama
-      - SHADOW313_AI_MODEL=mistral:7b
+      - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+      - SHADOW313_OUTPUT=rich
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
     stdin_open: true
     tty: true
     networks:
       - shadow313_net
 
-  dashboard:
+  # ── Shadow313 FastAPI REST API ────────────────────────────────────
+  shadow313-api:
     build:
       context: .
       target: nexus
-    image: shadow313/shadow313:4.0.0-nexus
-    container_name: shadow313-dashboard
-    command: ["serve", "--host", "0.0.0.0", "--port", "7313", "--no-browser"]
+    image: piyyy314/shadow313-nexus:4.0.0
+    container_name: shadow313-api
+    restart: unless-stopped
+    command: ["python", "-m", "shadow313.api.server", "--host", "0.0.0.0", "--port", "8313"]
     ports:
-      - "7313:7313"
+      - "8313:8313"
     volumes:
       - shadow313_data:/home/shadow313/.shadow313
     environment:
       - SHADOW313_AI_ENDPOINT=http://ollama:11434
       - SHADOW313_AI_BACKEND=ollama
+      - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+      - SHADOW313_API_KEY=${SHADOW313_API_KEY:-dev-key-change-in-production}
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
     networks:
       - shadow313_net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7313/api/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:8313/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  mobile-api:
-    build:
-      context: .
-      target: nexus
-    image: shadow313/shadow313:4.0.0-nexus
-    container_name: shadow313-mobile-api
-    command: ["mobile-api", "--host", "0.0.0.0", "--port", "7314"]
-    ports:
-      - "7314:7314"
-    volumes:
-      - shadow313_data:/home/shadow313/.shadow313
-    environment:
-      - SHADOW313_AI_ENDPOINT=http://ollama:11434
-      - SHADOW313_AI_BACKEND=ollama
-    depends_on:
-      - ollama
-    networks:
-      - shadow313_net
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: shadow313-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - shadow313_net
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    # Remove the deploy section above if no GPU available
-
+  # ── ChromaDB — Vector store for RAG ──────────────────────────────
   chromadb:
     image: chromadb/chroma:latest
     container_name: shadow313-chromadb
+    restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
@@ -95,6 +156,7 @@ services:
     environment:
       - CHROMA_SERVER_HOST=0.0.0.0
       - CHROMA_SERVER_HTTP_PORT=8000
+      - ANONYMIZED_TELEMETRY=false
     networks:
       - shadow313_net
     healthcheck:
@@ -103,28 +165,39 @@ services:
       timeout: 10s
       retries: 3
 
+  # ── Nginx — Reverse proxy ─────────────────────────────────────────
   nginx:
     image: nginx:alpine
     container_name: shadow313-nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
     depends_on:
-      - dashboard
-      - ollama
+      - open-webui
+      - shadow313-api
     networks:
       - shadow313_net
 
+# ── Volumes ───────────────────────────────────────────────────────
 volumes:
   shadow313_data:
     driver: local
   ollama_data:
     driver: local
+  openwebui_data:
+    driver: local
   chroma_data:
     driver: local
+  nginx_logs:
+    driver: local
 
+# ── Networks ──────────────────────────────────────────────────────
 networks:
   shadow313_net:
     driver: bridge
@@ -132,7 +205,7 @@ networks:
       config:
         - subnet: 172.20.0.0/16
 
-  # Isolated sandbox network for CVE reproduction
+  # Isolated sandbox for CVE reproduction / lab mode
   sandbox:
     driver: bridge
     internal: true

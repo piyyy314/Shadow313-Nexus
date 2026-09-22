@@ -112,15 +112,15 @@ pip install "shadow313[full]"
 
 ### Install (from source)
 ```bash
-git clone https://github.com/shadow313/shadow313
+git clone https://github.com/piyyy314/Shadow313-Nexus
 cd shadow313
 pip install -e ".[full]"
 ```
 
 ### Docker (NEXUS)
 ```bash
-docker pull shadow313/shadow313:4.0.0-nexus
-docker run --rm -it shadow313/shadow313:4.0.0-nexus recon --target example.com --mode passive
+docker pull piyyy314/shadow313-nexus:4.0.0-nexus
+docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.com --mode passive
 ```
 
 ### Docker Compose (full stack)

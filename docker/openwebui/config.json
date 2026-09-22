@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "ui": {
+    "default_locale": "en-US",
+    "prompt_suggestions": [
+      {
+        "title": ["Analyze threat", "with ATT&CK mapping"],
+        "content": "Analyze this security event and map it to MITRE ATT&CK techniques: "
+      },
+      {
+        "title": ["Explain CVE", "with exploit chain"],
+        "content": "Explain CVE-{{cve_id}} — what is the root cause, exploit chain, and how does Shadow313 detect it?"
+      },
+      {
+        "title": ["Triage alert", "with remediation"],
+        "content": "Triage this Shadow313 alert and provide remediation steps: "
+      },
+      {
+        "title": ["Post-quantum", "crypto audit"],
+        "content": "Audit this code for post-quantum cryptography weaknesses and recommend NIST FIPS 203/204/205 replacements: "
+      },
+      {
+        "title": ["313-BIND", "receipt verify"],
+        "content": "Explain how to verify a 313-BIND temporal binding receipt and what each field means."
+      },
+      {
+        "title": ["Web shell", "detection"],
+        "content": "Analyze this file content for web shell indicators (T1505.003): "
+      }
+    ]
+  },
+  "default_models": "matarmohamad313/shadow313-nexus",
+  "default_prompt_suggestions": true,
+  "enable_signup": false,
+  "enable_login_form": true,
+  "jwt_expiry": "-1",
+  "enable_community_sharing": false,
+  "enable_message_rating": true,
+  "enable_user_webhooks": false,
+  "webhook_url": "",
+  "chat": {
+    "delete_on_disconnect": false,
+    "rich_text_input": true,
+    "show_username": true
+  },
+  "rag": {
+    "enabled": true,
+    "chunk_size": 1500,
+    "chunk_overlap": 100,
+    "top_k": 5,
+    "relevance_threshold": 0.0,
+    "enable_hybrid_search": false,
+    "embedding_engine": "ollama",
+    "embedding_model": "nomic-embed-text:latest",
+    "reranking_model": ""
+  },
+  "ollama": {
+    "enable_ollama_api": true,
+    "ollama_base_urls": ["http://ollama:11434"],
+    "auto_update_models": false
+  },
+  "security": {
+    "enable_forward_user_info_headers": false,
+    "enable_api_key": true,
+    "enable_api_key_endpoint_restrictions": false
+  }
+}

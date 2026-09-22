@@ -13,7 +13,7 @@ setup(
     description      = "Local-First AI-Powered Security Intelligence CLI",
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url              = "https://github.com/shadow313/shadow313",
+    url              = "https://github.com/piyyy314/Shadow313-Nexus",
     license          = "MIT",
     packages         = find_packages(),
     python_requires  = ">=3.11",

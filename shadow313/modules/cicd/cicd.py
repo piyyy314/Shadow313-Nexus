@@ -85,7 +85,7 @@ class SARIFBuilder:
                     "driver": {
                         "name":            self.tool_name,
                         "version":         self.tool_version,
-                        "informationUri":  "https://github.com/shadow313/shadow313",
+                        "informationUri":  "https://github.com/piyyy314/Shadow313-Nexus",
                         "rules":           self._rules,
                     }
                 },
