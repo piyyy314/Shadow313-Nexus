@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 
+import yaml
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "deploy.yml"
@@ -22,13 +24,12 @@ def test_vercel_config_has_name_and_valid_destinations():
 
 
 def test_deploy_workflow_targets_repo_root_static_site():
-    workflow = WORKFLOW_PATH.read_text()
+    workflow = yaml.safe_load(WORKFLOW_PATH.read_text())
 
-    assert "working-directory: shadow313-landing" not in workflow
-
-    required_block = re.search(r'required=\((.*?)\n\s*\)', workflow, re.DOTALL)
-    assert required_block is not None
-    required_paths = set(re.findall(r'"([^"]+)"', required_block.group(1)))
+    quality_steps = workflow["jobs"]["quality"]["steps"]
+    required_step = next(step for step in quality_steps if step.get("name") == "Verify required files exist")
+    assert required_step.get("working-directory") is None
+    required_paths = set(re.findall(r'"([^"]+)"', required_step["run"]))
 
     for path in (
         "index.html",
@@ -55,15 +56,22 @@ def test_deploy_workflow_targets_repo_root_static_site():
     ):
         assert stale_path not in required_paths
 
-    preview_section = workflow.split("const body = [", 1)[1].split("].join('\\n');", 1)[0]
+    preview_steps = workflow["jobs"]["preview"]["steps"]
+    preview_comment_step = next(
+        step for step in preview_steps if step.get("name") == "Comment preview URL on PR"
+    )
+    preview_section = preview_comment_step["with"]["script"]
     for route in ("/docs", "/dashboard", "/dashboard-v3", "/ssp", "/architecture", "/ai-stack"):
         assert f"${{url}}{route}" in preview_section
 
     for stale_route in ("/tools", "/marketplace", "/analytics", "/about"):
         assert f"${{url}}{stale_route}" not in preview_section
 
-    smoke_section = workflow.split("routes=(", 1)[1].split("\n          )", 1)[0]
-    smoke_routes = set(re.findall(r'"([^"]+)"', smoke_section))
+    production_steps = workflow["jobs"]["production"]["steps"]
+    smoke_step = next(step for step in production_steps if step.get("name") == "Smoke test production deployment")
+    smoke_block = re.search(r'routes=\(\s*(.*?)\s*\)', smoke_step["run"], re.DOTALL)
+    assert smoke_block is not None
+    smoke_routes = set(re.findall(r'"([^"]+)"', smoke_block.group(1)))
     for route in ("/", "/docs", "/dashboard", "/dashboard-v3", "/ssp", "/architecture", "/ai-stack"):
         assert route in smoke_routes
 
