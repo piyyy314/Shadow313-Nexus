@@ -383,9 +383,13 @@ class RAGEngine:
             "Be precise, structured, and actionable."
         )
 
+        history_section = ""
+        if history_str:
+            history_section = f"CONVERSATION HISTORY:\n{history_str}\n\n"
+
         user_prompt = (
             f"RETRIEVED CONTEXT:\n{context_str}\n\n"
-            f"{'CONVERSATION HISTORY:\n' + history_str + chr(10) + chr(10) if history_str else ''}"
+            f"{history_section}"
             f"QUESTION: {query}"
         )
 
