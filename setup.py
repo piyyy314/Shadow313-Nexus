@@ -34,6 +34,7 @@ setup(
             "black>=24.0",
             "ruff>=0.4",
             "mypy>=1.10",
+            "numpy>=1.26",
         ],
     },
     entry_points = {
