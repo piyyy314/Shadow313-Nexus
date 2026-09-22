@@ -135,7 +135,7 @@ def _sign_slh_dsa(message: bytes) -> tuple[str, str]:
     )
     key = os.environ.get("SHADOW313_BIND_KEY", "").encode() or os.urandom(32)
     sig = hmac.new(key, message, hashlib.sha256).hexdigest()
-    return sig, "HMAC-SHA256 (fallback — install pqcrypto or pyspx for SLH-DSA)"
+    return sig, "HMAC-SHA256 (fallback)"
 
 
 # ── IPFS anchoring ────────────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ def _anchor_ipfs(content: str) -> str:
             headers={"Content-Type": "application/octet-stream"},
             method="POST",
         )
-        with urlreq.urlopen(req, timeout=15, encoding='utf-8') as resp:
+        with urlreq.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read())
             return result.get("Hash", "")
     except Exception:
