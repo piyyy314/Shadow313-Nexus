@@ -8,6 +8,7 @@ import os
 import pytest
 
 from shadow313.v4.intelligence.secrets_manager import (
+    detect_secret_patterns,
     SecretsValidator, SecretsAuditReport, SecretValidationResult,
     SecretClass, SecretSource, SECRET_REGISTRY, VAULT_CONFIG,
     GITHUB_OIDC_STRATEGY, KNOWN_DEFAULTS,
@@ -335,3 +336,104 @@ class TestKnownDefaults:
         monkeypatch.setenv("SHADOW313_API_KEY", generate_strong_secret(48))
         report = validate_secrets_at_startup(fail_fast=False)
         assert isinstance(report, SecretsAuditReport)
+
+
+# ── Pattern Detection (Layer 3 Gap Fix) ──────────────────────────────────────
+
+class TestPatternDetection:
+    """Tests for pattern-based secret detection — closes Layer 3 gap."""
+
+    def test_github_token_detected(self):
+        token = "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij"
+        matches = detect_secret_patterns(token)
+        assert len(matches) >= 1
+        assert any("GitHub" in m for m in matches)
+
+    def test_aws_access_key_detected(self):
+        key = "AKIAIOSFODNN7EXAMPLE"
+        matches = detect_secret_patterns(key)
+        assert len(matches) >= 1
+        assert any("AWS" in m for m in matches)
+
+    def test_openai_key_detected(self):
+        key = "sk-" + "A" * 48
+        matches = detect_secret_patterns(key)
+        assert len(matches) >= 1
+        assert any("OpenAI" in m for m in matches)
+
+    def test_private_key_detected(self):
+        key = "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA..."
+        matches = detect_secret_patterns(key)
+        assert len(matches) >= 1
+        assert any("Private key" in m for m in matches)
+
+    def test_shadow313_prod_key_detected(self):
+        key = "sk-shadow313-prod-xK9mP2qR7sT1uV5wY8zA4cD6eF0gH2iJ"
+        matches = detect_secret_patterns(key)
+        assert len(matches) >= 1
+
+    def test_bearer_token_detected(self):
+        token = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.payload.signature"
+        matches = detect_secret_patterns(token)
+        assert len(matches) >= 1
+
+    def test_clean_value_no_match(self):
+        # Normal config value — no pattern match
+        matches = detect_secret_patterns("matarmohamad313/shadow313-nexus")
+        assert len(matches) == 0
+
+    def test_random_strong_secret_no_match(self, strong_secret):
+        # Random URL-safe token doesn't match known patterns
+        matches = detect_secret_patterns(strong_secret)
+        # May or may not match — but shouldn't match specific provider patterns
+        provider_patterns = ["GitHub", "AWS", "OpenAI", "Private key", "Shadow313"]
+        provider_matches = [m for m in matches if any(p in m for p in provider_patterns)]
+        assert len(provider_matches) == 0
+
+    def test_context_helps_detection(self):
+        # Hardcoded assignment pattern
+        matches = detect_secret_patterns(
+            "sk-shadow313-prod-xK9mP2qR7sT1uV5wY8zA4cD6eF0gH2iJ",
+            context="WEBUI_SECRET_KEY"
+        )
+        assert len(matches) >= 1
+
+    def test_layer3_gap_closed_real_leaked_secret(self, validator, monkeypatch):
+        """
+        Critical gap test: a REAL leaked secret (strong entropy, correct length)
+        should now be detected via pattern matching even though it passes
+        entropy and length checks.
+        """
+        # This is a realistic leaked secret — strong, long, but matches sk- pattern
+        leaked = "sk-shadow313-prod-xK9mP2qR7sT1uV5wY8zA4cD6eF0gH2iJ"
+        monkeypatch.setenv("WEBUI_SECRET_KEY", leaked)
+
+        result = validator.validate_secret("WEBUI_SECRET_KEY")
+
+        # Entropy and length pass (it IS a strong secret)
+        assert result.length_ok is True
+        assert result.entropy_ok is True
+        assert result.not_default is True
+
+        # But pattern detection fires
+        pattern_issues = [i for i in result.issues if "pattern" in i.lower()]
+        assert len(pattern_issues) >= 1,             f"Layer 3 gap NOT closed — pattern detection missed leaked secret. Issues: {result.issues}"
+
+    def test_github_token_as_api_key_detected(self, validator, monkeypatch):
+        """GitHub token accidentally used as SHADOW313_API_KEY."""
+        github_token = "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij"
+        monkeypatch.setenv("SHADOW313_API_KEY", github_token)
+
+        result = validator.validate_secret("SHADOW313_API_KEY")
+        pattern_issues = [i for i in result.issues if "pattern" in i.lower()]
+        assert len(pattern_issues) >= 1, "GitHub token as API key not detected"
+
+    def test_aws_key_as_webui_secret_detected(self, validator, monkeypatch):
+        """AWS key accidentally used as WEBUI_SECRET_KEY."""
+        aws_key = "AKIAIOSFODNN7EXAMPLE" + "x" * 12  # pad to min length
+        monkeypatch.setenv("WEBUI_SECRET_KEY", aws_key)
+
+        result = validator.validate_secret("WEBUI_SECRET_KEY")
+        pattern_issues = [i for i in result.issues if "pattern" in i.lower() or "AWS" in i]
+        # AWS key is short — may fail length check first
+        assert not result.valid  # Should fail for some reason

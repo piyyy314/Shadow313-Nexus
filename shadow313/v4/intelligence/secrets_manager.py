@@ -238,6 +238,58 @@ KNOWN_DEFAULTS = {
 }
 
 
+# ── Secret Pattern Detection (Layer 3 gap fix) ───────────────────────────────
+# Real leaked secrets pass entropy/length checks — need pattern matching too
+
+SECRET_PATTERNS: list[tuple[str, str]] = [
+    # Shadow313 specific
+    (r"sk-shadow313-[a-zA-Z0-9\-]{20,}", "Shadow313 production key (sk-shadow313- prefix)"),
+    (r"313-[A-Z]+-[A-F0-9]{8}", "Shadow313 BIND receipt ID in secret position"),
+
+    # GitHub tokens
+    (r"ghp_[A-Za-z0-9]{36}", "GitHub Personal Access Token (ghp_)"),
+    (r"ghs_[A-Za-z0-9]{36}", "GitHub App token (ghs_)"),
+    (r"github_pat_[A-Za-z0-9_]{82}", "GitHub fine-grained PAT"),
+
+    # AWS
+    (r"AKIA[A-Z0-9]{16}", "AWS Access Key ID"),
+    (r"(?i)aws.{0,20}secret.{0,20}[A-Za-z0-9/+=]{40}", "AWS Secret Access Key"),
+
+    # OpenAI
+    (r"sk-[A-Za-z0-9]{48}", "OpenAI API key (sk- prefix)"),
+    (r"sk-proj-[A-Za-z0-9\-_]{50,}", "OpenAI project key"),
+
+    # Hetzner
+    (r"[A-Za-z0-9]{64}", "Possible Hetzner API token (64 char hex)"),
+
+    # Generic high-confidence patterns
+    (r"(?i)(api.key|secret.key|access.token)\s*[=:]\s*[A-Za-z0-9\-_+/]{32,}", "Hardcoded API/secret key assignment"),
+    (r"(?i)bearer\s+[A-Za-z0-9\-_+/=]{32,}", "Bearer token in code"),
+    (r"-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----", "Private key in code"),
+    (r"-----BEGIN CERTIFICATE-----", "Certificate in code"),
+]
+
+def detect_secret_patterns(value: str, context: str = "") -> list[str]:
+    """
+    Detect if a value matches known secret patterns.
+    This closes the Layer 3 gap where real secrets pass entropy checks.
+
+    Args:
+        value:   The secret value to check
+        context: Optional context (variable name, file path) for better detection
+
+    Returns:
+        List of pattern match descriptions (empty = no patterns matched)
+    """
+    import re
+    matches = []
+    text = f"{context}={value}" if context else value
+    for pattern, description in SECRET_PATTERNS:
+        if re.search(pattern, text):
+            matches.append(description)
+    return matches
+
+
 # ── Secrets Validator ─────────────────────────────────────────────────────────
 
 class SecretsValidator:
@@ -368,6 +420,16 @@ class SecretsValidator:
         not_default = value.lower() not in KNOWN_DEFAULTS if present else False
         if present and not not_default:
             issues.append("Default/placeholder value detected — must be changed")
+
+        # Pattern-based detection (Layer 3 gap fix)
+        # Real leaked secrets pass entropy/length but match known patterns
+        if present:
+            pattern_matches = detect_secret_patterns(value, context=name)
+            if pattern_matches:
+                for match in pattern_matches:
+                    issues.append(f"Secret pattern detected: {match}")
+                # Pattern match in wrong context = potential leak
+                # (e.g., GitHub token as WEBUI_SECRET_KEY)
 
         # Rotation check (simplified — in production use Vault lease TTL)
         rotation_due = False  # Would check Vault lease expiry in production
