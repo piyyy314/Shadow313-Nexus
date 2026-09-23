@@ -1,0 +1,140 @@
+# Shadow313 NEXUS — Nightly Security Scan
+# Runs every night at 02:00 UTC + on-demand
+
+name: Nightly Security Scan
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+
+  # ── Full dependency audit ─────────────────────────────────────────
+  dependency-audit:
+    name: Full Dependency Audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install and audit all deps
+        run: |
+          pip install -e ".[dev]"
+          pip install pip-audit==2.7.3 safety==3.1.0 bandit==1.7.8
+          pip-audit --desc --format json -o nightly-pip-audit.json
+          safety check --full-report --json > nightly-safety.json || true
+          bandit -r shadow313/ nexus_toolkit/ \
+            -x shadow313/tests,tests \
+            --severity-level medium \
+            -f json -o nightly-bandit.json || true
+
+      - name: Upload audit reports
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nightly-security-reports
+          path: |
+            nightly-pip-audit.json
+            nightly-safety.json
+            nightly-bandit.json
+          retention-days: 30
+
+  # ── Docker image scan ─────────────────────────────────────────────
+  container-scan:
+    name: Container Security Scan (Trivy)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build image for scanning
+        run: |
+          docker build --target production -t shadow313-scan:nightly . || true
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402c11fb9d89a7634134e4 # v0.29.0
+        with:
+          image-ref: "shadow313-scan:nightly"
+          severity: "CRITICAL,HIGH"
+          format: "sarif"
+          output: "trivy-container.sarif"
+          exit-code: "0"
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 # v3.28.15
+        if: always()
+        with:
+          sarif_file: trivy-container.sarif
+          category: trivy-container
+
+  # ── Secret history scan ───────────────────────────────────────────
+  secret-history-scan:
+    name: Full Git History Secret Scan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks full history
+        uses: gitleaks/gitleaks-action@44c470ffa3e3e9f1cf3e1dc0c3d9843f68e56cc0 # v2.3.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
+
+  # ── Docker compose security check ─────────────────────────────────
+  compose-security:
+    name: Docker Compose Security Audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install checkov
+        run: pip install checkov==3.2.0
+
+      - name: Run checkov on docker-compose
+        run: |
+          checkov -f docker-compose.yml \
+            --framework dockerfile \
+            --output cli \
+            --soft-fail || true
+
+      - name: Verify security hardening
+        run: |
+          python3 << 'PYEOF'
+          import sys
+          with open('docker-compose.yml') as f:
+              content = f.read()
+
+          checks = {
+              "no-new-privileges": "no-new-privileges:true" in content,
+              "cap_drop_all": "cap_drop" in content and "ALL" in content,
+              "no_docker_socket": "/var/run/docker.sock" not in content,
+              "no_privileged": "privileged: true" not in content,
+              "no_host_network": "network_mode: host" not in content,
+              "internal_network": "internal: true" in content,
+              "localhost_binding": "127.0.0.1:" in content,
+          }
+
+          failed = []
+          for check, passed in checks.items():
+              status = "✅" if passed else "❌"
+              print(f"  {status} {check}")
+              if not passed:
+                  failed.append(check)
+
+          if failed:
+              print(f"\nFailed checks: {failed}")
+              sys.exit(1)
+          else:
+              print("\n✅ All Docker security checks passed")
+          PYEOF

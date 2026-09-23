@@ -1,0 +1,71 @@
+# Shadow313 NEXUS — Dependabot Configuration
+# Automated dependency updates with security-first approach
+
+version: 2
+
+updates:
+  # ── Python dependencies ───────────────────────────────────────────
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "piyyy314"
+    labels:
+      - "dependencies"
+      - "python"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    # Security updates always open immediately
+    groups:
+      security-patches:
+        patterns:
+          - "pyjwt"
+          - "urllib3"
+          - "requests"
+          - "cryptography"
+          - "click"
+          - "pyspx"
+        update-types:
+          - "patch"
+          - "minor"
+
+  # ── GitHub Actions ────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "piyyy314"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+
+  # ── Docker ────────────────────────────────────────────────────────
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "piyyy314"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"

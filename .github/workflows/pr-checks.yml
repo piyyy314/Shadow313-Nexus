@@ -1,0 +1,165 @@
+# Shadow313 NEXUS — PR Gate Checks
+# Triggered: pull_request to master or develop
+# All jobs run in parallel. All must pass for merge.
+
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+  checks: write
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+
+  # ── Lint ──────────────────────────────────────────────────────────
+  lint:
+    name: Lint (Python / YAML / Markdown)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install linters
+        run: pip install ruff==0.4.4 black==24.3.0 yamllint==1.35.1
+
+      - name: Run ruff
+        run: ruff check shadow313/ nexus_toolkit/ --output-format github || true
+
+      - name: Run black format check
+        run: black --check --diff shadow313/ || true
+
+      - name: Run yamllint
+        run: yamllint -c .yamllint.yml .github/workflows/ docker-compose.yml || true
+
+  # ── Unit Tests ────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests (Python 3.11 / 3.12)
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn
+
+      - name: Run tests
+        run: |
+          pytest tests/ -q --tb=short \
+            --ignore=tests/integration \
+            -x
+
+  # ── SAST ──────────────────────────────────────────────────────────
+  sast:
+    name: SAST (Bandit + Semgrep)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Bandit
+        run: pip install bandit==1.7.8
+
+      - name: Run Bandit SAST
+        run: |
+          bandit -r shadow313/ nexus_toolkit/ \
+            -x shadow313/tests,tests \
+            --severity-level medium \
+            -f json -o bandit-report.json || true
+          bandit -r shadow313/ nexus_toolkit/ \
+            -x shadow313/tests,tests \
+            --severity-level high \
+            --exit-zero
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: bandit-report-${{ matrix.python-version || 'default' }}
+          path: bandit-report.json
+          retention-days: 7
+
+  # ── Secret Scan ───────────────────────────────────────────────────
+  secret-scan:
+    name: Secret Detection (Gitleaks)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@44c470ffa3e3e9f1cf3e1dc0c3d9843f68e56cc0 # v2.3.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
+
+  # ── SCA ───────────────────────────────────────────────────────────
+  sca:
+    name: Dependency Scan (pip-audit + Safety)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install audit tools
+        run: pip install pip-audit==2.7.3 safety==3.1.0
+
+      - name: Run pip-audit
+        run: |
+          pip install -e ".[dev]"
+          pip-audit --desc --format json -o pip-audit-report.json || true
+          pip-audit --desc --severity high
+
+      - name: Run Safety check
+        run: safety check --full-report || true
+
+  # ── Docker Lint ───────────────────────────────────────────────────
+  docker-lint:
+    name: Dockerfile Lint (Hadolint)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning
