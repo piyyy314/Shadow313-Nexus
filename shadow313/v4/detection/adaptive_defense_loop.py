@@ -25,6 +25,7 @@ from __future__ import annotations
 import hashlib
 import json
 import random
+import secrets  # for cryptographic operations
 import time
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone

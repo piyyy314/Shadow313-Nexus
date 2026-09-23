@@ -20,6 +20,7 @@ CVEs: 8 critical (EPSS > 0.85)
 from __future__ import annotations
 
 import random
+import secrets  # for cryptographic operations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional

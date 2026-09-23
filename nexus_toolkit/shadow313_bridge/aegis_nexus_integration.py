@@ -63,7 +63,7 @@ class AegisNexusIntegration:
             nexus_score  = await self._score_with_nexus(log_entry)
 
             alert = {
-                "alert_id":        f"AEGIS-{hashlib.md5(finding.get('title','').encode()).hexdigest()[:8].upper()}",
+                "alert_id":        f"AEGIS-{hashlib.sha3_256(finding.get('title','').encode()).hexdigest()[:8].upper()}",
                 "source":          "AegisAudit",
                 "target":          target,
                 "title":           finding.get("title", ""),

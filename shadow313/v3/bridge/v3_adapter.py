@@ -304,7 +304,7 @@ def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
                "MEDIUM"   if score >= 0.45 else "LOW"))
 
     return {
-        "id":          f"V3-{head.upper()[:8]}-{hashlib.md5(str(detection).encode()).hexdigest()[:6]}",
+        "id":          f"V3-{head.upper()[:8]}-{hashlib.sha3_256(str(detection).encode()).hexdigest()[:6]}",
         "tool":        "shadow313_v3_lstm",
         "title":       f"LSTM Detection: {head} (score={score:.3f})",
         "severity":    severity,
