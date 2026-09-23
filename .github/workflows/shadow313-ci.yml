@@ -95,7 +95,7 @@ jobs:
       - name: Safety dependency check
         run: safety check --json > safety-report.json || true
       - name: Upload security artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-reports
@@ -120,7 +120,7 @@ jobs:
       - name: Check distribution
         run: twine check dist/*
       - name: Upload dist artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-packages
           path: dist/
