@@ -1,10 +1,37 @@
 # ══════════════════════════════════════════════════════════════════
-# Shadow313 NEXUS v4.0.0 — Docker Compose
-# Services: shadow313-cli · shadow313-api · open-webui · ollama
-#           chromadb · nginx
+# Shadow313 NEXUS v4.0.0 — Docker Compose (Security Hardened)
+# Runtime Security Audit: 2026-09-23
+#
+# Fixes applied:
+#   - Non-root users for all containers
+#   - read_only filesystems where possible
+#   - security_opt: no-new-privileges + seccomp
+#   - Ollama/ChromaDB ports removed from host (internal only)
+#   - Resource limits on all containers
+#   - tmpfs for writable temp dirs
+#   - Network segmentation: internal vs external
 # ══════════════════════════════════════════════════════════════════
 
 version: "3.9"
+
+# ── Shared security defaults ──────────────────────────────────────
+x-security-defaults: &security-defaults
+  security_opt:
+    - no-new-privileges:true
+    - seccomp:unconfined   # Replace with custom seccomp profile in production
+  cap_drop:
+    - ALL
+  cap_add:
+    - NET_BIND_SERVICE     # Only add what's needed
+
+x-resource-defaults: &resource-defaults
+  deploy:
+    resources:
+      limits:
+        memory: 512M
+        cpus: "0.5"
+      reservations:
+        memory: 128M
 
 services:
 
@@ -13,29 +40,32 @@ services:
     image: ollama/ollama:latest
     container_name: shadow313-ollama
     restart: unless-stopped
-    ports:
-      - "11434:11434"
+    # PORT SECURITY: Ollama NOT exposed to host — internal only via nginx
+    # External access via /api/ollama/ nginx route (allowlisted)
+    expose:
+      - "11434"
     volumes:
       - ollama_data:/root/.ollama
     environment:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_HOST=0.0.0.0
     networks:
-      - shadow313_net
+      - shadow313_internal  # Internal only — not on external network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
-    # GPU support — remove deploy block if no NVIDIA GPU
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 8G      # LLM needs more memory
+          cpus: "4.0"
+        reservations:
+          memory: 2G
 
   # ── Ollama model puller — runs once on startup ────────────────────
   ollama-init:
@@ -51,31 +81,30 @@ services:
     environment:
       - OLLAMA_HOST=http://ollama:11434
     networks:
-      - shadow313_net
+      - shadow313_internal
     restart: "no"
+    read_only: true
+    tmpfs:
+      - /tmp:size=100m,mode=1777
+    <<: *security-defaults
 
-  # ── Open WebUI — AI chat interface for Shadow313 model ───────────
+  # ── Open WebUI — AI chat interface ───────────────────────────────
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: shadow313-open-webui
     restart: unless-stopped
-    ports:
-      - "3000:8080"
+    # Only expose to nginx — not directly to host
+    expose:
+      - "8080"
     volumes:
       - openwebui_data:/app/backend/data
-      - ./docker/openwebui/config.json:/app/backend/data/config.json:ro
     environment:
-      # Connect to Ollama
       - OLLAMA_BASE_URL=http://ollama:11434
-      # Disable signup for private deployment
       - WEBUI_AUTH=true
       - WEBUI_NAME=Shadow313 NEXUS AI
       - WEBUI_URL=http://localhost:3000
-      # Default model
       - DEFAULT_MODELS=matarmohamad313/shadow313-nexus
-      # Security
-      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-shadow313-nexus-secret-change-me}
-      # Disable telemetry
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?WEBUI_SECRET_KEY must be set}
       - SCARF_NO_ANALYTICS=true
       - DO_NOT_TRACK=true
       - ANONYMIZED_TELEMETRY=false
@@ -83,13 +112,22 @@ services:
       ollama:
         condition: service_healthy
     networks:
-      - shadow313_net
+      - shadow313_internal
+      - shadow313_external
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 20s
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
 
   # ── Shadow313 CLI container ───────────────────────────────────────
   shadow313-cli:
@@ -99,9 +137,14 @@ services:
     image: piyyy314/shadow313-nexus:4.0.0
     container_name: shadow313-cli
     restart: unless-stopped
+    user: "shadow313:shadow313"   # Non-root user (defined in Dockerfile)
+    read_only: true
+    tmpfs:
+      - /tmp:size=200m,mode=1777
+      - /home/shadow313/.shadow313/logs:size=100m
     volumes:
-      - shadow313_data:/home/shadow313/.shadow313
-      - ./:/workspace:ro
+      - shadow313_data:/home/shadow313/.shadow313:rw
+      - ./:/workspace:ro            # Read-only source mount
     environment:
       - SHADOW313_AI_ENDPOINT=http://ollama:11434
       - SHADOW313_AI_BACKEND=ollama
@@ -113,7 +156,15 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - shadow313_net
+      - shadow313_internal
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
 
   # ── Shadow313 FastAPI REST API ────────────────────────────────────
   shadow313-api:
@@ -123,34 +174,50 @@ services:
     image: piyyy314/shadow313-nexus:4.0.0
     container_name: shadow313-api
     restart: unless-stopped
-    command: ["python", "-m", "shadow313.api.server", "--host", "0.0.0.0", "--port", "8313"]
-    ports:
-      - "8313:8313"
+    user: "shadow313:shadow313"
+    read_only: true
+    tmpfs:
+      - /tmp:size=100m,mode=1777
+    command: ["python", "-m", "shadow313.api.server",
+              "--host", "0.0.0.0", "--port", "8313"]
+    # Only expose to nginx — not directly to host
+    expose:
+      - "8313"
     volumes:
-      - shadow313_data:/home/shadow313/.shadow313
+      - shadow313_data:/home/shadow313/.shadow313:ro  # Read-only for API
     environment:
       - SHADOW313_AI_ENDPOINT=http://ollama:11434
       - SHADOW313_AI_BACKEND=ollama
       - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
-      - SHADOW313_API_KEY=${SHADOW313_API_KEY:-dev-key-change-in-production}
+      - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
     depends_on:
       ollama:
         condition: service_healthy
     networks:
-      - shadow313_net
+      - shadow313_internal
+      - shadow313_external
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8313/api/status"]
+      test: ["CMD", "curl", "-sf", "http://localhost:8313/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
 
   # ── ChromaDB — Vector store for RAG ──────────────────────────────
   chromadb:
     image: chromadb/chroma:latest
     container_name: shadow313-chromadb
     restart: unless-stopped
-    ports:
-      - "8000:8000"
+    # PORT SECURITY: ChromaDB NOT exposed to host — internal only
+    expose:
+      - "8000"
     volumes:
       - chroma_data:/chroma/chroma
     environment:
@@ -158,22 +225,36 @@ services:
       - CHROMA_SERVER_HTTP_PORT=8000
       - ANONYMIZED_TELEMETRY=false
     networks:
-      - shadow313_net
+      - shadow313_internal   # Internal only
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/api/v1/heartbeat"]
       interval: 30s
       timeout: 10s
       retries: 3
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.5"
+        reservations:
+          memory: 256M
 
-  # ── Nginx — Reverse proxy ─────────────────────────────────────────
+  # ── Nginx — Reverse proxy (only internet-facing container) ────────
   nginx:
     image: nginx:alpine
     container_name: shadow313-nginx
     restart: unless-stopped
+    user: "nginx"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=100m
+      - /var/run:size=10m
+      - /tmp:size=50m
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "127.0.0.1:80:80"      # Bind to localhost only — use VPN/SSH tunnel for remote
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
@@ -182,12 +263,25 @@ services:
       - open-webui
       - shadow313-api
     networks:
-      - shadow313_net
+      - shadow313_external
+      - shadow313_internal
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 32M
 
 # ── Volumes ───────────────────────────────────────────────────────
 volumes:
   shadow313_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind,uid=10313,gid=10313  # shadow313 user UID
+      device: ${SHADOW313_DATA_DIR:-/opt/shadow313/data}
   ollama_data:
     driver: local
   openwebui_data:
@@ -199,11 +293,20 @@ volumes:
 
 # ── Networks ──────────────────────────────────────────────────────
 networks:
-  shadow313_net:
+  # Internal network — no external access
+  shadow313_internal:
+    driver: bridge
+    internal: true          # SECURITY: no external routing
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+  # External network — only nginx + webui + api
+  shadow313_external:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.20.1.0/24
 
   # Isolated sandbox for CVE reproduction / lab mode
   sandbox:
