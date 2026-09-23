@@ -48,7 +48,7 @@ HONEYPOT_ATTCK_MAP: list[dict] = [
         "name":        "Credentials In Files",
         "tactic":      "credential_access",
         "risk":        0.88,
-        "indicators":  [r"\.env", "GET.*\.env", "environment.*config", "api.key", "secret"],
+        "indicators":  [r"\.env", r"GET.*\.env", "environment.*config", "api.key", "secret"],
         "services":    ["WEB", "HTTP"],
         "description": "Probing for .env files containing credentials and API keys",
     },
