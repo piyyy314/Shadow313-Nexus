@@ -35,6 +35,16 @@ except ImportError:
 
 from shadow313 import __version__
 
+# Intelligence modules (lazy import — graceful if not available)
+try:
+    from shadow313.v4.intelligence.honeypot_analyzer import HoneypotAnalyzer, WEForgeTracker
+    from shadow313.v4.intelligence.global_threat_sim_v2 import (
+        GlobalThreatSimulatorV2, GLOBAL_THREATS_2026, run_global_simulation_v2
+    )
+    HAS_INTELLIGENCE = True
+except ImportError:
+    HAS_INTELLIGENCE = False
+
 # ── Models ────────────────────────────────────────────────────────
 
 if HAS_FASTAPI:
