@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S313 NEXUS — Command Center v6</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#020617;--bg2:#0b1329;--bg3:#0f1f3d;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --cyan:#06b6d4;--purple:#a78bfa;--blue:#3b82f6;--orange:#f97316;
+  --border:rgba(34,197,94,0.12);--text:#e2e8f0;--muted:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ── Header ── */
+.header{background:rgba(2,6,23,.98);border-bottom:1px solid var(--border);
+  padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:300;backdrop-filter:blur(14px);}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;flex-shrink:0;}
+.logo-icon{width:30px;height:30px;background:var(--green);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-weight:900;
+  color:#000;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.header-title{font-size:11px;font-family:'JetBrains Mono',monospace;
+  color:var(--muted);letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;}
+.nav-tabs{display:flex;gap:3px;margin-left:8px;}
+.nav-tab{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:700;
+  cursor:pointer;border:1px solid rgba(30,41,59,.8);background:none;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;transition:all .15s;white-space:nowrap;}
+.nav-tab.active{color:var(--green);background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);}
+.nav-tab:hover:not(.active){color:var(--text);background:rgba(30,41,59,.5);}
+.role-selector{margin-left:auto;display:flex;gap:3px;}
+.role-btn{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;
+  cursor:pointer;border:1px solid rgba(30,41,59,.8);background:none;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;transition:all .15s;}
+.role-btn.active{color:#000;font-weight:800;}
+.role-btn.r-exec.active{background:var(--purple);border-color:var(--purple);}
+.role-btn.r-ops.active{background:var(--cyan);border-color:var(--cyan);}
+.role-btn.r-analyst.active{background:var(--amber);border-color:var(--amber);}
+.role-btn.r-auditor.active{background:var(--green);border-color:var(--green);}
+.session-info{display:flex;gap:12px;align-items:center;font-size:10px;
+  font-family:'JetBrains Mono',monospace;color:var(--muted);flex-shrink:0;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+
+/* ── KPI bar ── */
+.kpi-bar{display:flex;gap:8px;padding:8px 20px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.kpi{background:var(--bg);border:1px solid rgba(30,41,59,.8);border-radius:7px;
+  padding:7px 12px;flex:1;position:relative;overflow:hidden;min-width:0;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.crit::before{background:var(--red);}
+.kpi.high::before{background:var(--amber);}
+.kpi.med::before{background:var(--cyan);}
+.kpi.low::before{background:var(--muted);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi.blue::before{background:var(--blue);}
+.kpi.orange::before{background:var(--orange);}
+.kpi-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.kpi-val{font-size:22px;font-weight:700;line-height:1.1;margin-top:1px;}
+.kpi.crit .kpi-val{color:var(--red);}
+.kpi.high .kpi-val{color:var(--amber);}
+.kpi.med  .kpi-val{color:var(--cyan);}
+.kpi.low  .kpi-val{color:var(--muted);}
+.kpi.green .kpi-val{color:var(--green);}
+.kpi.purple .kpi-val{color:var(--purple);}
+.kpi.blue .kpi-val{color:var(--blue);}
+.kpi.orange .kpi-val{color:var(--orange);}
+.kpi-sub{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+
+/* ── Page container ── */
+.page{display:none;padding:16px 20px;}
+.page.active{display:block;}
+
+/* ── Section headers ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;}
+.section-badge{font-size:10px;font-family:'JetBrains Mono',monospace;
+  background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.2);
+  border-radius:4px;padding:2px 8px;}
+
+/* ── Grid layouts ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.panel{background:var(--bg2);border:1px solid rgba(30,41,59,.8);border-radius:8px;padding:14px;}
+
+/* ── RF Health Board ── */
+.rf-asset-tree{display:flex;flex-direction:column;gap:6px;}
+.rf-asset{background:var(--bg);border:1px solid rgba(30,41,59,.8);border-radius:7px;
+  padding:10px 12px;cursor:pointer;transition:all .2s;}
+.rf-asset:hover{border-color:rgba(34,197,94,.3);}
+.rf-asset.expanded{border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.03);}
+.rf-asset-header{display:flex;align-items:center;gap:10px;}
+.rf-asset-icon{font-size:16px;flex-shrink:0;}
+.rf-asset-name{font-size:12px;font-weight:700;color:var(--text);}
+.rf-asset-id{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.rf-state{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.05em;margin-left:auto;}
+.state-normal{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.state-warning{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3);}
+.state-critical{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.state-stale{background:rgba(100,116,139,.12);color:var(--muted);border:1px solid rgba(100,116,139,.3);}
+.state-unknown{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3);}
+.state-unverified{background:rgba(249,115,22,.12);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
+.rf-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
+.rf-metric{background:rgba(0,0,0,.3);border-radius:5px;padding:6px 8px;text-align:center;}
+.rf-metric-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.rf-metric-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.rf-freshness{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);
+  margin-top:6px;display:flex;gap:12px;}
+.freshness-warn{color:var(--amber);}
+.freshness-stale{color:var(--red);}
+.rf-children{margin-top:8px;margin-left:16px;display:flex;flex-direction:column;gap:5px;}
+.rf-child{background:rgba(11,19,41,.8);border:1px solid rgba(30,41,59,.6);
+  border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
+.rf-child-name{font-size:11px;font-weight:600;color:var(--text);flex:1;}
+.rf-child-metrics{display:flex;gap:10px;}
+.rf-child-metric{font-size:10px;font-family:'JetBrains Mono',monospace;}
+
+/* ── Mission Board ── */
+.mission-card{background:var(--bg);border:1px solid rgba(30,41,59,.8);
+  border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.mission-card:hover{border-color:rgba(34,197,94,.3);}
+.mission-card.expanded{border-color:rgba(167,139,250,.4);}
+.mission-header{display:flex;align-items:flex-start;gap:12px;}
+.mission-id{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--purple);
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);
+  border-radius:3px;padding:2px 7px;white-space:nowrap;}
+.mission-name{font-size:13px;font-weight:700;color:var(--text);}
+.mission-owner{font-size:10px;color:var(--muted);}
+.mission-op-state{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;
+  text-transform:uppercase;margin-left:auto;white-space:nowrap;}
+.mission-trace{display:flex;align-items:center;gap:4px;margin-top:10px;
+  font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);flex-wrap:wrap;}
+.trace-node{padding:2px 6px;border-radius:3px;background:rgba(30,41,59,.8);
+  border:1px solid rgba(30,41,59,.8);color:#94a3b8;}
+.trace-arrow{color:var(--muted);}
+.trace-node.active{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);}
+.trace-node.warn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);}
+.trace-node.crit{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);}
+.mission-detail{margin-top:12px;display:none;}
+.mission-detail.open{display:block;}
+.mission-assets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.asset-tag{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 7px;
+  border-radius:3px;background:rgba(6,182,212,.08);color:var(--cyan);
+  border:1px solid rgba(6,182,212,.2);}
+.mission-evidence{background:rgba(0,0,0,.3);border-radius:5px;padding:8px 10px;
+  font-size:10px;font-family:'JetBrains Mono',monospace;color:#94a3b8;line-height:1.8;}
+.ev-label{color:var(--green);font-weight:600;}
+.ev-ok{color:var(--green);}
+.ev-warn{color:var(--amber);}
+.ev-crit{color:var(--red);}
+
+/* ── Threat feed (compact) ── */
+.threat-row{display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:var(--bg);border:1px solid rgba(30,41,59,.8);border-radius:6px;
+  margin-bottom:5px;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.threat-row.sev-CRITICAL{border-left:3px solid var(--red);}
+.threat-row.sev-HIGH{border-left:3px solid var(--amber);}
+.threat-row.sev-MEDIUM{border-left:3px solid var(--cyan);}
+.threat-row.sev-LOW{border-left:3px solid var(--muted);}
+.tr-time{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);min-width:55px;}
+.tr-sev{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;
+  text-transform:uppercase;white-space:nowrap;}
+.sev-CRITICAL .tr-sev{background:rgba(239,68,68,.15);color:var(--red);}
+.sev-HIGH     .tr-sev{background:rgba(245,158,11,.15);color:var(--amber);}
+.sev-MEDIUM   .tr-sev{background:rgba(6,182,212,.12);color:var(--cyan);}
+.sev-LOW      .tr-sev{background:rgba(100,116,139,.12);color:var(--muted);}
+.tr-title{font-size:11px;font-weight:600;color:var(--text);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-tech{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--purple);
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);
+  border-radius:3px;padding:1px 5px;white-space:nowrap;}
+.tr-asset{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);white-space:nowrap;}
+.tr-ack{padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;cursor:pointer;
+  border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.08);color:var(--green);
+  font-family:'JetBrains Mono',monospace;transition:all .15s;white-space:nowrap;}
+.tr-ack:hover{background:rgba(34,197,94,.18);}
+.tr-ack.acked{background:rgba(30,41,59,.5);color:var(--muted);border-color:rgba(30,41,59,.5);cursor:default;}
+
+/* ── ATT&CK heatmap (compact) ── */
+.heatmap-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-bottom:8px;}
+.hm-tactic{text-align:center;}
+.hm-tactic-name{font-size:7px;font-family:'JetBrains Mono',monospace;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hm-cell{height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  cursor:pointer;transition:all .2s;margin-bottom:2px;}
+.hm-cell:hover{transform:scale(1.1);z-index:10;position:relative;}
+
+/* ── Evidence / Audit ── */
+.evidence-row{display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:var(--bg);border:1px solid rgba(30,41,59,.8);border-radius:6px;margin-bottom:5px;}
+.ev-hash{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--cyan);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ev-sig{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--green);}
+.ev-prov{font-size:9px;font-family:'JetBrains Mono',monospace;padding:1px 5px;
+  border-radius:3px;background:rgba(34,197,94,.08);color:var(--green);
+  border:1px solid rgba(34,197,94,.2);}
+.ev-status{font-size:9px;font-weight:700;}
+.ev-status.ok{color:var(--green);}
+.ev-status.warn{color:var(--amber);}
+.ev-status.fail{color:var(--red);}
+
+/* ── Controls bar ── */
+.controls-bar{display:flex;gap:8px;align-items:center;padding:8px 20px;
+  background:var(--bg2);border-bottom:1px solid var(--border);}
+.search{flex:1;background:var(--bg);border:1px solid rgba(30,41,59,.8);
+  border-radius:5px;padding:6px 10px;color:var(--text);font-size:11px;
+  font-family:'Space Grotesk',sans-serif;outline:none;}
+.search:focus{border-color:rgba(34,197,94,.4);}
+.btn{padding:5px 11px;border-radius:5px;font-size:10px;font-weight:700;
+  cursor:pointer;border:none;font-family:'Space Grotesk',sans-serif;transition:all .15s;}
+.btn-pause{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3);}
+.btn-dl{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.btn-dl:hover{background:rgba(34,197,94,.2);}
+.btn-clear{background:rgba(30,41,59,.8);color:#94a3b8;border:1px solid rgba(30,41,59,.8);}
+.filter-btns{display:flex;gap:3px;}
+.filter-btn{padding:4px 8px;border-radius:4px;font-size:9px;font-weight:700;
+  cursor:pointer;border:1px solid rgba(30,41,59,.8);background:none;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;transition:all .15s;}
+.filter-btn.active{color:var(--text);background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);}
+.filter-btn.f-crit.active{color:var(--red);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08);}
+.filter-btn.f-high.active{color:var(--amber);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08);}
+.visible-count{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);white-space:nowrap;}
+
+/* ── Topic bus ── */
+.topic-row{display:flex;align-items:center;gap:8px;padding:6px 10px;
+  background:var(--bg);border:1px solid rgba(30,41,59,.8);border-radius:5px;margin-bottom:4px;}
+.topic-name{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--cyan);flex:1;}
+.topic-rate{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);}
+.topic-lag{font-size:10px;font-family:'JetBrains Mono',monospace;}
+.topic-lag.ok{color:var(--green);}
+.topic-lag.warn{color:var(--amber);}
+.topic-health{width:8px;height:8px;border-radius:50%;}
+.topic-health.ok{background:var(--green);}
+.topic-health.warn{background:var(--amber);}
+.topic-health.err{background:var(--red);}
+
+/* ── Provenance badge ── */
+.prov-badge{font-size:8px;font-family:'JetBrains Mono',monospace;padding:1px 5px;
+  border-radius:3px;font-weight:700;text-transform:uppercase;}
+.prov-REAL{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.prov-SIM{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.prov-SYNTH{background:rgba(100,116,139,.1);color:var(--muted);border:1px solid rgba(100,116,139,.2);}
+.prov-MODEL{background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:10px;font-size:9px;color:#334155;
+  border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">S3</div>
+    S313NEXUS
+  </div>
+  <span class="header-title">Command Center v6</span>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('threat',this)">⚡ Threat Feed</button>
+    <button class="nav-tab" onclick="showPage('attck',this)">🗺 ATT&CK</button>
+    <button class="nav-tab" onclick="showPage('rf',this)">📡 RF Health</button>
+    <button class="nav-tab" onclick="showPage('mission',this)">🎯 Mission</button>
+    <button class="nav-tab" onclick="showPage('evidence',this)">🔐 Evidence</button>
+    <button class="nav-tab" onclick="showPage('platform',this)">⚙️ Platform</button>
+  </nav>
+  <div class="role-selector">
+    <button class="role-btn r-exec" onclick="setRole('EXECUTIVE',this)">EXEC</button>
+    <button class="role-btn r-ops active" onclick="setRole('OPERATOR',this)">OPS</button>
+    <button class="role-btn r-analyst" onclick="setRole('ANALYST',this)">ANALYST</button>
+    <button class="role-btn r-auditor" onclick="setRole('AUDITOR',this)">AUDITOR</button>
+  </div>
+  <div class="session-info">
+    <div class="live-dot"></div>
+    <span id="clock" class="mono"></span>
+    <span>mohamad</span>
+    <span>v6.0</span>
+  </div>
+</header>
+
+<!-- ── KPI bar ── -->
+<div class="kpi-bar">
+  <div class="kpi crit"><div class="kpi-label">Critical</div><div class="kpi-val" id="k-crit">0</div></div>
+  <div class="kpi high"><div class="kpi-label">High</div><div class="kpi-val" id="k-high">0</div></div>
+  <div class="kpi med"><div class="kpi-label">Medium</div><div class="kpi-val" id="k-med">0</div></div>
+  <div class="kpi green"><div class="kpi-label">Acknowledged</div><div class="kpi-val" id="k-ack">0</div></div>
+  <div class="kpi purple"><div class="kpi-label">SOAR Actions</div><div class="kpi-val" id="k-soar">0</div></div>
+  <div class="kpi blue"><div class="kpi-label">RF Links</div><div class="kpi-val" id="k-rf">4</div><div class="kpi-sub">2 nominal · 1 warn · 1 crit</div></div>
+  <div class="kpi orange"><div class="kpi-label">Missions Active</div><div class="kpi-val" id="k-miss">3</div><div class="kpi-sub">1 degraded</div></div>
+  <div class="kpi green"><div class="kpi-label">Evidence Chain</div><div class="kpi-val" id="k-ev">✓</div><div class="kpi-sub" id="k-ev-sub">3180 receipts</div></div>
+</div>
+
+<!-- ── Controls bar ── -->
+<div class="controls-bar">
+  <input class="search" id="search" placeholder="Search threats, assets, techniques, modules..." oninput="filterFeed()">
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="setFilter('ALL',this)">ALL</button>
+    <button class="filter-btn f-crit" onclick="setFilter('CRITICAL',this)">CRIT</button>
+    <button class="filter-btn f-high" onclick="setFilter('HIGH',this)">HIGH</button>
+    <button class="filter-btn f-med"  onclick="setFilter('MEDIUM',this)">MED</button>
+    <button class="filter-btn"        onclick="setFilter('LOW',this)">LOW</button>
+  </div>
+  <button class="btn btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
+  <button class="btn btn-dl" onclick="downloadExport()">⬇ Download</button>
+  <button class="btn btn-clear" onclick="clearFeed()">🗑 Clear</button>
+  <span class="visible-count" id="vis-count">0 visible</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: THREAT FEED -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-threat" style="display:flex;gap:16px;padding:12px 20px;height:calc(100vh - 200px);">
+
+  <!-- Feed column -->
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;" id="feed-col">
+    <div id="feed"></div>
+  </div>
+
+  <!-- ATT&CK mini heatmap -->
+  <div style="width:320px;flex-shrink:0;overflow-y:auto;">
+    <div class="section-hdr"><span class="section-title">ATT&CK Activity</span><span class="section-badge" id="hm-count">0 techniques</span></div>
+    <div id="mini-heatmap"></div>
+    <div id="drill-panel" style="display:none;background:var(--bg);border:1px solid rgba(34,197,94,.2);border-radius:6px;padding:10px;margin-top:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px;" id="drill-title"></div>
+      <div id="drill-events"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: ATT&CK FULL HEATMAP -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-attck" style="height:calc(100vh - 200px);overflow-y:auto;padding:12px 20px;">
+  <div class="section-hdr">
+    <span class="section-title">🗺 MITRE ATT&CK Heatmap — Live Frequency</span>
+    <span class="section-badge" id="attck-total">0 events mapped</span>
+  </div>
+  <div id="full-heatmap"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: RF HEALTH BOARD (v6 schema) -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-rf" style="height:calc(100vh - 200px);overflow-y:auto;padding:12px 20px;">
+  <div class="section-hdr">
+    <span class="section-title">📡 VSAT RF Health Board — v6 Schema</span>
+    <span class="section-badge">Asset hierarchy: satellite → beam → terminal → link</span>
+  </div>
+  <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--amber);">
+    ⚠️ UNVERIFIED_SNAPSHOT — RF values are provisional. No RF observation alone constitutes confirmed attribution. Provenance: SYNTHETIC_TEST.
+  </div>
+  <div class="rf-asset-tree" id="rf-tree"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: MISSION BOARD (v6 schema) -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-mission" style="height:calc(100vh - 200px);overflow-y:auto;padding:12px 20px;">
+  <div class="section-hdr">
+    <span class="section-title">🎯 Mission Board — v6 Schema</span>
+    <span class="section-badge">Full trace: mission → asset → event → decision → action → receipt</span>
+  </div>
+  <div id="mission-board"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: EVIDENCE / AUDIT -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-evidence" style="height:calc(100vh - 200px);overflow-y:auto;padding:12px 20px;">
+  <div class="section-hdr">
+    <span class="section-title">🔐 Evidence Chain — 313-BIND Receipts</span>
+    <span class="section-badge" id="ev-count">0 receipts</span>
+  </div>
+  <div class="grid-3" style="margin-bottom:12px;">
+    <div class="panel">
+      <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;">CHAIN INTEGRITY</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green);">✓ VERIFIED</div>
+      <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;">bind_index gap: none · SLH-DSA: all valid</div>
+    </div>
+    <div class="panel">
+      <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;">PROVENANCE COVERAGE</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green);">100%</div>
+      <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;">All records labeled · 0 unlabeled</div>
+    </div>
+    <div class="panel">
+      <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;">SIGNED CRITICAL EVIDENCE</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green);">100%</div>
+      <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;">SLO: 100% · Status: MET</div>
+    </div>
+  </div>
+  <div id="evidence-feed"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PAGE: PLATFORM / KAFKA TOPICS -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-platform" style="height:calc(100vh - 200px);overflow-y:auto;padding:12px 20px;">
+  <div class="section-hdr">
+    <span class="section-title">⚙️ Platform Health — Event Bus Topics</span>
+    <span class="section-badge">v5 schema · CloudEvents 1.0 · OIDC/mTLS</span>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;">Kafka/Redpanda Topics</div>
+      <div id="topic-list"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;">SLO Status</div>
+      <div class="panel">
+        <div id="slo-list"></div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;">Security Gates</div>
+      <div class="panel">
+        <div id="gate-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  S313 NEXUS Command Center v6 · Event Schema v5/v6 · VSAT RF Health + Mission Boards · Ottawa, ON, Canada
+</div>
+
+<script>
+// ── Clock ──
+function updateClock(){document.getElementById('clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
+updateClock();setInterval(updateClock,1000);
+
+// ── State ──
+let paused=false,activeFilter='ALL',searchQuery='',cards=[],cardId=0,eventIdx=0;
+let counts={CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,acked:0,soar:0};
+let techMap={};let currentDrill=null;let currentRole='OPERATOR';
+let evidenceReceipts=[];let evId=0;
+
+// ── ATT&CK Tactics ──
+const TACTICS=[
+  {id:'TA0001',name:'Initial Access',short:'Init',color:'#7c3aed',techniques:['T1190','T1195.001','T1566.001','T1078','T1552.001']},
+  {id:'TA0002',name:'Execution',short:'Exec',color:'#dc2626',techniques:['T1059.001','T1059.004','T1047','T1053.005','T1204.002']},
+  {id:'TA0003',name:'Persistence',short:'Persist',color:'#b45309',techniques:['T1547.001','T1053.005','T1505.003','T1542.001','T1078']},
+  {id:'TA0004',name:'Priv Esc',short:'PrivEsc',color:'#0369a1',techniques:['T1068','T1548.002','T1055.001','T1134','T1078']},
+  {id:'TA0005',name:'Def Evasion',short:'DefEv',color:'#0f766e',techniques:['T1027','T1070.006','T1218','T1600.001','T1055.001']},
+  {id:'TA0006',name:'Cred Access',short:'CredAcc',color:'#7c2d12',techniques:['T1003.001','T1003.006','T1558.003','T1110.001','T1110.003']},
+  {id:'TA0007',name:'Discovery',short:'Disc',color:'#1e3a5f',techniques:['T1046','T1082','T1087','T1596','T1057']},
+  {id:'TA0008',name:'Lateral Mov',short:'LatMov',color:'#4a1d96',techniques:['T1021.001','T1550.002','T1021.002','T1534','T1570']},
+  {id:'TA0011',name:'C2',short:'C2',color:'#064e3b',techniques:['T1572','T1071.001','T1095','T1105','T1573']},
+  {id:'TA0040',name:'Impact',short:'Impact',color:'#7f1d1d',techniques:['T1486','T1490','T1565.001','T1498','T1489']},
+  {id:'TA0010',name:'Exfiltration',short:'Exfil',color:'#1e1b4b',techniques:['T1041','T1048','T1567','T1030','T1052']},
+];
+
+// ── Threat catalog ──
+const THREATS=[
+  {sev:'CRITICAL',title:'DCSync — non-DC replication',module:'NEXUS-SIG-004',tactic:'Credential Access',technique:'T1003.006',asset:'dc-01',epss:.98,soar:'Block account',detail:'EventID 4662 DS-Replication-Get-Changes from jsmith. Mimikatz lsadump::dcsync.'},
+  {sev:'CRITICAL',title:'VSS shadow copy deletion',module:'NEXUS-SIG-007',tactic:'Impact',technique:'T1490',asset:'ws-finance-03',epss:.97,soar:'Isolate + IR playbook',detail:'vssadmin delete shadows /all /quiet. LockBit/BlackCat precursor.'},
+  {sev:'CRITICAL',title:'LSASS dump via MiniDumpWriteDump',module:'NEXUS-SIG-001',tactic:'Credential Access',technique:'T1003.001',asset:'ws-hr-07',epss:.97,soar:'Kill process + rotate creds',detail:'GrantedAccess 0x1410 on lsass.exe from powershell.exe.'},
+  {sev:'CRITICAL',title:'China Chopper web shell in uploads/',module:'WEBSHELL',tactic:'Persistence',technique:'T1505.003',asset:'web-app-01',epss:.99,soar:'Remove file + block IP',detail:'<?php @eval($_POST[\'cmd\']); ?> in uploads/image.php.'},
+  {sev:'CRITICAL',title:'CVE-2026-0001 kernel priv esc',module:'EPSS',tactic:'Privilege Escalation',technique:'T1068',asset:'linux-srv-05',epss:.97,soar:'Patch + isolate',detail:'TOCTOU race in VirtualAlloc(). APT41/FIN7 confirmed.'},
+  {sev:'CRITICAL',title:'TR-069 unsigned firmware push',module:'VSAT',tactic:'Persistence',technique:'T1542.001',asset:'vsat-gw-01',epss:.96,soar:'Block port 7547',detail:'CVE-2026-3392: Unsigned CWMP provisioning on port 7547.'},
+  {sev:'CRITICAL',title:'Pass-the-Hash NTLM KeyLength 0',module:'NEXUS-SIG-010',tactic:'Lateral Movement',technique:'T1550.002',asset:'srv-app-02',epss:.94,soar:'Block source IP',detail:'EventID 4624 LogonType 3 NTLM KeyLength=0.'},
+  {sev:'CRITICAL',title:'CreateRemoteThread → lsass.exe',module:'NEXUS-SIG-014',tactic:'Defense Evasion',technique:'T1055.001',asset:'ws-dev-12',epss:.95,soar:'Kill thread + dump',detail:'Sysmon Event 8: CRT from powershell.exe targeting lsass.exe.'},
+  {sev:'CRITICAL',title:'Firmware hash mismatch — edge-node-04',module:'FIRMWARE',tactic:'Persistence',technique:'T1542.001',asset:'edge-node-04',epss:.96,soar:'Isolate node',detail:'SHA3-256 mismatch. Expected: a3f9c1... Got: 7b2e44...'},
+  {sev:'CRITICAL',title:'Behinder JSP AES shell',module:'WEBSHELL',tactic:'Persistence',technique:'T1505.003',asset:'tomcat-prod-01',epss:.99,soar:'Restart + patch',detail:'session.putValue("u",k) + Cipher.getInstance("AES") + defineClass.'},
+  {sev:'HIGH',title:'Kerberoasting — RC4 TGS from jsmith',module:'NEXUS-SIG-002',tactic:'Credential Access',technique:'T1558.003',asset:'dc-01',epss:.89,soar:'Reset account',detail:'47 TGS-REQ TicketEncryptionType 0x17 in 2 min.'},
+  {sev:'HIGH',title:'Encoded PowerShell from WINWORD.EXE',module:'NEXUS-SIG-005',tactic:'Execution',technique:'T1059.001',asset:'ws-exec-09',epss:.87,soar:'Kill process',detail:'powershell.exe -EncodedCommand from WINWORD.EXE. Risk: 95.'},
+  {sev:'HIGH',title:'DNS tunneling — entropy 4.2',module:'NEXUS-SIG-011',tactic:'Command & Control',technique:'T1572',asset:'ws-finance-03',epss:.85,soar:'Block DNS',detail:'Shannon entropy 4.2 on 28-char subdomain. BLINDINGCAN pattern.'},
+  {sev:'HIGH',title:'UAC bypass via fodhelper.exe',module:'NEXUS-SIG-015',tactic:'Privilege Escalation',technique:'T1548.002',asset:'ws-hr-07',epss:.88,soar:'Kill process',detail:'Non-system process from fodhelper.exe. LockBit/APT28 pattern.'},
+  {sev:'HIGH',title:'Mirai botnet Telnet staging',module:'HONEYPOT',tactic:'Impact',technique:'T1498',asset:'honeypot-01',epss:.90,soar:'Block IP + IOCs',detail:'45.154.255.88: admin:admin → wget mirai.arm7.'},
+  {sev:'HIGH',title:'SSH brute force — root:password123',module:'HONEYPOT',tactic:'Credential Access',technique:'T1110.001',asset:'honeypot-ssh-01',epss:.92,soar:'Block IP',detail:'194.26.29.112 libssh-0.8.1. 89 packets dropped.'},
+  {sev:'HIGH',title:'Password spraying — 15 accounts',module:'NEXUS-SIG-003',tactic:'Credential Access',technique:'T1110.003',asset:'ad-srv-01',epss:.91,soar:'Block source',detail:'10.0.0.42: 15 accounts in 5 min. NEXUS-SIG-003 fired.'},
+  {sev:'HIGH',title:'OpenSSL PQC downgrade CVE-2026-1847',module:'QUANTUM',tactic:'Defense Evasion',technique:'T1600.001',asset:'api-gw-01',epss:.94,soar:'Patch OpenSSL',detail:'Missing 0x6399 Kyber extension. Lazarus HNDL harvest.'},
+  {sev:'HIGH',title:'Unsigned dependency in build pipeline',module:'SUPPLY CHAIN',tactic:'Initial Access',technique:'T1195.001',asset:'build-runner-02',epss:.88,soar:'Block build',detail:'pip-audit: unsigned package. 313-BIND bind_index gap detected.'},
+  {sev:'HIGH',title:'RDP from powershell.exe parent',module:'NEXUS-SIG-012',tactic:'Lateral Movement',technique:'T1021.001',asset:'ws-admin-01',epss:.86,soar:'Block RDP',detail:'mstsc.exe from powershell.exe. Cobalt Strike indicator.'},
+  {sev:'MEDIUM',title:'Timestomping — MACE attribute modified',module:'NEXUS-SIG-013',tactic:'Defense Evasion',technique:'T1070.006',asset:'ws-dev-12',epss:.75,soar:null,detail:'Sysmon Event 2: FileCreateTime changed in \\AppData\\Local\\.'},
+  {sev:'MEDIUM',title:'WE-FORGE decoy — DNS beacon fired',module:'GHOST-WATCH',tactic:'Discovery',technique:'T1596',asset:'vortex.ghost.watch.local',epss:.70,soar:null,detail:'GW-LURE-12958 accessed. Attacker fingerprinted.'},
+  {sev:'MEDIUM',title:'SATCOM uplink gain spoof',module:'VSAT',tactic:'Impact',technique:'T1565.001',asset:'vsat-gw-01',epss:.78,soar:null,detail:'185.190.140.23: SET_UPLINK_GAIN 14.0dB [STIA_OVERRIDE].'},
+  {sev:'MEDIUM',title:'eBPF: cat /etc/shadow intercepted',module:'AEGIS-EBPF',tactic:'Credential Access',technique:'T1003.008',asset:'linux-srv-05',epss:.76,soar:null,detail:'cat (PID 2665) openat /etc/shadow. Intercepted.'},
+  {sev:'MEDIUM',title:'.env probe — CensysInspect',module:'HONEYPOT',tactic:'Credential Access',technique:'T1552.001',asset:'web-trap-01',epss:.75,soar:null,detail:'185.220.101.5 GET /.env. 142 packets dropped.'},
+  {sev:'MEDIUM',title:'Suspicious scheduled task SYSTEM',module:'NEXUS-SIG-009',tactic:'Persistence',technique:'T1053.005',asset:'ws-finance-03',epss:.74,soar:null,detail:'schtasks /create /ru SYSTEM in \\AppData\\Roaming\\.'},
+  {sev:'MEDIUM',title:'Registry Run key — non-standard path',module:'NEXUS-SIG-006',tactic:'Persistence',technique:'T1547.001',asset:'ws-hr-07',epss:.73,soar:null,detail:'SetValue to HKCU\\Run from non-installer process.'},
+  {sev:'MEDIUM',title:'PE analyzer: UPX-packed entropy 7.8',module:'AEGIS-PE',tactic:'Defense Evasion',technique:'T1027',asset:'edge-node-04',epss:.73,soar:null,detail:'UPX Pack Header at 0x0C. Entropy 7.8. Quarantined.'},
+  {sev:'LOW',title:'New domain relationship correlated',module:'OSINT',tactic:'Discovery',technique:'T1596',asset:'shadow313.net',epss:.35,soar:null,detail:'3 new subdomains via CT logs. No malicious indicators.'},
+  {sev:'LOW',title:'313-BIND chain verified — 3180 binds',module:'LEDGER',tactic:null,technique:null,asset:'ledger-01',epss:null,soar:null,detail:'bind_index gap: none. SLH-DSA: all valid. Posture: GREEN.'},
+  {sev:'LOW',title:'PE-7 retraining checkpoint F1=0.94',module:'APC',tactic:null,technique:null,asset:'nc-04',epss:null,soar:null,detail:'PE7-RETRAIN-2026-0922 step 1500. TA0005: 94.2%.'},
+  {sev:'LOW',title:'Nightly scan — 0 critical',module:'NEXUS',tactic:null,technique:null,asset:'all-hosts',epss:null,soar:null,detail:'pip-audit: 0. Bandit: 0. Gitleaks: 0. Posture: GREEN.'},
+];
+
+// ── RF Health data (v6 schema, SYNTHETIC_TEST provenance) ──
+const RF_ASSETS=[
+  {icon:'🛰️',name:'Telstar 11N',id:'SAT-T11N',slot:'37.5°W',state:'warning',
+   snr:15.6,margin:6.1,rx:-41.5,loss:0.19,lat:null,jitter:null,temp:44.7,fade:0.0,fresh:8,conf:.91,dropped:0,
+   children:[
+    {name:'Beam EU-1',id:'BEAM-EU1',state:'normal',snr:18.2,rx:-39.1,loss:0.05,fresh:5,conf:.97},
+    {name:'Beam NA-3',id:'BEAM-NA3',state:'warning',snr:12.1,rx:-44.8,loss:0.42,fresh:12,conf:.83},
+   ]},
+  {icon:'🛰️',name:'Inmarsat GX-5',id:'SAT-GX5',slot:'25.0°E',state:'critical',
+   snr:5.9,margin:1.2,rx:-52.3,loss:2.1,lat:680,jitter:45,temp:61.2,fade:3.4,fresh:45,conf:.61,dropped:12,
+   children:[
+    {name:'Beam EMEA-2',id:'BEAM-EMEA2',state:'critical',snr:5.9,rx:-52.3,loss:2.1,fresh:45,conf:.61},
+   ]},
+  {icon:'📡',name:'Ottawa Teleport',id:'GS-OTT',slot:'45.34°N 75.63°W',state:'normal',
+   snr:22.1,margin:12.4,rx:-38.2,loss:0.02,lat:null,jitter:null,temp:32.1,fade:0.0,fresh:3,conf:.99,dropped:0,
+   children:[
+    {name:'Terminal VSAT-GW-01',id:'TERM-GW01',state:'normal',snr:22.1,rx:-38.2,loss:0.02,fresh:3,conf:.99},
+    {name:'Terminal VSAT-GW-02',id:'TERM-GW02',state:'stale',snr:null,rx:null,loss:null,fresh:180,conf:.0},
+   ]},
+  {icon:'📡',name:'Frankfurt Hub',id:'GS-FRA',slot:'50.11°N 8.68°E',state:'unknown',
+   snr:null,margin:null,rx:null,loss:null,lat:null,jitter:null,temp:null,fade:null,fresh:null,conf:0,dropped:0,
+   children:[]},
+];
+
+// ── Mission data (v6 schema) ──
+const MISSIONS=[
+  {id:'MSN-2026-001',name:'Ottawa Teleport Continuity',owner:'mohamad',
+   state:'OPERATIONAL',degraded:false,
+   assets:['SAT-T11N','GS-OTT','TERM-GW01','VSAT-GW-01'],
+   objectives:['Maintain Ku-band uplink ≥99.5% availability','SNR ≥8.0 dB at all times'],
+   threats:['CVE-2026-3392 TR-069 firmware push','SATCOM uplink gain spoof'],
+   trace:{event:'✓',correlation:'✓',decision:'✓',action:'✓',receipt:'✓',control:'✓'},
+   evidence:{hash:'sha3_256:a3f9c1...',sig:'SLH-DSA-SIM:...313',prov:'REAL_OBSERVATION',status:'VALIDATED'},
+   risk:'LOW'},
+  {id:'MSN-2026-002',name:'EMEA Satcom Resilience',owner:'mohamad',
+   state:'DEGRADED',degraded:true,
+   assets:['SAT-GX5','BEAM-EMEA2'],
+   objectives:['Maintain link margin ≥3.0 dB','Packet loss ≤0.5%'],
+   threats:['SNR 5.9 dB — below 8.0 dB threshold','Packet loss 2.1% — exceeds SLO'],
+   trace:{event:'✓',correlation:'✓',decision:'⚠',action:'⏳',receipt:'⏳',control:'⚠'},
+   evidence:{hash:'sha3_256:7b2e44...',sig:'SLH-DSA-SIM:...313',prov:'REAL_OBSERVATION',status:'VALIDATED'},
+   risk:'HIGH'},
+  {id:'MSN-2026-003',name:'Ghost-Watch Deception Ops',owner:'mohamad',
+   state:'ACTIVE',degraded:false,
+   assets:['vortex.ghost.watch.local','phantom.ghost.watch.local'],
+   objectives:['Deploy WE-FORGE decoys','Fingerprint adversary via DNS beacon'],
+   threats:['GW-LURE-12958 triggered — attacker fingerprinted'],
+   trace:{event:'✓',correlation:'✓',decision:'✓',action:'✓',receipt:'✓',control:'✓'},
+   evidence:{hash:'sha3_256:fe239a...',sig:'SLH-DSA-SIM:...313',prov:'REAL_OBSERVATION',status:'VALIDATED'},
+   risk:'MEDIUM'},
+];
+
+// ── Kafka topics ──
+const TOPICS=[
+  {name:'s313.telemetry.vsat_tsi',rate:'142/s',lag:'0ms',health:'ok'},
+  {name:'s313.telemetry.aegis',rate:'89/s',lag:'2ms',health:'ok'},
+  {name:'s313.intel.stia',rate:'12/s',lag:'0ms',health:'ok'},
+  {name:'s313.correlation.apc',rate:'34/s',lag:'5ms',health:'ok'},
+  {name:'s313.decision.nexus',rate:'8/s',lag:'0ms',health:'ok'},
+  {name:'s313.action.cybershield',rate:'3/s',lag:'0ms',health:'ok'},
+  {name:'s313.evidence.ledger',rate:'21/s',lag:'1ms',health:'ok'},
+  {name:'s313.assurance.vanguard',rate:'2/s',lag:'0ms',health:'ok'},
+  {name:'s313.platform.health',rate:'5/s',lag:'0ms',health:'warn'},
+];
+
+const SLOS=[
+  {name:'Ingest p95',target:'≤5s',actual:'1.2s',ok:true},
+  {name:'Board refresh',target:'≤10s',actual:'3.1s',ok:true},
+  {name:'Critical receipt',target:'≤30s',actual:'8.4s',ok:true},
+  {name:'Schema validity',target:'≥99.9%',actual:'100%',ok:true},
+  {name:'Signed critical evidence',target:'100%',actual:'100%',ok:true},
+  {name:'Unlabeled provenance',target:'0',actual:'0',ok:true},
+];
+
+const GATES=[
+  {name:'Tenant authorization',ok:true},
+  {name:'Schema validation',ok:true},
+  {name:'Secret/PII redaction',ok:true},
+  {name:'Signature verification',ok:true},
+  {name:'Provenance label',ok:true},
+  {name:'Replay protection',ok:true},
+  {name:'Action expiry',ok:true},
+  {name:'Rollback',ok:true},
+];
+
+// ── Page switching ──
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Role switching ──
+function setRole(role,btn){
+  currentRole=role;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Shuffle ──
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+let shuffled=shuffle(THREATS);
+
+// ── Add threat event ──
+function addEvent(){
+  if(paused)return;
+  const t=shuffled[eventIdx%shuffled.length];
+  eventIdx++;
+  if(eventIdx%shuffled.length===0)shuffled=shuffle(THREATS);
+  const id=++cardId;
+  const ts=new Date().toTimeString().slice(0,8);
+  counts[t.sev]++;
+  if(t.technique){
+    if(!techMap[t.technique])techMap[t.technique]={count:0,crits:0,highs:0,meds:0,lows:0,events:[]};
+    techMap[t.technique].count++;
+    if(t.sev==='CRITICAL')techMap[t.technique].crits++;
+    else if(t.sev==='HIGH')techMap[t.technique].highs++;
+    else if(t.sev==='MEDIUM')techMap[t.technique].meds++;
+    else techMap[t.technique].lows++;
+    techMap[t.technique].events.unshift({id,ts,title:t.title,sev:t.sev,asset:t.asset});
+    if(techMap[t.technique].events.length>8)techMap[t.technique].events.pop();
+  }
+  // Add evidence receipt
+  addEvidenceReceipt(t,ts);
+  updateKPIs();
+  renderMiniHeatmap();
+  renderFullHeatmap();
+  // Build row
+  const row=document.createElement('div');
+  row.className=`threat-row sev-${t.sev}`;
+  row.id=`card-${id}`;
+  row.dataset.sev=t.sev;
+  row.dataset.text=`${t.title} ${t.module} ${t.asset} ${t.technique||''} ${t.tactic||''}`.toLowerCase();
+  const epssHtml=t.epss!=null?`<span class="tr-tech" style="color:${t.epss>=.9?'var(--red)':t.epss>=.7?'var(--amber)':'var(--green)'}">EPSS ${(t.epss*100).toFixed(0)}%</span>`:'';
+  const techHtml=t.technique?`<span class="tr-tech">${t.technique}</span>`:'';
+  const soarBtn=t.soar?`<button class="tr-ack" onclick="triggerSOAR(${id},'${t.soar.replace(/'/g,"\\'")}')">⚡</button>`:'';
+  row.innerHTML=`
+    <span class="tr-time mono">${ts}</span>
+    <span class="tr-sev">${t.sev}</span>
+    <span class="tr-title" title="${t.detail}">${t.title}</span>
+    ${techHtml}${epssHtml}
+    <span class="tr-asset mono">${t.asset}</span>
+    <button class="tr-ack" id="ack-${id}" onclick="acknowledge(${id})">✓ ACK</button>
+    ${soarBtn}`;
+  cards.unshift({id,sev:t.sev,el:row,technique:t.technique});
+  const feed=document.getElementById('feed');
+  feed.insertBefore(row,feed.firstChild);
+  if(cards.length>80){const old=cards.pop();if(old.el.parentNode)old.el.parentNode.removeChild(old.el);}
+  applyFilter();updateVisibleCount();
+}
+
+// ── Evidence receipts ──
+function addEvidenceReceipt(t,ts){
+  const id=++evId;
+  const hash='sha3_256:'+Math.random().toString(36).slice(2,18)+'...';
+  const sig='SLH-DSA-SIM:...313';
+  const prov=t.sev==='LOW'&&!t.technique?'REAL_OBSERVATION':'REAL_OBSERVATION';
+  evidenceReceipts.unshift({id,ts,hash,sig,prov,status:'VALIDATED',title:t.title,sev:t.sev});
+  if(evidenceReceipts.length>50)evidenceReceipts.pop();
+  renderEvidence();
+  document.getElementById('ev-count').textContent=`${evidenceReceipts.length} receipts`;
+  document.getElementById('k-ev-sub').textContent=`${3180+evidenceReceipts.length} total`;
+}
+
+function renderEvidence(){
+  const feed=document.getElementById('evidence-feed');
+  feed.innerHTML=evidenceReceipts.slice(0,20).map(r=>`
+    <div class="evidence-row">
+      <span class="tr-time mono">${r.ts}</span>
+      <span class="tr-sev sev-${r.sev}"><span class="tr-sev">${r.sev}</span></span>
+      <span class="ev-hash">${r.hash}</span>
+      <span class="ev-sig mono" style="font-size:9px;color:var(--green)">SLH-DSA ✓</span>
+      <span class="prov-badge prov-REAL">REAL</span>
+      <span class="ev-status ok">VALIDATED</span>
+    </div>`).join('');
+}
+
+// ── Acknowledge ──
+function acknowledge(id){
+  const btn=document.getElementById(`ack-${id}`);
+  const row=document.getElementById(`card-${id}`);
+  if(!btn||btn.classList.contains('acked'))return;
+  btn.textContent='✓';btn.classList.add('acked');
+  row.style.opacity='.45';counts.acked++;updateKPIs();
+}
+function triggerSOAR(id,action){acknowledge(id);counts.soar++;updateKPIs();}
+
+// ── Filter ──
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');applyFilter();updateVisibleCount();
+}
+function filterFeed(){searchQuery=document.getElementById('search').value.toLowerCase();applyFilter();updateVisibleCount();}
+function applyFilter(){
+  cards.forEach(({sev,el})=>{
+    const sm=activeFilter==='ALL'||sev===activeFilter;
+    const tm=!searchQuery||el.dataset.text.includes(searchQuery);
+    el.style.display=(sm&&tm)?'':'none';
+  });
+}
+function updateVisibleCount(){
+  const v=cards.filter(({el})=>el.style.display!=='none').length;
+  document.getElementById('vis-count').textContent=`${v} visible`;
+}
+
+// ── KPIs ──
+function updateKPIs(){
+  document.getElementById('k-crit').textContent=counts.CRITICAL;
+  document.getElementById('k-high').textContent=counts.HIGH;
+  document.getElementById('k-med').textContent=counts.MEDIUM;
+  document.getElementById('k-ack').textContent=counts.acked;
+  document.getElementById('k-soar').textContent=counts.soar;
+}
+
+// ── Pause ──
+function togglePause(){paused=!paused;document.getElementById('pause-btn').textContent=paused?'▶ Resume':'⏸ Pause';}
+
+// ── Clear ──
+function clearFeed(){
+  document.getElementById('feed').innerHTML='';
+  cards=[];techMap={};currentDrill=null;evidenceReceipts=[];
+  counts={CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,acked:0,soar:0};
+  updateKPIs();updateVisibleCount();renderMiniHeatmap();renderFullHeatmap();renderEvidence();
+}
+
+// ── Download ──
+function downloadExport(){
+  const data={
+    exported:new Date().toISOString(),
+    schema_version:'5.0',
+    provenance_class:'REAL_OBSERVATION',
+    counts,
+    attck_heatmap:techMap,
+    evidence_receipts:evidenceReceipts.length,
+    events:cards.map(({sev,el})=>({
+      severity:sev,
+      title:el.querySelector('.tr-title')?.textContent?.trim(),
+      technique:el.querySelector('.tr-tech')?.textContent?.trim(),
+      asset:el.querySelector('.tr-asset')?.textContent?.trim(),
+      time:el.querySelector('.tr-time')?.textContent?.trim(),
+      acknowledged:el.style.opacity==='0.45',
+    }))
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`s313-nexus-export-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ── Heatmap helpers ──
+function heatBg(d,max){
+  if(!d||d.count===0)return'rgba(30,41,59,.4)';
+  const i=d.count/Math.max(max,1);
+  if(d.crits>0)return`rgba(239,68,68,${0.15+i*.75})`;
+  if(d.highs>0)return`rgba(245,158,11,${0.15+i*.75})`;
+  if(d.meds>0)return`rgba(6,182,212,${0.12+i*.65})`;
+  return`rgba(100,116,139,${0.1+i*.5})`;
+}
+function heatText(d){if(!d||d.count===0)return'';return d.count;}
+
+// ── Mini heatmap (threat page sidebar) ──
+function renderMiniHeatmap(){
+  const max=Math.max(1,...Object.values(techMap).map(v=>v.count));
+  const total=Object.values(techMap).reduce((s,v)=>s+v.count,0);
+  document.getElementById('hm-count').textContent=`${Object.keys(techMap).length} techniques`;
+  let html='';
+  TACTICS.forEach(tac=>{
+    let tacCount=0;
+    tac.techniques.forEach(tid=>{if(techMap[tid])tacCount+=techMap[tid].count;});
+    html+=`<div style="margin-bottom:8px;">
+      <div style="font-size:9px;font-weight:700;color:${tac.color};text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">${tac.short} <span style="color:var(--muted);font-weight:400">(${tacCount})</span></div>
+      <div style="display:flex;gap:2px;flex-wrap:wrap;">`;
+    tac.techniques.forEach(tid=>{
+      const d=techMap[tid];
+      const bg=heatBg(d,max);
+      const txt=heatText(d);
+      const isActive=currentDrill===tid;
+      html+=`<div onclick="drillDown('${tid}')" title="${tid}" style="width:36px;height:22px;border-radius:3px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${d&&d.count>0?'#000':'#475569'};cursor:pointer;border:${isActive?'1px solid var(--green)':'1px solid transparent'};transition:all .2s;">${txt}</div>`;
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('mini-heatmap').innerHTML=html;
+  // Update drill panel
+  if(currentDrill&&techMap[currentDrill]){
+    const d=techMap[currentDrill];
+    document.getElementById('drill-panel').style.display='block';
+    document.getElementById('drill-title').textContent=`${currentDrill} — ${d.count} events`;
+    document.getElementById('drill-events').innerHTML=d.events.map(ev=>{
+      const c=ev.sev==='CRITICAL'?'var(--red)':ev.sev==='HIGH'?'var(--amber)':ev.sev==='MEDIUM'?'var(--cyan)':'var(--muted)';
+      return`<div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#94a3b8;padding:3px 0;border-bottom:1px solid rgba(30,41,59,.5);cursor:pointer;" onclick="scrollToCard(${ev.id})"><span style="color:${c}">[${ev.sev}]</span> ${ev.ts} · ${ev.title}</div>`;
+    }).join('');
+  }else{
+    document.getElementById('drill-panel').style.display='none';
+  }
+}
+
+function drillDown(tid){
+  currentDrill=currentDrill===tid?null:tid;
+  renderMiniHeatmap();
+  cards.forEach(({technique,el})=>{
+    if(currentDrill&&technique===currentDrill)el.style.outline='1px solid var(--green)';
+    else el.style.outline='none';
+  });
+}
+
+function scrollToCard(id){
+  const el=document.getElementById(`card-${id}`);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 0 2px var(--green)';setTimeout(()=>el.style.boxShadow='',2000);}
+}
+
+// ── Full heatmap ──
+function renderFullHeatmap(){
+  const max=Math.max(1,...Object.values(techMap).map(v=>v.count));
+  const total=Object.values(techMap).reduce((s,v)=>s+v.count,0);
+  document.getElementById('attck-total').textContent=`${total} events mapped`;
+  let html='';
+  TACTICS.forEach(tac=>{
+    let tacCount=0;
+    tac.techniques.forEach(tid=>{if(techMap[tid])tacCount+=techMap[tid].count;});
+    const barW=tacCount>0?Math.min(100,Math.round(tacCount/max*100)):0;
+    html+=`<div style="margin-bottom:14px;background:var(--bg2);border:1px solid rgba(30,41,59,.8);border-radius:8px;padding:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;color:${tac.color};text-transform:uppercase;letter-spacing:.05em;">${tac.name}</span>
+        <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:${tac.color}22;color:${tac.color};border:1px solid ${tac.color}44;border-radius:4px;padding:1px 7px;">${tacCount}</span>
+      </div>
+      <div style="background:rgba(0,0,0,.3);border-radius:3px;height:4px;margin-bottom:10px;">
+        <div style="width:${barW}%;height:4px;border-radius:3px;background:${tac.color};transition:width .5s;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">`;
+    tac.techniques.forEach(tid=>{
+      const d=techMap[tid]||{count:0,crits:0,highs:0,meds:0,lows:0};
+      const bg=heatBg(d,max);
+      const techName=getTechName(tid);
+      let pips='';
+      if(d.crits>0)pips+=`<div style="width:5px;height:${Math.min(16,d.crits*4+4)}px;border-radius:1px;background:var(--red);"></div>`;
+      if(d.highs>0)pips+=`<div style="width:5px;height:${Math.min(16,d.highs*4+4)}px;border-radius:1px;background:var(--amber);"></div>`;
+      if(d.meds>0)pips+=`<div style="width:5px;height:${Math.min(16,d.meds*4+4)}px;border-radius:1px;background:var(--cyan);"></div>`;
+      if(d.lows>0)pips+=`<div style="width:5px;height:${Math.min(16,d.lows*4+4)}px;border-radius:1px;background:var(--muted);"></div>`;
+      html+=`<div onclick="drillDown('${tid}')" style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:5px;cursor:pointer;transition:all .15s;background:${currentDrill===tid?'rgba(34,197,94,.06)':'none'};border:${currentDrill===tid?'1px solid rgba(34,197,94,.2)':'1px solid transparent'};">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--purple);min-width:72px;">${tid}</span>
+        <span style="font-size:10px;color:#94a3b8;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${techName}</span>
+        <div style="display:flex;gap:1px;align-items:flex-end;height:16px;">${pips}</div>
+        <div style="width:30px;height:20px;border-radius:3px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${d.count>0?'#000':'#475569'};">${d.count||''}</div>
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('full-heatmap').innerHTML=html;
+}
+
+function getTechName(tid){
+  const names={'T1190':'Exploit Public-Facing App','T1195.001':'Supply Chain Compromise','T1566.001':'Spearphishing','T1078':'Valid Accounts','T1552.001':'Credentials In Files','T1059.001':'PowerShell','T1059.004':'Unix Shell','T1047':'WMI','T1053.005':'Scheduled Task','T1204.002':'Malicious File','T1547.001':'Registry Run Keys','T1505.003':'Web Shell','T1542.001':'System Firmware','T1068':'Exploitation Priv Esc','T1548.002':'UAC Bypass','T1055.001':'Process Injection','T1134':'Access Token Manip','T1027':'Obfuscated Files','T1070.006':'Timestomping','T1218':'LOLBAS','T1600.001':'PQC Downgrade','T1003.001':'LSASS Memory','T1003.006':'DCSync','T1558.003':'Kerberoasting','T1110.001':'Brute Force','T1110.003':'Password Spraying','T1003.008':'/etc/shadow','T1046':'Network Service Disc','T1082':'System Info Disc','T1087':'Account Discovery','T1596':'Search Open Sources','T1057':'Process Discovery','T1021.001':'RDP','T1550.002':'Pass-the-Hash','T1021.002':'SMB/Admin Shares','T1534':'Internal Spearphish','T1570':'Lateral Tool Transfer','T1572':'Protocol Tunneling','T1071.001':'Web Protocols','T1095':'Non-App Layer Proto','T1105':'Ingress Tool Transfer','T1573':'Encrypted Channel','T1486':'Data Encrypted','T1490':'Inhibit System Recovery','T1565.001':'Data Manipulation','T1498':'Network DoS','T1489':'Service Stop','T1041':'Exfil Over C2','T1048':'Exfil Alt Protocol','T1567':'Exfil Cloud Storage','T1030':'Data Transfer Limits','T1052':'Exfil Physical'};
+  return names[tid]||tid;
+}
+
+// ── RF Health Board ──
+function renderRFBoard(){
+  const tree=document.getElementById('rf-tree');
+  tree.innerHTML=RF_ASSETS.map((a,ai)=>{
+    const stateClass=`state-${a.state}`;
+    const snrColor=a.snr==null?'var(--muted)':a.snr>=15?'var(--green)':a.snr>=8?'var(--amber)':'var(--red)';
+    const lossColor=a.loss==null?'var(--muted)':a.loss<=0.5?'var(--green)':a.loss<=2?'var(--amber)':'var(--red)';
+    const freshColor=a.fresh==null?'var(--muted)':a.fresh<=30?'var(--green)':a.fresh<=120?'var(--amber)':'var(--red)';
+    const metrics=a.snr!=null?`
+      <div class="rf-metrics">
+        <div class="rf-metric"><div class="rf-metric-val" style="color:${snrColor}">${a.snr!=null?a.snr.toFixed(1):'—'}</div><div class="rf-metric-label">SNR dB</div></div>
+        <div class="rf-metric"><div class="rf-metric-val" style="color:${a.margin>=3?'var(--green)':a.margin>=1?'var(--amber)':'var(--red)'}">${a.margin!=null?a.margin.toFixed(1):'—'}</div><div class="rf-metric-label">Margin dB</div></div>
+        <div class="rf-metric"><div class="rf-metric-val" style="color:var(--cyan)">${a.rx!=null?a.rx.toFixed(1):'—'}</div><div class="rf-metric-label">Rx dBm</div></div>
+        <div class="rf-metric"><div class="rf-metric-val" style="color:${lossColor}">${a.loss!=null?a.loss.toFixed(2):'—'}</div><div class="rf-metric-label">Loss %</div></div>
+        <div class="rf-metric"><div class="rf-metric-val" style="color:${a.temp!=null&&a.temp>55?'var(--red)':a.temp!=null&&a.temp>45?'var(--amber)':'var(--green)'}">${a.temp!=null?a.temp.toFixed(1):'—'}</div><div class="rf-metric-label">Temp °C</div></div>
+      </div>
+      <div class="rf-freshness">
+        <span>Freshness: <span class="${a.fresh<=30?'':'freshness-warn'}">${a.fresh!=null?a.fresh+'s ago':'unknown'}</span></span>
+        <span>Confidence: <span style="color:${a.conf>=.9?'var(--green)':a.conf>=.7?'var(--amber)':'var(--red)'}">${(a.conf*100).toFixed(0)}%</span></span>
+        <span>Dropped: <span style="color:${a.dropped>0?'var(--amber)':'var(--green)'}">${a.dropped}</span></span>
+        <span class="prov-badge prov-SYNTH">SYNTHETIC_TEST</span>
+      </div>`:'<div class="rf-freshness"><span style="color:var(--muted)">No telemetry — state: UNKNOWN</span><span class="prov-badge prov-SYNTH">SYNTHETIC_TEST</span></div>';
+    const children=a.children.length>0?`<div class="rf-children">${a.children.map(c=>`
+      <div class="rf-child">
+        <span class="rf-child-name">${c.name} <span style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;">${c.id}</span></span>
+        <div class="rf-child-metrics">
+          <span class="rf-child-metric" style="color:${c.snr!=null&&c.snr>=8?'var(--green)':c.snr!=null?'var(--red)':'var(--muted)'}">SNR ${c.snr!=null?c.snr.toFixed(1)+'dB':'—'}</span>
+          <span class="rf-child-metric" style="color:${c.loss!=null&&c.loss<=0.5?'var(--green)':c.loss!=null?'var(--amber)':'var(--muted)'}">Loss ${c.loss!=null?c.loss.toFixed(2)+'%':'—'}</span>
+          <span class="rf-child-metric" style="color:${c.fresh<=30?'var(--green)':c.fresh<=120?'var(--amber)':'var(--red)'}">Fresh ${c.fresh}s</span>
+          <span class="rf-state state-${c.state}">${c.state.toUpperCase()}</span>
+        </div>
+      </div>`).join('')}</div>`:'';
+    return`<div class="rf-asset" id="rf-${ai}" onclick="toggleRF(${ai})">
+      <div class="rf-asset-header">
+        <span class="rf-asset-icon">${a.icon}</span>
+        <div><div class="rf-asset-name">${a.name}</div><div class="rf-asset-id mono">${a.id} · ${a.slot}</div></div>
+        <span class="rf-state ${stateClass}">${a.state.toUpperCase()}</span>
+      </div>
+      <div id="rf-detail-${ai}" style="display:none;">${metrics}${children}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRF(i){
+  const d=document.getElementById(`rf-detail-${i}`);
+  const card=document.getElementById(`rf-${i}`);
+  const open=d.style.display==='none';
+  d.style.display=open?'block':'none';
+  card.classList.toggle('expanded',open);
+}
+
+// ── Mission Board ──
+function renderMissionBoard(){
+  const board=document.getElementById('mission-board');
+  board.innerHTML=MISSIONS.map((m,mi)=>{
+    const stateColor=m.state==='OPERATIONAL'?'var(--green)':m.state==='DEGRADED'?'var(--amber)':'var(--cyan)';
+    const riskColor=m.risk==='LOW'?'var(--green)':m.risk==='MEDIUM'?'var(--amber)':'var(--red)';
+    const traceHtml=Object.entries(m.trace).map(([k,v])=>`<span class="trace-node ${v==='✓'?'active':v==='⚠'?'warn':v==='⏳'?'warn':''}">${k}: ${v}</span><span class="trace-arrow">→</span>`).join('').slice(0,-'<span class="trace-arrow">→</span>'.length);
+    const assetsHtml=m.assets.map(a=>`<span class="asset-tag">${a}</span>`).join('');
+    const threatsHtml=m.threats.map(t=>`<div style="font-size:10px;color:var(--amber);font-family:'JetBrains Mono',monospace;padding:2px 0;">⚠ ${t}</div>`).join('');
+    return`<div class="mission-card" id="msn-${mi}" onclick="toggleMission(${mi})">
+      <div class="mission-header">
+        <span class="mission-id">${m.id}</span>
+        <div style="flex:1;">
+          <div class="mission-name">${m.name}</div>
+          <div class="mission-owner">Owner: ${m.owner} · Risk: <span style="color:${riskColor};font-weight:700;">${m.risk}</span>${m.degraded?' · <span style="color:var(--amber);">⚠ DEGRADED MODE</span>':''}</div>
+        </div>
+        <span class="mission-op-state" style="background:${stateColor}22;color:${stateColor};border:1px solid ${stateColor}44;">${m.state}</span>
+      </div>
+      <div class="mission-trace">${traceHtml}</div>
+      <div class="mission-detail" id="msn-detail-${mi}">
+        <div style="margin-top:10px;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px;">ASSETS</div>
+        <div class="mission-assets">${assetsHtml}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px;">ACTIVE THREATS</div>
+        ${threatsHtml}
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin:8px 0 4px;">EVIDENCE</div>
+        <div class="mission-evidence">
+          <span class="ev-label">Hash:</span> ${m.evidence.hash}<br>
+          <span class="ev-label">Sig:</span> ${m.evidence.sig}<br>
+          <span class="ev-label">Provenance:</span> <span class="ev-ok">${m.evidence.prov}</span><br>
+          <span class="ev-label">Status:</span> <span class="ev-ok">${m.evidence.status}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMission(i){
+  const d=document.getElementById(`msn-detail-${i}`);
+  const card=document.getElementById(`msn-${i}`);
+  const open=!d.classList.contains('open');
+  d.classList.toggle('open',open);
+  card.classList.toggle('expanded',open);
+}
+
+// ── Platform page ──
+function renderPlatform(){
+  document.getElementById('topic-list').innerHTML=TOPICS.map(t=>`
+    <div class="topic-row">
+      <div class="topic-health ${t.health}"></div>
+      <span class="topic-name">${t.name}</span>
+      <span class="topic-rate">${t.rate}</span>
+      <span class="topic-lag ${t.health}">lag: ${t.lag}</span>
+    </div>`).join('');
+  document.getElementById('slo-list').innerHTML=SLOS.map(s=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.5);">
+      <span style="font-size:10px;color:#94a3b8;flex:1;">${s.name}</span>
+      <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--muted);">${s.target}</span>
+      <span style="font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;color:${s.ok?'var(--green)':'var(--red)'};">${s.actual}</span>
+      <span style="font-size:10px;">${s.ok?'✅':'❌'}</span>
+    </div>`).join('');
+  document.getElementById('gate-list').innerHTML=GATES.map(g=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.5);">
+      <span style="font-size:10px;color:#94a3b8;flex:1;">${g.name}</span>
+      <span style="font-size:12px;">${g.ok?'✅':'❌'}</span>
+    </div>`).join('');
+}
+
+// ── Init ──
+renderRFBoard();
+renderMissionBoard();
+renderPlatform();
+renderMiniHeatmap();
+renderFullHeatmap();
+renderEvidence();
+
+// Seed initial events
+for(let i=0;i<6;i++)setTimeout(()=>addEvent(),i*300);
+function scheduleNext(){const d=1800+Math.random()*2800;setTimeout(()=>{addEvent();scheduleNext();},d);}
+scheduleNext();
+</script>
+</body>
+</html>
