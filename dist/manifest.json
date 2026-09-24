@@ -1,0 +1,296 @@
+{
+  "manifest_version": "1.0",
+  "schema": "shadow313-delivery-manifest",
+  "platform_version": "4.0.0",
+  "git_sha": "unknown",
+  "git_branch": "master",
+  "generated_at": "2026-09-24T04:17:13.334416+00:00",
+  "timestamp_313": 1790223433334430313,
+  "total_files": 28,
+  "total_size_kb": 757.7,
+  "files": [
+    {
+      "name": "s313-command-center-v6.html",
+      "path": "docs/s313-command-center-v6.html",
+      "size": 64547,
+      "size_kb": 63.0,
+      "sha3_256": "86f5916a85480a03a1039f67190ed142d2f08428a19bf643f805209ac25a53e6",
+      "modified": "2026-09-24T00:55:14+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "s313-threat-board.html",
+      "path": "docs/s313-threat-board.html",
+      "size": 33631,
+      "size_kb": 32.8,
+      "sha3_256": "fac1250bba5461bb77b26833ea629f2fd9c69133de17cf6f84bba62c57694443",
+      "modified": "2026-09-24T00:43:54+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-nexus-dashboard.html",
+      "path": "docs/shadow313-nexus-dashboard.html",
+      "size": 34524,
+      "size_kb": 33.7,
+      "sha3_256": "6b4c1b16e580432620fc3b3fb8f62f86890e9eba83fd8a93cf9028abdaee2230",
+      "modified": "2026-09-22T07:23:42+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "INSTALL.md",
+      "path": "docs/INSTALL.md",
+      "size": 6530,
+      "size_kb": 6.4,
+      "sha3_256": "accd56e16dac644c2205474427bf2a4f0eadcc3fa9d3aaaf4ebfb34d60c9bb41",
+      "modified": "2026-09-22T05:51:04+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Attack-Surface-Blind-Spot-Analysis.md",
+      "path": "docs/S313-Attack-Surface-Blind-Spot-Analysis.md",
+      "size": 31305,
+      "size_kb": 30.6,
+      "sha3_256": "ada8bcec4cd3e5c0c1294d6a3aee6328fb0cddb12d11574496686f78e7864fe3",
+      "modified": "2026-09-03T14:16:44+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-CVE-Blog-SHA3-Bypass-2026.md",
+      "path": "docs/S313-CVE-Blog-SHA3-Bypass-2026.md",
+      "size": 7065,
+      "size_kb": 6.9,
+      "sha3_256": "027025144fa701cc2423eb70b2570421b7cbcc408910744ff5fb534b0d63a2c6",
+      "modified": "2026-09-04T14:32:50+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Deployment-Guide-shadow313dev.md",
+      "path": "docs/S313-Deployment-Guide-shadow313dev.md",
+      "size": 5891,
+      "size_kb": 5.8,
+      "sha3_256": "ec769d02d6a6bee706ebe58755d72bf7213eee692d217f6922cf5915791f4912",
+      "modified": "2026-09-03T13:43:58+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-GAP-ANALYSIS-2026-001.md",
+      "path": "docs/S313-GAP-ANALYSIS-2026-001.md",
+      "size": 11420,
+      "size_kb": 11.2,
+      "sha3_256": "0edaec43a16ee2776cfe739ff6cfcf2e22112ca008bb66c87919fd6a2c6c71a8",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Industry-Benchmark-Comparison-2026.md",
+      "path": "docs/S313-Industry-Benchmark-Comparison-2026.md",
+      "size": 41670,
+      "size_kb": 40.7,
+      "sha3_256": "cc8416c1c06a81436e7cfaaa1a63008cd2f2dcf5a60fcd695f67f0f6a21d9bca",
+      "modified": "2026-09-04T07:22:32+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Nexus-Dashboard-v3.html",
+      "path": "docs/S313-Nexus-Dashboard-v3.html",
+      "size": 38550,
+      "size_kb": 37.6,
+      "sha3_256": "ba7c6e16cb76b697fe6c4a7d6f3e3cd8a6146fe2f88d7ad3dfc732b93bf370ae",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "S313-Production-Readiness-Gap-Analysis-2026.md",
+      "path": "docs/S313-Production-Readiness-Gap-Analysis-2026.md",
+      "size": 18407,
+      "size_kb": 18.0,
+      "sha3_256": "e5f9f5e66b94d07ccae0434df322311c5ee04812277e35ddb8d7e7475c543452",
+      "modified": "2026-09-03T12:17:28+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Project-Genesis-Chat-History.md",
+      "path": "docs/S313-Project-Genesis-Chat-History.md",
+      "size": 30659,
+      "size_kb": 29.9,
+      "sha3_256": "74836d36038e3e628bd2ade5e05c98131f8601aca5d951d964f191be2e1eca97",
+      "modified": "2026-09-03T13:43:58+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SOC2-Type2-Readiness-Plan-2026.md",
+      "path": "docs/S313-SOC2-Type2-Readiness-Plan-2026.md",
+      "size": 11455,
+      "size_kb": 11.2,
+      "sha3_256": "592dca0a5ccd16142b2e8c9101b83117e9014fdfeb4427e5952764e87fdae360",
+      "modified": "2026-09-03T12:50:18+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SSP-2026-001.md",
+      "path": "docs/S313-SSP-2026-001.md",
+      "size": 11641,
+      "size_kb": 11.4,
+      "sha3_256": "abd50391be2670d5005b08e536eb8f04d900a0b81e0cfb6b41e9fbac358ed042",
+      "modified": "2026-09-01T21:46:54+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SSP-Dashboard.html",
+      "path": "docs/S313-SSP-Dashboard.html",
+      "size": 40086,
+      "size_kb": 39.1,
+      "sha3_256": "f892105351a6141a446a06be0e20550d0b47fbe6db001968548fcac135438f45",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "S313-Security-Coverage-Remediation-Roadmap.md",
+      "path": "docs/S313-Security-Coverage-Remediation-Roadmap.md",
+      "size": 36052,
+      "size_kb": 35.2,
+      "sha3_256": "6f538e490c4b762f5ac717d360df18023ed9e6e81419824e7161b3b6c4f8fdac",
+      "modified": "2026-09-03T14:16:44+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-ZTAS-Architecture-Spec.md",
+      "path": "docs/S313-ZTAS-Architecture-Spec.md",
+      "size": 3150,
+      "size_kb": 3.1,
+      "sha3_256": "c8b61ec7b48f49f30edcf9752c5fb2ed818d16cc85884c4253e47014ae558995",
+      "modified": "2026-09-04T07:22:38+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "attack_chain_mapping.md",
+      "path": "docs/attack_chain_mapping.md",
+      "size": 29027,
+      "size_kb": 28.3,
+      "sha3_256": "c993f1b374da118e4a31afd975e0282c065923818781e6d03c73075468c385f3",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "crqc001_exploit_simulation.md",
+      "path": "docs/crqc001_exploit_simulation.md",
+      "size": 23380,
+      "size_kb": 22.8,
+      "sha3_256": "be5ea24dcd0d219959f7abc92dc8c8a056251efdb30d177bf1a2d310ec45c808",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "crqc_attack_surface_analysis.md",
+      "path": "docs/crqc_attack_surface_analysis.md",
+      "size": 21705,
+      "size_kb": 21.2,
+      "sha3_256": "cc9054d81a240d29ec4d863ae14b4b37b6eac51eb60c3ad617eb67c1e0ccf86f",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "d3fend_gap_closure_plan.md",
+      "path": "docs/d3fend_gap_closure_plan.md",
+      "size": 32650,
+      "size_kb": 31.9,
+      "sha3_256": "1543702a46ac788cbfe76eedaf9f17a7312a410ec9746f88f3fe9d5e5571e7d0",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "d3fend_mapping.md",
+      "path": "docs/d3fend_mapping.md",
+      "size": 42310,
+      "size_kb": 41.3,
+      "sha3_256": "2f36a600d3dcd8e1ca16fb5a9fa6488f2202a2c4b540cd0bda909cd01326f713",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "evasion_technique_analysis.md",
+      "path": "docs/evasion_technique_analysis.md",
+      "size": 44417,
+      "size_kb": 43.4,
+      "sha3_256": "fb6efa253f07742c290487f65647c20ab706c7f581113b85033a62648b4de18a",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "framework_comparison_313bind_slsa_ssdf.md",
+      "path": "docs/framework_comparison_313bind_slsa_ssdf.md",
+      "size": 35735,
+      "size_kb": 34.9,
+      "sha3_256": "acf86770181e3a34bb9e5a8924922828669aa393f2d12076a4c2d4c01a44726c",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "index.html",
+      "path": "docs/index.html",
+      "size": 729,
+      "size_kb": 0.7,
+      "sha3_256": "d7f902855592063949afc960289059389c74716a6ac50aafc24d71a5f16513e4",
+      "modified": "2026-09-23T09:02:38+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "pq_threat_landscape_slhdsa_evolution.md",
+      "path": "docs/pq_threat_landscape_slhdsa_evolution.md",
+      "size": 49964,
+      "size_kb": 48.8,
+      "sha3_256": "35a13124461ac8a5271b0d977f28e2a1a4d388886fa80d6a654775266caf75ba",
+      "modified": "2026-09-01T21:46:52+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "shadow313-ai-stack-map.html",
+      "path": "docs/shadow313-ai-stack-map.html",
+      "size": 30000,
+      "size_kb": 29.3,
+      "sha3_256": "e0fbd1f33db743d41aa631955f74dce5025f8eb0de5285384156c11ab883b813",
+      "modified": "2026-09-04T10:06:46+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-nexus-architecture.html",
+      "path": "docs/shadow313-nexus-architecture.html",
+      "size": 39397,
+      "size_kb": 38.5,
+      "sha3_256": "8046a3afc12be783bd805d74688a5476d1014c7d04d14bc66d43c18cb4455f4b",
+      "modified": "2026-09-22T04:07:10+00:00",
+      "priority": false,
+      "type": "html"
+    }
+  ],
+  "provenance_class": "REAL_OBSERVATION",
+  "delivery_id": "DEL-448E34CD",
+  "manifest_hash": "sha3_256:334dfde5b2d1f3cbe41e9237009443000695f2281894950e17fcd18abd0189af"
+}
