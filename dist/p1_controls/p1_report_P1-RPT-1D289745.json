@@ -1,0 +1,104 @@
+{
+  "report_id": "P1-RPT-1D289745",
+  "timestamp_ns": 1790227298807633313,
+  "timestamp_iso": "2026-09-24T05:21:38.807646+00:00",
+  "controls_run": 7,
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "overall": "PASS",
+  "results": [
+    {
+      "control_id": "P1-1",
+      "technique": "T1490",
+      "name": "VSS/Backup Protection",
+      "status": "APPLIED",
+      "mitigation": "M1053 Data Backup \u00b7 M1022 Restrict File Permissions",
+      "details": [
+        "Manifest backed up: manifest_88723d3d.json (sha3:88723d3d693b02d2...)",
+        "Receipts backed up: 1 new",
+        "Backup manifest: 2 files protected"
+      ],
+      "timestamp": "2026-09-24T05:21:38.749865+00:00"
+    },
+    {
+      "control_id": "P1-2",
+      "technique": "T1003.001",
+      "name": "LSASS/Process Protection",
+      "status": "APPLIED",
+      "mitigation": "M1043 Credential Access Protection \u00b7 M1025 Privileged Process Integrity",
+      "details": [
+        "ptrace_scope: 1 (SECURE)",
+        "kptr_restrict: 0 (INSECURE)",
+        "Process scan: No credential dumping tools detected"
+      ],
+      "timestamp": "2026-09-24T05:21:38.750812+00:00"
+    },
+    {
+      "control_id": "P1-3",
+      "technique": "T1550.002",
+      "name": "Pass-the-Hash / Credential Hardening",
+      "status": "APPLIED",
+      "mitigation": "M1026 Privileged Account Management \u00b7 M1051 Update Software",
+      "details": [
+        "Process identity: oai (UID 1000) \u2014 non-privileged \u2705",
+        "Config scan: No plaintext credentials in config files \u2705"
+      ],
+      "timestamp": "2026-09-24T05:21:38.758188+00:00"
+    },
+    {
+      "control_id": "P1-5",
+      "technique": "T1572",
+      "name": "DNS Exfil Prevention",
+      "status": "APPLIED",
+      "mitigation": "M1037 Filter Network Traffic \u00b7 M1031 Network Intrusion Prevention",
+      "details": [
+        "DNS resolvers: ['127.0.0.11'] \u2014 WARNING: No known-secure resolver",
+        "resolv.conf hash: 16521bfed54b2e0c... (baseline for future comparison)",
+        "DNS tunnel tools: None detected \u2705"
+      ],
+      "timestamp": "2026-09-24T05:21:38.758366+00:00"
+    },
+    {
+      "control_id": "P1-6",
+      "technique": "T1548.002",
+      "name": "UAC Bypass / Privilege Hardening",
+      "status": "APPLIED",
+      "mitigation": "M1047 Audit \u00b7 M1052 User Account Control",
+      "details": [
+        "SUID check: No SUID bits on daemon scripts \u2705",
+        "sudo: No NOPASSWD entries \u2705"
+      ],
+      "timestamp": "2026-09-24T05:21:38.761233+00:00"
+    },
+    {
+      "control_id": "P1-9",
+      "technique": "T1053.005",
+      "name": "Scheduled Task Monitoring",
+      "status": "APPLIED",
+      "mitigation": "M1047 Audit \u00b7 M1028 Operating System Configuration",
+      "details": [
+        "Baseline created: 0 scheduled tasks recorded",
+        "Systemd service: Not installed (run daemon install)"
+      ],
+      "timestamp": "2026-09-24T05:21:38.801418+00:00"
+    },
+    {
+      "control_id": "P1-10",
+      "technique": "T1547.001",
+      "name": "Registry/Persistence Watch",
+      "status": "APPLIED",
+      "mitigation": "M1024 Restrict Registry Permissions \u00b7 M1022 Restrict File Permissions",
+      "details": [
+        "Persistence baseline created: 4 entries"
+      ],
+      "timestamp": "2026-09-24T05:21:38.806784+00:00"
+    }
+  ],
+  "p0_integration": {
+    "P0-1": "P1-5 extends (DNS monitoring)",
+    "P0-3": "P1-9, P1-10 extend (startup integrity)",
+    "P0-4": "P1-3 extends (config file scanning)",
+    "P0-7": "P1-1 extends (backup of receipts)"
+  }
+}

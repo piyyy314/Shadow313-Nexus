@@ -1,0 +1,7 @@
+[2026-09-24T05:21:38Z] [OK   ] P1-1 applied: 2 files backed up
+[2026-09-24T05:21:38Z] [OK   ] P1-2 applied: ptrace_scope: 1 (SECURE); kptr_restrict: 0 (INSECURE)
+[2026-09-24T05:21:38Z] [OK   ] P1-3 applied: UID=1000 user=oai
+[2026-09-24T05:21:38Z] [OK   ] P1-5 applied: DNS monitoring configured
+[2026-09-24T05:21:38Z] [OK   ] P1-6 applied: UAC/privilege hardening verified
+[2026-09-24T05:21:38Z] [OK   ] P1-9 applied: 0 tasks baselined
+[2026-09-24T05:21:38Z] [OK   ] P1-10 applied: 4 persistence entries baselined

@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-24T05:21:38.807327+00:00",
+  "hash": "112cfeab0ccc3ee502fbe724966788719514af25fbf5f80c3d099d8902e63a57",
+  "snapshot": {
+    "/home/oai/.bashrc": "6145b648056846e0849f964a04435145fa18fb4d2179844dd9e2272824fd75df",
+    "/home/oai/.bash_profile": "46fef06a3dce30b5bf931327e761a71d5fec5b7f1730a583baca2fff2ae4fd0d",
+    "/etc/profile": "c65f23733eeafa75ce7c169bba474f6e1b9ba73ffe372ff95f8d8d9b851d3a5c",
+    "/etc/environment": "7c1ce519a009fe8a9c9702cd5492ef61cc2bb1c69a93005c2a9fd04cbaf43266"
+  }
+}
