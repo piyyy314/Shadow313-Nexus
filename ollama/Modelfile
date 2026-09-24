@@ -1,4 +1,4 @@
-FROM llama3.2:3b
+FROM mistral:7b
 
 # ============================================================
 # SHADOW313 NEXUS — Official Ollama Modelfile
@@ -176,7 +176,7 @@ PARAMETER top_k 40
 
 # Context window — 8192 tokens (~6000 words of conversation history)
 # Increase to 16384 if using mistral:7b or llama3.1:8b base
-PARAMETER num_ctx 8192
+PARAMETER num_ctx 16384
 
 # Repeat penalty — prevents looping/repetition in long outputs
 PARAMETER repeat_penalty 1.15
@@ -193,16 +193,11 @@ PARAMETER num_predict -1
 
 # Mirostat sampling — adaptive perplexity control
 # 0=disabled, 1=Mirostat, 2=Mirostat 2.0
-PARAMETER mirostat 2
-PARAMETER mirostat_eta 0.1
-PARAMETER mirostat_tau 5.0
 
 # ── STOP TOKENS ──────────────────────────────────────────────
 # Model stops generating when it hits these sequences
 
 # Standard conversation stops
-PARAMETER stop "<|eot_id|>"
-PARAMETER stop "<|end_of_text|>"
 PARAMETER stop "User:"
 PARAMETER stop "Human:"
 PARAMETER stop "Assistant:"
