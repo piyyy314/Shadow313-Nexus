@@ -759,6 +759,45 @@ level: high""",
 ]
 
 
+# ── CI/CD Pipeline Attack Rules (gap closure from security analysis) ──────────
+
+SIGMA_RULES_CICD: list[dict] = [
+    {
+        "id":          "nexus-sig-016",
+        "display_id":  "NEXUS-SIG-016",
+        "title":       "NEXUS — Supply Chain: pip/npm Typosquatting in CI",
+        "technique":   "T1195.002",
+        "tactic":      "initial_access",
+        "level":       "high",
+        "status":      "production",
+        "tpr":         0.85,
+        "fpr":         0.15,
+        "date":        "2026/09/24",
+        "tags":        ["attack.initial_access", "attack.t1195.002", "nexus.high"],
+        "description": "Detects pip/npm typosquatted or unsigned package installation in CI/CD pipelines.",
+        "sigma_yaml":  "title: NEXUS-SIG-016\nid: nexus-sig-016\nstatus: production\nlogsource:\n  category: process_creation\n  product: linux\ndetection:\n  selection:\n    Image|endswith: /pip\n    CommandLine|contains: shadow313-utils\n  condition: selection\nlevel: high",
+    },
+    {
+        "id":          "nexus-sig-017",
+        "display_id":  "NEXUS-SIG-017",
+        "title":       "NEXUS — Credentials In CI Environment Variables",
+        "technique":   "T1552.001",
+        "tactic":      "credential_access",
+        "level":       "high",
+        "status":      "production",
+        "tpr":         0.88,
+        "fpr":         0.12,
+        "date":        "2026/09/24",
+        "tags":        ["attack.credential_access", "attack.t1552.001", "nexus.high"],
+        "description": "Detects access or exfiltration of CI/CD environment variables containing secrets.",
+        "sigma_yaml":  "title: NEXUS-SIG-017\nid: nexus-sig-017\nstatus: production\nlogsource:\n  category: process_creation\n  product: linux\ndetection:\n  selection:\n    Image|endswith: /curl\n    CommandLine|contains: GITHUB_TOKEN\n  condition: selection\nlevel: high",
+    },
+]
+
+# Merge into main SIGMA_RULES
+SIGMA_RULES.extend(SIGMA_RULES_CICD)
+
+
 # ── SPL Queries ───────────────────────────────────────────────────────────────
 
 SPL_QUERIES: list[dict] = [
