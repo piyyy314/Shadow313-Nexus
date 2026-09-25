@@ -143,7 +143,12 @@ class SecretScanner:
 
     def scan_directory(self, path: str, max_file_size: int = 1_000_000) -> list[dict]:
         findings = []
-        base = Path(path)
+        try:
+            base = Path(path).expanduser().resolve()
+        except Exception as exc:
+            return [{"error": f"Invalid scan path: {exc}"}]
+        if not base.exists():
+            return [{"error": f"Path does not exist: {path}"}]
         for fpath in base.rglob("*"):
             if fpath.is_file():
                 if any(part in self.IGNORE_DIRS for part in fpath.parts):

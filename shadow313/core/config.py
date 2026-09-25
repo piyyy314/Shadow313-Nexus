@@ -225,3 +225,35 @@ class Config:
                 elif val.lower() in ("false", "0", "no"):
                     val = False  # type: ignore[assignment]
                 self.set(*cfg_path, val)
+
+def _safe_path(path: str, allowed_base: str | None = None) -> "Path":
+    """
+    Resolve a user-supplied path and optionally jail it to an allowed base.
+    
+    Raises ValueError if the resolved path escapes the allowed base directory.
+    This prevents path traversal attacks (CWE-22) when paths come from
+    API requests or CLI arguments.
+    
+    Args:
+        path: User-supplied path string
+        allowed_base: If provided, the resolved path must be within this directory.
+                      Use None for output paths where any location is acceptable.
+    
+    Returns:
+        Resolved Path object
+        
+    Raises:
+        ValueError: If path escapes allowed_base
+    """
+    from pathlib import Path as _Path
+    resolved = _Path(path).expanduser().resolve()
+    if allowed_base is not None:
+        base = _Path(allowed_base).expanduser().resolve()
+        try:
+            resolved.relative_to(base)
+        except ValueError:
+            raise ValueError(
+                f"Path traversal detected: {path!r} resolves to {resolved!r} "
+                f"which is outside allowed base {base!r}"
+            )
+    return resolved

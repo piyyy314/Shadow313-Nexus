@@ -375,7 +375,7 @@ class IntelligenceGraph:
     def export_graphml(self, path: str) -> str:
         if not _HAS_NX:
             raise ImportError("pip install networkx")
-        p = Path(path).expanduser()
+        p = Path(path).expanduser().resolve()
         p.parent.mkdir(parents=True, exist_ok=True)
         nx.write_graphml(self._g, str(p))
         return str(p)

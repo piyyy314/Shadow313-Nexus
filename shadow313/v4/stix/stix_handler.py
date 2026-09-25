@@ -104,9 +104,15 @@ class STIXParser:
         }
 
     def parse_file(self, path: str) -> dict:
-        p = Path(path)
+        try:
+            p = Path(path).expanduser().resolve()
+        except Exception as exc:
+            return {"error": f"Invalid path: {exc}"}
         if not p.exists():
             return {"error": f"File not found: {path}"}
+        # Only allow JSON/STIX files
+        if p.suffix.lower() not in ('.json', '.stix', '.taxii'):
+            return {"error": f"Unsupported file type: {p.suffix}"}
         try:
             bundle = json.loads(p.read_text())
             return self.parse_bundle(bundle)

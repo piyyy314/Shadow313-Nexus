@@ -242,9 +242,16 @@ class DependencyAuditor:
         self.db = db
 
     def audit_file(self, path: str) -> list[dict]:
-        p = Path(path)
+        try:
+            p = Path(path).expanduser().resolve()
+        except Exception as exc:
+            return [{"error": f"Invalid path: {exc}"}]
         if not p.exists():
             return [{"error": f"File not found: {path}"}]
+        # Reject paths that look like system files outside project scope
+        _BLOCKED = ('/etc/passwd', '/etc/shadow', '/proc/', '/sys/', '/dev/')
+        if any(str(p).startswith(b) for b in _BLOCKED):
+            return [{"error": f"Access denied: {path}"}]
         parser_method = self.PARSERS.get(p.name)
         if not parser_method:
             return [{"error": f"Unsupported file: {p.name}"}]
