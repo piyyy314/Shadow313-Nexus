@@ -58,11 +58,14 @@ jobs:
       - name: Install Shadow313 + test deps
         run: |
           pip install -e ".[dev]"
-          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn
+          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn \
+            numpy scipy scapy dnspython python-whois cryptography \
+            requests aiohttp sqlalchemy pydantic
       - name: Run tests
         run: |
           pytest tests/ -q --tb=short \
             --ignore=tests/integration \
+            --timeout=120 \
             -x
       - name: Upload coverage
         if: matrix.python-version == '3.11'

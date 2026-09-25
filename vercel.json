@@ -1,15 +1,38 @@
 {
   "name": "shadow313-nexus",
   "version": 2,
-  "name": "shadow313-nexus",
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/docs", "destination": "/docs/index.html" },
-    { "source": "/docs/", "destination": "/docs/index.html" },
-    { "source": "/dashboard", "destination": "/docs/shadow313-nexus-dashboard.html" },
-    { "source": "/dashboard-v3", "destination": "/docs/S313-Nexus-Dashboard-v3.html" },
-    { "source": "/ssp", "destination": "/docs/S313-SSP-Dashboard.html" },
-    { "source": "/architecture", "destination": "/docs/shadow313-nexus-architecture.html" },
-    { "source": "/ai-stack", "destination": "/docs/shadow313-ai-stack-map.html" }
+    {
+      "source": "/",
+      "destination": "/docs/index.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/docs/shadow313-nexus-dashboard.html"
+    },
+    {
+      "source": "/dashboard-v3",
+      "destination": "/docs/S313-Nexus-Dashboard-v3.html"
+    },
+    {
+      "source": "/ssp",
+      "destination": "/docs/S313-SSP-Dashboard.html"
+    },
+    {
+      "source": "/architecture",
+      "destination": "/docs/shadow313-nexus-architecture.html"
+    },
+    {
+      "source": "/ai-stack",
+      "destination": "/docs/shadow313-ai-stack-map.html"
+    },
+    {
+      "source": "/threat-board",
+      "destination": "/docs/s313-threat-board.html"
+    },
+    {
+      "source": "/command-center",
+      "destination": "/docs/s313-command-center-v6.html"
+    }
   ]
 }
