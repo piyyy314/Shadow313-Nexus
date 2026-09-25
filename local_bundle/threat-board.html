@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S313NEXUS — Real-Time Threat Board v4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --blue:#3b82f6; --orange:#f97316;
+    --bg:#000000; --bg2:#080808; --bg3:#0f0f0f; --bg4:#141414;
+    --border:rgba(34,197,94,0.12); --border2:rgba(30,41,59,0.5);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(34,197,94,0.2);
+    height:56px; display:flex; align-items:center; padding:0 24px; gap:14px;
+    position:sticky; top:0; z-index:100; backdrop-filter:blur(20px);
+  }
+  .logo-hex {
+    width:34px; height:34px; background:var(--green);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; color:#000; font-size:11px; font-family:'JetBrains Mono',monospace;
+    flex-shrink:0;
+  }
+  .logo-text { font-size:16px; font-weight:800; letter-spacing:.04em; }
+  .logo-text span { color:var(--green); }
+  .hdr-badge {
+    font-size:9px; font-family:'JetBrains Mono',monospace;
+    padding:3px 10px; border-radius:4px; font-weight:700; letter-spacing:.06em;
+  }
+  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+  .badge-red { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.25); }
+  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
+  .hdr-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--red); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,0.5)} 50%{opacity:.7;box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+
+  /* ── HERO ── */
+  .hero {
+    background:linear-gradient(180deg,#000 0%,#050505 100%);
+    border-bottom:1px solid rgba(34,197,94,0.1);
+    padding:24px 24px 20px;
+    display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center;
+  }
+  .hero-title { font-size:clamp(20px,2.5vw,28px); font-weight:800; line-height:1.1; }
+  .hero-title .accent { color:var(--green); text-shadow:0 0 20px rgba(34,197,94,0.4); }
+  .hero-sub { font-size:11px; color:var(--muted); margin-top:6px; font-family:'JetBrains Mono',monospace; }
+  .hero-kpis { display:flex; gap:28px; }
+  .hero-kpi { text-align:center; }
+  .hero-kpi-val {
+    font-size:clamp(24px,3vw,40px); font-weight:800; line-height:1;
+    font-family:'JetBrains Mono',monospace; text-shadow:0 0 24px currentColor;
+  }
+  .hero-kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-top:4px; }
+
+  /* ── KPI STRIP ── */
+  .kpi-strip {
+    display:grid; grid-template-columns:repeat(6,1fr);
+    gap:1px; background:rgba(34,197,94,0.06);
+    border-bottom:1px solid rgba(34,197,94,0.08);
+  }
+  .kpi-cell { background:var(--bg); padding:14px 16px; text-align:center; position:relative; }
+  .kpi-cell::after {
+    content:''; position:absolute; bottom:0; left:25%; right:25%;
+    height:2px; border-radius:2px;
+  }
+  .kpi-cell.red::after { background:var(--red); }
+  .kpi-cell.amber::after { background:var(--amber); }
+  .kpi-cell.cyan::after { background:var(--cyan); }
+  .kpi-cell.green::after { background:var(--green); }
+  .kpi-cell.purple::after { background:var(--purple); }
+  .kpi-cell.blue::after { background:var(--blue); }
+  .kpi-val { font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace; line-height:1; }
+  .kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display:flex; align-items:center; gap:10px; padding:12px 24px;
+    background:var(--bg); border-bottom:1px solid var(--border2);
+    flex-wrap:wrap;
+  }
+  .filter-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .ftab {
+    font-size:10px; font-family:'JetBrains Mono',monospace; padding:4px 12px;
+    border-radius:4px; cursor:pointer; border:1px solid var(--border2);
+    background:var(--bg2); color:var(--muted); transition:all .15s;
+  }
+  .ftab.active { background:rgba(34,197,94,0.1); color:var(--green); border-color:rgba(34,197,94,0.3); }
+  .ftab:hover { color:var(--text); border-color:rgba(34,197,94,0.2); }
+  .filter-right { margin-left:auto; display:flex; gap:8px; }
+  .action-btn {
+    font-size:10px; font-family:'JetBrains Mono',monospace; padding:5px 14px;
+    border-radius:5px; cursor:pointer; font-weight:700; transition:all .2s;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .btn-sim { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+  .btn-sim:hover { background:rgba(239,68,68,0.2); }
+  .btn-dl { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+  .btn-dl:hover { background:rgba(34,197,94,0.2); }
+
+  /* ── MAIN LAYOUT ── */
+  .main { display:grid; grid-template-columns:1fr 380px; gap:16px; padding:16px 24px; }
+
+  /* ── PANEL ── */
+  .panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+  .panel-hdr {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px; border-bottom:1px solid var(--border2);
+    background:rgba(0,0,0,0.5);
+  }
+  .panel-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--green); }
+  .panel-badge {
+    font-size:9px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.08); color:var(--green);
+    border:1px solid rgba(34,197,94,0.2); border-radius:4px; padding:2px 8px;
+  }
+
+  /* ── HEATMAP TABLE ── */
+  .hm-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .hm-table th {
+    text-align:left; padding:8px 14px;
+    font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--dim); font-family:'JetBrains Mono',monospace;
+    border-bottom:1px solid var(--border2); background:rgba(0,0,0,0.3);
+  }
+  .hm-row { cursor:pointer; transition:background .12s; }
+  .hm-row:hover { background:rgba(34,197,94,0.04); }
+  .hm-row.selected { background:rgba(34,197,94,0.07); }
+  .hm-row td { border-bottom:1px solid rgba(30,41,59,0.3); }
+
+  /* ── RIGHT COLUMN ── */
+  .right-col { display:flex; flex-direction:column; gap:14px; }
+
+  /* ── DRILLDOWN ── */
+  .drilldown { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+  .dd-placeholder { color:var(--muted); font-size:11px; text-align:center; padding:24px 16px; font-family:'JetBrains Mono',monospace; }
+  .dd-body { padding:14px 16px; }
+  .dd-tid { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800; line-height:1; }
+  .dd-name { font-size:12px; color:var(--text); margin:6px 0 4px; font-weight:600; }
+  .dd-tactic { font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--muted); margin-bottom:12px; }
+  .dd-stats { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:14px; }
+  .dd-stat { background:var(--bg3); border-radius:6px; padding:8px; text-align:center; }
+  .dd-stat-val { font-size:20px; font-weight:800; font-family:'JetBrains Mono',monospace; }
+  .dd-stat-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+  .dd-events-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--green); margin-bottom:8px; }
+  .dd-event { padding:7px 0; border-bottom:1px solid rgba(30,41,59,0.4); }
+  .dd-event:last-child { border-bottom:none; }
+  .dd-event-time { font-family:'JetBrains Mono',monospace; color:var(--dim); font-size:10px; }
+  .dd-event-title { color:var(--text); font-size:11px; margin-top:2px; }
+  .dd-event-asset { font-family:'JetBrains Mono',monospace; color:var(--cyan); font-size:10px; }
+
+  /* ── LIVE FEED ── */
+  .feed { height:260px; overflow-y:auto; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.8; }
+  .ev { display:flex; gap:8px; align-items:baseline; padding:2px 0; border-bottom:1px solid rgba(30,41,59,0.2); flex-wrap:wrap; }
+  .ev-time { color:var(--dim); white-space:nowrap; }
+  .ev-sev { font-weight:700; white-space:nowrap; padding:0 5px; border-radius:3px; font-size:9px; }
+  .ev-title { color:var(--text); flex:1; min-width:0; }
+  .ev-asset { color:var(--cyan); white-space:nowrap; font-size:9px; }
+  .ev-tid { color:var(--purple); white-space:nowrap; font-size:9px; }
+
+  /* ── SIM PROGRESS ── */
+  .sim-bar-wrap { background:rgba(0,0,0,0.4); border-radius:3px; height:3px; margin:0 24px 0; }
+  .sim-bar { height:3px; border-radius:3px; background:linear-gradient(to right,var(--green),var(--cyan)); transition:width .4s; width:0%; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align:center; padding:14px 24px;
+    font-size:10px; color:var(--dim);
+    border-top:1px solid rgba(34,197,94,0.08);
+    font-family:'JetBrains Mono',monospace;
+    background:var(--bg);
+  }
+
+  @media(max-width:1000px) {
+    .main { grid-template-columns:1fr; }
+    .kpi-strip { grid-template-columns:repeat(3,1fr); }
+    .hero { grid-template-columns:1fr; }
+    .hero-kpis { flex-wrap:wrap; gap:16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="logo-hex">S3</div>
+  <div class="logo-text">SHADOW<span>313</span> NEXUS</div>
+  <span class="hdr-badge badge-red">🔴 REAL-TIME THREAT BOARD v4</span>
+  <span class="hdr-badge badge-cyan">LIVE DATA · 2026-09-25</span>
+  <div class="hdr-right">
+    <div class="pulse"></div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)" id="clock"></span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">operator: mohamad</span>
+    <button class="action-btn btn-dl" onclick="downloadExport()">⬇ Export JSON</button>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div>
+    <div class="hero-title">REAL-TIME <span class="accent">THREAT INTELLIGENCE</span> BOARD</div>
+    <div class="hero-sub">26 active ATT&CK techniques · 172 events · 313-BIND cryptographic receipts · MITRE ATT&CK v15 aligned</div>
+  </div>
+  <div class="hero-kpis">
+    <div class="hero-kpi">
+      <div class="hero-kpi-val" style="color:var(--red)">56</div>
+      <div class="hero-kpi-lbl">Critical</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val" style="color:var(--amber)">52</div>
+      <div class="hero-kpi-lbl">High</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val" style="color:var(--cyan)">44</div>
+      <div class="hero-kpi-lbl">Medium</div>
+    </div>
+    <div class="hero-kpi">
+      <div class="hero-kpi-val" style="color:var(--green)">26</div>
+      <div class="hero-kpi-lbl">Techniques</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── KPI STRIP ── -->
+<div class="kpi-strip">
+  <div class="kpi-cell red">
+    <div class="kpi-val" style="color:var(--red)">56</div>
+    <div class="kpi-lbl">Critical Alerts</div>
+  </div>
+  <div class="kpi-cell amber">
+    <div class="kpi-val" style="color:var(--amber)">52</div>
+    <div class="kpi-lbl">High Alerts</div>
+  </div>
+  <div class="kpi-cell cyan">
+    <div class="kpi-val" style="color:var(--cyan)">44</div>
+    <div class="kpi-lbl">Medium</div>
+  </div>
+  <div class="kpi-cell green">
+    <div class="kpi-val" style="color:#94a3b8">20</div>
+    <div class="kpi-lbl">Low</div>
+  </div>
+  <div class="kpi-cell purple">
+    <div class="kpi-val" style="color:var(--purple)">66</div>
+    <div class="kpi-lbl">Acknowledged</div>
+  </div>
+  <div class="kpi-cell blue">
+    <div class="kpi-val" style="color:var(--blue)">26</div>
+    <div class="kpi-lbl">ATT&CK Techniques</div>
+  </div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar">
+  <span class="filter-label">Tactic Filter:</span>
+  <span class="ftab active" onclick="filterTactic('all',this)">All Tactics</span>
+  <span class="ftab" onclick="filterTactic('Credential Access',this)">Credential Access</span>
+  <span class="ftab" onclick="filterTactic('Persistence',this)">Persistence</span>
+  <span class="ftab" onclick="filterTactic('Impact',this)">Impact</span>
+  <span class="ftab" onclick="filterTactic('Defense Evasion',this)">Defense Evasion</span>
+  <span class="ftab" onclick="filterTactic('Lateral Movement',this)">Lateral Movement</span>
+  <span class="ftab" onclick="filterTactic('Execution',this)">Execution</span>
+  <div class="filter-right">
+    <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);align-self:center" id="sim-status">Click a row for drill-down</div>
+    <button class="action-btn btn-sim" onclick="runSimulation()">▶ Live Simulation</button>
+  </div>
+</div>
+
+<!-- ── SIM PROGRESS ── -->
+<div class="sim-bar-wrap"><div class="sim-bar" id="sim-bar"></div></div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ATT&CK Heatmap -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <span class="panel-title">⬡ ATT&CK Heatmap — Live Threat Data</span>
+      <span class="panel-badge">26 techniques · 172 events · REAL SESSION DATA</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="hm-table">
+        <thead>
+          <tr>
+            <th>Technique ID</th>
+            <th>Name</th>
+            <th>Tactic</th>
+            <th>Frequency</th>
+            <th>Count</th>
+            <th>Severity</th>
+          </tr>
+        </thead>
+        <tbody id="hm-body">
+          <tr class="hm-row" data-tid="T1542.001" onclick="selectTechnique('T1542.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1542.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Pre-OS Boot: Bootkit</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:3px;padding:2px 7px;white-space:nowrap">Persistence</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:91%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">11</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">11C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1596" onclick="selectTechnique('T1596')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1596</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Search Open Technical Databases</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;border-radius:3px;padding:2px 7px;white-space:nowrap">Reconnaissance</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:83%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">10</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1505.003" onclick="selectTechnique('T1505.003')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1505.003</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Server Software: Web Shell</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:3px;padding:2px 7px;white-space:nowrap">Persistence</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:83%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">10</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">10C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1558.003" onclick="selectTechnique('T1558.003')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1558.003</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Steal Kerberos Tickets: Kerberoasting</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">6H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1490" onclick="selectTechnique('T1490')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1490</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Inhibit System Recovery</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#dc262622;color:#dc2626;border:1px solid #dc262644;border-radius:3px;padding:2px 7px;white-space:nowrap">Impact</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">6C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1068" onclick="selectTechnique('T1068')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1068</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Exploitation for Privilege Escalation</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;border-radius:3px;padding:2px 7px;white-space:nowrap">Privilege Escalation</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">6C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1003.006" onclick="selectTechnique('T1003.006')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1003.006</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">OS Credential Dumping: DCSync</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">6C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1055.001" onclick="selectTechnique('T1055.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1055.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Process Injection: DLL Injection</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#06b6d422;color:#06b6d4;border:1px solid #06b6d444;border-radius:3px;padding:2px 7px;white-space:nowrap">Defense Evasion</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">6C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1070.006" onclick="selectTechnique('T1070.006')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1070.006</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Indicator Removal: Timestomping</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#06b6d422;color:#06b6d4;border:1px solid #06b6d444;border-radius:3px;padding:2px 7px;white-space:nowrap">Defense Evasion</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">6</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1003.001" onclick="selectTechnique('T1003.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1003.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">OS Credential Dumping: LSASS Memory</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">6C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1552.001" onclick="selectTechnique('T1552.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1552.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Unsecured Credentials: Credentials In Files</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">6</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1600.001" onclick="selectTechnique('T1600.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1600.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Weaken Encryption: Reduce Key Space</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#06b6d422;color:#06b6d4;border:1px solid #06b6d444;border-radius:3px;padding:2px 7px;white-space:nowrap">Defense Evasion</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">6H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1003.008" onclick="selectTechnique('T1003.008')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1003.008</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">OS Credential Dumping: /etc/passwd</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">6</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1021.001" onclick="selectTechnique('T1021.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1021.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Remote Services: Remote Desktop Protocol</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ec489922;color:#ec4899;border:1px solid #ec489944;border-radius:3px;padding:2px 7px;white-space:nowrap">Lateral Movement</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:50%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">6</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">6H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1572" onclick="selectTechnique('T1572')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1572</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Protocol Tunneling</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644;border-radius:3px;padding:2px 7px;white-space:nowrap">Command and Control</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1059.001" onclick="selectTechnique('T1059.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1059.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Command and Scripting: PowerShell</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;border-radius:3px;padding:2px 7px;white-space:nowrap">Execution</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1548.002" onclick="selectTechnique('T1548.002')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1548.002</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Abuse Elevation Control: Bypass UAC</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;border-radius:3px;padding:2px 7px;white-space:nowrap">Privilege Escalation</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1565.001" onclick="selectTechnique('T1565.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1565.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Data Manipulation: Stored Data Manipulation</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#dc262622;color:#dc2626;border:1px solid #dc262644;border-radius:3px;padding:2px 7px;white-space:nowrap">Impact</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">5</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1550.002" onclick="selectTechnique('T1550.002')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;white-space:nowrap">T1550.002</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Use Alternate Auth: Pass the Hash</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ec489922;color:#ec4899;border:1px solid #ec489944;border-radius:3px;padding:2px 7px;white-space:nowrap">Lateral Movement</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#ef4444"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#ef4444;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:3px;padding:1px 5px;margin-right:3px">5C</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1110.003" onclick="selectTechnique('T1110.003')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1110.003</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Brute Force: Password Spraying</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1195.001" onclick="selectTechnique('T1195.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1195.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Supply Chain Compromise: Software Dependencies</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa44;border-radius:3px;padding:2px 7px;white-space:nowrap">Initial Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1110.001" onclick="selectTechnique('T1110.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1110.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Brute Force: Password Guessing</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:3px;padding:2px 7px;white-space:nowrap">Credential Access</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">5</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">5H</span></td>
+    </tr>
+<tr class="hm-row" data-tid="T1027" onclick="selectTechnique('T1027')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1027</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Obfuscated Files or Information</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#06b6d422;color:#06b6d4;border:1px solid #06b6d444;border-radius:3px;padding:2px 7px;white-space:nowrap">Defense Evasion</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">5</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1053.005" onclick="selectTechnique('T1053.005')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1053.005</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Scheduled Task/Job: Scheduled Task</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:3px;padding:2px 7px;white-space:nowrap">Persistence</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">5</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1547.001" onclick="selectTechnique('T1547.001')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#06b6d4;white-space:nowrap">T1547.001</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Boot Autostart: Registry Run Keys</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:3px;padding:2px 7px;white-space:nowrap">Persistence</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:41%;height:6px;border-radius:2px;background:#06b6d4"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#06b6d4;text-align:center">5</td>
+      <td style="padding:9px 14px"></td>
+    </tr>
+<tr class="hm-row" data-tid="T1498" onclick="selectTechnique('T1498')">
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;white-space:nowrap">T1498</td>
+      <td style="padding:9px 14px;font-size:11px;color:#e2e8f0;max-width:220px">Network Denial of Service</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#dc262622;color:#dc2626;border:1px solid #dc262644;border-radius:3px;padding:2px 7px;white-space:nowrap">Impact</span></td>
+      <td style="padding:9px 14px"><div style="background:rgba(0,0,0,0.5);border-radius:2px;height:6px;width:90px"><div style="width:33%;height:6px;border-radius:2px;background:#f59e0b"></div></div></td>
+      <td style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#f59e0b;text-align:center">4</td>
+      <td style="padding:9px 14px"><span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);border-radius:3px;padding:1px 5px">4H</span></td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div class="right-col">
+
+    <!-- Drill-down -->
+    <div class="drilldown">
+      <div class="panel-hdr">
+        <span class="panel-title">⬡ Technique Drill-Down</span>
+        <span id="dd-tid-badge" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--cyan)">Select a row</span>
+      </div>
+      <div id="dd-content">
+        <div class="dd-placeholder">Click any technique row to see<br>events, severity breakdown,<br>and recent detections</div>
+      </div>
+    </div>
+
+    <!-- Live Feed -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">⚡ Live Event Stream</span>
+        <span class="panel-badge" id="feed-count">30 events · LIVE</span>
+      </div>
+      <div class="feed" id="feed-body">
+        <div class="ev"><span class="ev-time">23:12:14</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">CVE-2026-0001 kernel priv esc</span><span class="ev-asset">linux-srv-05</span><span class="ev-tid">T1068</span></div>
+<div class="ev"><span class="ev-time">23:12:12</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">VSS shadow copy deletion</span><span class="ev-asset">ws-finance-03</span><span class="ev-tid">T1490</span></div>
+<div class="ev"><span class="ev-time">23:12:07</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">.env probe — CensysInspect</span><span class="ev-asset">web-trap-01</span><span class="ev-tid">T1552.001</span></div>
+<div class="ev"><span class="ev-time">23:12:03</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">CreateRemoteThread → lsass.exe</span><span class="ev-asset">ws-dev-12</span><span class="ev-tid">T1055.001</span></div>
+<div class="ev"><span class="ev-time">23:12:01</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">Suspicious scheduled task SYSTEM</span><span class="ev-asset">ws-finance-03</span><span class="ev-tid">T1053.005</span></div>
+<div class="ev"><span class="ev-time">23:11:56</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">Timestomping — MACE attribute modified</span><span class="ev-asset">ws-dev-12</span><span class="ev-tid">T1070.006</span></div>
+<div class="ev"><span class="ev-time">23:11:53</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">SSH brute force — root:password123</span><span class="ev-asset">honeypot-ssh-01</span><span class="ev-tid">T1110.001</span></div>
+<div class="ev"><span class="ev-time">23:11:49</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">China Chopper web shell in uploads/</span><span class="ev-asset">web-app-01</span><span class="ev-tid">T1505.003</span></div>
+<div class="ev"><span class="ev-time">23:11:45</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">RDP from powershell.exe parent</span><span class="ev-asset">ws-admin-01</span><span class="ev-tid">T1021.001</span></div>
+<div class="ev"><span class="ev-time">23:11:42</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">LSASS dump via MiniDumpWriteDump</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1003.001</span></div>
+<div class="ev"><span class="ev-time">23:11:38</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
+<div class="ev"><span class="ev-time">23:11:36</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Unsigned dependency in build pipeline</span><span class="ev-asset">build-runner-02</span><span class="ev-tid">T1195.001</span></div>
+<div class="ev"><span class="ev-time">23:11:33</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">Registry Run key — non-standard path</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1547.001</span></div>
+<div class="ev"><span class="ev-time">23:11:29</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">eBPF: cat /etc/shadow intercepted</span><span class="ev-asset">linux-srv-05</span><span class="ev-tid">T1003.008</span></div>
+<div class="ev"><span class="ev-time">23:11:26</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">OpenSSL PQC downgrade CVE-2026-1847</span><span class="ev-asset">api-gw-01</span><span class="ev-tid">T1600.001</span></div>
+<div class="ev"><span class="ev-time">23:11:24</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1558.003</span></div>
+<div class="ev"><span class="ev-time">23:11:20</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span><span class="ev-tid">T1596</span></div>
+<div class="ev"><span class="ev-time">23:11:16</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">DCSync — non-DC replication</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1003.006</span></div>
+<div class="ev"><span class="ev-time">23:11:13</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">PE analyzer: UPX-packed entropy 7.8</span><span class="ev-asset">edge-node-04</span><span class="ev-tid">T1027</span></div>
+<div class="ev"><span class="ev-time">23:11:10</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">Firmware hash mismatch — edge-node-04</span><span class="ev-asset">edge-node-04</span><span class="ev-tid">T1542.001</span></div>
+<div class="ev"><span class="ev-time">23:11:05</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">UAC bypass via fodhelper.exe</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1548.002</span></div>
+<div class="ev"><span class="ev-time">23:11:04</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1558.003</span></div>
+<div class="ev"><span class="ev-time">23:11:00</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">PE-7 retraining checkpoint F1=0.94</span><span class="ev-asset">nc-04</span><span class="ev-tid"></span></div>
+<div class="ev"><span class="ev-time">23:10:57</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
+<div class="ev"><span class="ev-time">23:10:55</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span><span class="ev-tid">T1596</span></div>
+<div class="ev"><span class="ev-time">23:10:52</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">Behinder JSP AES shell</span><span class="ev-asset">tomcat-prod-01</span><span class="ev-tid">T1505.003</span></div>
+<div class="ev"><span class="ev-time">23:10:50</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">DNS tunneling — entropy 4.2</span><span class="ev-asset">ws-finance-03</span><span class="ev-tid">T1572</span></div>
+<div class="ev"><span class="ev-time">23:10:46</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Mirai botnet Telnet staging</span><span class="ev-asset">honeypot-01</span><span class="ev-tid">T1498</span></div>
+<div class="ev"><span class="ev-time">23:10:44</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Unsigned dependency in build pipeline</span><span class="ev-asset">build-runner-02</span><span class="ev-tid">T1195.001</span></div>
+<div class="ev"><span class="ev-time">23:10:41</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Password spraying — 15 accounts</span><span class="ev-asset">ad-srv-01</span><span class="ev-tid">T1110.003</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="text-align:center;padding:12px 24px">
+  <button class="action-btn btn-dl" onclick="downloadExport()" style="font-size:12px;padding:8px 20px">⬇ Export Full Threat Report JSON</button>
+</div>
+
+<div class="footer">
+  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Real-Time Threat Board v4 &nbsp;·&nbsp;
+  313 Temporal Binding Protocol &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
+  matarmohamad313@duck.com &nbsp;·&nbsp;
+  <span style="color:var(--green)">3,462 tests GREEN</span>
+</div>
+
+<script>
+const DRILLDOWN = {
+  "T1542.001": {
+    "id": "T1542.001",
+    "name": "Pre-OS Boot: Bootkit",
+    "tactic": "Persistence",
+    "tactic_color": "#22c55e",
+    "count": 11,
+    "crits": 11,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 91,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 417,
+        "ts": "23:11:10",
+        "title": "Firmware hash mismatch \u2014 edge-node-04",
+        "sev": "CRITICAL",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 406,
+        "ts": "23:10:37",
+        "title": "TR-069 unsigned firmware push",
+        "sev": "CRITICAL",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 389,
+        "ts": "23:09:49",
+        "title": "Firmware hash mismatch \u2014 edge-node-04",
+        "sev": "CRITICAL",
+        "asset": "edge-node-04"
+      }
+    ]
+  },
+  "T1596": {
+    "id": "T1596",
+    "name": "Search Open Technical Databases",
+    "tactic": "Reconnaissance",
+    "tactic_color": "#64748b",
+    "count": 10,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 4,
+    "pct": 83,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 420,
+        "ts": "23:11:20",
+        "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+        "sev": "MEDIUM",
+        "asset": "vortex.ghost.watch.local"
+      },
+      {
+        "id": 412,
+        "ts": "23:10:55",
+        "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+        "sev": "MEDIUM",
+        "asset": "vortex.ghost.watch.local"
+      },
+      {
+        "id": 400,
+        "ts": "23:10:21",
+        "title": "New domain relationship correlated",
+        "sev": "LOW",
+        "asset": "shadow313.net"
+      }
+    ]
+  },
+  "T1505.003": {
+    "id": "T1505.003",
+    "name": "Server Software: Web Shell",
+    "tactic": "Persistence",
+    "tactic_color": "#22c55e",
+    "count": 10,
+    "crits": 10,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 83,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 429,
+        "ts": "23:11:49",
+        "title": "China Chopper web shell in uploads/",
+        "sev": "CRITICAL",
+        "asset": "web-app-01"
+      },
+      {
+        "id": 411,
+        "ts": "23:10:52",
+        "title": "Behinder JSP AES shell",
+        "sev": "CRITICAL",
+        "asset": "tomcat-prod-01"
+      },
+      {
+        "id": 404,
+        "ts": "23:10:32",
+        "title": "China Chopper web shell in uploads/",
+        "sev": "CRITICAL",
+        "asset": "web-app-01"
+      }
+    ]
+  },
+  "T1558.003": {
+    "id": "T1558.003",
+    "name": "Steal Kerberos Tickets: Kerberoasting",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 421,
+        "ts": "23:11:24",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      },
+      {
+        "id": 415,
+        "ts": "23:11:04",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      },
+      {
+        "id": 371,
+        "ts": "23:08:54",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      }
+    ]
+  },
+  "T1490": {
+    "id": "T1490",
+    "name": "Inhibit System Recovery",
+    "tactic": "Impact",
+    "tactic_color": "#dc2626",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 435,
+        "ts": "23:12:12",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 388,
+        "ts": "23:09:48",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 360,
+        "ts": "23:08:15",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1068": {
+    "id": "T1068",
+    "name": "Exploitation for Privilege Escalation",
+    "tactic": "Privilege Escalation",
+    "tactic_color": "#f97316",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 436,
+        "ts": "23:12:14",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 395,
+        "ts": "23:10:07",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 366,
+        "ts": "23:08:39",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      }
+    ]
+  },
+  "T1003.006": {
+    "id": "T1003.006",
+    "name": "OS Credential Dumping: DCSync",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 419,
+        "ts": "23:11:16",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      },
+      {
+        "id": 399,
+        "ts": "23:10:18",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      },
+      {
+        "id": 364,
+        "ts": "23:08:31",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      }
+    ]
+  },
+  "T1055.001": {
+    "id": "T1055.001",
+    "name": "Process Injection: DLL Injection",
+    "tactic": "Defense Evasion",
+    "tactic_color": "#06b6d4",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 433,
+        "ts": "23:12:03",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 390,
+        "ts": "23:09:53",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 359,
+        "ts": "23:08:11",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      }
+    ]
+  },
+  "T1070.006": {
+    "id": "T1070.006",
+    "name": "Indicator Removal: Timestomping",
+    "tactic": "Defense Evasion",
+    "tactic_color": "#06b6d4",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 431,
+        "ts": "23:11:56",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 397,
+        "ts": "23:10:13",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 373,
+        "ts": "23:08:59",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      }
+    ]
+  },
+  "T1003.001": {
+    "id": "T1003.001",
+    "name": "OS Credential Dumping: LSASS Memory",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 427,
+        "ts": "23:11:42",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 398,
+        "ts": "23:10:16",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 382,
+        "ts": "23:09:30",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1552.001": {
+    "id": "T1552.001",
+    "name": "Unsecured Credentials: Credentials In Files",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 434,
+        "ts": "23:12:07",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      },
+      {
+        "id": 387,
+        "ts": "23:09:44",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      },
+      {
+        "id": 369,
+        "ts": "23:08:49",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      }
+    ]
+  },
+  "T1600.001": {
+    "id": "T1600.001",
+    "name": "Weaken Encryption: Reduce Key Space",
+    "tactic": "Defense Evasion",
+    "tactic_color": "#06b6d4",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 422,
+        "ts": "23:11:26",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      },
+      {
+        "id": 405,
+        "ts": "23:10:34",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      },
+      {
+        "id": 362,
+        "ts": "23:08:24",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      }
+    ]
+  },
+  "T1003.008": {
+    "id": "T1003.008",
+    "name": "OS Credential Dumping: /etc/passwd",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 423,
+        "ts": "23:11:29",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 386,
+        "ts": "23:09:40",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 361,
+        "ts": "23:08:20",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      }
+    ]
+  },
+  "T1021.001": {
+    "id": "T1021.001",
+    "name": "Remote Services: Remote Desktop Protocol",
+    "tactic": "Lateral Movement",
+    "tactic_color": "#ec4899",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 428,
+        "ts": "23:11:45",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      },
+      {
+        "id": 394,
+        "ts": "23:10:05",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      },
+      {
+        "id": 367,
+        "ts": "23:08:42",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      }
+    ]
+  },
+  "T1572": {
+    "id": "T1572",
+    "name": "Protocol Tunneling",
+    "tactic": "Command and Control",
+    "tactic_color": "#3b82f6",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 410,
+        "ts": "23:10:50",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 363,
+        "ts": "23:08:26",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 326,
+        "ts": "23:06:28",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1059.001": {
+    "id": "T1059.001",
+    "name": "Command and Scripting: PowerShell",
+    "tactic": "Execution",
+    "tactic_color": "#f59e0b",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 391,
+        "ts": "23:09:55",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      },
+      {
+        "id": 383,
+        "ts": "23:09:32",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      },
+      {
+        "id": 324,
+        "ts": "23:06:22",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      }
+    ]
+  },
+  "T1548.002": {
+    "id": "T1548.002",
+    "name": "Abuse Elevation Control: Bypass UAC",
+    "tactic": "Privilege Escalation",
+    "tactic_color": "#f97316",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 416,
+        "ts": "23:11:05",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 376,
+        "ts": "23:09:09",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 329,
+        "ts": "23:06:37",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1565.001": {
+    "id": "T1565.001",
+    "name": "Data Manipulation: Stored Data Manipulation",
+    "tactic": "Impact",
+    "tactic_color": "#dc2626",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 392,
+        "ts": "23:09:59",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 375,
+        "ts": "23:09:05",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 347,
+        "ts": "23:07:34",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      }
+    ]
+  },
+  "T1550.002": {
+    "id": "T1550.002",
+    "name": "Use Alternate Auth: Pass the Hash",
+    "tactic": "Lateral Movement",
+    "tactic_color": "#ec4899",
+    "count": 5,
+    "crits": 5,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 393,
+        "ts": "23:10:02",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      },
+      {
+        "id": 380,
+        "ts": "23:09:23",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      },
+      {
+        "id": 325,
+        "ts": "23:06:26",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      }
+    ]
+  },
+  "T1110.003": {
+    "id": "T1110.003",
+    "name": "Brute Force: Password Spraying",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 407,
+        "ts": "23:10:41",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      },
+      {
+        "id": 354,
+        "ts": "23:07:53",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      },
+      {
+        "id": 336,
+        "ts": "23:07:01",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      }
+    ]
+  },
+  "T1195.001": {
+    "id": "T1195.001",
+    "name": "Supply Chain Compromise: Software Dependencies",
+    "tactic": "Initial Access",
+    "tactic_color": "#a78bfa",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 425,
+        "ts": "23:11:36",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      },
+      {
+        "id": 408,
+        "ts": "23:10:44",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      },
+      {
+        "id": 368,
+        "ts": "23:08:45",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      }
+    ]
+  },
+  "T1110.001": {
+    "id": "T1110.001",
+    "name": "Brute Force: Password Guessing",
+    "tactic": "Credential Access",
+    "tactic_color": "#ef4444",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 430,
+        "ts": "23:11:53",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      },
+      {
+        "id": 401,
+        "ts": "23:10:24",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      },
+      {
+        "id": 365,
+        "ts": "23:08:35",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      }
+    ]
+  },
+  "T1027": {
+    "id": "T1027",
+    "name": "Obfuscated Files or Information",
+    "tactic": "Defense Evasion",
+    "tactic_color": "#06b6d4",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 418,
+        "ts": "23:11:13",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 403,
+        "ts": "23:10:29",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 372,
+        "ts": "23:08:56",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      }
+    ]
+  },
+  "T1053.005": {
+    "id": "T1053.005",
+    "name": "Scheduled Task/Job: Scheduled Task",
+    "tactic": "Persistence",
+    "tactic_color": "#22c55e",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 432,
+        "ts": "23:12:01",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 396,
+        "ts": "23:10:09",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 353,
+        "ts": "23:07:50",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1547.001": {
+    "id": "T1547.001",
+    "name": "Boot Autostart: Registry Run Keys",
+    "tactic": "Persistence",
+    "tactic_color": "#22c55e",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 424,
+        "ts": "23:11:33",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 385,
+        "ts": "23:09:38",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 370,
+        "ts": "23:08:51",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1498": {
+    "id": "T1498",
+    "name": "Network Denial of Service",
+    "tactic": "Impact",
+    "tactic_color": "#dc2626",
+    "count": 4,
+    "crits": 0,
+    "highs": 4,
+    "meds": 0,
+    "lows": 0,
+    "pct": 33,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 409,
+        "ts": "23:10:46",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      },
+      {
+        "id": 381,
+        "ts": "23:09:26",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      },
+      {
+        "id": 331,
+        "ts": "23:06:42",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      }
+    ]
+  }
+};
+const LIVE_EVENTS = [
+  {
+    "sev": "CRITICAL",
+    "title": "CVE-2026-0001 kernel priv esc",
+    "technique": "T1068",
+    "asset": "linux-srv-05",
+    "time": "23:12:14"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "VSS shadow copy deletion",
+    "technique": "T1490",
+    "asset": "ws-finance-03",
+    "time": "23:12:12"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": ".env probe \u2014 CensysInspect",
+    "technique": "T1552.001",
+    "asset": "web-trap-01",
+    "time": "23:12:07"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "CreateRemoteThread \u2192 lsass.exe",
+    "technique": "T1055.001",
+    "asset": "ws-dev-12",
+    "time": "23:12:03"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "Suspicious scheduled task SYSTEM",
+    "technique": "T1053.005",
+    "asset": "ws-finance-03",
+    "time": "23:12:01"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "Timestomping \u2014 MACE attribute modified",
+    "technique": "T1070.006",
+    "asset": "ws-dev-12",
+    "time": "23:11:56"
+  },
+  {
+    "sev": "HIGH",
+    "title": "SSH brute force \u2014 root:password123",
+    "technique": "T1110.001",
+    "asset": "honeypot-ssh-01",
+    "time": "23:11:53"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "China Chopper web shell in uploads/",
+    "technique": "T1505.003",
+    "asset": "web-app-01",
+    "time": "23:11:49"
+  },
+  {
+    "sev": "HIGH",
+    "title": "RDP from powershell.exe parent",
+    "technique": "T1021.001",
+    "asset": "ws-admin-01",
+    "time": "23:11:45"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "LSASS dump via MiniDumpWriteDump",
+    "technique": "T1003.001",
+    "asset": "ws-hr-07",
+    "time": "23:11:42"
+  },
+  {
+    "sev": "LOW",
+    "title": "313-BIND chain verified \u2014 3180 binds",
+    "technique": "",
+    "asset": "ledger-01",
+    "time": "23:11:38"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Unsigned dependency in build pipeline",
+    "technique": "T1195.001",
+    "asset": "build-runner-02",
+    "time": "23:11:36"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "Registry Run key \u2014 non-standard path",
+    "technique": "T1547.001",
+    "asset": "ws-hr-07",
+    "time": "23:11:33"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "eBPF: cat /etc/shadow intercepted",
+    "technique": "T1003.008",
+    "asset": "linux-srv-05",
+    "time": "23:11:29"
+  },
+  {
+    "sev": "HIGH",
+    "title": "OpenSSL PQC downgrade CVE-2026-1847",
+    "technique": "T1600.001",
+    "asset": "api-gw-01",
+    "time": "23:11:26"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+    "technique": "T1558.003",
+    "asset": "dc-01",
+    "time": "23:11:24"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+    "technique": "T1596",
+    "asset": "vortex.ghost.watch.local",
+    "time": "23:11:20"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "DCSync \u2014 non-DC replication",
+    "technique": "T1003.006",
+    "asset": "dc-01",
+    "time": "23:11:16"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "PE analyzer: UPX-packed entropy 7.8",
+    "technique": "T1027",
+    "asset": "edge-node-04",
+    "time": "23:11:13"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "Firmware hash mismatch \u2014 edge-node-04",
+    "technique": "T1542.001",
+    "asset": "edge-node-04",
+    "time": "23:11:10"
+  },
+  {
+    "sev": "HIGH",
+    "title": "UAC bypass via fodhelper.exe",
+    "technique": "T1548.002",
+    "asset": "ws-hr-07",
+    "time": "23:11:05"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+    "technique": "T1558.003",
+    "asset": "dc-01",
+    "time": "23:11:04"
+  },
+  {
+    "sev": "LOW",
+    "title": "PE-7 retraining checkpoint F1=0.94",
+    "technique": "",
+    "asset": "nc-04",
+    "time": "23:11:00"
+  },
+  {
+    "sev": "LOW",
+    "title": "313-BIND chain verified \u2014 3180 binds",
+    "technique": "",
+    "asset": "ledger-01",
+    "time": "23:10:57"
+  },
+  {
+    "sev": "MEDIUM",
+    "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+    "technique": "T1596",
+    "asset": "vortex.ghost.watch.local",
+    "time": "23:10:55"
+  },
+  {
+    "sev": "CRITICAL",
+    "title": "Behinder JSP AES shell",
+    "technique": "T1505.003",
+    "asset": "tomcat-prod-01",
+    "time": "23:10:52"
+  },
+  {
+    "sev": "HIGH",
+    "title": "DNS tunneling \u2014 entropy 4.2",
+    "technique": "T1572",
+    "asset": "ws-finance-03",
+    "time": "23:10:50"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Mirai botnet Telnet staging",
+    "technique": "T1498",
+    "asset": "honeypot-01",
+    "time": "23:10:46"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Unsigned dependency in build pipeline",
+    "technique": "T1195.001",
+    "asset": "build-runner-02",
+    "time": "23:10:44"
+  },
+  {
+    "sev": "HIGH",
+    "title": "Password spraying \u2014 15 accounts",
+    "technique": "T1110.003",
+    "asset": "ad-srv-01",
+    "time": "23:10:41"
+  }
+];
+
+// Clock
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Tactic filter
+function filterTactic(tactic, el) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.hm-row').forEach(row => {
+    const rowTactic = row.querySelector('td:nth-child(3) span')?.textContent || '';
+    row.style.display = (tactic === 'all' || rowTactic === tactic) ? '' : 'none';
+  });
+}
+
+// Drill-down
+function selectTechnique(tid) {
+  const t = DRILLDOWN[tid];
+  if (!t) return;
+  document.querySelectorAll('.hm-row').forEach(r => r.classList.remove('selected'));
+  document.querySelector(`[data-tid="${tid}"]`)?.classList.add('selected');
+  document.getElementById('dd-tid-badge').textContent = tid + ' · ' + t.tactic;
+
+  const mainColor = t.crits > 0 ? '#ef4444' : (t.highs > 0 ? '#f59e0b' : '#06b6d4');
+  let evHtml = '';
+  if (t.events && t.events.length) {
+    t.events.forEach(e => {
+      evHtml += `<div class="dd-event">
+        <div class="dd-event-time">${e.ts}</div>
+        <div class="dd-event-title">${e.title}</div>
+        <div class="dd-event-asset">${e.asset}</div>
+      </div>`;
+    });
+  } else {
+    evHtml = '<div style="color:#475569;font-size:11px;font-family:JetBrains Mono,monospace">No recent events cached</div>';
+  }
+
+  document.getElementById('dd-content').innerHTML = `
+    <div class="dd-body">
+      <div class="dd-tid" style="color:${mainColor};text-shadow:0 0 20px ${mainColor}88">${t.id}</div>
+      <div class="dd-name">${t.name}</div>
+      <div class="dd-tactic" style="color:${t.tactic_color}">${t.tactic}</div>
+      <div class="dd-stats">
+        <div class="dd-stat"><div class="dd-stat-val" style="color:#ef4444">${t.crits}</div><div class="dd-stat-lbl">Critical</div></div>
+        <div class="dd-stat"><div class="dd-stat-val" style="color:#f59e0b">${t.highs}</div><div class="dd-stat-lbl">High</div></div>
+        <div class="dd-stat"><div class="dd-stat-val" style="color:#06b6d4">${t.meds}</div><div class="dd-stat-lbl">Medium</div></div>
+        <div class="dd-stat"><div class="dd-stat-val" style="color:#94a3b8">${t.lows}</div><div class="dd-stat-lbl">Low</div></div>
+      </div>
+      <div class="dd-events-title">Recent Events</div>
+      <div>${evHtml}</div>
+    </div>`;
+}
+
+// Live simulation
+let simInterval = null;
+let simIdx = 0;
+const allTids = Object.keys(DRILLDOWN);
+
+function runSimulation() {
+  const btn = document.querySelector('.btn-sim');
+  if (simInterval) {
+    clearInterval(simInterval);
+    simInterval = null;
+    btn.textContent = '▶ Live Simulation';
+    document.getElementById('sim-status').textContent = 'Simulation stopped';
+    document.getElementById('sim-bar').style.width = '0%';
+    return;
+  }
+  simIdx = 0;
+  btn.textContent = '⏹ Stop';
+  simInterval = setInterval(() => {
+    if (simIdx >= allTids.length) {
+      clearInterval(simInterval);
+      simInterval = null;
+      btn.textContent = '▶ Live Simulation';
+      document.getElementById('sim-status').textContent = `✅ Complete — ${allTids.length} techniques`;
+      document.getElementById('sim-bar').style.width = '100%';
+      return;
+    }
+    const tid = allTids[simIdx];
+    selectTechnique(tid);
+    const pct = ((simIdx + 1) / allTids.length * 100).toFixed(0);
+    document.getElementById('sim-bar').style.width = pct + '%';
+    document.getElementById('sim-status').textContent = `Scanning ${simIdx+1}/${allTids.length}: ${tid}`;
+    simIdx++;
+  }, 1600);
+}
+
+// Live feed — add new events periodically
+const SEV_STYLES = {
+  CRITICAL: 'background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)',
+  HIGH: 'background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)',
+  MEDIUM: 'background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)',
+  LOW: 'background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)',
+};
+let liveIdx = 0;
+function addLiveEvent() {
+  const ev = LIVE_EVENTS[liveIdx % LIVE_EVENTS.length];
+  liveIdx++;
+  const body = document.getElementById('feed-body');
+  const ts = new Date().toISOString().slice(11,19);
+  const style = SEV_STYLES[ev.sev] || SEV_STYLES.LOW;
+  const div = document.createElement('div');
+  div.className = 'ev';
+  div.innerHTML = `<span class="ev-time">${ts}</span><span class="ev-sev" style="${style}">${ev.sev}</span><span class="ev-title">${ev.title}</span><span class="ev-asset">${ev.asset}</span><span class="ev-tid">${ev.technique}</span>`;
+  body.appendChild(div);
+  while (body.children.length > 150) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+  const cnt = document.getElementById('feed-count');
+  cnt.textContent = body.children.length + ' events · LIVE';
+}
+setInterval(addLiveEvent, 2500);
+
+// Download
+function downloadExport() {
+  const data = {
+    exported: new Date().toISOString(),
+    source: 'S313NEXUS Real-Time Threat Board v4',
+    schema_version: '4.0',
+    operator: 'mohamad',
+    counts: { CRITICAL: 56, HIGH: 52, MEDIUM: 44, LOW: 20, acked: 66 },
+    attck_heatmap: DRILLDOWN,
+    events: LIVE_EVENTS,
+    evidence_receipts: 50,
+    platform: 'SHADOW313 NEXUS v4.0.0 · Ottawa, ON, Canada',
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `s313-threats-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  a.click();
+}
+
+// Auto-select first technique on load
+setTimeout(() => selectTechnique(allTids[0]), 400);
+</script>
+</body>
+</html>

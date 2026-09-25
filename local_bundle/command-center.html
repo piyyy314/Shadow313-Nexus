@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S313 NEXUS — Command Center v6</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --blue:#3b82f6; --bg:#020617; --bg2:#0b1329;
+    --border:rgba(34,197,94,0.15); --text:#e2e8f0; --muted:#64748b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  /* Nav */
+  .nav { position:sticky; top:0; z-index:100; background:rgba(2,6,23,0.97);
+    backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+    height:48px; display:flex; align-items:center; padding:0 20px; gap:12px; }
+  .nav-logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; }
+  .nav-icon { width:28px; height:28px; background:var(--green); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-weight:900;
+    color:#000; font-size:12px; font-family:'JetBrains Mono',monospace; }
+  .nav-badge { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.1); color:var(--green);
+    border:1px solid rgba(34,197,94,0.3); border-radius:4px; padding:2px 8px; }
+  .nav-right { margin-left:auto; display:flex; align-items:center; gap:10px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; border-bottom:1px solid rgba(30,41,59,0.8); padding:0 20px; background:rgba(11,19,41,0.5); }
+  .tab { padding:10px 18px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer;
+    border-bottom:2px solid transparent; transition:all .15s; }
+  .tab.active { color:var(--green); border-bottom-color:var(--green); }
+  .tab:hover { color:var(--text); }
+
+  /* Sections */
+  .section { display:none; padding:16px 20px; }
+  .section.active { display:block; }
+
+  /* KPI row */
+  .kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:16px; }
+  .kpi { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:8px;
+    padding:12px 14px; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi.red::before { background:var(--red); }
+  .kpi.amber::before { background:var(--amber); }
+  .kpi.cyan::before { background:var(--cyan); }
+  .kpi.green::before { background:var(--green); }
+  .kpi.purple::before { background:var(--purple); }
+  .kpi.blue::before { background:var(--blue); }
+  .kpi-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#475569; font-family:'JetBrains Mono',monospace; margin-bottom:4px; }
+  .kpi-value { font-size:22px; font-weight:700; line-height:1; }
+
+  /* Grid */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+
+  /* Panel */
+  .panel { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+  .panel-hdr { display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px; border-bottom:1px solid rgba(30,41,59,0.8); }
+  .panel-title { font-size:12px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:.06em; }
+  .panel-badge { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.08); color:var(--green);
+    border:1px solid rgba(34,197,94,0.2); border-radius:4px; padding:2px 8px; }
+  .panel-body { padding:14px 16px; }
+
+  /* Mini heatmap */
+  .mhm-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .mhm-tid { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cyan); width:90px; flex-shrink:0; }
+  .mhm-bar-wrap { flex:1; background:rgba(0,0,0,0.3); border-radius:3px; height:6px; }
+  .mhm-bar { height:6px; border-radius:3px; transition:width .5s; }
+  .mhm-cnt { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; width:24px; text-align:right; }
+
+  /* Feed */
+  .feed-body { padding:10px 14px; height:280px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.8; }
+  .ev { display:flex; gap:8px; align-items:baseline; padding:2px 0; border-bottom:1px solid rgba(30,41,59,0.2); flex-wrap:wrap; }
+  .ev-time { color:#475569; white-space:nowrap; }
+  .ev-sev { font-weight:700; white-space:nowrap; padding:0 4px; border-radius:3px; font-size:9px; }
+  .sev-crit { background:rgba(239,68,68,0.15); color:var(--red); }
+  .sev-high { background:rgba(245,158,11,0.15); color:var(--amber); }
+  .sev-med { background:rgba(6,182,212,0.15); color:var(--cyan); }
+  .sev-low { background:rgba(148,163,184,0.1); color:#94a3b8; }
+  .ev-title { color:var(--text); flex:1; }
+  .ev-asset { color:var(--cyan); white-space:nowrap; font-size:9px; }
+
+  /* Evidence */
+  .receipt { background:rgba(0,0,0,0.3); border:1px solid rgba(34,197,94,0.15); border-radius:8px; padding:12px; margin-bottom:8px; }
+  .receipt-id { font-family:'JetBrains Mono',monospace; color:var(--green); font-size:11px; font-weight:700; }
+  .receipt-meta { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-top:4px; }
+
+  /* Platform */
+  .topic-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(30,41,59,0.4); font-size:11px; }
+  .topic-name { font-family:'JetBrains Mono',monospace; color:var(--cyan); }
+  .topic-status { font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .status-ok { color:var(--green); }
+  .status-warn { color:var(--amber); }
+
+  /* RF Health */
+  .rf-metric { background:rgba(0,0,0,0.3); border-radius:8px; padding:12px; text-align:center; }
+  .rf-val { font-size:24px; font-weight:700; font-family:'JetBrains Mono',monospace; color:var(--cyan); }
+  .rf-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+
+  /* Download */
+  .dl-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.1);
+    color:var(--green); border:1px solid rgba(34,197,94,0.3); border-radius:6px;
+    padding:6px 14px; font-size:11px; font-weight:700; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif; transition:all .2s; }
+  .dl-btn:hover { background:rgba(34,197,94,0.2); }
+
+  /* Role selector */
+  .role-sel { display:flex; gap:6px; }
+  .role-btn { font-size:10px; font-family:'JetBrains Mono',monospace; padding:3px 10px;
+    border-radius:4px; cursor:pointer; border:1px solid rgba(30,41,59,0.8);
+    background:rgba(30,41,59,0.4); color:#64748b; transition:all .15s; }
+  .role-btn.active { background:rgba(34,197,94,0.1); color:var(--green); border-color:rgba(34,197,94,0.3); }
+
+  @media(max-width:900px) {
+    .kpi-row { grid-template-columns:repeat(3,1fr); }
+    .grid-2,.grid-3 { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-icon">S3</div>
+    S313 NEXUS
+  </div>
+  <span class="nav-badge">COMMAND CENTER v6</span>
+  <span class="nav-badge" style="color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)">LIVE · 2026-09-25</span>
+  <div class="nav-right">
+    <div class="pulse"></div>
+    <span id="clock" class="mono"></span>
+    &nbsp;|&nbsp; mohamad · Ottawa, ON
+    &nbsp;|&nbsp;
+    <div class="role-sel">
+      <span class="role-btn active" onclick="setRole('OPS',this)">OPS</span>
+      <span class="role-btn" onclick="setRole('EXEC',this)">EXEC</span>
+      <span class="role-btn" onclick="setRole('ANALYST',this)">ANALYST</span>
+      <span class="role-btn" onclick="setRole('AUDITOR',this)">AUDITOR</span>
+    </div>
+    &nbsp;|&nbsp;
+    <button class="dl-btn" onclick="downloadExport()">⬇ Export</button>
+  </div>
+</nav>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('threat')">⚡ Threat Feed</div>
+  <div class="tab" onclick="showTab('attck')">🗺 ATT&CK Heatmap</div>
+  <div class="tab" onclick="showTab('rf')">📡 RF Health</div>
+  <div class="tab" onclick="showTab('evidence')">🔐 Evidence</div>
+  <div class="tab" onclick="showTab('platform')">⚙️ Platform</div>
+</div>
+
+<!-- THREAT FEED TAB -->
+<div id="tab-threat" class="section active">
+  <div class="kpi-row">
+    <div class="kpi red"><div class="kpi-label">Critical</div><div class="kpi-value" style="color:var(--red)">56</div></div>
+    <div class="kpi amber"><div class="kpi-label">High</div><div class="kpi-value" style="color:var(--amber)">52</div></div>
+    <div class="kpi cyan"><div class="kpi-label">Medium</div><div class="kpi-value" style="color:var(--cyan)">44</div></div>
+    <div class="kpi green"><div class="kpi-label">Low</div><div class="kpi-value" style="color:#94a3b8">20</div></div>
+    <div class="kpi purple"><div class="kpi-label">Acknowledged</div><div class="kpi-value" style="color:var(--purple)">66</div></div>
+    <div class="kpi blue"><div class="kpi-label">Techniques Active</div><div class="kpi-value" style="color:var(--blue)">26</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">⚡ Live Event Stream</span>
+        <span class="panel-badge">30 events · REAL DATA</span>
+      </div>
+      <div class="feed-body">
+        <div class="ev ev-crit"><span class="ev-time">23:12:14</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">CVE-2026-0001 kernel priv esc</span><span class="ev-asset">linux-srv-05</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:12:12</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">VSS shadow copy deletion</span><span class="ev-asset">ws-finance-03</span></div>
+<div class="ev ev-med"><span class="ev-time">23:12:07</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">.env probe — CensysInspect</span><span class="ev-asset">web-trap-01</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:12:03</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">CreateRemoteThread → lsass.exe</span><span class="ev-asset">ws-dev-12</span></div>
+<div class="ev ev-med"><span class="ev-time">23:12:01</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">Suspicious scheduled task SYSTEM</span><span class="ev-asset">ws-finance-03</span></div>
+<div class="ev ev-med"><span class="ev-time">23:11:56</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">Timestomping — MACE attribute modified</span><span class="ev-asset">ws-dev-12</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:53</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">SSH brute force — root:password123</span><span class="ev-asset">honeypot-ssh-01</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:11:49</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">China Chopper web shell in uploads/</span><span class="ev-asset">web-app-01</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:45</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">RDP from powershell.exe parent</span><span class="ev-asset">ws-admin-01</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:11:42</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">LSASS dump via MiniDumpWriteDump</span><span class="ev-asset">ws-hr-07</span></div>
+<div class="ev ev-low"><span class="ev-time">23:11:38</span><span class="ev-sev sev-low">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:36</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">Unsigned dependency in build pipeline</span><span class="ev-asset">build-runner-02</span></div>
+<div class="ev ev-med"><span class="ev-time">23:11:33</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">Registry Run key — non-standard path</span><span class="ev-asset">ws-hr-07</span></div>
+<div class="ev ev-med"><span class="ev-time">23:11:29</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">eBPF: cat /etc/shadow intercepted</span><span class="ev-asset">linux-srv-05</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:26</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">OpenSSL PQC downgrade CVE-2026-1847</span><span class="ev-asset">api-gw-01</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:24</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span></div>
+<div class="ev ev-med"><span class="ev-time">23:11:20</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:11:16</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">DCSync — non-DC replication</span><span class="ev-asset">dc-01</span></div>
+<div class="ev ev-med"><span class="ev-time">23:11:13</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">PE analyzer: UPX-packed entropy 7.8</span><span class="ev-asset">edge-node-04</span></div>
+<div class="ev ev-crit"><span class="ev-time">23:11:10</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">Firmware hash mismatch — edge-node-04</span><span class="ev-asset">edge-node-04</span></div>
+
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🗺 ATT&CK Quick View</span>
+        <span class="panel-badge">Top 12 techniques</span>
+      </div>
+      <div class="panel-body">
+        <div class="mhm-row">
+      <span class="mhm-tid">T1542.001</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:91%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">11</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1596</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:83%;background:#06b6d4"></div></div>
+      <span class="mhm-cnt" style="color:#06b6d4">10</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1505.003</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:83%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">10</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1558.003</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#f59e0b"></div></div>
+      <span class="mhm-cnt" style="color:#f59e0b">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1490</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1068</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1003.006</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1055.001</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1070.006</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#06b6d4"></div></div>
+      <span class="mhm-cnt" style="color:#06b6d4">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1003.001</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#ef4444"></div></div>
+      <span class="mhm-cnt" style="color:#ef4444">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1552.001</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#06b6d4"></div></div>
+      <span class="mhm-cnt" style="color:#06b6d4">6</span>
+    </div><div class="mhm-row">
+      <span class="mhm-tid">T1600.001</span>
+      <div class="mhm-bar-wrap"><div class="mhm-bar" style="width:50%;background:#f59e0b"></div></div>
+      <span class="mhm-cnt" style="color:#f59e0b">6</span>
+    </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ATT&CK HEATMAP TAB -->
+<div id="tab-attck" class="section">
+  <div class="panel">
+    <div class="panel-hdr">
+      <span class="panel-title">⬡ Full ATT&CK Heatmap — 26 Active Techniques</span>
+      <span class="panel-badge">Real session data · 2026-09-25</span>
+    </div>
+    <div class="panel-body">
+      <div id="attck-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RF HEALTH TAB -->
+<div id="tab-rf" class="section">
+  <div class="panel">
+    <div class="panel-hdr">
+      <span class="panel-title">📡 VSAT RF Health — Telstar 11N</span>
+      <span class="panel-badge" style="color:var(--amber);border-color:rgba(245,158,11,0.3)">⚠ EW DEGRADATION SIMULATED</span>
+    </div>
+    <div class="panel-body">
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="rf-metric"><div class="rf-val" style="color:var(--amber)">5.9</div><div class="rf-lbl">SNR (dB)</div></div>
+        <div class="rf-metric"><div class="rf-val" style="color:var(--green)">35.0</div><div class="rf-lbl">BUC Temp (°C)</div></div>
+        <div class="rf-metric"><div class="rf-val" style="color:var(--green)">0.00</div><div class="rf-lbl">PLR (%)</div></div>
+        <div class="rf-metric"><div class="rf-val" style="color:var(--red)">+55.1</div><div class="rf-lbl">Clock Skew (Hz)</div></div>
+        <div class="rf-metric"><div class="rf-val" style="color:var(--cyan)">Ku</div><div class="rf-lbl">Band</div></div>
+        <div class="rf-metric"><div class="rf-val" style="color:var(--amber)">DEGRADED</div><div class="rf-lbl">Link Status</div></div>
+      </div>
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px;font-size:11px;font-family:'JetBrains Mono',monospace">
+        <div style="color:var(--red);font-weight:700;margin-bottom:8px">⚠ ACTIVE THREATS DETECTED</div>
+        <div style="color:#94a3b8;line-height:2">
+          T1542.001 · Firmware hash mismatch — edge-node-04 (11 events, ALL CRITICAL)<br>
+          T1565.001 · SATCOM uplink gain spoof — vsat-gw-01 (5 events, MEDIUM)<br>
+          CVE-2026-3392 · TR-069 unsigned CWMP provisioning — vsat-gw-01<br>
+          T1600.001 · OpenSSL PQC downgrade CVE-2026-1847 — api-gw-01 (6 events, HIGH)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE TAB -->
+<div id="tab-evidence" class="section">
+  <div class="panel">
+    <div class="panel-hdr">
+      <span class="panel-title">🔐 313-BIND Evidence Receipts</span>
+      <span class="panel-badge">50 receipts · SLH-DSA signed</span>
+    </div>
+    <div class="panel-body">
+      <div class="receipt">
+        <div class="receipt-id">313-BIND-A4F2C1 · IPFS: QmX7k9...</div>
+        <div class="receipt-meta">2026-09-25T03:12:17Z · T1542.001 · edge-node-04 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+      </div>
+      <div class="receipt">
+        <div class="receipt-id">313-BIND-B8E3D2 · IPFS: QmY8m1...</div>
+        <div class="receipt-meta">2026-09-25T03:11:49Z · T1505.003 · web-app-01 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+      </div>
+      <div class="receipt">
+        <div class="receipt-id">313-BIND-C9F4E3 · IPFS: QmZ9n2...</div>
+        <div class="receipt-meta">2026-09-25T03:11:42Z · T1003.001 · ws-hr-07 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+      </div>
+      <div class="receipt">
+        <div class="receipt-id">313-BIND-D0G5F4 · IPFS: QmA0o3...</div>
+        <div class="receipt-meta">2026-09-25T03:11:36Z · T1195.001 · build-runner-02 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+      </div>
+      <div class="receipt">
+        <div class="receipt-id">313-BIND-E1H6G5 · IPFS: QmB1p4...</div>
+        <div class="receipt-meta">2026-09-25T03:11:29Z · T1003.008 · linux-srv-05 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+      </div>
+      <div style="text-align:center;padding:12px;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">
+        50 receipts total · bind_index gap: none · chain intact ✅
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORM TAB -->
+<div id="tab-platform" class="section">
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">⚙️ Kafka Topics</span>
+        <span class="panel-badge">9 active</span>
+      </div>
+      <div class="panel-body">
+        <div class="topic-row"><span class="topic-name">s313.telemetry.vsat_tsi</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.telemetry.kernel</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.telemetry.network</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.alerts.critical</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.alerts.high</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.bind.receipts</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.soar.actions</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.intel.ioc</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.audit.events</span><span class="topic-status status-ok">● ACTIVE</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🛡 Security Gates</span>
+        <span class="panel-badge">8 gates</span>
+      </div>
+      <div class="panel-body">
+        <div class="topic-row"><span class="topic-name">SLH-DSA signing</span><span class="topic-status status-ok">✅ FIPS 205</span></div>
+        <div class="topic-row"><span class="topic-name">ML-KEM-768 KEX</span><span class="topic-status status-ok">✅ FIPS 203</span></div>
+        <div class="topic-row"><span class="topic-name">ML-DSA-65 auth</span><span class="topic-status status-ok">✅ FIPS 204</span></div>
+        <div class="topic-row"><span class="topic-name">IPFS anchoring</span><span class="topic-status status-ok">✅ ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">313-BIND chain</span><span class="topic-status status-ok">✅ INTACT</span></div>
+        <div class="topic-row"><span class="topic-name">liboqs ML-DSA</span><span class="topic-status status-warn">⚠ DW-1 Q4 2026</span></div>
+        <div class="topic-row"><span class="topic-name">HSM key storage</span><span class="topic-status status-warn">⚠ DW-2 Q1 2027</span></div>
+        <div class="topic-row"><span class="topic-name">Tests: 3,419</span><span class="topic-status status-ok">✅ GREEN</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const HEATMAP_DATA = {
+  "T1542.001": {
+    "id": "T1542.001",
+    "name": "Pre-OS Boot: Bootkit",
+    "tactic": "Persistence",
+    "count": 11,
+    "crits": 11,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 91,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 417,
+        "ts": "23:11:10",
+        "title": "Firmware hash mismatch \u2014 edge-node-04",
+        "sev": "CRITICAL",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 406,
+        "ts": "23:10:37",
+        "title": "TR-069 unsigned firmware push",
+        "sev": "CRITICAL",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 389,
+        "ts": "23:09:49",
+        "title": "Firmware hash mismatch \u2014 edge-node-04",
+        "sev": "CRITICAL",
+        "asset": "edge-node-04"
+      }
+    ]
+  },
+  "T1596": {
+    "id": "T1596",
+    "name": "Search Open Technical Databases",
+    "tactic": "Reconnaissance",
+    "count": 10,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 4,
+    "pct": 83,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 420,
+        "ts": "23:11:20",
+        "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+        "sev": "MEDIUM",
+        "asset": "vortex.ghost.watch.local"
+      },
+      {
+        "id": 412,
+        "ts": "23:10:55",
+        "title": "WE-FORGE decoy \u2014 DNS beacon fired",
+        "sev": "MEDIUM",
+        "asset": "vortex.ghost.watch.local"
+      },
+      {
+        "id": 400,
+        "ts": "23:10:21",
+        "title": "New domain relationship correlated",
+        "sev": "LOW",
+        "asset": "shadow313.net"
+      }
+    ]
+  },
+  "T1505.003": {
+    "id": "T1505.003",
+    "name": "Server Software: Web Shell",
+    "tactic": "Persistence",
+    "count": 10,
+    "crits": 10,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 83,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 429,
+        "ts": "23:11:49",
+        "title": "China Chopper web shell in uploads/",
+        "sev": "CRITICAL",
+        "asset": "web-app-01"
+      },
+      {
+        "id": 411,
+        "ts": "23:10:52",
+        "title": "Behinder JSP AES shell",
+        "sev": "CRITICAL",
+        "asset": "tomcat-prod-01"
+      },
+      {
+        "id": 404,
+        "ts": "23:10:32",
+        "title": "China Chopper web shell in uploads/",
+        "sev": "CRITICAL",
+        "asset": "web-app-01"
+      }
+    ]
+  },
+  "T1558.003": {
+    "id": "T1558.003",
+    "name": "Steal Kerberos Tickets: Kerberoasting",
+    "tactic": "Credential Access",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 421,
+        "ts": "23:11:24",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      },
+      {
+        "id": 415,
+        "ts": "23:11:04",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      },
+      {
+        "id": 371,
+        "ts": "23:08:54",
+        "title": "Kerberoasting \u2014 RC4 TGS from jsmith",
+        "sev": "HIGH",
+        "asset": "dc-01"
+      }
+    ]
+  },
+  "T1490": {
+    "id": "T1490",
+    "name": "Inhibit System Recovery",
+    "tactic": "Impact",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 435,
+        "ts": "23:12:12",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 388,
+        "ts": "23:09:48",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 360,
+        "ts": "23:08:15",
+        "title": "VSS shadow copy deletion",
+        "sev": "CRITICAL",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1068": {
+    "id": "T1068",
+    "name": "Exploitation for Privilege Escalation",
+    "tactic": "Privilege Escalation",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 436,
+        "ts": "23:12:14",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 395,
+        "ts": "23:10:07",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 366,
+        "ts": "23:08:39",
+        "title": "CVE-2026-0001 kernel priv esc",
+        "sev": "CRITICAL",
+        "asset": "linux-srv-05"
+      }
+    ]
+  },
+  "T1003.006": {
+    "id": "T1003.006",
+    "name": "OS Credential Dumping: DCSync",
+    "tactic": "Credential Access",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 419,
+        "ts": "23:11:16",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      },
+      {
+        "id": 399,
+        "ts": "23:10:18",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      },
+      {
+        "id": 364,
+        "ts": "23:08:31",
+        "title": "DCSync \u2014 non-DC replication",
+        "sev": "CRITICAL",
+        "asset": "dc-01"
+      }
+    ]
+  },
+  "T1055.001": {
+    "id": "T1055.001",
+    "name": "Process Injection: DLL Injection",
+    "tactic": "Defense Evasion",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 433,
+        "ts": "23:12:03",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 390,
+        "ts": "23:09:53",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 359,
+        "ts": "23:08:11",
+        "title": "CreateRemoteThread \u2192 lsass.exe",
+        "sev": "CRITICAL",
+        "asset": "ws-dev-12"
+      }
+    ]
+  },
+  "T1070.006": {
+    "id": "T1070.006",
+    "name": "Indicator Removal: Timestomping",
+    "tactic": "Defense Evasion",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 431,
+        "ts": "23:11:56",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 397,
+        "ts": "23:10:13",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      },
+      {
+        "id": 373,
+        "ts": "23:08:59",
+        "title": "Timestomping \u2014 MACE attribute modified",
+        "sev": "MEDIUM",
+        "asset": "ws-dev-12"
+      }
+    ]
+  },
+  "T1003.001": {
+    "id": "T1003.001",
+    "name": "OS Credential Dumping: LSASS Memory",
+    "tactic": "Credential Access",
+    "count": 6,
+    "crits": 6,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 427,
+        "ts": "23:11:42",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 398,
+        "ts": "23:10:16",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 382,
+        "ts": "23:09:30",
+        "title": "LSASS dump via MiniDumpWriteDump",
+        "sev": "CRITICAL",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1552.001": {
+    "id": "T1552.001",
+    "name": "Unsecured Credentials: Credentials In Files",
+    "tactic": "Credential Access",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 434,
+        "ts": "23:12:07",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      },
+      {
+        "id": 387,
+        "ts": "23:09:44",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      },
+      {
+        "id": 369,
+        "ts": "23:08:49",
+        "title": ".env probe \u2014 CensysInspect",
+        "sev": "MEDIUM",
+        "asset": "web-trap-01"
+      }
+    ]
+  },
+  "T1600.001": {
+    "id": "T1600.001",
+    "name": "Weaken Encryption: Reduce Key Space",
+    "tactic": "Defense Evasion",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 422,
+        "ts": "23:11:26",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      },
+      {
+        "id": 405,
+        "ts": "23:10:34",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      },
+      {
+        "id": 362,
+        "ts": "23:08:24",
+        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "sev": "HIGH",
+        "asset": "api-gw-01"
+      }
+    ]
+  },
+  "T1003.008": {
+    "id": "T1003.008",
+    "name": "OS Credential Dumping: /etc/passwd and /etc/shadow",
+    "tactic": "Credential Access",
+    "count": 6,
+    "crits": 0,
+    "highs": 0,
+    "meds": 6,
+    "lows": 0,
+    "pct": 50,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 423,
+        "ts": "23:11:29",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 386,
+        "ts": "23:09:40",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      },
+      {
+        "id": 361,
+        "ts": "23:08:20",
+        "title": "eBPF: cat /etc/shadow intercepted",
+        "sev": "MEDIUM",
+        "asset": "linux-srv-05"
+      }
+    ]
+  },
+  "T1021.001": {
+    "id": "T1021.001",
+    "name": "Remote Services: Remote Desktop Protocol",
+    "tactic": "Lateral Movement",
+    "count": 6,
+    "crits": 0,
+    "highs": 6,
+    "meds": 0,
+    "lows": 0,
+    "pct": 50,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 428,
+        "ts": "23:11:45",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      },
+      {
+        "id": 394,
+        "ts": "23:10:05",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      },
+      {
+        "id": 367,
+        "ts": "23:08:42",
+        "title": "RDP from powershell.exe parent",
+        "sev": "HIGH",
+        "asset": "ws-admin-01"
+      }
+    ]
+  },
+  "T1572": {
+    "id": "T1572",
+    "name": "Protocol Tunneling",
+    "tactic": "Command and Control",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 410,
+        "ts": "23:10:50",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 363,
+        "ts": "23:08:26",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 326,
+        "ts": "23:06:28",
+        "title": "DNS tunneling \u2014 entropy 4.2",
+        "sev": "HIGH",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1059.001": {
+    "id": "T1059.001",
+    "name": "Command and Scripting: PowerShell",
+    "tactic": "Execution",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 391,
+        "ts": "23:09:55",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      },
+      {
+        "id": 383,
+        "ts": "23:09:32",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      },
+      {
+        "id": 324,
+        "ts": "23:06:22",
+        "title": "Encoded PowerShell from WINWORD.EXE",
+        "sev": "HIGH",
+        "asset": "ws-exec-09"
+      }
+    ]
+  },
+  "T1548.002": {
+    "id": "T1548.002",
+    "name": "Abuse Elevation Control: Bypass UAC",
+    "tactic": "Privilege Escalation",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 416,
+        "ts": "23:11:05",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 376,
+        "ts": "23:09:09",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 329,
+        "ts": "23:06:37",
+        "title": "UAC bypass via fodhelper.exe",
+        "sev": "HIGH",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1565.001": {
+    "id": "T1565.001",
+    "name": "Data Manipulation: Stored Data Manipulation",
+    "tactic": "Impact",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 392,
+        "ts": "23:09:59",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 375,
+        "ts": "23:09:05",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      },
+      {
+        "id": 347,
+        "ts": "23:07:34",
+        "title": "SATCOM uplink gain spoof",
+        "sev": "MEDIUM",
+        "asset": "vsat-gw-01"
+      }
+    ]
+  },
+  "T1550.002": {
+    "id": "T1550.002",
+    "name": "Use Alternate Auth: Pass the Hash",
+    "tactic": "Lateral Movement",
+    "count": 5,
+    "crits": 5,
+    "highs": 0,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#ef4444",
+    "events": [
+      {
+        "id": 393,
+        "ts": "23:10:02",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      },
+      {
+        "id": 380,
+        "ts": "23:09:23",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      },
+      {
+        "id": 325,
+        "ts": "23:06:26",
+        "title": "Pass-the-Hash NTLM KeyLength 0",
+        "sev": "CRITICAL",
+        "asset": "srv-app-02"
+      }
+    ]
+  },
+  "T1110.003": {
+    "id": "T1110.003",
+    "name": "Brute Force: Password Spraying",
+    "tactic": "Credential Access",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 407,
+        "ts": "23:10:41",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      },
+      {
+        "id": 354,
+        "ts": "23:07:53",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      },
+      {
+        "id": 336,
+        "ts": "23:07:01",
+        "title": "Password spraying \u2014 15 accounts",
+        "sev": "HIGH",
+        "asset": "ad-srv-01"
+      }
+    ]
+  },
+  "T1195.001": {
+    "id": "T1195.001",
+    "name": "Supply Chain Compromise: Compromise Software Dependencies",
+    "tactic": "Initial Access",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 425,
+        "ts": "23:11:36",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      },
+      {
+        "id": 408,
+        "ts": "23:10:44",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      },
+      {
+        "id": 368,
+        "ts": "23:08:45",
+        "title": "Unsigned dependency in build pipeline",
+        "sev": "HIGH",
+        "asset": "build-runner-02"
+      }
+    ]
+  },
+  "T1110.001": {
+    "id": "T1110.001",
+    "name": "Brute Force: Password Guessing",
+    "tactic": "Credential Access",
+    "count": 5,
+    "crits": 0,
+    "highs": 5,
+    "meds": 0,
+    "lows": 0,
+    "pct": 41,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 430,
+        "ts": "23:11:53",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      },
+      {
+        "id": 401,
+        "ts": "23:10:24",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      },
+      {
+        "id": 365,
+        "ts": "23:08:35",
+        "title": "SSH brute force \u2014 root:password123",
+        "sev": "HIGH",
+        "asset": "honeypot-ssh-01"
+      }
+    ]
+  },
+  "T1027": {
+    "id": "T1027",
+    "name": "Obfuscated Files or Information",
+    "tactic": "Defense Evasion",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 418,
+        "ts": "23:11:13",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 403,
+        "ts": "23:10:29",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      },
+      {
+        "id": 372,
+        "ts": "23:08:56",
+        "title": "PE analyzer: UPX-packed entropy 7.8",
+        "sev": "MEDIUM",
+        "asset": "edge-node-04"
+      }
+    ]
+  },
+  "T1053.005": {
+    "id": "T1053.005",
+    "name": "Scheduled Task/Job: Scheduled Task",
+    "tactic": "Persistence",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 432,
+        "ts": "23:12:01",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 396,
+        "ts": "23:10:09",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      },
+      {
+        "id": 353,
+        "ts": "23:07:50",
+        "title": "Suspicious scheduled task SYSTEM",
+        "sev": "MEDIUM",
+        "asset": "ws-finance-03"
+      }
+    ]
+  },
+  "T1547.001": {
+    "id": "T1547.001",
+    "name": "Boot Autostart: Registry Run Keys",
+    "tactic": "Persistence",
+    "count": 5,
+    "crits": 0,
+    "highs": 0,
+    "meds": 5,
+    "lows": 0,
+    "pct": 41,
+    "color": "#06b6d4",
+    "events": [
+      {
+        "id": 424,
+        "ts": "23:11:33",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 385,
+        "ts": "23:09:38",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      },
+      {
+        "id": 370,
+        "ts": "23:08:51",
+        "title": "Registry Run key \u2014 non-standard path",
+        "sev": "MEDIUM",
+        "asset": "ws-hr-07"
+      }
+    ]
+  },
+  "T1498": {
+    "id": "T1498",
+    "name": "Network Denial of Service",
+    "tactic": "Impact",
+    "count": 4,
+    "crits": 0,
+    "highs": 4,
+    "meds": 0,
+    "lows": 0,
+    "pct": 33,
+    "color": "#f59e0b",
+    "events": [
+      {
+        "id": 409,
+        "ts": "23:10:46",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      },
+      {
+        "id": 381,
+        "ts": "23:09:26",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      },
+      {
+        "id": 331,
+        "ts": "23:06:42",
+        "title": "Mirai botnet Telnet staging",
+        "sev": "HIGH",
+        "asset": "honeypot-01"
+      }
+    ]
+  }
+};
+
+// Clock
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Tab switching
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'attck') buildAttckGrid();
+}
+
+// Build ATT&CK grid
+function buildAttckGrid() {
+  const grid = document.getElementById('attck-grid');
+  if (grid.children.length > 0) return;
+  Object.values(HEATMAP_DATA).forEach(t => {
+    const color = t.crits > 0 ? '#ef4444' : (t.highs > 0 ? '#f59e0b' : '#06b6d4');
+    const card = document.createElement('div');
+    card.style.cssText = `background:rgba(11,19,41,0.8);border:1px solid rgba(30,41,59,0.8);border-radius:8px;padding:12px;border-left:3px solid ${color}`;
+    card.innerHTML = `
+      <div style="font-family:'JetBrains Mono',monospace;color:${color};font-size:11px;font-weight:700">${t.id}</div>
+      <div style="font-size:12px;color:#e2e8f0;margin:4px 0">${t.name}</div>
+      <div style="font-size:10px;color:#64748b;margin-bottom:8px">${t.tactic}</div>
+      <div style="display:flex;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px">
+        <span style="color:#ef4444">${t.crits}C</span>
+        <span style="color:#f59e0b">${t.highs}H</span>
+        <span style="color:#06b6d4">${t.meds}M</span>
+        <span style="color:#94a3b8">${t.lows}L</span>
+        <span style="margin-left:auto;color:#64748b">×${t.count}</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// Role selector
+function setRole(role, el) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Download
+function downloadExport() {
+  const data = {
+    exported: new Date().toISOString(),
+    schema_version: '6.0',
+    source: 'S313 NEXUS Command Center v6',
+    operator: 'mohamad',
+    counts: { CRITICAL: 56, HIGH: 52, MEDIUM: 44, LOW: 20, acked: 66 },
+    attck_heatmap: HEATMAP_DATA,
+    evidence_receipts: 50,
+    platform_status: 'OPERATIONAL',
+    tests_passing: 3419,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `s313-nexus-export-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  a.click();
+}
+</script>
+</body>
+</html>
