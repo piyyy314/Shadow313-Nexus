@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Federated Threat Intelligence Mesh — Shadow313 NEXUS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root{--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a78bfa;--blue:#3b82f6;--bg:#020617;--bg2:#0b1329;--bg3:#0f172a;--border2:rgba(30,41,59,0.8);--text:#e2e8f0;--muted:#64748b;--dim:#334155;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .nav{background:rgba(2,6,23,0.97);border-bottom:1px solid rgba(34,197,94,0.15);height:44px;display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);}
+  .nav-logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:14px;color:var(--text);flex-shrink:0;}
+  .nav-logo-icon{width:24px;height:24px;background:var(--green);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:11px;}
+  .nav-link{padding:4px 10px;border-radius:5px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .15s;}
+  .nav-link:hover{color:var(--text);background:rgba(34,197,94,0.08);}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+
+  /* Hero */
+  .hero{padding:48px 24px 40px;background:linear-gradient(135deg,#020617 0%,#0b1329 50%,#020617 100%);border-bottom:1px solid rgba(34,197,94,0.08);text-align:center;}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:20px;padding:4px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:20px;}
+  .hero h1{font-size:clamp(28px,4vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px;}
+  .hero h1 .accent{color:var(--green);text-shadow:0 0 30px rgba(34,197,94,0.3);}
+  .hero p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto 28px;line-height:1.7;}
+  .hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+  .hero-stat{text-align:center;}
+  .hero-stat-val{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;text-shadow:0 0 20px currentColor;}
+  .hero-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+  .hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .badge{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;font-weight:700;letter-spacing:.06em;}
+  .bg{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+  .bc{background:rgba(6,182,212,0.12);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+  .bp{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25);}
+  .ba{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+
+  /* Main layout */
+  .con{max-width:1200px;margin:0 auto;padding:0 24px;}
+  .sec{padding:48px 24px;}
+  .sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:24px;display:flex;align-items:center;gap:8px;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+  /* Feature cards — matching Copilot app style */
+  .feature-card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:28px;transition:all .2s;position:relative;overflow:hidden;}
+  .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .feature-card.green::before{background:linear-gradient(to right,var(--green),#16a34a);}
+  .feature-card.cyan::before{background:linear-gradient(to right,var(--cyan),#0891b2);}
+  .feature-card.purple::before{background:linear-gradient(to right,var(--purple),#7c3aed);}
+  .feature-card.amber::before{background:linear-gradient(to right,var(--amber),#d97706);}
+  .feature-card:hover{border-color:rgba(34,197,94,0.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+  .feature-icon{font-size:32px;margin-bottom:16px;}
+  .feature-title{font-size:18px;font-weight:700;margin-bottom:8px;}
+  .feature-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
+  .feature-tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 8px;border-radius:4px;font-weight:600;}
+  .tag-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
+  .tag-cyan{background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.2);}
+  .tag-purple{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2);}
+  .tag-amber{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.2);}
+
+  /* Peer network visualization */
+  .peer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+  .peer-node{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:12px;text-align:center;transition:all .2s;cursor:pointer;}
+  .peer-node:hover{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.04);}
+  .peer-node.active{border-color:rgba(34,197,94,0.5);background:rgba(34,197,94,0.06);}
+  .peer-node.warning{border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.04);}
+  .peer-icon{font-size:20px;margin-bottom:6px;}
+  .peer-name{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .peer-status{font-size:9px;font-family:'JetBrains Mono',monospace;margin-top:4px;}
+  .peer-status.ok{color:var(--green);}
+  .peer-status.warn{color:var(--amber);}
+  .peer-status.off{color:var(--red);}
+
+  /* Intel feed */
+  .intel-feed{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;}
+  .intel-feed-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,0.3);}
+  .intel-feed-title{font-size:12px;font-weight:700;color:var(--text);}
+  .intel-feed-body{padding:12px;height:280px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;}
+  .intel-ev{display:flex;gap:10px;align-items:baseline;padding:3px 0;border-bottom:1px solid rgba(30,41,59,0.3);}
+  .intel-ev-time{color:var(--dim);white-space:nowrap;}
+  .intel-ev-type{font-weight:700;white-space:nowrap;padding:0 5px;border-radius:3px;font-size:9px;}
+  .type-ioc{background:rgba(239,68,68,0.15);color:var(--red);}
+  .type-cve{background:rgba(245,158,11,0.15);color:var(--amber);}
+  .type-attck{background:rgba(167,139,250,0.15);color:var(--purple);}
+  .type-honey{background:rgba(34,197,94,0.15);color:var(--green);}
+  .type-hash{background:rgba(6,182,212,0.15);color:var(--cyan);}
+  .intel-ev-msg{color:var(--text);flex:1;}
+  .intel-ev-peer{color:var(--cyan);font-size:9px;white-space:nowrap;}
+
+  /* Trust model */
+  .trust-bar{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,41,59,0.3);}
+  .trust-bar:last-child{border-bottom:none;}
+  .trust-peer{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);width:140px;flex-shrink:0;}
+  .trust-bar-wrap{flex:1;background:rgba(0,0,0,0.4);border-radius:3px;height:8px;}
+  .trust-bar-fill{height:8px;border-radius:3px;transition:width .5s;}
+  .trust-score{font-family:'JetBrains Mono',monospace;font-size:11px;width:40px;text-align:right;}
+  .trust-status{font-size:9px;font-family:'JetBrains Mono',monospace;width:80px;text-align:right;}
+
+  /* CLI demo */
+  .cli-demo{background:#000;border:1px solid rgba(34,197,94,0.2);border-radius:10px;overflow:hidden;}
+  .cli-bar{background:var(--bg2);border-bottom:1px solid rgba(30,41,59,0.8);padding:8px 14px;display:flex;align-items:center;gap:6px;}
+  .cli-dot{width:10px;height:10px;border-radius:50%;}
+  .cli-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:#94a3b8;}
+  .cli-prompt{color:var(--green);}
+  .cli-cmd{color:var(--text);}
+  .cli-out{color:#94a3b8;}
+  .cli-ok{color:var(--green);}
+  .cli-warn{color:var(--amber);}
+
+  /* CTA */
+  .cta-section{background:linear-gradient(135deg,rgba(34,197,94,0.06) 0%,rgba(6,182,212,0.04) 100%);border:1px solid rgba(34,197,94,0.15);border-radius:16px;padding:40px;text-align:center;margin:0 24px 48px;}
+  .cta-title{font-size:28px;font-weight:800;margin-bottom:12px;}
+  .cta-desc{font-size:14px;color:var(--muted);margin-bottom:28px;}
+  .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:'Space Grotesk',sans-serif;}
+  .btn-green{background:var(--green);color:#000;}
+  .btn-green:hover{background:#16a34a;}
+  .btn-outline{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+  .btn-outline:hover{background:rgba(34,197,94,0.2);}
+
+  .footer{text-align:center;padding:28px 24px;font-size:10px;color:var(--dim);border-top:1px solid rgba(34,197,94,0.08);font-family:'JetBrains Mono',monospace;background:var(--bg);}
+  @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr;}.peer-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:600px){.g2,.g3,.g4,.peer-grid{grid-template-columns:1fr;}.hero-stats{gap:16px;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-icon">S3</div>SHADOW313 NEXUS</div>
+  <a class="nav-link" href="./index.html">Home</a>
+  <a class="nav-link" href="./platform.html">Platform</a>
+  <a class="nav-link" href="./tools.html">Tools</a>
+  <a class="nav-link" href="./marketplace.html">Marketplace</a>
+  <div class="nav-right">
+    <div class="pulse"></div>
+    <span id="clock" class="mono"></span>
+    &nbsp;|&nbsp; <span style="color:var(--green)">MESH ACTIVE</span>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge"><div class="pulse"></div>GROUP C · ADVANCED THREAT OPERATIONS</div>
+  <h1>Federated Threat <span class="accent">Intelligence Mesh</span></h1>
+  <p>Decentralized peer-to-peer threat intelligence sharing — 2 to 10,000+ peers, no central server, cryptographically signed packages, differential privacy.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val" style="color:var(--green)">10,000+</div><div class="hero-stat-lbl">Max Peers</div></div>
+    <div class="hero-stat"><div class="hero-stat-val" style="color:var(--cyan)">0</div><div class="hero-stat-lbl">Central Servers</div></div>
+    <div class="hero-stat"><div class="hero-stat-val" style="color:var(--purple)">ZK</div><div class="hero-stat-lbl">Attestation</div></div>
+    <div class="hero-stat"><div class="hero-stat-val" style="color:var(--amber)">cosign</div><div class="hero-stat-lbl">Package Signing</div></div>
+  </div>
+  <div class="hero-badges">
+    <span class="badge bg">libp2p GOSSIP</span>
+    <span class="badge bc">mDNS · DHT</span>
+    <span class="badge bp">ZK ATTESTATION</span>
+    <span class="badge ba">DIFF. PRIVACY</span>
+  </div>
+</div>
+
+<!-- Architecture Features -->
+<div class="sec con">
+  <div class="sec-title">⬡ Core Architecture</div>
+  <div class="g2" style="margin-bottom:32px">
+    <div class="feature-card green">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-title">P2P Architecture</div>
+      <div class="feature-desc">Fully decentralized mesh with no central server. Peers discover each other automatically via mDNS on local networks and DHT for internet-wide routing. Gossip protocol ensures resilient propagation even with high churn.</div>
+      <div class="feature-tags">
+        <span class="tag tag-green">libp2p</span>
+        <span class="tag tag-cyan">mDNS</span>
+        <span class="tag tag-cyan">DHT</span>
+        <span class="tag tag-green">Gossip</span>
+        <span class="tag tag-green">No SPOF</span>
+      </div>
+    </div>
+    <div class="feature-card cyan">
+      <div class="feature-icon">📦</div>
+      <div class="feature-title">Shared Intel Types</div>
+      <div class="feature-desc">Peers share enriched, structured threat intelligence across the mesh. Each package is typed, versioned, and schema-validated before propagation to downstream peers.</div>
+      <div class="feature-tags">
+        <span class="tag tag-cyan">IOCs</span>
+        <span class="tag tag-amber">CVE Enrichments</span>
+        <span class="tag tag-purple">MITRE ATT&amp;CK</span>
+        <span class="tag tag-green">Honeypot Captures</span>
+        <span class="tag tag-cyan">Malware Hashes</span>
+      </div>
+    </div>
+    <div class="feature-card purple">
+      <div class="feature-icon">🔐</div>
+      <div class="feature-title">Trust Model</div>
+      <div class="feature-desc">Every intel package is cosign-signed before emission. Peers maintain a reputation score for each neighbour. Low-trust or malformed packages are silently rejected; repeated offenders are automatically quarantined.</div>
+      <div class="feature-tags">
+        <span class="tag tag-purple">cosign</span>
+        <span class="tag tag-amber">Reputation Score</span>
+        <span class="tag tag-green">Package Signing</span>
+        <span class="tag tag-amber">Auto-Quarantine</span>
+      </div>
+    </div>
+    <div class="feature-card amber">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Privacy</div>
+      <div class="feature-desc">Differential privacy noise is injected into shared data to prevent peer fingerprinting. Zero-knowledge attestation lets peers prove intel validity without revealing source identity. Sharing is always opt-in only.</div>
+      <div class="feature-tags">
+        <span class="tag tag-amber">Diff. Privacy</span>
+        <span class="tag tag-purple">ZK Attestation</span>
+        <span class="tag tag-green">Opt-In Only</span>
+        <span class="tag tag-cyan">No Fingerprinting</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Peer Network -->
+  <div class="sec-title">📡 Live Peer Network</div>
+  <div class="peer-grid" id="peer-grid">
+    <div class="peer-node active" onclick="selectPeer(this,'Ottawa-Alpha')"><div class="peer-icon">🖥️</div><div class="peer-name">Ottawa-Alpha</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'London-Beta')"><div class="peer-icon">🖥️</div><div class="peer-name">London-Beta</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Tokyo-Gamma')"><div class="peer-icon">🖥️</div><div class="peer-name">Tokyo-Gamma</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node warning" onclick="selectPeer(this,'Berlin-Delta')"><div class="peer-icon">🖥️</div><div class="peer-name">Berlin-Delta</div><div class="peer-status warn">⚠ LOW TRUST</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Sydney-Epsilon')"><div class="peer-icon">🖥️</div><div class="peer-name">Sydney-Epsilon</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node" onclick="selectPeer(this,'Mumbai-Zeta')"><div class="peer-icon">🖥️</div><div class="peer-name">Mumbai-Zeta</div><div class="peer-status off">○ OFFLINE</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'NYC-Eta')"><div class="peer-icon">🖥️</div><div class="peer-name">NYC-Eta</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Seoul-Theta')"><div class="peer-icon">🖥️</div><div class="peer-name">Seoul-Theta</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Dubai-Iota')"><div class="peer-icon">🖥️</div><div class="peer-name">Dubai-Iota</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'São Paulo-Kappa')"><div class="peer-icon">🖥️</div><div class="peer-name">SP-Kappa</div><div class="peer-status ok">● SYNCED</div></div>
+  </div>
+
+  <!-- Intel Feed + Trust Model -->
+  <div class="g2" style="margin-bottom:32px">
+    <div class="intel-feed">
+      <div class="intel-feed-hdr">
+        <span class="intel-feed-title">⚡ Live Intel Feed</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.2);border-radius:4px;padding:2px 8px" id="feed-count">0 packages</span>
+      </div>
+      <div class="intel-feed-body" id="intel-body"></div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:16px">🏆 Peer Trust Scores</div>
+      <div id="trust-list">
+        <div class="trust-bar"><span class="trust-peer">Ottawa-Alpha</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:98%;background:var(--green)"></div></div><span class="trust-score" style="color:var(--green)">0.98</span><span class="trust-status" style="color:var(--green)">TRUSTED</span></div>
+        <div class="trust-bar"><span class="trust-peer">London-Beta</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:95%;background:var(--green)"></div></div><span class="trust-score" style="color:var(--green)">0.95</span><span class="trust-status" style="color:var(--green)">TRUSTED</span></div>
+        <div class="trust-bar"><span class="trust-peer">Tokyo-Gamma</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:91%;background:var(--green)"></div></div><span class="trust-score" style="color:var(--green)">0.91</span><span class="trust-status" style="color:var(--green)">TRUSTED</span></div>
+        <div class="trust-bar"><span class="trust-peer">Berlin-Delta</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:34%;background:var(--amber)"></div></div><span class="trust-score" style="color:var(--amber)">0.34</span><span class="trust-status" style="color:var(--amber)">LOW TRUST</span></div>
+        <div class="trust-bar"><span class="trust-peer">Sydney-Epsilon</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:88%;background:var(--green)"></div></div><span class="trust-score" style="color:var(--green)">0.88</span><span class="trust-status" style="color:var(--green)">TRUSTED</span></div>
+        <div class="trust-bar"><span class="trust-peer">NYC-Eta</span><div class="trust-bar-wrap"><div class="trust-bar-fill" style="width:93%;background:var(--green)"></div></div><span class="trust-score" style="color:var(--green)">0.93</span><span class="trust-status" style="color:var(--green)">TRUSTED</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLI Demo -->
+  <div class="sec-title">💻 CLI Integration</div>
+  <div class="cli-demo">
+    <div class="cli-bar">
+      <div class="cli-dot" style="background:#ef4444"></div>
+      <div class="cli-dot" style="background:#f59e0b"></div>
+      <div class="cli-dot" style="background:#22c55e"></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">shadow313 · mesh · Ottawa-Alpha</span>
+    </div>
+    <div class="cli-body">
+      <div><span class="cli-prompt">shadow313@nexus:~$ </span><span class="cli-cmd">shadow313 mesh join --network community --sign-with yubikey</span></div>
+      <div class="cli-ok">[+] YubiHSM 2 detected — slot 0 initialized</div>
+      <div class="cli-ok">[+] ML-DSA-65 keypair generated (FIPS 204)</div>
+      <div class="cli-ok">[+] Peer discovery: mDNS scan complete — 3 local peers found</div>
+      <div class="cli-ok">[+] DHT bootstrap: 7 internet peers connected</div>
+      <div class="cli-ok">[+] Joined community mesh — 10 peers active</div>
+      <div style="margin-top:8px"><span class="cli-prompt">shadow313@nexus:~$ </span><span class="cli-cmd">shadow313 mesh status</span></div>
+      <div class="cli-out">Peers: 10 active (9 trusted, 1 low-trust, 0 quarantined)</div>
+      <div class="cli-out">Intel packages received: 1,247 | Rejected: 3 (malformed)</div>
+      <div class="cli-out">Packages emitted: 89 | cosign verified: 89/89</div>
+      <div class="cli-out">Differential privacy: ε=0.1 | ZK attestations: 89</div>
+      <div style="margin-top:8px"><span class="cli-prompt">shadow313@nexus:~$ </span><span class="cli-cmd">shadow313 mesh share --ioc 185.220.101.42 --type c2 --tlp amber</span></div>
+      <div class="cli-ok">[+] IOC signed with ML-DSA-65 (FIPS 204)</div>
+      <div class="cli-ok">[+] Differential privacy noise injected (ε=0.1)</div>
+      <div class="cli-ok">[+] Propagated to 9 trusted peers via gossip</div>
+      <div class="cli-ok">[+] 313-BIND receipt: 313-MESH-A4F2C1 anchored to IPFS</div>
+      <div><span class="cli-prompt">shadow313@nexus:~$ </span><span class="cli-cmd" id="cursor">_</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-title">Join the <span style="color:var(--green)">Intelligence Mesh</span></div>
+  <div class="cta-desc">Connect your Shadow313 NEXUS instance to the community mesh and start sharing threat intelligence with cryptographic guarantees.</div>
+  <div class="cta-btns">
+    <a href="./docs-install.html" class="btn btn-green">Get Started →</a>
+    <a href="./docs.html" class="btn btn-outline">Read the Docs</a>
+    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" class="btn btn-outline">GitHub ↗</a>
+  </div>
+</div>
+
+<footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Federated Threat Intelligence Mesh &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)" target="_blank">github.com/piyyy314/Shadow313-Nexus</a></footer>
+
+<script>
+// Clock
+function updateClock(){document.getElementById('clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
+updateClock();setInterval(updateClock,1000);
+
+// Cursor blink
+setInterval(()=>{const c=document.getElementById('cursor');c.style.opacity=c.style.opacity==='0'?'1':'0';},500);
+
+// Intel feed
+const PEERS=['Ottawa-Alpha','London-Beta','Tokyo-Gamma','Sydney-Epsilon','NYC-Eta','Seoul-Theta','Dubai-Iota'];
+const INTEL_TYPES=[
+  {type:'ioc',cls:'type-ioc',msgs:['C2 beacon IP: 185.220.101.42','Malicious domain: update.microsoft-cdn.net','Tor exit node: 45.138.16.89']},
+  {type:'cve',cls:'type-cve',msgs:['CVE-2026-3392 EPSS:0.743 KEV:YES','CVE-2024-3400 EPSS:0.971 KEV:YES','CVE-2023-46604 EPSS:0.934 KEV:YES']},
+  {type:'attck',cls:'type-attck',msgs:['T1003.001 LSASS dump detected','T1572 DNS tunneling — entropy 4.2','T1542.001 firmware hash mismatch']},
+  {type:'honey',cls:'type-honey',msgs:['SSH honeypot: root:password123 attempt','Telnet probe from 192.168.1.45','Web shell upload attempt blocked']},
+  {type:'hash',cls:'type-hash',msgs:['Malware hash: sha256:a4f2c1...','Cobalt Strike beacon: sha256:b8e3d2...','Mimikatz variant: sha256:c9f4e3...']},
+];
+let pkgCount=0;
+function addIntel(){
+  const t=INTEL_TYPES[Math.floor(Math.random()*INTEL_TYPES.length)];
+  const msg=t.msgs[Math.floor(Math.random()*t.msgs.length)];
+  const peer=PEERS[Math.floor(Math.random()*PEERS.length)];
+  const body=document.getElementById('intel-body');
+  const ts=new Date().toISOString().slice(11,19);
+  const div=document.createElement('div');
+  div.className='intel-ev';
+  div.innerHTML=`<span class="intel-ev-time">${ts}</span><span class="intel-ev-type ${t.cls}">${t.type.toUpperCase()}</span><span class="intel-ev-msg">${msg}</span><span class="intel-ev-peer">${peer}</span>`;
+  body.appendChild(div);
+  while(body.children.length>80)body.removeChild(body.firstChild);
+  body.scrollTop=body.scrollHeight;
+  pkgCount++;
+  document.getElementById('feed-count').textContent=pkgCount+' packages';
+}
+setInterval(addIntel,1800);
+addIntel();addIntel();addIntel();
+
+// Peer selection
+function selectPeer(el,name){
+  document.querySelectorAll('.peer-node').forEach(p=>p.style.boxShadow='');
+  el.style.boxShadow='0 0 0 2px var(--green)';
+}
+</script>
+</body>
+</html>

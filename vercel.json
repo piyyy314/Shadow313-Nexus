@@ -173,6 +173,14 @@
     {
       "source": "/platform/docs",
       "destination": "/platform/docs.html"
+    },
+    {
+      "source": "/federated-mesh",
+      "destination": "/docs/federated-mesh.html"
+    },
+    {
+      "source": "/mesh",
+      "destination": "/docs/federated-mesh.html"
     }
   ]
 }
