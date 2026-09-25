@@ -1,5 +1,3 @@
-v3_adapter.py
-PYTHON
 """
 Shadow313 v3 → v1 Bridge Adapter
 ==================================
