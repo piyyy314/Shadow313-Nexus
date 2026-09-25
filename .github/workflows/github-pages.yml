@@ -51,6 +51,19 @@ jobs:
           <p>Page not found — redirecting to home...</p>
           </body></html>
           HTML
+          # Copy tools/ marketplace/ about/ directories
+          cp -r tools/ _site/tools/ 2>/dev/null || true
+          cp -r marketplace/ _site/marketplace/ 2>/dev/null || true
+          cp -r about/ _site/about/ 2>/dev/null || true
+          # Additional route aliases for clean URLs
+          mkdir -p _site/coverage _site/analytics/live _site/vsat _site/aegis-nexus _site/chronos _site/apt-simulation
+          cp docs/coverage_matrix.html _site/coverage/index.html 2>/dev/null || true
+          cp marketplace/analytics.html _site/analytics/index.html 2>/dev/null || true
+          cp marketplace/analytics-live.html _site/analytics/live/index.html 2>/dev/null || true
+          cp docs/vsat-tactical-suite.html _site/vsat/index.html 2>/dev/null || true
+          cp docs/aegis_nexus.html _site/aegis-nexus/index.html 2>/dev/null || true
+          cp docs/chronos-sentinel.html _site/chronos/index.html 2>/dev/null || true
+          cp docs/s313-apt-simulation.html _site/apt-simulation/index.html 2>/dev/null || true
           echo "Site contents:"
           find _site -type f | sort
 

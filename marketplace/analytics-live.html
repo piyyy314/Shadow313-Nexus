@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Analytics Terminal — Shadow313 NEXUS Marketplace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root { --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4; --purple:#a78bfa; --blue:#3b82f6; --bg:#000000; --bg2:#080808; --bg3:#0f0f0f; --border2:rgba(30,41,59,0.5); --text:#e2e8f0; --muted:#64748b; --dim:#334155; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .nav { background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(34,197,94,0.15); height:52px; display:flex; align-items:center; padding:0 24px; gap:14px; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px); }
+  .nav-hex { width:30px; height:30px; background:var(--green); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .nav-brand { font-size:15px; font-weight:800; letter-spacing:.04em; }
+  .nav-brand span { color:var(--green); }
+  .nav-links { display:flex; gap:4px; margin-left:16px; }
+  .nav-link { font-size:12px; font-weight:500; color:var(--muted); padding:5px 12px; border-radius:5px; text-decoration:none; transition:all .15s; }
+  .nav-link:hover { color:var(--text); background:rgba(34,197,94,0.06); }
+  .nav-link.active { color:var(--green); background:rgba(34,197,94,0.08); }
+  .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+  .nav-cta { background:var(--green); color:#000; font-weight:700; padding:6px 16px; border-radius:6px; font-size:12px; text-decoration:none; }
+  .hero { padding:60px 24px 48px; text-align:center; background:linear-gradient(180deg,#000 0%,#050a05 100%); border-bottom:1px solid rgba(34,197,94,0.08); }
+  .hero h1 { font-size:clamp(28px,4vw,48px); font-weight:800; line-height:1.1; margin-bottom:16px; }
+  .hero h1 .accent { color:var(--green); text-shadow:0 0 30px rgba(34,197,94,0.3); }
+  .hero p { font-size:16px; color:var(--muted); max-width:600px; margin:0 auto 32px; line-height:1.7; }
+  .hero-badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .badge { font-size:10px; font-family:'JetBrains Mono',monospace; padding:4px 12px; border-radius:4px; font-weight:700; letter-spacing:.06em; }
+  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
+  .badge-purple { background:rgba(167,139,250,0.12); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+  .badge-amber { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.25); }
+  .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .section { padding:48px 24px; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--green); margin-bottom:24px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .card { background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:24px; transition:all .2s; }
+  .card:hover { border-color:rgba(34,197,94,0.3); transform:translateY(-2px); }
+  .card-icon { font-size:28px; margin-bottom:12px; }
+  .card h3 { font-size:15px; font-weight:700; margin-bottom:8px; }
+  .card p { font-size:12px; color:var(--muted); line-height:1.6; }
+  .footer { text-align:center; padding:32px 24px; font-size:11px; color:var(--dim); border-top:1px solid rgba(34,197,94,0.08); font-family:'JetBrains Mono',monospace; background:var(--bg); }
+  @media(max-width:900px) { .grid-3,.grid-4 { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:600px) { .grid-3,.grid-4 { grid-template-columns:1fr; } }
+
+.terminal { background:#000; border:1px solid rgba(34,197,94,0.2); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+.terminal-bar { background:var(--bg2); border-bottom:1px solid rgba(30,41,59,0.8); padding:8px 14px; display:flex; align-items:center; gap:8px; }
+.terminal-dot { width:10px; height:10px; border-radius:50%; }
+.terminal-body { padding:14px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.8; height:280px; overflow-y:auto; }
+.ev-install { color:var(--green); }
+.ev-download { color:var(--cyan); }
+.ev-review { color:var(--amber); }
+.ev-publish { color:var(--purple); }
+.kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(34,197,94,0.06); border-bottom:1px solid rgba(34,197,94,0.08); }
+.kpi-cell { background:var(--bg); padding:14px; text-align:center; position:relative; }
+.kpi-cell::after { content:''; position:absolute; bottom:0; left:25%; right:25%; height:2px; border-radius:2px; }
+.kpi-cell.green::after { background:var(--green); }
+.kpi-cell.cyan::after { background:var(--cyan); }
+.kpi-cell.amber::after { background:var(--amber); }
+.kpi-cell.purple::after { background:var(--purple); }
+.kpi-val { font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace; line-height:1; }
+.kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+</style></head><body>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW<span>313</span> NEXUS</div>
+  <div class="nav-links">
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="/tools">Tools</a>
+    <a class="nav-link" href="/marketplace">Marketplace</a>
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <a class="nav-link" href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+<div class="hero">
+  <h1>Live <span class="accent">Analytics Terminal</span></h1>
+  <p>Real-time WebSocket analytics dashboard — live download velocity, plugin install events, category distribution, and rolling 5-minute window.</p>
+  <div class="hero-badges">
+    <span class="badge badge-green">LIVE STREAM</span>
+    <span class="badge badge-cyan">WEBSOCKET</span>
+    <span class="badge badge-amber">5-MIN WINDOW</span>
+  </div>
+</div>
+<div class="kpi-strip">
+  <div class="kpi-cell green"><div class="kpi-val" style="color:var(--green)" id="installs-count">0</div><div class="kpi-lbl">Installs (5min)</div></div>
+  <div class="kpi-cell cyan"><div class="kpi-val" style="color:var(--cyan)" id="downloads-count">0</div><div class="kpi-lbl">Downloads (5min)</div></div>
+  <div class="kpi-cell amber"><div class="kpi-val" style="color:var(--amber)" id="reviews-count">0</div><div class="kpi-lbl">Reviews (5min)</div></div>
+  <div class="kpi-cell purple"><div class="kpi-val" style="color:var(--purple)" id="publishes-count">0</div><div class="kpi-lbl">Publishes (5min)</div></div>
+</div>
+<div class="section container">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot" style="background:#ef4444"></div>
+      <div class="terminal-dot" style="background:#f59e0b"></div>
+      <div class="terminal-dot" style="background:#22c55e"></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">shadow313-marketplace · live-stream · ws://localhost:8080</span>
+      <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--green)" id="ws-status">● CONNECTED</span>
+    </div>
+    <div class="terminal-body" id="terminal-body"></div>
+  </div>
+</div>
+<footer class="footer">
+  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
+  matarmohamad313@duck.com &nbsp;·&nbsp;
+  <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a>
+  &nbsp;·&nbsp; MIT License
+</footer>
+<script>
+const EVENTS = [
+  {type:'install', msg:'shadow313-recon-spider v2.3.1 installed by user_7a4f', color:'ev-install'},
+  {type:'download', msg:'pqc-audit-scanner v1.5.0 downloaded (12.4 MB)', color:'ev-download'},
+  {type:'review', msg:'shodan-censys-bridge rated ⭐⭐⭐⭐⭐ by analyst_k9m2', color:'ev-review'},
+  {type:'install', msg:'ai-threat-narrator v1.1.0 installed by soc_team_alpha', color:'ev-install'},
+  {type:'publish', msg:'NEW: quantum-noise-detector v0.9.0 published by dev_q7x1', color:'ev-publish'},
+  {type:'download', msg:'vsat-rf-monitor v2.0.0 downloaded (8.2 MB)', color:'ev-download'},
+  {type:'install', msg:'sigma-rule-forge v3.2.1 installed by blue_team_delta', color:'ev-install'},
+  {type:'review', msg:'darkweb-monitor-pro rated ⭐⭐⭐⭐ by threat_hunter_99', color:'ev-review'},
+  {type:'install', msg:'hsm-key-manager v1.3.0 installed by crypto_ops_team', color:'ev-install'},
+  {type:'download', msg:'identity-graph-builder v2.0.1 downloaded (5.7 MB)', color:'ev-download'},
+];
+let counts = {install:0, download:0, review:0, publish:0};
+let idx = 0;
+function addEvent() {
+  const ev = EVENTS[idx % EVENTS.length];
+  idx++;
+  counts[ev.type] = (counts[ev.type] || 0) + 1;
+  const body = document.getElementById('terminal-body');
+  const ts = new Date().toISOString().slice(11,19);
+  const div = document.createElement('div');
+  div.className = ev.color;
+  div.textContent = `[${ts}] [${ev.type.toUpperCase()}] ${ev.msg}`;
+  body.appendChild(div);
+  while (body.children.length > 100) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+  document.getElementById('installs-count').textContent = counts.install || 0;
+  document.getElementById('downloads-count').textContent = counts.download || 0;
+  document.getElementById('reviews-count').textContent = counts.review || 0;
+  document.getElementById('publishes-count').textContent = counts.publish || 0;
+}
+setInterval(addEvent, 1800);
+addEvent();
+</script>
+</body></html>

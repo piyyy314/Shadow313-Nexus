@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sovereign Shield — Post-Quantum Cryptography · Shadow313 NEXUS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --blue:#3b82f6; --orange:#f97316;
+    --bg:#000000; --bg2:#080808; --bg3:#0f0f0f;
+    --border:rgba(34,197,94,0.12); --border2:rgba(30,41,59,0.5);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .nav { background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(34,197,94,0.15); height:52px; display:flex; align-items:center; padding:0 24px; gap:14px; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px); }
+  .nav-hex { width:30px; height:30px; background:var(--green); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .nav-brand { font-size:15px; font-weight:800; letter-spacing:.04em; }
+  .nav-brand span { color:var(--green); }
+  .nav-links { display:flex; gap:4px; margin-left:16px; }
+  .nav-link { font-size:12px; font-weight:500; color:var(--muted); padding:5px 12px; border-radius:5px; text-decoration:none; transition:all .15s; }
+  .nav-link:hover { color:var(--text); background:rgba(34,197,94,0.06); }
+  .nav-link.active { color:var(--green); background:rgba(34,197,94,0.08); }
+  .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+  .nav-cta { background:var(--green); color:#000; font-weight:700; padding:6px 16px; border-radius:6px; font-size:12px; text-decoration:none; }
+  .hero { padding:60px 24px 48px; text-align:center; background:linear-gradient(180deg,#000 0%,#050a05 100%); border-bottom:1px solid rgba(34,197,94,0.08); }
+  .hero h1 { font-size:clamp(28px,4vw,48px); font-weight:800; line-height:1.1; margin-bottom:16px; }
+  .hero h1 .accent { color:var(--green); text-shadow:0 0 30px rgba(34,197,94,0.3); }
+  .hero p { font-size:16px; color:var(--muted); max-width:600px; margin:0 auto 32px; line-height:1.7; }
+  .hero-badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .badge { font-size:10px; font-family:'JetBrains Mono',monospace; padding:4px 12px; border-radius:4px; font-weight:700; letter-spacing:.06em; }
+  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
+  .badge-purple { background:rgba(167,139,250,0.12); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+  .badge-amber { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.25); }
+  .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .section { padding:48px 24px; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--green); margin-bottom:24px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .card { background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:24px; transition:all .2s; }
+  .card:hover { border-color:rgba(34,197,94,0.3); transform:translateY(-2px); }
+  .card-icon { font-size:28px; margin-bottom:12px; }
+  .card h3 { font-size:15px; font-weight:700; margin-bottom:8px; }
+  .card p { font-size:12px; color:var(--muted); line-height:1.6; }
+  .footer { text-align:center; padding:32px 24px; font-size:11px; color:var(--dim); border-top:1px solid rgba(34,197,94,0.08); font-family:'JetBrains Mono',monospace; background:var(--bg); }
+  @media(max-width:900px) { .grid-3,.grid-4 { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:600px) { .grid-3,.grid-4 { grid-template-columns:1fr; } }
+
+.algo-card { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; padding:20px; }
+.algo-card.active { border-color:rgba(34,197,94,0.4); background:rgba(34,197,94,0.03); }
+.algo-name { font-size:16px; font-weight:800; font-family:'JetBrains Mono',monospace; }
+.algo-standard { font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--muted); margin-top:4px; }
+.algo-desc { font-size:12px; color:var(--muted); margin-top:10px; line-height:1.6; }
+.algo-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.algo-stat { background:rgba(0,0,0,0.4); border-radius:6px; padding:8px; text-align:center; }
+.algo-stat-val { font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.algo-stat-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+.bind-flow { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; padding:20px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:2; }
+</style></head><body>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW<span>313</span> NEXUS</div>
+  <div class="nav-links">
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="/tools">Tools</a>
+    <a class="nav-link" href="/marketplace">Marketplace</a>
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <a class="nav-link" href="/about">About</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+<div class="hero">
+  <h1>Sovereign <span class="accent">Shield</span></h1>
+  <p>Post-quantum cryptography toolkit implementing NIST FIPS 203, 204, and 205 — with the 313 Temporal Binding Protocol for tamper-evident audit chains.</p>
+  <div class="hero-badges">
+    <span class="badge badge-green">FIPS 203 ML-KEM</span>
+    <span class="badge badge-cyan">FIPS 204 ML-DSA</span>
+    <span class="badge badge-purple">FIPS 205 SLH-DSA</span>
+    <span class="badge badge-amber">313-BIND</span>
+  </div>
+</div>
+<div class="section container">
+  <div class="section-title">⬡ Post-Quantum Algorithm Suite</div>
+  <div class="grid-3" style="margin-bottom:32px">
+    <div class="algo-card active">
+      <div class="algo-name" style="color:var(--green)">ML-KEM-768</div>
+      <div class="algo-standard">NIST FIPS 203 · Key Encapsulation</div>
+      <div class="algo-desc">Module-Lattice Key Encapsulation Mechanism. Replaces RSA/ECDH for quantum-safe key exchange. Shor-resistant.</div>
+      <div class="algo-stats">
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--green)">1184B</div><div class="algo-stat-lbl">Public Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--green)">2400B</div><div class="algo-stat-lbl">Secret Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--green)">1088B</div><div class="algo-stat-lbl">Ciphertext</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--green)">L3</div><div class="algo-stat-lbl">NIST Level</div></div>
+      </div>
+    </div>
+    <div class="algo-card active">
+      <div class="algo-name" style="color:var(--cyan)">ML-DSA-65</div>
+      <div class="algo-standard">NIST FIPS 204 · Digital Signatures</div>
+      <div class="algo-desc">Module-Lattice Digital Signature Algorithm. Replaces ECDSA/RSA for quantum-safe signing. Used for plugin signing and auth.</div>
+      <div class="algo-stats">
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--cyan)">1952B</div><div class="algo-stat-lbl">Public Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--cyan)">4032B</div><div class="algo-stat-lbl">Secret Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--cyan)">3309B</div><div class="algo-stat-lbl">Signature</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--cyan)">L3</div><div class="algo-stat-lbl">NIST Level</div></div>
+      </div>
+    </div>
+    <div class="algo-card active">
+      <div class="algo-name" style="color:var(--purple)">SLH-DSA</div>
+      <div class="algo-standard">NIST FIPS 205 · Hash-Based Signatures</div>
+      <div class="algo-desc">Stateless Hash-Based Digital Signature. Root of trust for 313-BIND receipts. Secure even if lattice assumptions fail.</div>
+      <div class="algo-stats">
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--purple)">32B</div><div class="algo-stat-lbl">Public Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--purple)">64B</div><div class="algo-stat-lbl">Secret Key</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--purple)">17088B</div><div class="algo-stat-lbl">Signature</div></div>
+        <div class="algo-stat"><div class="algo-stat-val" style="color:var(--purple)">L5</div><div class="algo-stat-lbl">NIST Level</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section-title">🔐 313 Temporal Binding Protocol</div>
+  <div class="bind-flow">
+    <div style="color:var(--green);font-weight:700;margin-bottom:8px">313-BIND Receipt Structure</div>
+    <div style="color:#94a3b8">bind_id:        <span style="color:var(--cyan)">313-BIND-A4F2C1</span></div>
+    <div style="color:#94a3b8">timestamp_ns:   <span style="color:var(--green)">1727234567890123<span style="color:var(--amber)">313</span></span> ← ends in ...313</div>
+    <div style="color:#94a3b8">payload_hash:   <span style="color:var(--cyan)">sha3_256:a4f2c1d8e9b3...</span></div>
+    <div style="color:#94a3b8">chain_hash:     <span style="color:var(--cyan)">sha3_512:prev_hash + payload + ts</span></div>
+    <div style="color:#94a3b8">signature:      <span style="color:var(--purple)">SLH-DSA-SHAKE-128f (FIPS 205)</span></div>
+    <div style="color:#94a3b8">ipfs_cid:       <span style="color:var(--muted)">QmX7k9... (IPFS anchor)</span></div>
+    <div style="color:#94a3b8">bind_index:     <span style="color:var(--amber)">sequential — gap detection</span></div>
+  </div>
+</div>
+<footer class="footer">
+  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
+  matarmohamad313@duck.com &nbsp;·&nbsp;
+  <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a>
+  &nbsp;·&nbsp; MIT License
+</footer>
+</body></html>

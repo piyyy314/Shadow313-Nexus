@@ -49,6 +49,46 @@
     {
       "source": "/chronos",
       "destination": "/docs/chronos-sentinel.html"
+    },
+    {
+      "source": "/tools",
+      "destination": "/tools/index.html"
+    },
+    {
+      "source": "/tools/aegis",
+      "destination": "/tools/aegis-nexus.html"
+    },
+    {
+      "source": "/tools/sovereign-shield",
+      "destination": "/tools/sovereign-shield.html"
+    },
+    {
+      "source": "/tools/vsat",
+      "destination": "/tools/vsat-tactical-suite.html"
+    },
+    {
+      "source": "/marketplace",
+      "destination": "/marketplace/index.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/marketplace/analytics.html"
+    },
+    {
+      "source": "/analytics/live",
+      "destination": "/marketplace/analytics-live.html"
+    },
+    {
+      "source": "/marketplace/live",
+      "destination": "/marketplace/analytics-live.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about/index.html"
+    },
+    {
+      "source": "/coverage",
+      "destination": "/docs/coverage_matrix.html"
     }
   ]
 }
