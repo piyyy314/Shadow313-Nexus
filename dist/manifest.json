@@ -2,10 +2,10 @@
   "manifest_version": "1.0",
   "schema": "shadow313-delivery-manifest",
   "platform_version": "4.0.0",
-  "git_sha": "2c565b6",
+  "git_sha": "103806e",
   "git_branch": "master",
-  "generated_at": "2026-09-25T01:46:37.324866+00:00",
-  "timestamp_313": 1790300797324874313,
+  "generated_at": "2026-09-25T06:03:12.308799+00:00",
+  "timestamp_313": 1790316192308806313,
   "total_files": 31,
   "total_size_kb": 782.3,
   "files": [
@@ -15,7 +15,7 @@
       "size": 64547,
       "size_kb": 63.0,
       "sha3_256": "86f5916a85480a03a1039f67190ed142d2f08428a19bf643f805209ac25a53e6",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.204409+00:00",
       "priority": true,
       "type": "html"
     },
@@ -25,7 +25,7 @@
       "size": 33631,
       "size_kb": 32.8,
       "sha3_256": "fac1250bba5461bb77b26833ea629f2fd9c69133de17cf6f84bba62c57694443",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.204409+00:00",
       "priority": true,
       "type": "html"
     },
@@ -35,7 +35,7 @@
       "size": 34524,
       "size_kb": 33.7,
       "sha3_256": "6b4c1b16e580432620fc3b3fb8f62f86890e9eba83fd8a93cf9028abdaee2230",
-      "modified": "2026-09-25T01:46:33.182277+00:00",
+      "modified": "2026-09-25T06:03:06.205167+00:00",
       "priority": true,
       "type": "html"
     },
@@ -45,7 +45,7 @@
       "size": 6530,
       "size_kb": 6.4,
       "sha3_256": "accd56e16dac644c2205474427bf2a4f0eadcc3fa9d3aaaf4ebfb34d60c9bb41",
-      "modified": "2026-09-25T01:46:33.178738+00:00",
+      "modified": "2026-09-25T06:03:06.201171+00:00",
       "priority": false,
       "type": "md"
     },
@@ -55,7 +55,7 @@
       "size": 31080,
       "size_kb": 30.4,
       "sha3_256": "18122885885424078df45448b4a7cf2e8811da83b88f79dee71bfd832ab3b47d",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201315+00:00",
       "priority": false,
       "type": "md"
     },
@@ -65,7 +65,7 @@
       "size": 7065,
       "size_kb": 6.9,
       "sha3_256": "027025144fa701cc2423eb70b2570421b7cbcc408910744ff5fb534b0d63a2c6",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201315+00:00",
       "priority": false,
       "type": "md"
     },
@@ -75,7 +75,7 @@
       "size": 5703,
       "size_kb": 5.6,
       "sha3_256": "ef7e88fbf032054ac1d1b163d67c5408bdddd3647fd5734f09de40e3ed2dc505",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201315+00:00",
       "priority": false,
       "type": "md"
     },
@@ -85,7 +85,7 @@
       "size": 11420,
       "size_kb": 11.2,
       "sha3_256": "0edaec43a16ee2776cfe739ff6cfcf2e22112ca008bb66c87919fd6a2c6c71a8",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201315+00:00",
       "priority": false,
       "type": "md"
     },
@@ -95,7 +95,7 @@
       "size": 41285,
       "size_kb": 40.3,
       "sha3_256": "b3acc2387ddc35cb809a98c9b880d66168325dcacb896629add9373bac9dd423",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201315+00:00",
       "priority": false,
       "type": "md"
     },
@@ -105,7 +105,7 @@
       "size": 38550,
       "size_kb": 37.6,
       "sha3_256": "ba7c6e16cb76b697fe6c4a7d6f3e3cd8a6146fe2f88d7ad3dfc732b93bf370ae",
-      "modified": "2026-09-25T01:46:33.178883+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "html"
     },
@@ -115,7 +115,7 @@
       "size": 18101,
       "size_kb": 17.7,
       "sha3_256": "9b56ca152eef42f8444366b8b57d2a5ddf3e3d04db71108926026ea7fc7d34c2",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -125,7 +125,7 @@
       "size": 29660,
       "size_kb": 29.0,
       "sha3_256": "23a294950c6d4fe92fa25843e7480547393b4e4eeab54351c6f81ebd42e35aa0",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -135,7 +135,7 @@
       "size": 11138,
       "size_kb": 10.9,
       "sha3_256": "15107adbc46f68d27e4233ca1312093e2b108b45f33b94b7cc43a9e7949991e2",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -145,7 +145,7 @@
       "size": 11641,
       "size_kb": 11.4,
       "sha3_256": "abd50391be2670d5005b08e536eb8f04d900a0b81e0cfb6b41e9fbac358ed042",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -155,7 +155,7 @@
       "size": 40086,
       "size_kb": 39.1,
       "sha3_256": "f892105351a6141a446a06be0e20550d0b47fbe6db001968548fcac135438f45",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "html"
     },
@@ -165,7 +165,7 @@
       "size": 35751,
       "size_kb": 34.9,
       "sha3_256": "7d473b9597580ab6ec1e0542f29c8e2a06504cbd476ad63dd90d3241e3de8055",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -175,7 +175,7 @@
       "size": 3105,
       "size_kb": 3.0,
       "sha3_256": "395f6a2de9b3f340fb6e901f9da956e2aa21bcb6e5ccbfd8caf0b721fc222845",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -185,7 +185,7 @@
       "size": 1276,
       "size_kb": 1.2,
       "sha3_256": "62d9377a3d35f9ec9e31b2248b1185ff343c009902ff15dabf366dd487489882",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -195,7 +195,7 @@
       "size": 29027,
       "size_kb": 28.3,
       "sha3_256": "c993f1b374da118e4a31afd975e0282c065923818781e6d03c73075468c385f3",
-      "modified": "2026-09-25T01:46:33.179027+00:00",
+      "modified": "2026-09-25T06:03:06.201409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -205,7 +205,7 @@
       "size": 23380,
       "size_kb": 22.8,
       "sha3_256": "be5ea24dcd0d219959f7abc92dc8c8a056251efdb30d177bf1a2d310ec45c808",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.202701+00:00",
       "priority": false,
       "type": "md"
     },
@@ -215,7 +215,7 @@
       "size": 21705,
       "size_kb": 21.2,
       "sha3_256": "cc9054d81a240d29ec4d863ae14b4b37b6eac51eb60c3ad617eb67c1e0ccf86f",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.202701+00:00",
       "priority": false,
       "type": "md"
     },
@@ -225,7 +225,7 @@
       "size": 32650,
       "size_kb": 31.9,
       "sha3_256": "1543702a46ac788cbfe76eedaf9f17a7312a410ec9746f88f3fe9d5e5571e7d0",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.202701+00:00",
       "priority": false,
       "type": "md"
     },
@@ -235,7 +235,7 @@
       "size": 42310,
       "size_kb": 41.3,
       "sha3_256": "2f36a600d3dcd8e1ca16fb5a9fa6488f2202a2c4b540cd0bda909cd01326f713",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.202701+00:00",
       "priority": false,
       "type": "md"
     },
@@ -245,7 +245,7 @@
       "size": 44417,
       "size_kb": 43.4,
       "sha3_256": "fb6efa253f07742c290487f65647c20ab706c7f581113b85033a62648b4de18a",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -255,7 +255,7 @@
       "size": 35735,
       "size_kb": 34.9,
       "sha3_256": "acf86770181e3a34bb9e5a8924922828669aa393f2d12076a4c2d4c01a44726c",
-      "modified": "2026-09-25T01:46:33.180285+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -265,7 +265,7 @@
       "size": 6396,
       "size_kb": 6.2,
       "sha3_256": "5088cfbf2e672022fae6e51cf0244834d9b57b0eda03887fe8d91ed79ef75fe1",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "html"
     },
@@ -275,7 +275,7 @@
       "size": 7176,
       "size_kb": 7.0,
       "sha3_256": "834a002d3a3e45ee087ad2e5ef283b68af7b38cd219cf000415b1f483957165f",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -285,7 +285,7 @@
       "size": 13802,
       "size_kb": 13.5,
       "sha3_256": "cfe66ccf5ceb254e83ac0cf47e33e77e9127d17da2d6773d62d93980e32fe289",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -295,7 +295,7 @@
       "size": 49964,
       "size_kb": 48.8,
       "sha3_256": "35a13124461ac8a5271b0d977f28e2a1a4d388886fa80d6a654775266caf75ba",
-      "modified": "2026-09-25T01:46:33.181027+00:00",
+      "modified": "2026-09-25T06:03:06.203409+00:00",
       "priority": false,
       "type": "md"
     },
@@ -305,7 +305,7 @@
       "size": 30000,
       "size_kb": 29.3,
       "sha3_256": "e0fbd1f33db743d41aa631955f74dce5025f8eb0de5285384156c11ab883b813",
-      "modified": "2026-09-25T01:46:33.182277+00:00",
+      "modified": "2026-09-25T06:03:06.205167+00:00",
       "priority": false,
       "type": "html"
     },
@@ -315,12 +315,12 @@
       "size": 39397,
       "size_kb": 38.5,
       "sha3_256": "8046a3afc12be783bd805d74688a5476d1014c7d04d14bc66d43c18cb4455f4b",
-      "modified": "2026-09-25T01:46:33.182277+00:00",
+      "modified": "2026-09-25T06:03:06.205167+00:00",
       "priority": false,
       "type": "html"
     }
   ],
   "provenance_class": "REAL_OBSERVATION",
-  "delivery_id": "DEL-71A8A849",
-  "manifest_hash": "sha3_256:2d403a723b442efa8e1be7987f0440b7f036517552997fbb51b3cbd3c6718031"
+  "delivery_id": "DEL-5E67755D",
+  "manifest_hash": "sha3_256:e52a5fdbe949ba56df2b5352541dbab4b5373caa943205a1907fbfd5efc4d9e2"
 }
