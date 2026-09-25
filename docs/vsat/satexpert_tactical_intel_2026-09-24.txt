@@ -1,0 +1,44 @@
+TACTICAL SATELLITE INTELLIGENCE REPORT
+GENERATED: 2026-09-24T22:29:10.448Z
+STATUS: SPACENEWS_LIVE_FEED
+==================================
+
+[1] SOURCE: SPACENEWS_LIVE
+TITLE: True or false on space industry trends with Pacôme Révillon
+LINK: https://spacenews.com/true-or-false-on-space-industry-trends-with-pacome-revillon/
+----------------------------------
+
+[2] SOURCE: SPACENEWS_LIVE
+TITLE: Moog Completes ISO Class 8 Clean Room at Niagara Falls Facility to Expand Thruster Production
+LINK: https://spacenews.com/moog-completes-iso-class-8-clean-room-at-niagara-falls-facility-to-expand-thruster-production/
+----------------------------------
+
+[3] SOURCE: SPACENEWS_LIVE
+TITLE: Ethereal Space Awarded NOAA SBEM Task Order 1
+LINK: https://spacenews.com/ethereal-space-awarded-noaa-sbem-task-order-1/
+----------------------------------
+
+[4] SOURCE: SPACENEWS_LIVE
+TITLE: Commercial Space Federation (CSF) Welcomes Two New Members
+LINK: https://spacenews.com/commercial-space-federation-csf-welcomes-two-new-members/
+----------------------------------
+
+[5] SOURCE: SPACENEWS_LIVE
+TITLE: Terran Orbital Promotes Margherita Cardi to Vice President of European Operations &amp; Head of Strategic Programs
+LINK: https://spacenews.com/terran-orbital-promotes-margherita-cardi-to-vice-president-of-european-operations-head-of-strategic-programs/
+----------------------------------
+
+[6] SOURCE: SPACENEWS_LIVE
+TITLE: Satrec Initiative to build 10-centimeter-class optical satellites for Hanwha constellation
+LINK: https://spacenews.com/satrec-initiative-to-build-10-centimeter-class-optical-satellites-for-hanwha-constellation/
+----------------------------------
+
+[7] SOURCE: SPACENEWS_LIVE
+TITLE: Simera Sense and IDOM partner to develop and produce xScape350 optical system as demand for high-resolution EO imagery surges
+LINK: https://spacenews.com/simera-sense-and-idom-partner-to-develop-and-produce-xscape350-optical-system-as-demand-for-high-resolution-eo-imagery-surges/
+----------------------------------
+
+[8] SOURCE: SPACENEWS_LIVE
+TITLE: Inside Europe’s push for space autonomy with Josef Aschbacher
+LINK: https://spacenews.com/inside-europes-push-for-space-autonomy-with-josef-aschbacher/
+----------------------------------

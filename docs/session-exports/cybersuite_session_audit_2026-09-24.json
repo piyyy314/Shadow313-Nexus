@@ -1,0 +1,357 @@
+[
+  {
+    "id": "1",
+    "timestamp": "4:54:54 p.m.",
+    "category": "SYSTEM",
+    "message": "Apex Quantum CyberSuite monolithic kernel initialized.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "2",
+    "timestamp": "4:56:54 p.m.",
+    "category": "QUANTUM",
+    "message": "Lattice bypass math logic verified on 512-dimensional vector.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "3",
+    "timestamp": "4:58:54 p.m.",
+    "category": "SECURITY",
+    "message": "Polymorphic EDR Evasion: dynamical entropy adjusted to threshold index: 0.78.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "4",
+    "timestamp": "5:01:54 p.m.",
+    "category": "NETWORK",
+    "message": "Port sweep probes launched against GATEWAY-VPC-01. Host identified.",
+    "status": "INFO"
+  },
+  {
+    "id": "5",
+    "timestamp": "5:03:54 p.m.",
+    "category": "SIMULATION",
+    "message": "Simulated Kerberoasting SPN sweep executed successfully on target server.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "6",
+    "timestamp": "5:05:54 p.m.",
+    "category": "NETWORK",
+    "message": "Covert exfiltration DNS telemetry tunnel mapped via UDP/53 on external path.",
+    "status": "SUCCESS",
+    "payload": "TX_RECORD: 0x8FA43FDB9901AC8E"
+  },
+  {
+    "id": "0.6116620488211462",
+    "timestamp": "5:10:51 p.m.",
+    "category": "SYSTEM",
+    "message": "Set target focus node to: DC-ENTERPRISE-01 (192.168.12.10)",
+    "status": "INFO"
+  },
+  {
+    "id": "0.24636499144890955",
+    "timestamp": "5:13:02 p.m.",
+    "category": "SECURITY",
+    "message": "Dynamic check: Active cipher suite evaluated as: ML-KEM-1024 hybrid. Pre-quantum leakage risk optimal.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.9956833297223241",
+    "timestamp": "5:13:40 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: ingress-edge-01 secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.12270357630217155",
+    "timestamp": "5:13:40 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: web-portal-02 secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.7400223886842685",
+    "timestamp": "5:13:41 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: s3-archive-db secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.7265807052133378",
+    "timestamp": "5:13:41 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: legacy-mail-relay secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.3372724312598939",
+    "timestamp": "5:13:41 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: hr-portal-internal secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.4382469524721827",
+    "timestamp": "5:13:42 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: dev-build-node-01 secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.23802175714369822",
+    "timestamp": "5:13:42 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: staging-k8s-ingress secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.37876401421245076",
+    "timestamp": "5:13:43 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: finance-ledger-db secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.7539855214420121",
+    "timestamp": "5:13:43 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: voip-asterisk-pbx secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.6237999867301849",
+    "timestamp": "5:13:43 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: old-ldap-server secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.4161628138990201",
+    "timestamp": "5:13:44 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: partner-vpn-tunnel secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.3488222258822994",
+    "timestamp": "5:13:44 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: executive-laptop-03 secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.24349140647345713",
+    "timestamp": "5:13:45 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: iot-badge-reader secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.6854771486510866",
+    "timestamp": "5:13:45 p.m.",
+    "category": "QUANTUM",
+    "message": "Batch Immunization: monitoring-prom-node secure bounds established.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.2468229479527282",
+    "timestamp": "5:13:52 p.m.",
+    "category": "QUANTUM",
+    "message": "Calculated Grover search metrics using 512 Qubits space. High cohesion achieved.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.03160908458838274",
+    "timestamp": "5:14:29 p.m.",
+    "category": "NETWORK",
+    "message": "Initiating multi-threaded port assessment targeting GATEWAY-VPC-01 at 192.168.12.1...",
+    "status": "INFO"
+  },
+  {
+    "id": "0.7063172746978836",
+    "timestamp": "5:14:31 p.m.",
+    "category": "SECURITY",
+    "message": "EDR Evasion Triggered. Padding payload using AI-Polymorphic junk instructions. Observed entropy ratio matches threshold: 0.78",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.8948016824412874",
+    "timestamp": "5:14:32 p.m.",
+    "category": "SIMULATION",
+    "message": "Process Doppelgänger technique executed: replacing memory segments of payload shell inside host memory map.",
+    "status": "INFO"
+  },
+  {
+    "id": "0.43185500256023546",
+    "timestamp": "5:14:34 p.m.",
+    "category": "QUANTUM",
+    "message": "Bypassing high-dimensional lattice failed or restricted. Node implements PQC quantum shield standard. Decryption bypassed; fall back to port scraping.",
+    "status": "WARNING"
+  },
+  {
+    "id": "0.11024332197645281",
+    "timestamp": "5:14:35 p.m.",
+    "category": "NETWORK",
+    "message": "Exfiltration tunnel safely mapped. Launching covert DNS stream tunnel via UDP/53 in CORP-ENT-CLOUD-01",
+    "status": "SUCCESS",
+    "payload": "TX_RECORD: 0x8FA43FDB9901AC8E"
+  },
+  {
+    "id": "0.3828142576209086",
+    "timestamp": "5:14:37 p.m.",
+    "category": "SIMULATION",
+    "message": "[ATTACK_SUCCESS] Attack complete on GATEWAY-VPC-01. Core nodes status updated.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.259859477709532",
+    "timestamp": "5:14:50 p.m.",
+    "category": "NETWORK",
+    "message": "Initiating multi-threaded port assessment targeting GATEWAY-VPC-01 at 192.168.12.1...",
+    "status": "INFO"
+  },
+  {
+    "id": "0.6523441758188835",
+    "timestamp": "5:14:52 p.m.",
+    "category": "SECURITY",
+    "message": "EDR Evasion Triggered. Padding payload using AI-Polymorphic junk instructions. Observed entropy ratio matches threshold: 0.78",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.6223344495293409",
+    "timestamp": "5:14:53 p.m.",
+    "category": "SIMULATION",
+    "message": "Process Doppelgänger technique executed: replacing memory segments of payload shell inside host memory map.",
+    "status": "INFO"
+  },
+  {
+    "id": "0.5380951401652189",
+    "timestamp": "5:14:55 p.m.",
+    "category": "QUANTUM",
+    "message": "Bypassing high-dimensional lattice failed or restricted. Node implements PQC quantum shield standard. Decryption bypassed; fall back to port scraping.",
+    "status": "WARNING"
+  },
+  {
+    "id": "0.1894398558131648",
+    "timestamp": "5:14:56 p.m.",
+    "category": "NETWORK",
+    "message": "Exfiltration tunnel safely mapped. Launching covert DNS stream tunnel via UDP/53 in CORP-ENT-CLOUD-01",
+    "status": "SUCCESS",
+    "payload": "TX_RECORD: 0x8FA43FDB9901AC8E"
+  },
+  {
+    "id": "0.3488791792095227",
+    "timestamp": "5:14:58 p.m.",
+    "category": "SIMULATION",
+    "message": "[ATTACK_SUCCESS] Attack complete on GATEWAY-VPC-01. Core nodes status updated.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.9660277844169345",
+    "timestamp": "5:15:02 p.m.",
+    "category": "NETWORK",
+    "message": "Initiating multi-threaded port assessment targeting GATEWAY-VPC-01 at 192.168.12.1...",
+    "status": "INFO"
+  },
+  {
+    "id": "0.939491289520652",
+    "timestamp": "5:15:03 p.m.",
+    "category": "SECURITY",
+    "message": "EDR Evasion Triggered. Padding payload using AI-Polymorphic junk instructions. Observed entropy ratio matches threshold: 0.78",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.8110584912855123",
+    "timestamp": "5:15:05 p.m.",
+    "category": "SIMULATION",
+    "message": "Simulating Kerberoasting SPN harvesting sequence on domain controllers. Found vulnerable ticketing tickets!",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.7204571913955526",
+    "timestamp": "5:15:06 p.m.",
+    "category": "QUANTUM",
+    "message": "Bypassing high-dimensional lattice failed or restricted. Node implements PQC quantum shield standard. Decryption bypassed; fall back to port scraping.",
+    "status": "WARNING"
+  },
+  {
+    "id": "0.6580014059709248",
+    "timestamp": "5:15:08 p.m.",
+    "category": "NETWORK",
+    "message": "Exfiltration tunnel safely mapped. Launching covert DNS stream tunnel via UDP/53 in CORP-ENT-CLOUD-01",
+    "status": "SUCCESS",
+    "payload": "TX_RECORD: 0x8FA43FDB9901AC8E"
+  },
+  {
+    "id": "0.9126799903165655",
+    "timestamp": "5:15:09 p.m.",
+    "category": "SIMULATION",
+    "message": "[ATTACK_SUCCESS] Attack complete on GATEWAY-VPC-01. Core nodes status updated.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.39262857775890636",
+    "timestamp": "5:15:17 p.m.",
+    "category": "SYSTEM",
+    "message": "Set target focus node to: WEB-PUBLIC-PORTAL (192.168.140.22)",
+    "status": "INFO"
+  },
+  {
+    "id": "0.08516397424118871",
+    "timestamp": "5:15:29 p.m.",
+    "category": "NETWORK",
+    "message": "Initiating multi-threaded port assessment targeting WEB-PUBLIC-PORTAL at 192.168.140.22...",
+    "status": "INFO"
+  },
+  {
+    "id": "0.3542984388402255",
+    "timestamp": "5:15:31 p.m.",
+    "category": "SECURITY",
+    "message": "EDR Evasion Triggered. Padding payload using AI-Polymorphic junk instructions. Observed entropy ratio matches threshold: 0.78",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.5892453044785897",
+    "timestamp": "5:15:33 p.m.",
+    "category": "SIMULATION",
+    "message": "Simulating Kerberoasting SPN harvesting sequence on domain controllers. Found vulnerable ticketing tickets!",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.45375332564691917",
+    "timestamp": "5:15:34 p.m.",
+    "category": "QUANTUM",
+    "message": "Analyzing high-dimensional vector space bypass with 512 simulated qubits on 24% PQC ready server. Side-channel collision found. Cryptographic bypass: VALIDATED.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.9857150840497397",
+    "timestamp": "5:15:36 p.m.",
+    "category": "NETWORK",
+    "message": "Exfiltration tunnel safely mapped. Launching covert DNS stream tunnel via UDP/53 in CORP-ENT-CLOUD-01",
+    "status": "SUCCESS",
+    "payload": "TX_RECORD: 0x8FA43FDB9901AC8E"
+  },
+  {
+    "id": "0.7807808611259894",
+    "timestamp": "5:15:37 p.m.",
+    "category": "SIMULATION",
+    "message": "[ATTACK_SUCCESS] Attack complete on WEB-PUBLIC-PORTAL. Core nodes status updated.",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "0.8542465165638092",
+    "timestamp": "5:15:44 p.m.",
+    "category": "SYSTEM",
+    "message": "Set target focus node to: SECURE-LEGACY-DB (10.0.4.5)",
+    "status": "INFO"
+  },
+  {
+    "id": "0.24060311024405523",
+    "timestamp": "5:16:53 p.m.",
+    "category": "SECURITY",
+    "message": "External TLS Handshake Audit scan on internal.banking-api.secure complete. Status: SECURED (PQC-HYBRID). Security score: 100/100.",
+    "status": "SUCCESS"
+  }
+]

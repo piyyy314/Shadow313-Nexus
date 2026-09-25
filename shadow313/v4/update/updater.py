@@ -30,7 +30,7 @@ def _now_iso() -> str:
 
 
 PYPI_URL     = "https://pypi.org/pypi/shadow313/json"
-GITHUB_API   = "https://api.github.com/repos/shadow313/shadow313/releases/latest"
+GITHUB_API   = "https://api.github.com/repos/piyyy314/Shadow313-Nexus/releases/latest"
 CURRENT_VERSION = "4.0.0"
 
 
@@ -386,7 +386,7 @@ class Updater:
     def show_changelog(self, version: str = "") -> str:
         """Show changelog for a version."""
         try:
-            url = f"https://raw.githubusercontent.com/shadow313/shadow313/main/CHANGELOG.md"
+            url = f"https://raw.githubusercontent.com/piyyy314/Shadow313-Nexus/main/CHANGELOG.md"
             req = urlreq.Request(url, headers={"User-Agent": "shadow313/4.0"})
             with urlreq.urlopen(req, timeout=10) as resp:
                 changelog = resp.read().decode("utf-8", errors="replace")

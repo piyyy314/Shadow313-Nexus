@@ -1,0 +1,1928 @@
+{
+  "exported": "2026-09-25T03:12:17.655Z",
+  "schema_version": "5.0",
+  "provenance_class": "REAL_OBSERVATION",
+  "counts": {
+    "CRITICAL": 56,
+    "HIGH": 52,
+    "MEDIUM": 44,
+    "LOW": 20,
+    "acked": 66,
+    "soar": 0
+  },
+  "attck_heatmap": {
+    "T1596": {
+      "count": 10,
+      "crits": 0,
+      "highs": 0,
+      "meds": 6,
+      "lows": 4,
+      "events": [
+        {
+          "id": 420,
+          "ts": "23:11:20",
+          "title": "WE-FORGE decoy — DNS beacon fired",
+          "sev": "MEDIUM",
+          "asset": "vortex.ghost.watch.local"
+        },
+        {
+          "id": 412,
+          "ts": "23:10:55",
+          "title": "WE-FORGE decoy — DNS beacon fired",
+          "sev": "MEDIUM",
+          "asset": "vortex.ghost.watch.local"
+        },
+        {
+          "id": 400,
+          "ts": "23:10:21",
+          "title": "New domain relationship correlated",
+          "sev": "LOW",
+          "asset": "shadow313.net"
+        },
+        {
+          "id": 379,
+          "ts": "23:09:19",
+          "title": "New domain relationship correlated",
+          "sev": "LOW",
+          "asset": "shadow313.net"
+        },
+        {
+          "id": 357,
+          "ts": "23:08:04",
+          "title": "WE-FORGE decoy — DNS beacon fired",
+          "sev": "MEDIUM",
+          "asset": "vortex.ghost.watch.local"
+        },
+        {
+          "id": 351,
+          "ts": "23:07:44",
+          "title": "New domain relationship correlated",
+          "sev": "LOW",
+          "asset": "shadow313.net"
+        },
+        {
+          "id": 333,
+          "ts": "23:06:49",
+          "title": "WE-FORGE decoy — DNS beacon fired",
+          "sev": "MEDIUM",
+          "asset": "vortex.ghost.watch.local"
+        },
+        {
+          "id": 309,
+          "ts": "23:05:35",
+          "title": "New domain relationship correlated",
+          "sev": "LOW",
+          "asset": "shadow313.net"
+        }
+      ]
+    },
+    "T1572": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 410,
+          "ts": "23:10:50",
+          "title": "DNS tunneling — entropy 4.2",
+          "sev": "HIGH",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 363,
+          "ts": "23:08:26",
+          "title": "DNS tunneling — entropy 4.2",
+          "sev": "HIGH",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 326,
+          "ts": "23:06:28",
+          "title": "DNS tunneling — entropy 4.2",
+          "sev": "HIGH",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 305,
+          "ts": "23:05:22",
+          "title": "DNS tunneling — entropy 4.2",
+          "sev": "HIGH",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 266,
+          "ts": "23:03:18",
+          "title": "DNS tunneling — entropy 4.2",
+          "sev": "HIGH",
+          "asset": "ws-finance-03"
+        }
+      ]
+    },
+    "T1558.003": {
+      "count": 6,
+      "crits": 0,
+      "highs": 6,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 421,
+          "ts": "23:11:24",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        },
+        {
+          "id": 415,
+          "ts": "23:11:04",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        },
+        {
+          "id": 371,
+          "ts": "23:08:54",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        },
+        {
+          "id": 343,
+          "ts": "23:07:22",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        },
+        {
+          "id": 311,
+          "ts": "23:05:41",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        },
+        {
+          "id": 267,
+          "ts": "23:03:22",
+          "title": "Kerberoasting — RC4 TGS from jsmith",
+          "sev": "HIGH",
+          "asset": "dc-01"
+        }
+      ]
+    },
+    "T1542.001": {
+      "count": 11,
+      "crits": 11,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 417,
+          "ts": "23:11:10",
+          "title": "Firmware hash mismatch — edge-node-04",
+          "sev": "CRITICAL",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 406,
+          "ts": "23:10:37",
+          "title": "TR-069 unsigned firmware push",
+          "sev": "CRITICAL",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 389,
+          "ts": "23:09:49",
+          "title": "Firmware hash mismatch — edge-node-04",
+          "sev": "CRITICAL",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 384,
+          "ts": "23:09:34",
+          "title": "Firmware hash mismatch — edge-node-04",
+          "sev": "CRITICAL",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 378,
+          "ts": "23:09:15",
+          "title": "TR-069 unsigned firmware push",
+          "sev": "CRITICAL",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 332,
+          "ts": "23:06:46",
+          "title": "TR-069 unsigned firmware push",
+          "sev": "CRITICAL",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 322,
+          "ts": "23:06:15",
+          "title": "Firmware hash mismatch — edge-node-04",
+          "sev": "CRITICAL",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 320,
+          "ts": "23:06:09",
+          "title": "Firmware hash mismatch — edge-node-04",
+          "sev": "CRITICAL",
+          "asset": "edge-node-04"
+        }
+      ]
+    },
+    "T1059.001": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 391,
+          "ts": "23:09:55",
+          "title": "Encoded PowerShell from WINWORD.EXE",
+          "sev": "HIGH",
+          "asset": "ws-exec-09"
+        },
+        {
+          "id": 383,
+          "ts": "23:09:32",
+          "title": "Encoded PowerShell from WINWORD.EXE",
+          "sev": "HIGH",
+          "asset": "ws-exec-09"
+        },
+        {
+          "id": 324,
+          "ts": "23:06:22",
+          "title": "Encoded PowerShell from WINWORD.EXE",
+          "sev": "HIGH",
+          "asset": "ws-exec-09"
+        },
+        {
+          "id": 301,
+          "ts": "23:05:11",
+          "title": "Encoded PowerShell from WINWORD.EXE",
+          "sev": "HIGH",
+          "asset": "ws-exec-09"
+        },
+        {
+          "id": 269,
+          "ts": "23:03:29",
+          "title": "Encoded PowerShell from WINWORD.EXE",
+          "sev": "HIGH",
+          "asset": "ws-exec-09"
+        }
+      ]
+    },
+    "T1548.002": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 416,
+          "ts": "23:11:05",
+          "title": "UAC bypass via fodhelper.exe",
+          "sev": "HIGH",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 376,
+          "ts": "23:09:09",
+          "title": "UAC bypass via fodhelper.exe",
+          "sev": "HIGH",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 329,
+          "ts": "23:06:37",
+          "title": "UAC bypass via fodhelper.exe",
+          "sev": "HIGH",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 313,
+          "ts": "23:05:46",
+          "title": "UAC bypass via fodhelper.exe",
+          "sev": "HIGH",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 270,
+          "ts": "23:03:32",
+          "title": "UAC bypass via fodhelper.exe",
+          "sev": "HIGH",
+          "asset": "ws-hr-07"
+        }
+      ]
+    },
+    "T1490": {
+      "count": 6,
+      "crits": 6,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 435,
+          "ts": "23:12:12",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 388,
+          "ts": "23:09:48",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 360,
+          "ts": "23:08:15",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 330,
+          "ts": "23:06:39",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 307,
+          "ts": "23:05:26",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 271,
+          "ts": "23:03:36",
+          "title": "VSS shadow copy deletion",
+          "sev": "CRITICAL",
+          "asset": "ws-finance-03"
+        }
+      ]
+    },
+    "T1505.003": {
+      "count": 10,
+      "crits": 10,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 429,
+          "ts": "23:11:49",
+          "title": "China Chopper web shell in uploads/",
+          "sev": "CRITICAL",
+          "asset": "web-app-01"
+        },
+        {
+          "id": 411,
+          "ts": "23:10:52",
+          "title": "Behinder JSP AES shell",
+          "sev": "CRITICAL",
+          "asset": "tomcat-prod-01"
+        },
+        {
+          "id": 404,
+          "ts": "23:10:32",
+          "title": "China Chopper web shell in uploads/",
+          "sev": "CRITICAL",
+          "asset": "web-app-01"
+        },
+        {
+          "id": 356,
+          "ts": "23:08:02",
+          "title": "China Chopper web shell in uploads/",
+          "sev": "CRITICAL",
+          "asset": "web-app-01"
+        },
+        {
+          "id": 355,
+          "ts": "23:07:57",
+          "title": "Behinder JSP AES shell",
+          "sev": "CRITICAL",
+          "asset": "tomcat-prod-01"
+        },
+        {
+          "id": 340,
+          "ts": "23:07:14",
+          "title": "Behinder JSP AES shell",
+          "sev": "CRITICAL",
+          "asset": "tomcat-prod-01"
+        },
+        {
+          "id": 335,
+          "ts": "23:06:57",
+          "title": "China Chopper web shell in uploads/",
+          "sev": "CRITICAL",
+          "asset": "web-app-01"
+        },
+        {
+          "id": 310,
+          "ts": "23:05:39",
+          "title": "Behinder JSP AES shell",
+          "sev": "CRITICAL",
+          "asset": "tomcat-prod-01"
+        }
+      ]
+    },
+    "T1068": {
+      "count": 6,
+      "crits": 6,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 436,
+          "ts": "23:12:14",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 395,
+          "ts": "23:10:07",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 366,
+          "ts": "23:08:39",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 327,
+          "ts": "23:06:30",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 290,
+          "ts": "23:04:38",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 274,
+          "ts": "23:03:48",
+          "title": "CVE-2026-0001 kernel priv esc",
+          "sev": "CRITICAL",
+          "asset": "linux-srv-05"
+        }
+      ]
+    },
+    "T1003.006": {
+      "count": 6,
+      "crits": 6,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 419,
+          "ts": "23:11:16",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        },
+        {
+          "id": 399,
+          "ts": "23:10:18",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        },
+        {
+          "id": 364,
+          "ts": "23:08:31",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        },
+        {
+          "id": 339,
+          "ts": "23:07:09",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        },
+        {
+          "id": 303,
+          "ts": "23:05:15",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        },
+        {
+          "id": 275,
+          "ts": "23:03:50",
+          "title": "DCSync — non-DC replication",
+          "sev": "CRITICAL",
+          "asset": "dc-01"
+        }
+      ]
+    },
+    "T1055.001": {
+      "count": 6,
+      "crits": 6,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 433,
+          "ts": "23:12:03",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 390,
+          "ts": "23:09:53",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 359,
+          "ts": "23:08:11",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 350,
+          "ts": "23:07:40",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 319,
+          "ts": "23:06:07",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 277,
+          "ts": "23:03:56",
+          "title": "CreateRemoteThread → lsass.exe",
+          "sev": "CRITICAL",
+          "asset": "ws-dev-12"
+        }
+      ]
+    },
+    "T1070.006": {
+      "count": 6,
+      "crits": 0,
+      "highs": 0,
+      "meds": 6,
+      "lows": 0,
+      "events": [
+        {
+          "id": 431,
+          "ts": "23:11:56",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 397,
+          "ts": "23:10:13",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 373,
+          "ts": "23:08:59",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 349,
+          "ts": "23:07:38",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 314,
+          "ts": "23:05:48",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        },
+        {
+          "id": 279,
+          "ts": "23:04:02",
+          "title": "Timestomping — MACE attribute modified",
+          "sev": "MEDIUM",
+          "asset": "ws-dev-12"
+        }
+      ]
+    },
+    "T1003.001": {
+      "count": 6,
+      "crits": 6,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 427,
+          "ts": "23:11:42",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 398,
+          "ts": "23:10:16",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 382,
+          "ts": "23:09:30",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 334,
+          "ts": "23:06:54",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 316,
+          "ts": "23:05:56",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 280,
+          "ts": "23:04:05",
+          "title": "LSASS dump via MiniDumpWriteDump",
+          "sev": "CRITICAL",
+          "asset": "ws-hr-07"
+        }
+      ]
+    },
+    "T1552.001": {
+      "count": 6,
+      "crits": 0,
+      "highs": 0,
+      "meds": 6,
+      "lows": 0,
+      "events": [
+        {
+          "id": 434,
+          "ts": "23:12:07",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        },
+        {
+          "id": 387,
+          "ts": "23:09:44",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        },
+        {
+          "id": 369,
+          "ts": "23:08:49",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        },
+        {
+          "id": 338,
+          "ts": "23:07:05",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        },
+        {
+          "id": 308,
+          "ts": "23:05:30",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        },
+        {
+          "id": 281,
+          "ts": "23:04:07",
+          "title": ".env probe — CensysInspect",
+          "sev": "MEDIUM",
+          "asset": "web-trap-01"
+        }
+      ]
+    },
+    "T1600.001": {
+      "count": 6,
+      "crits": 0,
+      "highs": 6,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 422,
+          "ts": "23:11:26",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        },
+        {
+          "id": 405,
+          "ts": "23:10:34",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        },
+        {
+          "id": 362,
+          "ts": "23:08:24",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        },
+        {
+          "id": 323,
+          "ts": "23:06:18",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        },
+        {
+          "id": 299,
+          "ts": "23:05:04",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        },
+        {
+          "id": 283,
+          "ts": "23:04:13",
+          "title": "OpenSSL PQC downgrade CVE-2026-1847",
+          "sev": "HIGH",
+          "asset": "api-gw-01"
+        }
+      ]
+    },
+    "T1565.001": {
+      "count": 5,
+      "crits": 0,
+      "highs": 0,
+      "meds": 5,
+      "lows": 0,
+      "events": [
+        {
+          "id": 392,
+          "ts": "23:09:59",
+          "title": "SATCOM uplink gain spoof",
+          "sev": "MEDIUM",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 375,
+          "ts": "23:09:05",
+          "title": "SATCOM uplink gain spoof",
+          "sev": "MEDIUM",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 347,
+          "ts": "23:07:34",
+          "title": "SATCOM uplink gain spoof",
+          "sev": "MEDIUM",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 318,
+          "ts": "23:06:04",
+          "title": "SATCOM uplink gain spoof",
+          "sev": "MEDIUM",
+          "asset": "vsat-gw-01"
+        },
+        {
+          "id": 284,
+          "ts": "23:04:17",
+          "title": "SATCOM uplink gain spoof",
+          "sev": "MEDIUM",
+          "asset": "vsat-gw-01"
+        }
+      ]
+    },
+    "T1550.002": {
+      "count": 5,
+      "crits": 5,
+      "highs": 0,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 393,
+          "ts": "23:10:02",
+          "title": "Pass-the-Hash NTLM KeyLength 0",
+          "sev": "CRITICAL",
+          "asset": "srv-app-02"
+        },
+        {
+          "id": 380,
+          "ts": "23:09:23",
+          "title": "Pass-the-Hash NTLM KeyLength 0",
+          "sev": "CRITICAL",
+          "asset": "srv-app-02"
+        },
+        {
+          "id": 325,
+          "ts": "23:06:26",
+          "title": "Pass-the-Hash NTLM KeyLength 0",
+          "sev": "CRITICAL",
+          "asset": "srv-app-02"
+        },
+        {
+          "id": 296,
+          "ts": "23:04:56",
+          "title": "Pass-the-Hash NTLM KeyLength 0",
+          "sev": "CRITICAL",
+          "asset": "srv-app-02"
+        },
+        {
+          "id": 285,
+          "ts": "23:04:21",
+          "title": "Pass-the-Hash NTLM KeyLength 0",
+          "sev": "CRITICAL",
+          "asset": "srv-app-02"
+        }
+      ]
+    },
+    "T1003.008": {
+      "count": 6,
+      "crits": 0,
+      "highs": 0,
+      "meds": 6,
+      "lows": 0,
+      "events": [
+        {
+          "id": 423,
+          "ts": "23:11:29",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 386,
+          "ts": "23:09:40",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 361,
+          "ts": "23:08:20",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 321,
+          "ts": "23:06:13",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 293,
+          "ts": "23:04:46",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        },
+        {
+          "id": 286,
+          "ts": "23:04:23",
+          "title": "eBPF: cat /etc/shadow intercepted",
+          "sev": "MEDIUM",
+          "asset": "linux-srv-05"
+        }
+      ]
+    },
+    "T1110.003": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 407,
+          "ts": "23:10:41",
+          "title": "Password spraying — 15 accounts",
+          "sev": "HIGH",
+          "asset": "ad-srv-01"
+        },
+        {
+          "id": 354,
+          "ts": "23:07:53",
+          "title": "Password spraying — 15 accounts",
+          "sev": "HIGH",
+          "asset": "ad-srv-01"
+        },
+        {
+          "id": 336,
+          "ts": "23:07:01",
+          "title": "Password spraying — 15 accounts",
+          "sev": "HIGH",
+          "asset": "ad-srv-01"
+        },
+        {
+          "id": 312,
+          "ts": "23:05:44",
+          "title": "Password spraying — 15 accounts",
+          "sev": "HIGH",
+          "asset": "ad-srv-01"
+        },
+        {
+          "id": 287,
+          "ts": "23:04:27",
+          "title": "Password spraying — 15 accounts",
+          "sev": "HIGH",
+          "asset": "ad-srv-01"
+        }
+      ]
+    },
+    "T1021.001": {
+      "count": 6,
+      "crits": 0,
+      "highs": 6,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 428,
+          "ts": "23:11:45",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        },
+        {
+          "id": 394,
+          "ts": "23:10:05",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        },
+        {
+          "id": 367,
+          "ts": "23:08:42",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        },
+        {
+          "id": 328,
+          "ts": "23:06:33",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        },
+        {
+          "id": 297,
+          "ts": "23:04:59",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        },
+        {
+          "id": 288,
+          "ts": "23:04:31",
+          "title": "RDP from powershell.exe parent",
+          "sev": "HIGH",
+          "asset": "ws-admin-01"
+        }
+      ]
+    },
+    "T1195.001": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 425,
+          "ts": "23:11:36",
+          "title": "Unsigned dependency in build pipeline",
+          "sev": "HIGH",
+          "asset": "build-runner-02"
+        },
+        {
+          "id": 408,
+          "ts": "23:10:44",
+          "title": "Unsigned dependency in build pipeline",
+          "sev": "HIGH",
+          "asset": "build-runner-02"
+        },
+        {
+          "id": 368,
+          "ts": "23:08:45",
+          "title": "Unsigned dependency in build pipeline",
+          "sev": "HIGH",
+          "asset": "build-runner-02"
+        },
+        {
+          "id": 345,
+          "ts": "23:07:29",
+          "title": "Unsigned dependency in build pipeline",
+          "sev": "HIGH",
+          "asset": "build-runner-02"
+        },
+        {
+          "id": 289,
+          "ts": "23:04:36",
+          "title": "Unsigned dependency in build pipeline",
+          "sev": "HIGH",
+          "asset": "build-runner-02"
+        }
+      ]
+    },
+    "T1110.001": {
+      "count": 5,
+      "crits": 0,
+      "highs": 5,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 430,
+          "ts": "23:11:53",
+          "title": "SSH brute force — root:password123",
+          "sev": "HIGH",
+          "asset": "honeypot-ssh-01"
+        },
+        {
+          "id": 401,
+          "ts": "23:10:24",
+          "title": "SSH brute force — root:password123",
+          "sev": "HIGH",
+          "asset": "honeypot-ssh-01"
+        },
+        {
+          "id": 365,
+          "ts": "23:08:35",
+          "title": "SSH brute force — root:password123",
+          "sev": "HIGH",
+          "asset": "honeypot-ssh-01"
+        },
+        {
+          "id": 342,
+          "ts": "23:07:19",
+          "title": "SSH brute force — root:password123",
+          "sev": "HIGH",
+          "asset": "honeypot-ssh-01"
+        },
+        {
+          "id": 294,
+          "ts": "23:04:50",
+          "title": "SSH brute force — root:password123",
+          "sev": "HIGH",
+          "asset": "honeypot-ssh-01"
+        }
+      ]
+    },
+    "T1027": {
+      "count": 5,
+      "crits": 0,
+      "highs": 0,
+      "meds": 5,
+      "lows": 0,
+      "events": [
+        {
+          "id": 418,
+          "ts": "23:11:13",
+          "title": "PE analyzer: UPX-packed entropy 7.8",
+          "sev": "MEDIUM",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 403,
+          "ts": "23:10:29",
+          "title": "PE analyzer: UPX-packed entropy 7.8",
+          "sev": "MEDIUM",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 372,
+          "ts": "23:08:56",
+          "title": "PE analyzer: UPX-packed entropy 7.8",
+          "sev": "MEDIUM",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 348,
+          "ts": "23:07:36",
+          "title": "PE analyzer: UPX-packed entropy 7.8",
+          "sev": "MEDIUM",
+          "asset": "edge-node-04"
+        },
+        {
+          "id": 295,
+          "ts": "23:04:52",
+          "title": "PE analyzer: UPX-packed entropy 7.8",
+          "sev": "MEDIUM",
+          "asset": "edge-node-04"
+        }
+      ]
+    },
+    "T1053.005": {
+      "count": 5,
+      "crits": 0,
+      "highs": 0,
+      "meds": 5,
+      "lows": 0,
+      "events": [
+        {
+          "id": 432,
+          "ts": "23:12:01",
+          "title": "Suspicious scheduled task SYSTEM",
+          "sev": "MEDIUM",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 396,
+          "ts": "23:10:09",
+          "title": "Suspicious scheduled task SYSTEM",
+          "sev": "MEDIUM",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 353,
+          "ts": "23:07:50",
+          "title": "Suspicious scheduled task SYSTEM",
+          "sev": "MEDIUM",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 341,
+          "ts": "23:07:17",
+          "title": "Suspicious scheduled task SYSTEM",
+          "sev": "MEDIUM",
+          "asset": "ws-finance-03"
+        },
+        {
+          "id": 300,
+          "ts": "23:05:07",
+          "title": "Suspicious scheduled task SYSTEM",
+          "sev": "MEDIUM",
+          "asset": "ws-finance-03"
+        }
+      ]
+    },
+    "T1547.001": {
+      "count": 5,
+      "crits": 0,
+      "highs": 0,
+      "meds": 5,
+      "lows": 0,
+      "events": [
+        {
+          "id": 424,
+          "ts": "23:11:33",
+          "title": "Registry Run key — non-standard path",
+          "sev": "MEDIUM",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 385,
+          "ts": "23:09:38",
+          "title": "Registry Run key — non-standard path",
+          "sev": "MEDIUM",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 370,
+          "ts": "23:08:51",
+          "title": "Registry Run key — non-standard path",
+          "sev": "MEDIUM",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 337,
+          "ts": "23:07:03",
+          "title": "Registry Run key — non-standard path",
+          "sev": "MEDIUM",
+          "asset": "ws-hr-07"
+        },
+        {
+          "id": 304,
+          "ts": "23:05:18",
+          "title": "Registry Run key — non-standard path",
+          "sev": "MEDIUM",
+          "asset": "ws-hr-07"
+        }
+      ]
+    },
+    "T1498": {
+      "count": 4,
+      "crits": 0,
+      "highs": 4,
+      "meds": 0,
+      "lows": 0,
+      "events": [
+        {
+          "id": 409,
+          "ts": "23:10:46",
+          "title": "Mirai botnet Telnet staging",
+          "sev": "HIGH",
+          "asset": "honeypot-01"
+        },
+        {
+          "id": 381,
+          "ts": "23:09:26",
+          "title": "Mirai botnet Telnet staging",
+          "sev": "HIGH",
+          "asset": "honeypot-01"
+        },
+        {
+          "id": 331,
+          "ts": "23:06:42",
+          "title": "Mirai botnet Telnet staging",
+          "sev": "HIGH",
+          "asset": "honeypot-01"
+        },
+        {
+          "id": 315,
+          "ts": "23:05:52",
+          "title": "Mirai botnet Telnet staging",
+          "sev": "HIGH",
+          "asset": "honeypot-01"
+        }
+      ]
+    }
+  },
+  "evidence_receipts": 50,
+  "events": [
+    {
+      "severity": "CRITICAL",
+      "title": "CVE-2026-0001 kernel priv esc",
+      "technique": "T1068",
+      "asset": "linux-srv-05",
+      "time": "23:12:14",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "VSS shadow copy deletion",
+      "technique": "T1490",
+      "asset": "ws-finance-03",
+      "time": "23:12:12",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": ".env probe — CensysInspect",
+      "technique": "T1552.001",
+      "asset": "web-trap-01",
+      "time": "23:12:07",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "CreateRemoteThread → lsass.exe",
+      "technique": "T1055.001",
+      "asset": "ws-dev-12",
+      "time": "23:12:03",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Suspicious scheduled task SYSTEM",
+      "technique": "T1053.005",
+      "asset": "ws-finance-03",
+      "time": "23:12:01",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Timestomping — MACE attribute modified",
+      "technique": "T1070.006",
+      "asset": "ws-dev-12",
+      "time": "23:11:56",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "SSH brute force — root:password123",
+      "technique": "T1110.001",
+      "asset": "honeypot-ssh-01",
+      "time": "23:11:53",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "China Chopper web shell in uploads/",
+      "technique": "T1505.003",
+      "asset": "web-app-01",
+      "time": "23:11:49",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "RDP from powershell.exe parent",
+      "technique": "T1021.001",
+      "asset": "ws-admin-01",
+      "time": "23:11:45",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "LSASS dump via MiniDumpWriteDump",
+      "technique": "T1003.001",
+      "asset": "ws-hr-07",
+      "time": "23:11:42",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "313-BIND chain verified — 3180 binds",
+      "asset": "ledger-01",
+      "time": "23:11:38",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Unsigned dependency in build pipeline",
+      "technique": "T1195.001",
+      "asset": "build-runner-02",
+      "time": "23:11:36",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Registry Run key — non-standard path",
+      "technique": "T1547.001",
+      "asset": "ws-hr-07",
+      "time": "23:11:33",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "eBPF: cat /etc/shadow intercepted",
+      "technique": "T1003.008",
+      "asset": "linux-srv-05",
+      "time": "23:11:29",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "OpenSSL PQC downgrade CVE-2026-1847",
+      "technique": "T1600.001",
+      "asset": "api-gw-01",
+      "time": "23:11:26",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Kerberoasting — RC4 TGS from jsmith",
+      "technique": "T1558.003",
+      "asset": "dc-01",
+      "time": "23:11:24",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "WE-FORGE decoy — DNS beacon fired",
+      "technique": "T1596",
+      "asset": "vortex.ghost.watch.local",
+      "time": "23:11:20",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "DCSync — non-DC replication",
+      "technique": "T1003.006",
+      "asset": "dc-01",
+      "time": "23:11:16",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "PE analyzer: UPX-packed entropy 7.8",
+      "technique": "T1027",
+      "asset": "edge-node-04",
+      "time": "23:11:13",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Firmware hash mismatch — edge-node-04",
+      "technique": "T1542.001",
+      "asset": "edge-node-04",
+      "time": "23:11:10",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "UAC bypass via fodhelper.exe",
+      "technique": "T1548.002",
+      "asset": "ws-hr-07",
+      "time": "23:11:05",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Kerberoasting — RC4 TGS from jsmith",
+      "technique": "T1558.003",
+      "asset": "dc-01",
+      "time": "23:11:04",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "PE-7 retraining checkpoint F1=0.94",
+      "asset": "nc-04",
+      "time": "23:11:00",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "313-BIND chain verified — 3180 binds",
+      "asset": "ledger-01",
+      "time": "23:10:57",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "WE-FORGE decoy — DNS beacon fired",
+      "technique": "T1596",
+      "asset": "vortex.ghost.watch.local",
+      "time": "23:10:55",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Behinder JSP AES shell",
+      "technique": "T1505.003",
+      "asset": "tomcat-prod-01",
+      "time": "23:10:52",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "DNS tunneling — entropy 4.2",
+      "technique": "T1572",
+      "asset": "ws-finance-03",
+      "time": "23:10:50",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Mirai botnet Telnet staging",
+      "technique": "T1498",
+      "asset": "honeypot-01",
+      "time": "23:10:46",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Unsigned dependency in build pipeline",
+      "technique": "T1195.001",
+      "asset": "build-runner-02",
+      "time": "23:10:44",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Password spraying — 15 accounts",
+      "technique": "T1110.003",
+      "asset": "ad-srv-01",
+      "time": "23:10:41",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "TR-069 unsigned firmware push",
+      "technique": "T1542.001",
+      "asset": "vsat-gw-01",
+      "time": "23:10:37",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "OpenSSL PQC downgrade CVE-2026-1847",
+      "technique": "T1600.001",
+      "asset": "api-gw-01",
+      "time": "23:10:34",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "China Chopper web shell in uploads/",
+      "technique": "T1505.003",
+      "asset": "web-app-01",
+      "time": "23:10:32",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "PE analyzer: UPX-packed entropy 7.8",
+      "technique": "T1027",
+      "asset": "edge-node-04",
+      "time": "23:10:29",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "Nightly scan — 0 critical",
+      "asset": "all-hosts",
+      "time": "23:10:27",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "SSH brute force — root:password123",
+      "technique": "T1110.001",
+      "asset": "honeypot-ssh-01",
+      "time": "23:10:24",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "New domain relationship correlated",
+      "technique": "T1596",
+      "asset": "shadow313.net",
+      "time": "23:10:21",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "DCSync — non-DC replication",
+      "technique": "T1003.006",
+      "asset": "dc-01",
+      "time": "23:10:18",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "LSASS dump via MiniDumpWriteDump",
+      "technique": "T1003.001",
+      "asset": "ws-hr-07",
+      "time": "23:10:16",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Timestomping — MACE attribute modified",
+      "technique": "T1070.006",
+      "asset": "ws-dev-12",
+      "time": "23:10:13",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Suspicious scheduled task SYSTEM",
+      "technique": "T1053.005",
+      "asset": "ws-finance-03",
+      "time": "23:10:09",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "CVE-2026-0001 kernel priv esc",
+      "technique": "T1068",
+      "asset": "linux-srv-05",
+      "time": "23:10:07",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "RDP from powershell.exe parent",
+      "technique": "T1021.001",
+      "asset": "ws-admin-01",
+      "time": "23:10:05",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Pass-the-Hash NTLM KeyLength 0",
+      "technique": "T1550.002",
+      "asset": "srv-app-02",
+      "time": "23:10:02",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "SATCOM uplink gain spoof",
+      "technique": "T1565.001",
+      "asset": "vsat-gw-01",
+      "time": "23:09:59",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Encoded PowerShell from WINWORD.EXE",
+      "technique": "T1059.001",
+      "asset": "ws-exec-09",
+      "time": "23:09:55",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "CreateRemoteThread → lsass.exe",
+      "technique": "T1055.001",
+      "asset": "ws-dev-12",
+      "time": "23:09:53",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Firmware hash mismatch — edge-node-04",
+      "technique": "T1542.001",
+      "asset": "edge-node-04",
+      "time": "23:09:49",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "VSS shadow copy deletion",
+      "technique": "T1490",
+      "asset": "ws-finance-03",
+      "time": "23:09:48",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": ".env probe — CensysInspect",
+      "technique": "T1552.001",
+      "asset": "web-trap-01",
+      "time": "23:09:44",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "eBPF: cat /etc/shadow intercepted",
+      "technique": "T1003.008",
+      "asset": "linux-srv-05",
+      "time": "23:09:40",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Registry Run key — non-standard path",
+      "technique": "T1547.001",
+      "asset": "ws-hr-07",
+      "time": "23:09:38",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Firmware hash mismatch — edge-node-04",
+      "technique": "T1542.001",
+      "asset": "edge-node-04",
+      "time": "23:09:34",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Encoded PowerShell from WINWORD.EXE",
+      "technique": "T1059.001",
+      "asset": "ws-exec-09",
+      "time": "23:09:32",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "LSASS dump via MiniDumpWriteDump",
+      "technique": "T1003.001",
+      "asset": "ws-hr-07",
+      "time": "23:09:30",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Mirai botnet Telnet staging",
+      "technique": "T1498",
+      "asset": "honeypot-01",
+      "time": "23:09:26",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Pass-the-Hash NTLM KeyLength 0",
+      "technique": "T1550.002",
+      "asset": "srv-app-02",
+      "time": "23:09:23",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "New domain relationship correlated",
+      "technique": "T1596",
+      "asset": "shadow313.net",
+      "time": "23:09:19",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "TR-069 unsigned firmware push",
+      "technique": "T1542.001",
+      "asset": "vsat-gw-01",
+      "time": "23:09:15",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "Nightly scan — 0 critical",
+      "asset": "all-hosts",
+      "time": "23:09:11",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "UAC bypass via fodhelper.exe",
+      "technique": "T1548.002",
+      "asset": "ws-hr-07",
+      "time": "23:09:09",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "SATCOM uplink gain spoof",
+      "technique": "T1565.001",
+      "asset": "vsat-gw-01",
+      "time": "23:09:05",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "PE-7 retraining checkpoint F1=0.94",
+      "asset": "nc-04",
+      "time": "23:09:01",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Timestomping — MACE attribute modified",
+      "technique": "T1070.006",
+      "asset": "ws-dev-12",
+      "time": "23:08:59",
+      "acknowledged": true
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "PE analyzer: UPX-packed entropy 7.8",
+      "technique": "T1027",
+      "asset": "edge-node-04",
+      "time": "23:08:56",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Kerberoasting — RC4 TGS from jsmith",
+      "technique": "T1558.003",
+      "asset": "dc-01",
+      "time": "23:08:54",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Registry Run key — non-standard path",
+      "technique": "T1547.001",
+      "asset": "ws-hr-07",
+      "time": "23:08:51",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": ".env probe — CensysInspect",
+      "technique": "T1552.001",
+      "asset": "web-trap-01",
+      "time": "23:08:49",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "Unsigned dependency in build pipeline",
+      "technique": "T1195.001",
+      "asset": "build-runner-02",
+      "time": "23:08:45",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "RDP from powershell.exe parent",
+      "technique": "T1021.001",
+      "asset": "ws-admin-01",
+      "time": "23:08:42",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "CVE-2026-0001 kernel priv esc",
+      "technique": "T1068",
+      "asset": "linux-srv-05",
+      "time": "23:08:39",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "SSH brute force — root:password123",
+      "technique": "T1110.001",
+      "asset": "honeypot-ssh-01",
+      "time": "23:08:35",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "DCSync — non-DC replication",
+      "technique": "T1003.006",
+      "asset": "dc-01",
+      "time": "23:08:31",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "DNS tunneling — entropy 4.2",
+      "technique": "T1572",
+      "asset": "ws-finance-03",
+      "time": "23:08:26",
+      "acknowledged": false
+    },
+    {
+      "severity": "HIGH",
+      "title": "OpenSSL PQC downgrade CVE-2026-1847",
+      "technique": "T1600.001",
+      "asset": "api-gw-01",
+      "time": "23:08:24",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "eBPF: cat /etc/shadow intercepted",
+      "technique": "T1003.008",
+      "asset": "linux-srv-05",
+      "time": "23:08:20",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "VSS shadow copy deletion",
+      "technique": "T1490",
+      "asset": "ws-finance-03",
+      "time": "23:08:15",
+      "acknowledged": false
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "CreateRemoteThread → lsass.exe",
+      "technique": "T1055.001",
+      "asset": "ws-dev-12",
+      "time": "23:08:11",
+      "acknowledged": false
+    },
+    {
+      "severity": "LOW",
+      "title": "313-BIND chain verified — 3180 binds",
+      "asset": "ledger-01",
+      "time": "23:08:09",
+      "acknowledged": false
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "WE-FORGE decoy — DNS beacon fired",
+      "technique": "T1596",
+      "asset": "vortex.ghost.watch.local",
+      "time": "23:08:04",
+      "acknowledged": false
+    }
+  ]
+}

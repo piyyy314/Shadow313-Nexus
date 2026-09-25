@@ -58,7 +58,7 @@ jobs:
       - name: Install Shadow313 + test deps
         run: |
           pip install -e ".[dev]"
-          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn \
+          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn pytest-timeout \
             numpy scipy scapy dnspython python-whois cryptography \
             requests aiohttp sqlalchemy pydantic
       - name: Run tests
@@ -185,7 +185,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: shadow313/shadow313:ci-${{ github.sha }}
+          tags: piyyy314/shadow313-nexus:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Login + push (release only)
@@ -201,5 +201,5 @@ jobs:
           context: .
           push: true
           tags: |
-            shadow313/shadow313:latest
-            shadow313/shadow313:${{ github.event.release.tag_name }}
+            piyyy314/shadow313-nexus:latest
+            piyyy314/shadow313-nexus:${{ github.event.release.tag_name }}

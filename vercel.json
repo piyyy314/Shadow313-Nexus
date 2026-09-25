@@ -33,6 +33,10 @@
     {
       "source": "/command-center",
       "destination": "/docs/s313-command-center-v6.html"
+    },
+    {
+      "source": "/apt-simulation",
+      "destination": "/docs/s313-apt-simulation.html"
     }
   ]
 }

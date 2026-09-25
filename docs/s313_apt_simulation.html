@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — APT Simulation & IR Playbook</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --bg:#020617; --bg2:#0b1329; --border:rgba(34,197,94,0.15);
+    --text:#e2e8f0; --muted:#64748b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  /* Nav */
+  .nav { position:sticky; top:0; z-index:100; background:rgba(2,6,23,0.97);
+    backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+    height:48px; display:flex; align-items:center; padding:0 20px; gap:12px; }
+  .nav-logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; }
+  .nav-icon { width:28px; height:28px; background:var(--green); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-weight:900;
+    color:#000; font-size:12px; font-family:'JetBrains Mono',monospace; }
+  .nav-badge { font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:rgba(34,197,94,0.1); color:var(--green);
+    border:1px solid rgba(34,197,94,0.3); border-radius:4px; padding:2px 8px; }
+  .nav-right { margin-left:auto; display:flex; align-items:center; gap:10px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--muted); }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--red); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{opacity:.7;box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+
+  /* KPI */
+  .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; padding:16px 20px; }
+  .kpi { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:8px; padding:12px 14px; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi.red::before { background:var(--red); }
+  .kpi.amber::before { background:var(--amber); }
+  .kpi.green::before { background:var(--green); }
+  .kpi.purple::before { background:var(--purple); }
+  .kpi.cyan::before { background:var(--cyan); }
+  .kpi-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#475569; font-family:'JetBrains Mono',monospace; margin-bottom:4px; }
+  .kpi-value { font-size:22px; font-weight:700; line-height:1; }
+
+  /* Scenario selector */
+  .scenario-bar { display:flex; gap:10px; padding:0 20px 16px; flex-wrap:wrap; }
+  .scenario-btn { display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:8px;
+    border:1px solid rgba(30,41,59,0.8); background:var(--bg2); cursor:pointer;
+    transition:all .2s; font-size:12px; font-weight:600; color:var(--muted); }
+  .scenario-btn:hover { color:var(--text); border-color:rgba(34,197,94,0.3); }
+  .scenario-btn.active { color:var(--text); border-color:rgba(34,197,94,0.5); background:rgba(34,197,94,0.06); }
+  .scenario-icon { font-size:18px; }
+
+  /* Main layout */
+  .layout { display:grid; grid-template-columns:1fr 360px; gap:16px; padding:0 20px 20px; }
+
+  /* Timeline */
+  .timeline { position:relative; }
+  .timeline-line { position:absolute; left:20px; top:0; bottom:0; width:2px; background:rgba(34,197,94,0.15); }
+  .tl-event { position:relative; padding-left:52px; margin-bottom:16px; }
+  .tl-dot { position:absolute; left:12px; top:8px; width:18px; height:18px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700;
+    border:2px solid var(--bg); z-index:1; }
+  .tl-card { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:10px;
+    padding:14px 16px; cursor:pointer; transition:all .2s; }
+  .tl-card:hover { border-color:rgba(34,197,94,0.3); transform:translateX(2px); }
+  .tl-card.selected { border-color:rgba(34,197,94,0.5); background:rgba(34,197,94,0.04); }
+  .tl-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .tl-time { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); }
+  .tl-sev { font-size:9px; font-weight:700; padding:2px 7px; border-radius:3px; text-transform:uppercase; }
+  .tl-tid { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cyan); }
+  .tl-tactic { font-size:10px; padding:2px 7px; border-radius:3px; font-weight:600; }
+  .tl-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .tl-cmd { font-family:'JetBrains Mono',monospace; font-size:10px; color:#94a3b8;
+    background:rgba(0,0,0,0.3); border-radius:4px; padding:4px 8px; margin-bottom:6px;
+    word-break:break-all; }
+  .tl-meta { display:flex; gap:12px; font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+  .tl-detector { font-size:10px; color:var(--green); background:rgba(34,197,94,0.08);
+    border:1px solid rgba(34,197,94,0.2); border-radius:3px; padding:1px 6px; }
+  .tl-mttd { font-size:10px; color:var(--amber); font-family:'JetBrains Mono',monospace; }
+  .tl-receipt { font-size:9px; color:#475569; font-family:'JetBrains Mono',monospace; margin-top:6px; }
+
+  /* Right panel */
+  .right-col { display:flex; flex-direction:column; gap:14px; }
+  .panel { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:10px; overflow:hidden; }
+  .panel-hdr { display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; border-bottom:1px solid rgba(30,41,59,0.8); }
+  .panel-title { font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:.06em; }
+  .panel-body { padding:12px 14px; }
+
+  /* IR Playbook */
+  .ir-step { display:flex; align-items:flex-start; gap:8px; padding:6px 0; border-bottom:1px solid rgba(30,41,59,0.3); font-size:11px; }
+  .ir-step:last-child { border-bottom:none; }
+  .ir-num { width:18px; height:18px; border-radius:50%; background:rgba(34,197,94,0.15);
+    color:var(--green); font-size:9px; font-weight:700; display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; margin-top:1px; }
+  .ir-text { color:var(--text); line-height:1.4; }
+  .ir-placeholder { color:var(--muted); font-size:11px; text-align:center; padding:16px; }
+
+  /* 313-BIND receipt */
+  .receipt-box { background:rgba(0,0,0,0.3); border:1px solid rgba(34,197,94,0.15); border-radius:6px; padding:10px; font-family:'JetBrains Mono',monospace; font-size:10px; }
+  .receipt-id { color:var(--green); font-weight:700; margin-bottom:4px; }
+  .receipt-field { color:#475569; margin-bottom:2px; }
+  .receipt-field span { color:#94a3b8; }
+
+  /* ATT&CK mini map */
+  .attck-mini { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .attck-chip { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px; border-left:3px solid; }
+  .attck-chip-tid { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; }
+  .attck-chip-name { font-size:10px; color:#94a3b8; margin-top:2px; }
+
+  /* Download */
+  .dl-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.1);
+    color:var(--green); border:1px solid rgba(34,197,94,0.3); border-radius:6px;
+    padding:6px 14px; font-size:11px; font-weight:700; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif; transition:all .2s; }
+  .dl-btn:hover { background:rgba(34,197,94,0.2); }
+
+  /* Simulation progress */
+  .sim-progress { background:rgba(0,0,0,0.3); border-radius:6px; height:6px; margin-bottom:8px; overflow:hidden; }
+  .sim-bar { height:6px; border-radius:6px; background:linear-gradient(to right,var(--green),var(--cyan)); transition:width 0.5s; }
+
+  @media(max-width:900px) {
+    .layout { grid-template-columns:1fr; }
+    .kpi-row { grid-template-columns:repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-icon">S3</div>
+    SHADOW313 NEXUS
+  </div>
+  <span class="nav-badge">APT SIMULATION ENGINE</span>
+  <span class="nav-badge" style="color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)">🔴 ACTIVE INCIDENT</span>
+  <div class="nav-right">
+    <div class="pulse"></div>
+    <span id="clock" class="mono"></span>
+    &nbsp;|&nbsp; Purple Team Mode &nbsp;|&nbsp;
+    <button class="dl-btn" onclick="downloadReport()">⬇ Export IR Report</button>
+  </div>
+</nav>
+
+<!-- KPI Row -->
+<div class="kpi-row">
+  <div class="kpi red">
+    <div class="kpi-label">Total Events</div>
+    <div class="kpi-value" style="color:var(--red)">8</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-label">Critical Alerts</div>
+    <div class="kpi-value" style="color:var(--red)">4</div>
+  </div>
+  <div class="kpi amber">
+    <div class="kpi-label">High Alerts</div>
+    <div class="kpi-value" style="color:var(--amber)">3</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-label">Avg MTTD</div>
+    <div class="kpi-value" style="color:var(--green)">44s</div>
+  </div>
+  <div class="kpi purple">
+    <div class="kpi-label">Techniques</div>
+    <div class="kpi-value" style="color:var(--purple)">7</div>
+  </div>
+</div>
+
+<!-- Scenario Selector -->
+<div class="scenario-bar">
+  <div class="scenario-btn active" onclick="selectScenario('all', this)">
+    <span class="scenario-icon">🎯</span>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--text)">All Scenarios</div>
+      <div style="font-size:10px;color:var(--muted)">8 events · 3 actors</div>
+    </div>
+  </div>
+  <div class="scenario-btn" onclick="selectScenario('APT29', this)">
+    <span class="scenario-icon">🐻</span>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--text)">APT29 Cozy Bear</div>
+      <div style="font-size:10px;color:var(--muted)">4 events · T1566→T1003.006</div>
+    </div>
+  </div>
+  <div class="scenario-btn" onclick="selectScenario('RANSOM', this)">
+    <span class="scenario-icon">🔒</span>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--text)">BlackCat Ransomware</div>
+      <div style="font-size:10px;color:var(--muted)">3 events · T1562→T1490</div>
+    </div>
+  </div>
+  <div class="scenario-btn" onclick="selectScenario('FIN7', this)">
+    <span class="scenario-icon">💳</span>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--text)">FIN7 Carbanak</div>
+      <div style="font-size:10px;color:var(--muted)">3 events · T1566→T1003</div>
+    </div>
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+    <button onclick="runSimulation()" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif">▶ Run Live Simulation</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- Timeline -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em">⚡ Attack Timeline</div>
+      <div id="sim-status" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)">Click an event for IR playbook</div>
+    </div>
+    <div class="sim-progress"><div class="sim-bar" id="sim-bar" style="width:100%"></div></div>
+    <div class="timeline">
+      <div class="timeline-line"></div>
+      <div id="timeline-events"></div>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right-col">
+
+    <!-- IR Playbook -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🛡 IR Playbook</span>
+        <span id="ir-tid" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--cyan)">Select an event</span>
+      </div>
+      <div class="panel-body" id="ir-body">
+        <div class="ir-placeholder">Click any timeline event to load the incident response playbook for that technique</div>
+      </div>
+    </div>
+
+    <!-- 313-BIND Receipt -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🔐 313-BIND Receipt</span>
+        <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green)">SLH-DSA signed</span>
+      </div>
+      <div class="panel-body" id="receipt-body">
+        <div class="ir-placeholder">Receipt appears when event is selected</div>
+      </div>
+    </div>
+
+    <!-- ATT&CK Coverage -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🗺 ATT&CK Techniques</span>
+        <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--purple)">7 active</span>
+      </div>
+      <div class="panel-body">
+        <div class="attck-mini" id="attck-mini"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const EVENTS = [{"log_id": "APT29-001", "event_id": 4688, "event_type": "process_creation", "process": "winword.exe", "parent": "outlook.exe", "command_line": "winword.exe /n Q4_Report.docm", "user": "jsmith", "host": "WS-07", "severity": "info", "timestamp": "2026-09-25T06:34:39.043090+00:00", "tid": "T1566.001", "tactic": "Initial Access", "name": "Spearphishing Attachment", "detector": "SpearphishingEnhancer", "mttd_s": 89, "detected": true, "receipt": {"bind_id": "313-SIM-A9BF926A", "log_id": "APT29-001", "timestamp_ns": "1790318079043149313", "payload_hash": "sha3_256:788d169328e021642447c80b9e7f666...", "chain_hash": "sha3_512:5039dc5ef5b37b53ec9e99a0b84df3f...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "APT29-002", "event_id": 4688, "event_type": "process_creation", "process": "powershell.exe", "parent": "winword.exe", "command_line": "powershell.exe -nop -w hidden -enc JABjAD0ATgBlAHcALQBPAGIAagBlAGMAdAA=", "user": "jsmith", "host": "WS-07", "severity": "high", "timestamp": "2026-09-25T06:34:39.043101+00:00", "tid": "T1059.001", "tactic": "Execution", "name": "PowerShell", "detector": "LOLBinDetector", "mttd_s": 12, "detected": true, "receipt": {"bind_id": "313-SIM-435A67D7", "log_id": "APT29-002", "timestamp_ns": "1790318079043206313", "payload_hash": "sha3_256:fb5dfd153cb2e43f6df68475cd660b2...", "chain_hash": "sha3_512:f8b73edff9922cc63fe54c1c929de2f...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "APT29-003", "event_id": 10, "event_type": "process_access", "process": "powershell.exe", "parent": "powershell.exe", "command_line": "sekurlsa::logonpasswords", "TargetImage": "C:\\Windows\\System32\\lsass.exe", "GrantedAccess": "0x1010", "user": "SYSTEM", "host": "WS-07", "severity": "critical", "timestamp": "2026-09-25T06:34:39.043105+00:00", "tid": "T1003.001", "tactic": "Credential Access", "name": "LSASS Memory Dump", "detector": "FullAccessLsassDetector", "mttd_s": 52, "detected": true, "receipt": {"bind_id": "313-SIM-D79786A3", "log_id": "APT29-003", "timestamp_ns": "1790318079043235313", "payload_hash": "sha3_256:72c26079b898c56697d4a8dd78b5a80...", "chain_hash": "sha3_512:9910137a7c5559ae3d5e2426a913a72...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "APT29-004", "event_id": 4662, "event_type": "directory_service_access", "process": "powershell.exe", "command_line": "Invoke-Mimikatz -Command \"lsadump::dcsync /domain:corp.local\"", "user": "SYSTEM", "host": "WS-07", "severity": "critical", "timestamp": "2026-09-25T06:34:39.043108+00:00", "tid": "T1003.006", "tactic": "Credential Access", "name": "DCSync", "detector": "CredentialDumpingDetector", "mttd_s": 42, "detected": true, "receipt": {"bind_id": "313-SIM-51533F30", "log_id": "APT29-004", "timestamp_ns": "1790318079043256313", "payload_hash": "sha3_256:e7269bd8989525221304ad728499275...", "chain_hash": "sha3_512:fc872369bfeca9ac27eb8b0e487227a...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "RANSOM-001", "event_id": 4688, "event_type": "process_creation", "process": "powershell.exe", "parent": "explorer.exe", "command_line": "powershell.exe Set-MpPreference -DisableRealtimeMonitoring $true", "user": "administrator", "host": "DC-01", "severity": "high", "timestamp": "2026-09-25T06:34:39.043116+00:00", "tid": "T1562.001", "tactic": "Defense Evasion", "name": "Disable Security Tools", "detector": "ETWPatchingDetector", "mttd_s": 8, "detected": true, "receipt": {"bind_id": "313-SIM-981D9E51", "log_id": "RANSOM-001", "timestamp_ns": "1790318079043274313", "payload_hash": "sha3_256:0a9827f70a9a3db6270d454ed84fdb1...", "chain_hash": "sha3_512:a71cd2f4d68e94d2be35638392a6404...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "RANSOM-002", "event_id": 4688, "event_type": "process_creation", "process": "vssadmin.exe", "parent": "cmd.exe", "command_line": "vssadmin delete shadows /all /quiet", "user": "administrator", "host": "DC-01", "severity": "critical", "timestamp": "2026-09-25T06:34:39.043119+00:00", "tid": "T1490", "tactic": "Impact", "name": "Inhibit System Recovery", "detector": "KernelGapHardening", "mttd_s": 38, "detected": true, "receipt": {"bind_id": "313-SIM-B7CB8912", "log_id": "RANSOM-002", "timestamp_ns": "1790318079043293313", "payload_hash": "sha3_256:d8647af7be36f662e16340c6b694951...", "chain_hash": "sha3_512:278f1bd0b18a8f8b5e2439a4560f77d...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "RANSOM-003", "event_id": 4688, "event_type": "process_creation", "process": "7z.exe", "parent": "cmd.exe", "command_line": "7z.exe a -p\"S3cr3t!\" C:\\Windows\\Temp\\data.zip C:\\Users\\*\\Documents\\*", "file_path": "C:\\Windows\\Temp\\data.zip", "user": "administrator", "host": "DC-01", "severity": "high", "timestamp": "2026-09-25T06:34:39.043122+00:00", "tid": "T1560.001", "tactic": "Collection", "name": "Archive via Utility", "detector": "LogForge", "mttd_s": 15, "detected": true, "receipt": {"bind_id": "313-SIM-791081B2", "log_id": "RANSOM-003", "timestamp_ns": "1790318079043310313", "payload_hash": "sha3_256:e8765e2d54a44ee82a5d200810c9dc7...", "chain_hash": "sha3_512:f33af6eb97a00ed6e6eead945ebe594...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}, {"log_id": "FIN7-001", "event_id": 4688, "event_type": "process_creation", "process": "rundll32.exe", "parent": "explorer.exe", "command_line": "rundll32.exe C:\\Users\\Public\\AppData\\evil.dll,DllMain", "file_path": "C:\\Users\\Public\\AppData\\evil.dll", "user": "cashier01", "host": "POS-01", "severity": "critical", "timestamp": "2026-09-25T06:34:39.043128+00:00", "tid": "T1566.001", "tactic": "Initial Access", "name": "Spearphishing Attachment", "detector": "SpearphishingEnhancer", "mttd_s": 95, "detected": true, "receipt": {"bind_id": "313-SIM-EC2AEA58", "log_id": "FIN7-001", "timestamp_ns": "1790318079043328313", "payload_hash": "sha3_256:dbc7beaaa5356756d61dca3da1a7d1f...", "chain_hash": "sha3_512:913d783ad4c931fc44659dc1eb4d98b...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}}];
+const RECEIPTS = [{"bind_id": "313-SIM-A9BF926A", "log_id": "APT29-001", "timestamp_ns": "1790318079043149313", "payload_hash": "sha3_256:788d169328e021642447c80b9e7f666...", "chain_hash": "sha3_512:5039dc5ef5b37b53ec9e99a0b84df3f...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-435A67D7", "log_id": "APT29-002", "timestamp_ns": "1790318079043206313", "payload_hash": "sha3_256:fb5dfd153cb2e43f6df68475cd660b2...", "chain_hash": "sha3_512:f8b73edff9922cc63fe54c1c929de2f...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-D79786A3", "log_id": "APT29-003", "timestamp_ns": "1790318079043235313", "payload_hash": "sha3_256:72c26079b898c56697d4a8dd78b5a80...", "chain_hash": "sha3_512:9910137a7c5559ae3d5e2426a913a72...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-51533F30", "log_id": "APT29-004", "timestamp_ns": "1790318079043256313", "payload_hash": "sha3_256:e7269bd8989525221304ad728499275...", "chain_hash": "sha3_512:fc872369bfeca9ac27eb8b0e487227a...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-981D9E51", "log_id": "RANSOM-001", "timestamp_ns": "1790318079043274313", "payload_hash": "sha3_256:0a9827f70a9a3db6270d454ed84fdb1...", "chain_hash": "sha3_512:a71cd2f4d68e94d2be35638392a6404...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-B7CB8912", "log_id": "RANSOM-002", "timestamp_ns": "1790318079043293313", "payload_hash": "sha3_256:d8647af7be36f662e16340c6b694951...", "chain_hash": "sha3_512:278f1bd0b18a8f8b5e2439a4560f77d...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-791081B2", "log_id": "RANSOM-003", "timestamp_ns": "1790318079043310313", "payload_hash": "sha3_256:e8765e2d54a44ee82a5d200810c9dc7...", "chain_hash": "sha3_512:f33af6eb97a00ed6e6eead945ebe594...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}, {"bind_id": "313-SIM-EC2AEA58", "log_id": "FIN7-001", "timestamp_ns": "1790318079043328313", "payload_hash": "sha3_256:dbc7beaaa5356756d61dca3da1a7d1f...", "chain_hash": "sha3_512:913d783ad4c931fc44659dc1eb4d98b...", "algorithm": "SHA3-512 + SLH-DSA (simulated)"}];
+const IR_STEPS = {"T1566.001": ["Quarantine affected mailbox", "Block sender domain at email gateway", "Extract attachment IOCs", "Scan all mailboxes for similar attachments", "Alert SOC \u2014 spearphishing campaign detected"], "T1059.001": ["Kill PowerShell process tree", "Decode base64 payload", "Extract C2 indicators", "Block outbound connections to C2", "Collect memory dump for forensics"], "T1003.001": ["Isolate host immediately", "Reset all credentials on affected host", "Force password reset for jsmith", "Enable Protected Users security group", "Deploy Credential Guard"], "T1003.006": ["Emergency DC isolation", "Reset krbtgt password TWICE (24h apart)", "Invalidate all Kerberos tickets", "Audit all domain admin accounts", "Deploy DCSync detection rule"], "T1562.001": ["Re-enable Windows Defender immediately", "Check for persistence mechanisms", "Audit Group Policy for AV disable rules", "Deploy tamper protection", "Alert \u2014 ransomware pre-stage detected"], "T1490": ["CRITICAL: Ransomware imminent", "Isolate ALL hosts on segment", "Activate backup restoration plan", "Notify incident response team", "Preserve forensic evidence before remediation"], "T1560.001": ["Block 7z.exe execution via AppLocker", "Identify staged archive location", "Check for exfiltration channels", "Preserve archive for forensics", "Scan for data exfiltration indicators"]};
+
+const SEV_COLORS = {critical:'#ef4444', high:'#f59e0b', medium:'#06b6d4', info:'#64748b'};
+const TACTIC_COLORS = {
+  'Initial Access':'#a78bfa', 'Execution':'#f59e0b', 'Credential Access':'#ef4444',
+  'Lateral Movement':'#f97316', 'Defense Evasion':'#06b6d4', 'Impact':'#dc2626',
+  'Collection':'#8b5cf6', 'Command and Control':'#10b981',
+};
+
+let currentFilter = 'all';
+let simInterval = null;
+let simIndex = 0;
+
+// Clock
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Render timeline
+function renderTimeline(filter) {
+  const container = document.getElementById('timeline-events');
+  container.innerHTML = '';
+  const filtered = filter === 'all' ? EVENTS : EVENTS.filter(e => e.log_id.startsWith(filter));
+  
+  filtered.forEach((ev, i) => {
+    const sevColor = SEV_COLORS[ev.severity.toLowerCase()] || '#64748b';
+    const tacticColor = TACTIC_COLORS[ev.tactic] || '#64748b';
+    const ts = ev.timestamp ? ev.timestamp.slice(11,19) : '--:--:--';
+    
+    const div = document.createElement('div');
+    div.className = 'tl-event';
+    div.innerHTML = `
+      <div class="tl-dot" style="background:${sevColor};color:#000">${i+1}</div>
+      <div class="tl-card" id="ev-${ev.log_id}" onclick="selectEvent('${ev.log_id}')">
+        <div class="tl-header">
+          <span class="tl-time">${ts}</span>
+          <span class="tl-sev" style="background:${sevColor}22;color:${sevColor};border:1px solid ${sevColor}44">${ev.severity.toUpperCase()}</span>
+          <span class="tl-tid">${ev.tid}</span>
+          <span class="tl-tactic" style="background:${tacticColor}22;color:${tacticColor}">${ev.tactic}</span>
+          <span class="tl-detector">🔍 ${ev.detector}</span>
+          <span class="tl-mttd">⏱ ${ev.mttd_s}s MTTD</span>
+        </div>
+        <div class="tl-title">${ev.name} — ${ev.process || ev.event_type}</div>
+        <div class="tl-cmd">${(ev.command_line || ev.event_type || '').slice(0,100)}</div>
+        <div class="tl-meta">
+          <span>👤 ${ev.user}</span>
+          <span>🖥 ${ev.host}</span>
+          <span>📋 ${ev.log_id}</span>
+        </div>
+        ${ev.receipt ? `<div class="tl-receipt">🔐 ${ev.receipt.bind_id} · chain: ${ev.receipt.chain_hash.slice(0,20)}...</div>` : ''}
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+// Select event → show IR playbook + receipt
+function selectEvent(logId) {
+  // Deselect all
+  document.querySelectorAll('.tl-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('ev-' + logId)?.classList.add('selected');
+  
+  const ev = EVENTS.find(e => e.log_id === logId);
+  if (!ev) return;
+  
+  // IR Playbook
+  const steps = IR_STEPS[ev.tid] || ['Investigate event', 'Collect forensic evidence', 'Contain affected systems', 'Remediate and recover', 'Document lessons learned'];
+  document.getElementById('ir-tid').textContent = ev.tid + ' · ' + ev.tactic;
+  document.getElementById('ir-body').innerHTML = steps.map((s, i) =>
+    `<div class="ir-step"><div class="ir-num">${i+1}</div><div class="ir-text">${s}</div></div>`
+  ).join('');
+  
+  // 313-BIND Receipt
+  const receipt = ev.receipt;
+  if (receipt) {
+    document.getElementById('receipt-body').innerHTML = `
+      <div class="receipt-box">
+        <div class="receipt-id">${receipt.bind_id}</div>
+        <div class="receipt-field">timestamp_ns: <span>${receipt.timestamp_ns}</span></div>
+        <div class="receipt-field">payload_hash: <span>${receipt.payload_hash}</span></div>
+        <div class="receipt-field">chain_hash: <span>${receipt.chain_hash}</span></div>
+        <div class="receipt-field">algorithm: <span>${receipt.algorithm}</span></div>
+        <div style="margin-top:8px;font-size:9px;color:#22c55e">✅ Chain intact · Tamper-evident · IPFS-anchored</div>
+      </div>`;
+  }
+}
+
+// ATT&CK mini map
+function buildAttckMini() {
+  const seen = {};
+  EVENTS.forEach(e => { seen[e.tid] = {name: e.name, tactic: e.tactic}; });
+  const container = document.getElementById('attck-mini');
+  Object.entries(seen).forEach(([tid, info]) => {
+    const color = TACTIC_COLORS[info.tactic] || '#64748b';
+    const chip = document.createElement('div');
+    chip.className = 'attck-chip';
+    chip.style.borderLeftColor = color;
+    chip.innerHTML = `<div class="attck-chip-tid" style="color:${color}">${tid}</div><div class="attck-chip-name">${info.name.slice(0,25)}</div>`;
+    chip.onclick = () => {
+      const ev = EVENTS.find(e => e.tid === tid);
+      if (ev) selectEvent(ev.log_id);
+    };
+    container.appendChild(chip);
+  });
+}
+
+// Scenario filter
+function selectScenario(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTimeline(filter);
+}
+
+// Live simulation
+function runSimulation() {
+  if (simInterval) {
+    clearInterval(simInterval);
+    simInterval = null;
+    document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Live Simulation';
+    document.getElementById('sim-status').textContent = 'Simulation stopped';
+    return;
+  }
+  
+  simIndex = 0;
+  document.querySelector('[onclick="runSimulation()"]').textContent = '⏹ Stop Simulation';
+  document.getElementById('sim-status').textContent = 'Simulation running...';
+  
+  const filtered = currentFilter === 'all' ? EVENTS : EVENTS.filter(e => e.log_id.startsWith(currentFilter));
+  
+  simInterval = setInterval(() => {
+    if (simIndex >= filtered.length) {
+      clearInterval(simInterval);
+      simInterval = null;
+      document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Live Simulation';
+      document.getElementById('sim-status').textContent = `✅ Simulation complete — ${filtered.length} events processed`;
+      document.getElementById('sim-bar').style.width = '100%';
+      return;
+    }
+    
+    const ev = filtered[simIndex];
+    selectEvent(ev.log_id);
+    const pct = ((simIndex + 1) / filtered.length * 100).toFixed(0);
+    document.getElementById('sim-bar').style.width = pct + '%';
+    document.getElementById('sim-status').textContent = `Processing event ${simIndex+1}/${filtered.length}: ${ev.log_id}`;
+    simIndex++;
+  }, 1800);
+}
+
+// Download IR report
+function downloadReport() {
+  const report = {
+    generated: new Date().toISOString(),
+    source: 'Shadow313 NEXUS APT Simulation Engine',
+    scenarios: ['APT29 Cozy Bear', 'BlackCat Ransomware', 'FIN7 Carbanak'],
+    total_events: EVENTS.length,
+    techniques: [...new Set(EVENTS.map(e => e.tid))],
+    avg_mttd_seconds: (EVENTS.reduce((s,e) => s + e.mttd_s, 0) / EVENTS.length).toFixed(1),
+    events: EVENTS,
+    receipts: RECEIPTS,
+    ir_playbooks: IR_STEPS,
+  };
+  const blob = new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `s313-ir-report-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// Init
+renderTimeline('all');
+buildAttckMini();
+// Auto-select first event
+setTimeout(() => selectEvent(EVENTS[0]?.log_id), 300);
+</script>
+</body>
+</html>
