@@ -89,6 +89,90 @@
     {
       "source": "/coverage",
       "destination": "/docs/coverage_matrix.html"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/pricing/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/sha3-bypass",
+      "destination": "/blog/sha3-bypass.html"
+    },
+    {
+      "source": "/docs/install",
+      "destination": "/docs/install.html"
+    },
+    {
+      "source": "/docs/quickstart",
+      "destination": "/docs/quickstart.html"
+    },
+    {
+      "source": "/docs/api",
+      "destination": "/docs/api.html"
+    },
+    {
+      "source": "/docs/modules",
+      "destination": "/docs/modules.html"
+    },
+    {
+      "source": "/docs/pqc",
+      "destination": "/docs/pqc.html"
+    },
+    {
+      "source": "/docs/attck",
+      "destination": "/docs/attck.html"
+    },
+    {
+      "source": "/roi-calculator",
+      "destination": "/docs/roi-calculator.html"
+    },
+    {
+      "source": "/vendor-scorecard",
+      "destination": "/docs/vendor-scorecard.html"
+    },
+    {
+      "source": "/platform",
+      "destination": "/platform/index.html"
+    },
+    {
+      "source": "/platform/recon",
+      "destination": "/platform/recon.html"
+    },
+    {
+      "source": "/platform/vuln",
+      "destination": "/platform/vuln.html"
+    },
+    {
+      "source": "/platform/quantum",
+      "destination": "/platform/quantum.html"
+    },
+    {
+      "source": "/platform/network",
+      "destination": "/platform/network.html"
+    },
+    {
+      "source": "/platform/defense",
+      "destination": "/platform/defense.html"
+    },
+    {
+      "source": "/platform/cicd",
+      "destination": "/platform/cicd.html"
+    },
+    {
+      "source": "/platform/plugins",
+      "destination": "/platform/plugins.html"
+    },
+    {
+      "source": "/platform/exploit",
+      "destination": "/platform/exploit.html"
+    },
+    {
+      "source": "/platform/docs",
+      "destination": "/platform/docs.html"
     }
   ]
 }

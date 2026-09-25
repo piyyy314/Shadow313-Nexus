@@ -2,158 +2,27 @@
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ATT&CK Coverage Matrix — Shadow313 NEXUS</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-  :root { --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4; --purple:#a78bfa; --blue:#3b82f6; --bg:#000000; --bg2:#080808; --bg3:#0f0f0f; --border2:rgba(30,41,59,0.5); --text:#e2e8f0; --muted:#64748b; --dim:#334155; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-  .nav { background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(34,197,94,0.15); height:52px; display:flex; align-items:center; padding:0 24px; gap:14px; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px); }
-  .nav-hex { width:30px; height:30px; background:var(--green); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; font-size:10px; font-family:'JetBrains Mono',monospace; }
-  .nav-brand { font-size:15px; font-weight:800; letter-spacing:.04em; }
-  .nav-brand span { color:var(--green); }
-  .nav-links { display:flex; gap:4px; margin-left:16px; }
-  .nav-link { font-size:12px; font-weight:500; color:var(--muted); padding:5px 12px; border-radius:5px; text-decoration:none; transition:all .15s; }
-  .nav-link:hover { color:var(--text); background:rgba(34,197,94,0.06); }
-  .nav-link.active { color:var(--green); background:rgba(34,197,94,0.08); }
-  .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-  .nav-cta { background:var(--green); color:#000; font-weight:700; padding:6px 16px; border-radius:6px; font-size:12px; text-decoration:none; }
-  .hero { padding:60px 24px 48px; text-align:center; background:linear-gradient(180deg,#000 0%,#050a05 100%); border-bottom:1px solid rgba(34,197,94,0.08); }
-  .hero h1 { font-size:clamp(28px,4vw,48px); font-weight:800; line-height:1.1; margin-bottom:16px; }
-  .hero h1 .accent { color:var(--green); text-shadow:0 0 30px rgba(34,197,94,0.3); }
-  .hero p { font-size:16px; color:var(--muted); max-width:600px; margin:0 auto 32px; line-height:1.7; }
-  .hero-badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
-  .badge { font-size:10px; font-family:'JetBrains Mono',monospace; padding:4px 12px; border-radius:4px; font-weight:700; letter-spacing:.06em; }
-  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
-  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
-  .badge-purple { background:rgba(167,139,250,0.12); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
-  .badge-amber { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.25); }
-  .container { max-width:1200px; margin:0 auto; padding:0 24px; }
-  .section { padding:48px 24px; }
-  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--green); margin-bottom:24px; }
-  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-  .card { background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:24px; transition:all .2s; }
-  .card:hover { border-color:rgba(34,197,94,0.3); transform:translateY(-2px); }
-  .card-icon { font-size:28px; margin-bottom:12px; }
-  .card h3 { font-size:15px; font-weight:700; margin-bottom:8px; }
-  .card p { font-size:12px; color:var(--muted); line-height:1.6; }
-  .footer { text-align:center; padding:32px 24px; font-size:11px; color:var(--dim); border-top:1px solid rgba(34,197,94,0.08); font-family:'JetBrains Mono',monospace; background:var(--bg); }
-  @media(max-width:900px) { .grid-3,.grid-4 { grid-template-columns:repeat(2,1fr); } }
-  @media(max-width:600px) { .grid-3,.grid-4 { grid-template-columns:1fr; } }
+<style>@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');:root{--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a78bfa;--blue:#3b82f6;--bg:#000;--bg2:#080808;--border2:rgba(30,41,59,0.5);--text:#e2e8f0;--muted:#64748b;--dim:#334155;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}.nav{background:rgba(0,0,0,0.97);border-bottom:1px solid rgba(34,197,94,0.15);height:52px;display:flex;align-items:center;padding:0 24px;gap:10px;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;flex-shrink:0;}.nav-brand{font-size:14px;font-weight:800;letter-spacing:.04em;white-space:nowrap;}.nav-brand span{color:var(--green);}.nav-links{display:flex;gap:2px;margin-left:12px;}.nav-link{font-size:11px;font-weight:500;color:var(--muted);padding:4px 10px;border-radius:5px;text-decoration:none;transition:all .15s;white-space:nowrap;}.nav-link:hover{color:var(--text);background:rgba(34,197,94,0.06);}.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}.nav-cta{background:var(--green);color:#000;font-weight:700;padding:5px 14px;border-radius:6px;font-size:11px;text-decoration:none;white-space:nowrap;}.hero{padding:56px 24px 44px;text-align:center;background:linear-gradient(180deg,#000 0%,#050a05 100%);border-bottom:1px solid rgba(34,197,94,0.08);}.hero h1{font-size:clamp(24px,4vw,44px);font-weight:800;line-height:1.1;margin-bottom:14px;}.hero h1 .accent{color:var(--green);text-shadow:0 0 28px rgba(34,197,94,0.3);}.hero p{font-size:15px;color:var(--muted);max-width:580px;margin:0 auto 28px;line-height:1.7;}.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}.badge{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;font-weight:700;letter-spacing:.06em;}.bg{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}.bc{background:rgba(6,182,212,0.12);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}.bp{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25);}.ba{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}.con{max-width:1100px;margin:0 auto;padding:0 24px;}.sec{padding:44px 24px;}.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:20px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:22px;transition:all .2s;}.card:hover{border-color:rgba(34,197,94,0.3);transform:translateY(-2px);}.card-icon{font-size:26px;margin-bottom:10px;}.card h3{font-size:14px;font-weight:700;margin-bottom:7px;}.card p{font-size:11px;color:var(--muted);line-height:1.6;}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;}.btn-green{background:var(--green);color:#000;}.btn-outline{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);}.footer{text-align:center;padding:28px 24px;font-size:10px;color:var(--dim);border-top:1px solid rgba(34,197,94,0.08);font-family:'JetBrains Mono',monospace;background:var(--bg);}.mono{font-family:'JetBrains Mono',monospace;}.code-block{background:#000;border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:#94a3b8;overflow-x:auto;}.sidebar-link{display:block;padding:8px 12px;border-radius:6px;font-size:12px;color:var(--muted);text-decoration:none;transition:all .15s;}.sidebar-link:hover{color:var(--text);background:rgba(34,197,94,0.06);}.sidebar-link.active{color:var(--green);background:rgba(34,197,94,0.08);}@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}.nav-links{display:none;}}</style></head><body>
+<nav class="nav"><div class="nav-hex">S3</div><div class="nav-brand">SHADOW<span>313</span> NEXUS</div><div class="nav-links"><a class="nav-link" href="/">Home</a><a class="nav-link" href="/platform">Platform</a><a class="nav-link" href="/tools">Tools</a><a class="nav-link" href="/marketplace">Marketplace</a><a class="nav-link" href="/pricing">Pricing</a><a class="nav-link" href="/docs">Docs</a><a class="nav-link" href="/about">About</a></div><div class="nav-right"><a class="nav-link" href="/blog">Blog</a><a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a></div></nav>
 
-.hm-table { width:100%; border-collapse:collapse; font-size:12px; }
-.hm-table th { text-align:left; padding:10px 14px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#475569; font-family:'JetBrains Mono',monospace; border-bottom:1px solid rgba(30,41,59,0.8); background:rgba(0,0,0,0.3); }
-.hm-table tr:hover td { background:rgba(34,197,94,0.03); }
-.hm-table td { border-bottom:1px solid rgba(30,41,59,0.3); }
-</style></head><body>
-<nav class="nav">
-  <div class="nav-hex">S3</div>
-  <div class="nav-brand">SHADOW<span>313</span> NEXUS</div>
-  <div class="nav-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link" href="/tools">Tools</a>
-    <a class="nav-link" href="/marketplace">Marketplace</a>
-    <a class="nav-link" href="/dashboard">Dashboard</a>
-    <a class="nav-link" href="/about">About</a>
-  </div>
-  <div class="nav-right">
-    <a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a>
-  </div>
-</nav>
-<div class="hero">
-  <h1>ATT&CK <span class="accent">Coverage Matrix</span></h1>
-  <p>MITRE ATT&CK Enterprise coverage across all 13 tactics — Shadow313 NEXUS v4.0.0 detection capabilities mapped to real-world adversary techniques.</p>
-  <div class="hero-badges">
-    <span class="badge badge-green">51.4% COVERAGE</span>
-    <span class="badge badge-cyan">136/265 TECHNIQUES</span>
-    <span class="badge badge-purple">37 MAPPED</span>
-    <span class="badge badge-amber">MITRE ATT&CK v15</span>
-  </div>
+<div class="hero"><h1>ATT&amp;CK <span class="accent">Coverage Matrix</span></h1>
+<p>MITRE ATT&amp;CK Enterprise coverage — Shadow313 NEXUS v4.0.0 detection capabilities mapped to real-world adversary techniques.</p>
+<div class="badges"><span class="badge bg">51.4% COVERAGE</span><span class="badge bc">136/265 TECHNIQUES</span><span class="badge bp">37 MAPPED</span><span class="badge ba">MITRE ATT&amp;CK v15</span></div></div>
+<div class="sec con">
+<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:24px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,0.5)">
+<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green)">🗺 Tactic Coverage Summary</span>
+<span style="font-size:9px;font-family:JetBrains Mono,monospace;background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.2);border-radius:4px;padding:2px 8px">v4.0.0 · 2026-09-25</span>
 </div>
-<div class="section container">
-  <div style="background:var(--bg2);border:1px solid rgba(30,41,59,0.5);border-radius:10px;overflow:hidden;margin-bottom:24px">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(30,41,59,0.8);background:rgba(0,0,0,0.5)">
-      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green)">🗺 Tactic Coverage Summary</span>
-      <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.2);border-radius:4px;padding:2px 8px">v4.0.0 · 2026-09-25</span>
-    </div>
-    <table class="hm-table">
-      <thead><tr><th>Tactic</th><th>Coverage Bar</th><th>Techniques</th><th>Coverage %</th></tr></thead>
-      <tbody><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Reconnaissance</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:40%;height:8px;border-radius:3px;background:#f59e0b"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#f59e0b">2/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#f59e0b">40%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Initial Access</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Execution</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Persistence</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Privilege Escalation</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:80%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">4/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">80%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Defense Evasion</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Credential Access</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Discovery</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Lateral Movement</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Collection</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:0%;height:8px;border-radius:3px;background:#ef4444"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ef4444">0/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ef4444">0%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Command and Control</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Exfiltration</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:0%;height:8px;border-radius:3px;background:#ef4444"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ef4444">0/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ef4444">0%</td>
-    </tr><tr>
-      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Impact</td>
-      <td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:8px;width:120px"><div style="width:100%;height:8px;border-radius:3px;background:#22c55e"></div></div></td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">5/5</td>
-      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#22c55e">100%</td>
-    </tr></tbody>
-    </table>
-  </div>
-  <div style="text-align:center">
-    <a href="/threat-board" style="display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:10px 20px;text-decoration:none;font-weight:700;font-size:13px">View Live Threat Board →</a>
-  </div>
-</div>
-<footer class="footer">
-  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
-  matarmohamad313@duck.com &nbsp;·&nbsp;
-  <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a>
-  &nbsp;·&nbsp; MIT License
-</footer>
+<table style="width:100%;border-collapse:collapse;font-size:12px">
+<thead><tr style="border-bottom:1px solid var(--border2);background:rgba(0,0,0,0.3)">
+<th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-family:JetBrains Mono,monospace">Tactic</th>
+<th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-family:JetBrains Mono,monospace">Coverage</th>
+<th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-family:JetBrains Mono,monospace">Techniques</th>
+<th style="text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-family:JetBrains Mono,monospace">%</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Initial Access</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:40%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">2/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">40%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Execution</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:80%;height:6px;border-radius:3px;background:#22c55e"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">4/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">80%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Persistence</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:80%;height:6px;border-radius:3px;background:#22c55e"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">4/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">80%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Privilege Escalation</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:60%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">3/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">60%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Defense Evasion</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:100%;height:6px;border-radius:3px;background:#22c55e"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">5/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">100%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Credential Access</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:100%;height:6px;border-radius:3px;background:#22c55e"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">5/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#22c55e">100%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Discovery</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:60%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">3/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">60%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Lateral Movement</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:60%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">3/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">60%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Collection</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:40%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">2/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">40%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Command and Control</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:60%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">3/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">60%</td></tr><tr style="border-bottom:1px solid rgba(30,41,59,0.3)"><td style="padding:10px 14px;font-size:12px;font-weight:600;color:#e2e8f0">Impact</td><td style="padding:10px 14px"><div style="background:rgba(0,0,0,0.4);border-radius:3px;height:6px;width:120px"><div style="width:60%;height:6px;border-radius:3px;background:#f59e0b"></div></div></td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">3/5</td><td style="padding:10px 14px;font-family:JetBrains Mono,monospace;font-size:11px;color:#f59e0b">60%</td></tr></tbody></table></div>
+<div style="text-align:center"><a href="/threat-board" class="btn btn-green">View Live Threat Board →</a></div></div>
+<footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>
