@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS NEXUS — VSAT Ground-Station & PQC Control Center v5.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --blue:#3b82f6; --orange:#f97316;
+    --bg:#000000; --bg2:#080808; --bg3:#0f0f0f;
+    --border:rgba(34,197,94,0.12); --border2:rgba(30,41,59,0.5);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  .header {
+    background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(6,182,212,0.2);
+    height:56px; display:flex; align-items:center; padding:0 24px; gap:14px;
+    position:sticky; top:0; z-index:100; backdrop-filter:blur(20px);
+  }
+  .logo-hex {
+    width:34px; height:34px; background:var(--cyan);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; color:#000; font-size:10px; font-family:'JetBrains Mono',monospace;
+  }
+  .logo-text { font-size:16px; font-weight:800; letter-spacing:.04em; }
+  .logo-text span { color:var(--cyan); }
+  .hdr-badge {
+    font-size:9px; font-family:'JetBrains Mono',monospace;
+    padding:3px 10px; border-radius:4px; font-weight:700; letter-spacing:.06em;
+  }
+  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
+  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+  .badge-red { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.25); }
+  .badge-amber { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.25); }
+  .hdr-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 50%{opacity:.7;box-shadow:0 0 0 8px rgba(34,197,94,0)} }
+
+  .hero {
+    background:linear-gradient(135deg,#000 0%,#050a0f 50%,#000 100%);
+    border-bottom:1px solid rgba(6,182,212,0.1);
+    padding:24px 24px 20px;
+    display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center;
+  }
+  .hero-title { font-size:clamp(20px,2.5vw,28px); font-weight:800; line-height:1.1; }
+  .hero-title .accent { color:var(--cyan); text-shadow:0 0 20px rgba(6,182,212,0.4); }
+  .hero-sub { font-size:11px; color:var(--muted); margin-top:6px; font-family:'JetBrains Mono',monospace; }
+  .hero-kpis { display:flex; gap:28px; }
+  .hero-kpi { text-align:center; }
+  .hero-kpi-val { font-size:clamp(22px,3vw,36px); font-weight:800; line-height:1; font-family:'JetBrains Mono',monospace; text-shadow:0 0 20px currentColor; }
+  .hero-kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-top:4px; }
+
+  .kpi-strip { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:rgba(6,182,212,0.06); border-bottom:1px solid rgba(6,182,212,0.08); }
+  .kpi-cell { background:var(--bg); padding:14px 16px; text-align:center; position:relative; }
+  .kpi-cell::after { content:''; position:absolute; bottom:0; left:25%; right:25%; height:2px; border-radius:2px; }
+  .kpi-cell.red::after { background:var(--red); }
+  .kpi-cell.amber::after { background:var(--amber); }
+  .kpi-cell.cyan::after { background:var(--cyan); }
+  .kpi-cell.green::after { background:var(--green); }
+  .kpi-cell.purple::after { background:var(--purple); }
+  .kpi-cell.blue::after { background:var(--blue); }
+  .kpi-cell.orange::after { background:var(--orange); }
+  .kpi-val { font-size:22px; font-weight:800; font-family:'JetBrains Mono',monospace; line-height:1; }
+  .kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+
+  .main { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; padding:16px 24px; }
+  .col-span-2 { grid-column:span 2; }
+  .col-span-3 { grid-column:span 3; }
+
+  .panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+  .panel-hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border2); background:rgba(0,0,0,0.5); }
+  .panel-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--cyan); }
+  .panel-badge { font-size:9px; font-family:'JetBrains Mono',monospace; background:rgba(6,182,212,0.08); color:var(--cyan); border:1px solid rgba(6,182,212,0.2); border-radius:4px; padding:2px 8px; }
+  .panel-body { padding:14px 16px; }
+
+  .finding { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(30,41,59,0.4); }
+  .finding:last-child { border-bottom:none; }
+  .finding-sev { font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
+  .sev-crit { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+  .sev-high { background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+  .finding-title { font-size:12px; font-weight:700; color:var(--text); }
+  .finding-host { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+  .finding-fix { font-size:10px; color:var(--cyan); margin-top:3px; }
+
+  .rf-metric { background:var(--bg3); border:1px solid var(--border2); border-radius:8px; padding:14px; text-align:center; }
+  .rf-val { font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace; }
+  .rf-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+  .rf-status { font-size:9px; font-family:'JetBrains Mono',monospace; margin-top:4px; }
+
+  .pqc-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(30,41,59,0.3); font-size:11px; }
+  .pqc-row:last-child { border-bottom:none; }
+  .pqc-name { font-family:'JetBrains Mono',monospace; color:var(--cyan); }
+  .pqc-status { font-size:10px; font-family:'JetBrains Mono',monospace; }
+
+  .terminal { background:#000; border:1px solid rgba(30,41,59,0.8); border-radius:8px; overflow:hidden; }
+  .terminal-bar { background:var(--bg2); border-bottom:1px solid rgba(30,41,59,0.8); padding:8px 12px; display:flex; align-items:center; gap:6px; }
+  .terminal-dot { width:10px; height:10px; border-radius:50%; }
+  .terminal-body { padding:12px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.7; color:#e2e8f0; height:180px; overflow-y:auto; }
+  .log-ok { color:var(--green); }
+  .log-warn { color:var(--amber); }
+  .log-crit { color:var(--red); }
+  .log-info { color:var(--cyan); }
+  .log-dim { color:#475569; }
+
+  .dl-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(6,182,212,0.1); color:var(--cyan); border:1px solid rgba(6,182,212,0.3); border-radius:6px; padding:6px 14px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all .2s; }
+  .dl-btn:hover { background:rgba(6,182,212,0.2); }
+
+  .footer { text-align:center; padding:14px 24px; font-size:10px; color:var(--dim); border-top:1px solid rgba(6,182,212,0.08); font-family:'JetBrains Mono',monospace; background:var(--bg); }
+
+  @media(max-width:1000px) { .main { grid-template-columns:1fr 1fr; } .kpi-strip { grid-template-columns:repeat(4,1fr); } }
+  @media(max-width:700px) { .main { grid-template-columns:1fr; } .hero { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-hex">AX</div>
+  <div class="logo-text">AEGIS <span>NEXUS</span></div>
+  <span class="hdr-badge badge-cyan">VSAT TACTICAL v5.0</span>
+  <span class="hdr-badge badge-green">OPERATIONAL</span>
+  <span class="hdr-badge badge-red">7 CRITICAL FINDINGS</span>
+  <div class="hdr-right">
+    <div class="pulse"></div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)" id="clock"></span>
+    <button class="dl-btn" onclick="downloadReport()">⬇ Export Report</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-title">VSAT GROUND-STATION & <span class="accent">PQC CONTROL CENTER</span></div>
+    <div class="hero-sub">Target: 192.168.100.1/24 · Profile: DEEP · Telstar 11N (37.5°W) · Ku-band · Ottawa, ON</div>
+  </div>
+  <div class="hero-kpis">
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--red)">7</div><div class="hero-kpi-lbl">Critical Findings</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--amber)">5.9</div><div class="hero-kpi-lbl">SNR (dB)</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--amber)">42.8%</div><div class="hero-kpi-lbl">PQC Score</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--red)">40%</div><div class="hero-kpi-lbl">QKD QBER</div></div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi-cell red"><div class="kpi-val" style="color:var(--red)">7</div><div class="kpi-lbl">Critical</div></div>
+  <div class="kpi-cell amber"><div class="kpi-val" style="color:var(--amber)">5.9</div><div class="kpi-lbl">SNR dB</div></div>
+  <div class="kpi-cell red"><div class="kpi-val" style="color:var(--red)">+55.1</div><div class="kpi-lbl">Clock Skew Hz</div></div>
+  <div class="kpi-cell amber"><div class="kpi-val" style="color:var(--amber)">42.8%</div><div class="kpi-lbl">PQC Readiness</div></div>
+  <div class="kpi-cell red"><div class="kpi-val" style="color:var(--red)">40%</div><div class="kpi-lbl">QKD QBER</div></div>
+  <div class="kpi-cell cyan"><div class="kpi-val" style="color:var(--cyan)">Ku</div><div class="kpi-lbl">Band</div></div>
+  <div class="kpi-cell orange"><div class="kpi-val" style="color:var(--orange)">DEEP</div><div class="kpi-lbl">Scan Profile</div></div>
+</div>
+
+<div class="main">
+
+  <!-- Vulnerability Findings -->
+  <div class="panel col-span-2">
+    <div class="panel-hdr">
+      <span class="panel-title">🔍 Ground Segment Vulnerability Sweep — Findings</span>
+      <span class="panel-badge">7 critical · 192.168.100.1/24</span>
+    </div>
+    <div class="panel-body">
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">Telnet (Port 23) OPEN — Cleartext credentials</div>
+          <div class="finding-host">192.168.100.1 · T1040 Network Sniffing</div>
+          <div class="finding-fix">→ Disable telnet; deploy SSH (Ed25519)</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">FTP Anonymous Write (Port 21) OPEN</div>
+          <div class="finding-host">192.168.100.15 · T1190 Exploit Public-Facing App</div>
+          <div class="finding-fix">→ Disable FTP; deploy SFTP chroot</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">HTTP Admin Panel (Port 80) — Unencrypted</div>
+          <div class="finding-host">Both hosts · T1557 Adversary-in-the-Middle</div>
+          <div class="finding-fix">→ Redirect to HTTPS (TLS 1.3)</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">CVE-2026-3392 TR-069 CWMP — Unsigned provisioning</div>
+          <div class="finding-host">192.168.100.1 · T1542.001 Pre-OS Boot</div>
+          <div class="finding-fix">→ Disable CWMP or enforce mutual TLS</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">Unsigned Firmware Accepted — Arbitrary partition overwrite</div>
+          <div class="finding-host">192.168.100.1 · T1542.001 Firmware Integrity</div>
+          <div class="finding-fix">→ Enable firmware signature verification (ML-DSA-65)</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-crit">CRITICAL</span>
+        <div>
+          <div class="finding-title">UART/JTAG Hardware Console — Unauthenticated</div>
+          <div class="finding-host">192.168.100.1 · T1200 Hardware Additions</div>
+          <div class="finding-fix">→ Physically secure debug headers</div>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-sev sev-high">HIGH</span>
+        <div>
+          <div class="finding-title">SNR 5.9 dB / Clock Skew +55.1 Hz — Below threshold</div>
+          <div class="finding-host">RF Link · T1565.001 Data Manipulation</div>
+          <div class="finding-fix">→ Resync GPS/NTP; inspect OCXO oscillator</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF Health -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">📡 RF Link Health</span>
+        <span class="panel-badge" style="color:var(--amber);border-color:rgba(245,158,11,0.3)">⚠ DEGRADED</span>
+      </div>
+      <div class="panel-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="rf-metric"><div class="rf-val" style="color:var(--amber)">5.9</div><div class="rf-lbl">SNR (dB)</div><div class="rf-status" style="color:var(--red)">CRITICAL &lt;8.0</div></div>
+          <div class="rf-metric"><div class="rf-val" style="color:var(--green)">35.0</div><div class="rf-lbl">BUC Temp °C</div><div class="rf-status" style="color:var(--green)">NOMINAL</div></div>
+          <div class="rf-metric"><div class="rf-val" style="color:var(--green)">0.00</div><div class="rf-lbl">PLR %</div><div class="rf-status" style="color:var(--green)">NOMINAL</div></div>
+          <div class="rf-metric"><div class="rf-val" style="color:var(--red)">+55.1</div><div class="rf-lbl">Clock Skew Hz</div><div class="rf-status" style="color:var(--red)">CRITICAL &gt;±10</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🔐 PQC Readiness</span>
+        <span class="panel-badge">42.8% · FIPS 203/204/205</span>
+      </div>
+      <div class="panel-body">
+        <div class="pqc-row"><span class="pqc-name">ML-KEM-768</span><span class="pqc-status" style="color:var(--green)">✅ FIPS 203</span></div>
+        <div class="pqc-row"><span class="pqc-name">ML-DSA-65</span><span class="pqc-status" style="color:var(--amber)">⚠ PARTIAL</span></div>
+        <div class="pqc-row"><span class="pqc-name">SLH-DSA</span><span class="pqc-status" style="color:var(--green)">✅ FIPS 205</span></div>
+        <div class="pqc-row"><span class="pqc-name">RSA-2048</span><span class="pqc-status" style="color:var(--red)">❌ LEGACY</span></div>
+        <div class="pqc-row"><span class="pqc-name">ECC-P256</span><span class="pqc-status" style="color:var(--red)">❌ LEGACY</span></div>
+        <div class="pqc-row"><span class="pqc-name">QKD BB84</span><span class="pqc-status" style="color:var(--red)">❌ QBER 40%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terminal Log -->
+  <div class="panel col-span-3">
+    <div class="panel-hdr">
+      <span class="panel-title">⚡ Sweep Terminal Log</span>
+      <span class="panel-badge">PHASE 0–5 COMPLETE · 7 findings</span>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot" style="background:#ef4444"></div>
+        <div class="terminal-dot" style="background:#f59e0b"></div>
+        <div class="terminal-dot" style="background:#22c55e"></div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">aegis-nexus · sweep · 192.168.100.1/24</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <div class="log-info">[*] Target Subnet: 192.168.100.1/24 | Profile: DEEP</div>
+        <div class="log-info">[*] PHASE 0: Network Discovery...</div>
+        <div class="log-ok">[+] Host 192.168.100.1 — VSAT Ground Terminal Modulator Hub</div>
+        <div class="log-ok">[+] Host 192.168.100.15 — Network Operations Center Console</div>
+        <div class="log-info">[*] PHASE 1: Probing TCP/UDP Control Sockets...</div>
+        <div class="log-crit">[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!</div>
+        <div class="log-crit">[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!</div>
+        <div class="log-crit">[!!!] Port 80 (HTTP): OPEN — Unencrypted admin panel!</div>
+        <div class="log-ok">[✓] Port 161 (SNMP): SNMPv3 auth enforced — SECURE</div>
+        <div class="log-info">[*] PHASE 2: Auditing TR-069 CWMP (Port 7547)...</div>
+        <div class="log-warn">[!] Port 7547 (TR-069): Exposed to incoming networks</div>
+        <div class="log-crit">[!!!] CVE-2026-3392: Unsigned CWMP provisioning accepted — VULNERABLE!</div>
+        <div class="log-info">[*] PHASE 3: Cryptographic Audit...</div>
+        <div class="log-crit">[!!!] Unsigned firmware accepted — Arbitrary partition overwrite threat!</div>
+        <div class="log-info">[*] PHASE 4: Hardware Debug Audit (JTAG/UART)...</div>
+        <div class="log-crit">[!!!] UART pins unauthenticated — Device registers readable!</div>
+        <div class="log-info">[*] PHASE 5: RF Carrier Telemetry...</div>
+        <div class="log-crit">[!!!] Carrier SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)</div>
+        <div class="log-crit">[!!!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)</div>
+        <div class="log-ok">[✓] Sweep complete. 7 critical findings. See findings table.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;padding:12px 24px">
+  <button class="dl-btn" onclick="downloadReport()">⬇ Export Full VSAT Security Report JSON</button>
+</div>
+
+<div class="footer">
+  AEGIS NEXUS v5.0 &nbsp;·&nbsp; VSAT Ground-Station & PQC Control Center &nbsp;·&nbsp;
+  Shadow313 NEXUS &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
+  <span style="color:var(--cyan)">Telstar 11N · Ku-band · 37.5°W</span>
+</div>
+
+<script>
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+function downloadReport() {
+  const report = {
+    exported: new Date().toISOString(),
+    source: 'AEGIS NEXUS VSAT Ground-Station & PQC Control Center v5.0',
+    target_subnet: '192.168.100.1/24',
+    scan_profile: 'DEEP',
+    satellite: 'Telstar 11N (37.5°W)',
+    band: 'Ku-band',
+    snr_db: 5.9,
+    clock_skew_hz: 55.1,
+    pqc_score_pct: 42.8,
+    qkd_qber_pct: 40.0,
+    critical_findings: 7,
+    findings: [
+      {severity:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'192.168.100.1', technique:'T1040', fix:'Disable telnet; deploy SSH (Ed25519)'},
+      {severity:'CRITICAL', title:'FTP Anonymous Write (Port 21)', host:'192.168.100.15', technique:'T1190', fix:'Disable FTP; deploy SFTP chroot'},
+      {severity:'CRITICAL', title:'HTTP Admin Panel (Port 80)', host:'Both', technique:'T1557', fix:'Redirect to HTTPS (TLS 1.3)'},
+      {severity:'CRITICAL', title:'CVE-2026-3392 TR-069 CWMP', host:'192.168.100.1', technique:'T1542.001', fix:'Disable CWMP or enforce mutual TLS'},
+      {severity:'CRITICAL', title:'Unsigned Firmware Accepted', host:'192.168.100.1', technique:'T1542.001', fix:'Enable firmware signature verification'},
+      {severity:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', technique:'T1200', fix:'Physically secure debug headers'},
+      {severity:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', technique:'T1565.001', fix:'Resync GPS/NTP; inspect OCXO'},
+    ],
+    pqc_inventory: [
+      {algorithm:'ML-KEM-768', standard:'FIPS 203', status:'COMPLIANT'},
+      {algorithm:'ML-DSA-65', standard:'FIPS 204', status:'PARTIAL'},
+      {algorithm:'SLH-DSA', standard:'FIPS 205', status:'COMPLIANT'},
+      {algorithm:'RSA-2048', standard:'Legacy', status:'CRITICAL_RISK'},
+      {algorithm:'ECC-P256', standard:'Legacy', status:'HIGH_RISK'},
+    ],
+  };
+  const blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `aegis-nexus-vsat-report-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+</script>
+</body>
+</html>

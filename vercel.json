@@ -37,6 +37,18 @@
     {
       "source": "/apt-simulation",
       "destination": "/docs/s313-apt-simulation.html"
+    },
+    {
+      "source": "/aegis-nexus",
+      "destination": "/docs/aegis_nexus.html"
+    },
+    {
+      "source": "/vsat",
+      "destination": "/docs/vsat-tactical-suite.html"
+    },
+    {
+      "source": "/chronos",
+      "destination": "/docs/chronos-sentinel.html"
     }
   ]
 }

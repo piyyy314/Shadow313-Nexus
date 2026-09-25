@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chronos Sentinel — Quantum Cybersecurity Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  :root {
+    --green:#22c55e; --red:#ef4444; --amber:#f59e0b; --cyan:#06b6d4;
+    --purple:#a78bfa; --blue:#3b82f6; --orange:#f97316;
+    --bg:#000000; --bg2:#080808; --bg3:#0f0f0f;
+    --border:rgba(167,139,250,0.12); --border2:rgba(30,41,59,0.5);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Space Grotesk',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+  .header { background:rgba(0,0,0,0.97); border-bottom:1px solid rgba(167,139,250,0.2); height:56px; display:flex; align-items:center; padding:0 24px; gap:14px; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px); }
+  .logo-hex { width:34px; height:34px; background:var(--purple); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .logo-text { font-size:16px; font-weight:800; letter-spacing:.04em; }
+  .logo-text span { color:var(--purple); }
+  .hdr-badge { font-size:9px; font-family:'JetBrains Mono',monospace; padding:3px 10px; border-radius:4px; font-weight:700; letter-spacing:.06em; }
+  .badge-purple { background:rgba(167,139,250,0.12); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+  .badge-green { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+  .badge-cyan { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.25); }
+  .hdr-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .pulse { width:8px; height:8px; border-radius:50%; background:var(--purple); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(167,139,250,0.5)} 50%{opacity:.7;box-shadow:0 0 0 8px rgba(167,139,250,0)} }
+
+  .hero { background:linear-gradient(135deg,#000 0%,#0a050f 50%,#000 100%); border-bottom:1px solid rgba(167,139,250,0.1); padding:24px 24px 20px; display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center; }
+  .hero-title { font-size:clamp(20px,2.5vw,28px); font-weight:800; line-height:1.1; }
+  .hero-title .accent { color:var(--purple); text-shadow:0 0 20px rgba(167,139,250,0.4); }
+  .hero-sub { font-size:11px; color:var(--muted); margin-top:6px; font-family:'JetBrains Mono',monospace; }
+  .hero-kpis { display:flex; gap:28px; }
+  .hero-kpi { text-align:center; }
+  .hero-kpi-val { font-size:clamp(22px,3vw,36px); font-weight:800; line-height:1; font-family:'JetBrains Mono',monospace; text-shadow:0 0 20px currentColor; }
+  .hero-kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-top:4px; }
+
+  .kpi-strip { display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:rgba(167,139,250,0.06); border-bottom:1px solid rgba(167,139,250,0.08); }
+  .kpi-cell { background:var(--bg); padding:14px 16px; text-align:center; position:relative; }
+  .kpi-cell::after { content:''; position:absolute; bottom:0; left:25%; right:25%; height:2px; border-radius:2px; }
+  .kpi-cell.purple::after { background:var(--purple); }
+  .kpi-cell.green::after { background:var(--green); }
+  .kpi-cell.cyan::after { background:var(--cyan); }
+  .kpi-cell.amber::after { background:var(--amber); }
+  .kpi-cell.blue::after { background:var(--blue); }
+  .kpi-cell.orange::after { background:var(--orange); }
+  .kpi-val { font-size:22px; font-weight:800; font-family:'JetBrains Mono',monospace; line-height:1; }
+  .kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+
+  .main { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; padding:16px 24px; }
+  .col-span-2 { grid-column:span 2; }
+  .col-span-3 { grid-column:span 3; }
+
+  .panel { background:var(--bg2); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+  .panel-hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border2); background:rgba(0,0,0,0.5); }
+  .panel-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--purple); }
+  .panel-badge { font-size:9px; font-family:'JetBrains Mono',monospace; background:rgba(167,139,250,0.08); color:var(--purple); border:1px solid rgba(167,139,250,0.2); border-radius:4px; padding:2px 8px; }
+  .panel-body { padding:14px 16px; }
+
+  .comp-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(30,41,59,0.3); }
+  .comp-row:last-child { border-bottom:none; }
+  .comp-id { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--purple); width:50px; flex-shrink:0; }
+  .comp-class { font-size:9px; font-family:'JetBrains Mono',monospace; padding:1px 6px; border-radius:3px; flex-shrink:0; }
+  .class-d { background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.2); }
+  .class-s { background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.2); }
+  .class-p { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.2); }
+  .class-x { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+  .comp-desc { font-size:11px; color:var(--text); flex:1; }
+
+  .phase-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid rgba(30,41,59,0.3); }
+  .phase-row:last-child { border-bottom:none; }
+  .phase-num { width:28px; height:28px; border-radius:50%; background:rgba(167,139,250,0.15); color:var(--purple); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
+  .phase-title { font-size:12px; font-weight:700; color:var(--text); }
+  .phase-desc { font-size:10px; color:var(--muted); margin-top:3px; }
+
+  .stack-row { display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid rgba(30,41,59,0.3); font-size:11px; }
+  .stack-row:last-child { border-bottom:none; }
+  .stack-layer { color:var(--muted); font-size:10px; font-family:'JetBrains Mono',monospace; }
+  .stack-choice { color:var(--purple); font-family:'JetBrains Mono',monospace; font-size:10px; }
+
+  .dl-btn { display:inline-flex; align-items:center; gap:6px; background:rgba(167,139,250,0.1); color:var(--purple); border:1px solid rgba(167,139,250,0.3); border-radius:6px; padding:6px 14px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all .2s; }
+  .dl-btn:hover { background:rgba(167,139,250,0.2); }
+
+  .footer { text-align:center; padding:14px 24px; font-size:10px; color:var(--dim); border-top:1px solid rgba(167,139,250,0.08); font-family:'JetBrains Mono',monospace; background:var(--bg); }
+
+  @media(max-width:1000px) { .main { grid-template-columns:1fr 1fr; } .kpi-strip { grid-template-columns:repeat(3,1fr); } }
+  @media(max-width:700px) { .main { grid-template-columns:1fr; } .hero { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-hex">CS</div>
+  <div class="logo-text">CHRONOS <span>SENTINEL</span></div>
+  <span class="hdr-badge badge-purple">QUANTUM CYBERSECURITY</span>
+  <span class="hdr-badge badge-green">LAPTOP-FIRST</span>
+  <span class="hdr-badge badge-cyan">NIST CSF 2.0</span>
+  <div class="hdr-right">
+    <div class="pulse"></div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)" id="clock"></span>
+    <button class="dl-btn" onclick="downloadBlueprint()">⬇ Export Blueprint</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-title">CHRONOS SENTINEL — <span class="accent">QUANTUM CYBER DEFENSE</span></div>
+    <div class="hero-sub">Laptop-first · Policy-as-code · PQC experimentation · NIST CSF 2.0 · Zero Trust · MITRE ATT&CK aligned</div>
+  </div>
+  <div class="hero-kpis">
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--green)">26</div><div class="hero-kpi-lbl">Components</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--purple)">5</div><div class="hero-kpi-lbl">Build Phases</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--cyan)">$0</div><div class="hero-kpi-lbl">License Cost</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--amber)">16GB</div><div class="hero-kpi-lbl">Min RAM</div></div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi-cell purple"><div class="kpi-val" style="color:var(--purple)">26</div><div class="kpi-lbl">Components A–Z</div></div>
+  <div class="kpi-cell green"><div class="kpi-val" style="color:var(--green)">D</div><div class="kpi-lbl">Directly Impl.</div></div>
+  <div class="kpi-cell cyan"><div class="kpi-val" style="color:var(--cyan)">S</div><div class="kpi-lbl">Simulated</div></div>
+  <div class="kpi-cell amber"><div class="kpi-val" style="color:var(--amber)">P</div><div class="kpi-lbl">Peripheral</div></div>
+  <div class="kpi-cell blue"><div class="kpi-val" style="color:var(--blue)">FIPS</div><div class="kpi-lbl">203/204/205</div></div>
+  <div class="kpi-cell orange"><div class="kpi-val" style="color:var(--orange)">OPA</div><div class="kpi-lbl">Policy Engine</div></div>
+</div>
+
+<div class="main">
+
+  <!-- Component Matrix -->
+  <div class="panel col-span-2">
+    <div class="panel-hdr">
+      <span class="panel-title">⬡ A–Z Component Feasibility Matrix</span>
+      <span class="panel-badge">D=Direct · S=Simulated · P=Peripheral · X=Unsupported</span>
+    </div>
+    <div class="panel-body" style="max-height:420px;overflow-y:auto">
+      <div class="comp-row"><span class="comp-id">AQC-Core</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Central orchestrator; deterministic policy/rule engine with quantum-simulator plug-ins</div></div>
+      <div class="comp-row"><span class="comp-id">BIN</span><span class="comp-class class-d">D</span><div class="comp-desc">Boundary/scope enforcement nodes: allowlists, egress proxy, OPA decisions</div></div>
+      <div class="comp-row"><span class="comp-id">CFE</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Correlation, forecasting, and risk scoring — not clairvoyant prediction</div></div>
+      <div class="comp-row"><span class="comp-id">DSAD</span><span class="comp-class class-d">D/P</span><div class="comp-desc">Host/network/sensor anomaly detection using osquery, PCAP, or synthetic telemetry</div></div>
+      <div class="comp-row"><span class="comp-id">ETP</span><span class="comp-class class-s">S/X</span><div class="comp-desc">Entanglement/teleportation protocol simulator only — labeled simulated</div></div>
+      <div class="comp-row"><span class="comp-id">FDG</span><span class="comp-class class-d">D</span><div class="comp-desc">Findings/dependency graph linking assets, SBOMs, CVEs, controls, and evidence</div></div>
+      <div class="comp-row"><span class="comp-id">HCAA</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Hybrid rules plus statistical/ML analysis, with human-review thresholds</div></div>
+      <div class="comp-row"><span class="comp-id">IITI</span><span class="comp-class class-d">D</span><div class="comp-desc">Threat-intelligence ingestion and normalization into a common schema</div></div>
+      <div class="comp-row"><span class="comp-id">JQR</span><span class="comp-class class-s">S</span><div class="comp-desc">Queued quantum-research jobs through local simulators or approved APIs</div></div>
+      <div class="comp-row"><span class="comp-id">KRM</span><span class="comp-class class-d">D</span><div class="comp-desc">Key lifecycle, signing, rotation, revocation, and secret-reference service</div></div>
+      <div class="comp-row"><span class="comp-id">LCF</span><span class="comp-class class-d">D</span><div class="comp-desc">Lattice/PQC experimentation with ML-KEM and ML-DSA (FIPS 203/204)</div></div>
+      <div class="comp-row"><span class="comp-id">MLO</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Reproducible local ML pipeline: dataset manifests, training, evaluation, drift checks</div></div>
+      <div class="comp-row"><span class="comp-id">NSRE</span><span class="comp-class class-s">S</span><div class="comp-desc">Network/security-range emulator using isolated containers or VMs</div></div>
+      <div class="comp-row"><span class="comp-id">OSS</span><span class="comp-class class-d">D</span><div class="comp-desc">Service orchestration, scheduling, health, retries, and kill switch</div></div>
+      <div class="comp-row"><span class="comp-id">PQKD</span><span class="comp-class class-s">D/S/X</span><div class="comp-desc">PQC implementation plus QKD simulation; never describe PQC as physical QKD</div></div>
+      <div class="comp-row"><span class="comp-id">SEC</span><span class="comp-class class-d">D</span><div class="comp-desc">Security-event correlation and enrichment (Suricata/Zeek/osquery)</div></div>
+      <div class="comp-row"><span class="comp-id">TAR</span><span class="comp-class class-d">D</span><div class="comp-desc">Triage and response recommendations; execution requires explicit approval</div></div>
+      <div class="comp-row"><span class="comp-id">UTO</span><span class="comp-class class-d">D</span><div class="comp-desc">Unified workflow orchestration across Blue, Red-lab, and Purple jobs</div></div>
+      <div class="comp-row"><span class="comp-id">VQF</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Policy firewall plus PQC-readiness scoring; quantum behavior remains simulated</div></div>
+      <div class="comp-row"><span class="comp-id">XCTE</span><span class="comp-class class-s">S</span><div class="comp-desc">Cross-component threat emulation in isolated ranges</div></div>
+      <div class="comp-row"><span class="comp-id">YSDF</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Seeded synthetic-data and fuzz-corpus factory</div></div>
+      <div class="comp-row"><span class="comp-id">ZTQP</span><span class="comp-class class-d">D/S</span><div class="comp-desc">Zero-trust policy profile with PQC experiments; no magical quantum trust</div></div>
+    </div>
+  </div>
+
+  <!-- Build Phases + Stack -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">🗺 Implementation Roadmap</span>
+        <span class="panel-badge">5 phases</span>
+      </div>
+      <div class="panel-body">
+        <div class="phase-row"><div class="phase-num">0</div><div><div class="phase-title">Governance & Contracts</div><div class="phase-desc">Freeze acronyms, threat model, prohibited actions, NIST CSF</div></div></div>
+        <div class="phase-row"><div class="phase-num">1</div><div><div class="phase-title">Minimum Viable Platform</div><div class="phase-desc">ChronosEvent, scope guard, SQLite, AQC-Core, CLI</div></div></div>
+        <div class="phase-row"><div class="phase-num">2</div><div><div class="phase-title">Defensive Collectors</div><div class="phase-desc">osquery, Zeek/Suricata, Semgrep, Trivy, SBOM</div></div></div>
+        <div class="phase-row"><div class="phase-num">3</div><div><div class="phase-title">Controlled Lab & Purple</div><div class="phase-desc">WebGoat, Atomic Red Team, ATT&CK coverage</div></div></div>
+        <div class="phase-row"><div class="phase-num">4</div><div><div class="phase-title">PQC & Quantum Simulation</div><div class="phase-desc">NIST vectors, liboqs, Qiskit Aer, reality=simulation</div></div></div>
+        <div class="phase-row"><div class="phase-num">5</div><div><div class="phase-title">Company Hardening</div><div class="phase-desc">RBAC, signed bundles, encrypted evidence, release signing</div></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr">
+        <span class="panel-title">⚙️ Recommended Stack</span>
+        <span class="panel-badge">$0 license cost</span>
+      </div>
+      <div class="panel-body">
+        <div class="stack-row"><span class="stack-layer">Core API</span><span class="stack-choice">Python · FastAPI · Pydantic</span></div>
+        <div class="stack-row"><span class="stack-layer">Policy</span><span class="stack-choice">OPA/Rego</span></div>
+        <div class="stack-row"><span class="stack-layer">Bus</span><span class="stack-choice">asyncio.Queue → NATS</span></div>
+        <div class="stack-row"><span class="stack-layer">Metadata</span><span class="stack-choice">SQLite + DuckDB</span></div>
+        <div class="stack-row"><span class="stack-layer">Host telemetry</span><span class="stack-choice">osquery</span></div>
+        <div class="stack-row"><span class="stack-layer">Network</span><span class="stack-choice">Zeek / Suricata</span></div>
+        <div class="stack-row"><span class="stack-layer">PQC</span><span class="stack-choice">liboqs · NIST vectors</span></div>
+        <div class="stack-row"><span class="stack-layer">Quantum sim</span><span class="stack-choice">Qiskit Aer</span></div>
+        <div class="stack-row"><span class="stack-layer">Observability</span><span class="stack-choice">OpenTelemetry + Grafana</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="panel col-span-3">
+    <div class="panel-hdr">
+      <span class="panel-title">🏗 Target Architecture — 6 Mandatory Planes</span>
+      <span class="panel-badge">ChronosEvent 1.0 · Deny by default</span>
+    </div>
+    <div class="panel-body">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
+        <div style="background:var(--bg3);border:1px solid rgba(167,139,250,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">🔐</div>
+          <div style="font-size:11px;font-weight:700;color:var(--purple)">Authorization</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">OPA · deny-by-default · scope_id</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid rgba(6,182,212,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">📡</div>
+          <div style="font-size:11px;font-weight:700;color:var(--cyan)">Telemetry</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">osquery · Zeek · Suricata</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">🧠</div>
+          <div style="font-size:11px;font-weight:700;color:var(--green)">Decision</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">Rules first · ML second</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">🐳</div>
+          <div style="font-size:11px;font-weight:700;color:var(--amber)">Execution</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">Rootless containers · VMs</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">🔗</div>
+          <div style="font-size:11px;font-weight:700;color:var(--red)">Evidence</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">Append-only · SHA-256 · JSONL</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:6px">📊</div>
+          <div style="font-size:11px;font-weight:700;color:var(--blue)">Observability</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">OpenTelemetry · Prometheus</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:rgba(0,0,0,0.4);border:1px solid rgba(167,139,250,0.15);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8">
+        <div style="color:var(--purple);font-weight:700;margin-bottom:6px">ChronosEvent 1.0 — Minimum Fields</div>
+        <div>event_id · observed_at · component · source · kind · asset · scope_id · authorization_id</div>
+        <div>reality: <span style="color:var(--green)">real</span> | <span style="color:var(--cyan)">replay</span> | <span style="color:var(--amber)">synthetic</span> | <span style="color:var(--red)">simulation</span></div>
+        <div>taxonomy · payload_ref · decision · explanation · provenance</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;padding:12px 24px">
+  <button class="dl-btn" onclick="downloadBlueprint()">⬇ Export Chronos Sentinel Blueprint JSON</button>
+</div>
+
+<div class="footer">
+  Chronos Sentinel &nbsp;·&nbsp; Quantum Cybersecurity Platform &nbsp;·&nbsp;
+  NIST CSF 2.0 · NIST SP 800-207 Zero Trust · FIPS 203/204/205 &nbsp;·&nbsp;
+  <span style="color:var(--purple)">Laptop-first · $0 license cost</span>
+</div>
+
+<script>
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+function downloadBlueprint() {
+  const data = {
+    exported: new Date().toISOString(),
+    source: 'Chronos Sentinel Quantum Cybersecurity Platform',
+    version: '1.0',
+    components: 26,
+    build_phases: 5,
+    license_cost: '$0',
+    min_ram_gb: 16,
+    pqc_standards: ['FIPS 203 ML-KEM', 'FIPS 204 ML-DSA', 'FIPS 205 SLH-DSA'],
+    frameworks: ['NIST CSF 2.0', 'NIST SP 800-207 Zero Trust', 'MITRE ATT&CK', 'NIST SSDF'],
+    stack: {
+      core: 'Python · FastAPI · Pydantic · Typer',
+      policy: 'OPA/Rego',
+      bus: 'asyncio.Queue → NATS/Redis Streams',
+      metadata: 'SQLite + DuckDB',
+      telemetry: 'osquery · Zeek · Suricata',
+      pqc: 'liboqs · NIST vectors',
+      quantum_sim: 'Qiskit Aer',
+      observability: 'OpenTelemetry + Prometheus/Grafana',
+    },
+    architecture_planes: ['Authorization', 'Telemetry', 'Decision', 'Execution', 'Evidence', 'Observability'],
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `chronos-sentinel-blueprint-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+</script>
+</body>
+</html>
