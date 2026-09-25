@@ -29,9 +29,9 @@ jobs:
       version:     ${{ steps.pipeline.outputs.version }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -81,7 +81,7 @@ jobs:
           retention-days: 30
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
 
@@ -97,7 +97,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        uses: actions/deploy-pages@v4
 
   # ── Commit manifest back to repo ──────────────────────────────────────────
   commit-manifest:
@@ -106,11 +106,11 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.3.0
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 

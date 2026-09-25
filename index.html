@@ -3,14 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow313 NEXUS</title>
+  <title>Shadow313 NEXUS — Verifiable Security Intelligence</title>
+  <style>
+    :root { --green:#22c55e; --cyan:#06b6d4; --bg:#020617; --bg2:#0b1329; --text:#e2e8f0; --muted:#64748b; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    nav { background:rgba(2,6,23,0.97); border-bottom:1px solid rgba(34,197,94,0.15); padding:0 24px; height:52px; display:flex; align-items:center; gap:12px; }
+    .logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; }
+    .logo-icon { width:30px; height:30px; background:var(--green); border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:900; color:#000; font-size:12px; font-family:monospace; }
+    .badge { font-size:10px; font-family:monospace; background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.3); border-radius:4px; padding:2px 8px; }
+    .hero { text-align:center; padding:80px 24px 60px; }
+    .hero h1 { font-size:clamp(2rem,5vw,3.5rem); font-weight:800; background:linear-gradient(135deg,#fff,var(--green)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:16px; }
+    .hero p { font-size:1.1rem; color:var(--muted); max-width:600px; margin:0 auto 40px; line-height:1.7; }
+    .stats { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-bottom:60px; }
+    .stat { text-align:center; }
+    .stat-val { font-size:2rem; font-weight:700; color:var(--green); font-family:monospace; }
+    .stat-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; max-width:1100px; margin:0 auto; padding:0 24px 80px; }
+    .card { background:var(--bg2); border:1px solid rgba(30,41,59,0.8); border-radius:12px; padding:24px; text-decoration:none; color:inherit; transition:all .2s; display:block; }
+    .card:hover { border-color:rgba(34,197,94,0.4); transform:translateY(-2px); }
+    .card-icon { font-size:28px; margin-bottom:12px; }
+    .card h3 { font-size:15px; font-weight:700; margin-bottom:6px; color:var(--text); }
+    .card p { font-size:12px; color:var(--muted); line-height:1.5; }
+    .card-badge { display:inline-block; margin-top:10px; font-size:9px; font-family:monospace; padding:2px 8px; border-radius:4px; background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.2); }
+    .section-title { text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:0 auto 24px; }
+    footer { text-align:center; padding:24px; font-size:11px; color:var(--muted); border-top:1px solid rgba(34,197,94,0.08); font-family:monospace; }
+    .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; display:inline-block; margin-right:6px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  </style>
 </head>
 <body>
+<nav>
+  <div class="logo">
+    <div class="logo-icon">S3</div>
+    SHADOW313 NEXUS
+  </div>
+  <span class="badge">v4.0.0</span>
+  <span class="badge" style="color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)">POST-QUANTUM</span>
+  <span style="margin-left:auto;font-size:11px;font-family:monospace;color:var(--muted)">
+    <span class="pulse"></span>OPERATIONAL · Ottawa, ON, Canada
+  </span>
+</nav>
+
+<div class="hero">
   <h1>Shadow313 NEXUS</h1>
-  <p>This deployment serves the static dashboard bundle for Shadow313 NEXUS.</p>
-  <ul>
-    <li><a href="/docs/">Open dashboard index</a></li>
-    <li><a href="/dashboard">Open unified dashboard (v4)</a></li>
-  </ul>
+  <p>Local-first, AI-powered security intelligence platform. Every finding is a cryptographic fact — verified by the 313 Temporal Binding Protocol.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-val">3,449</div><div class="stat-lbl">Tests Passing</div></div>
+    <div class="stat"><div class="stat-val">98%</div><div class="stat-lbl">ATT&CK Coverage</div></div>
+    <div class="stat"><div class="stat-val">FIPS 205</div><div class="stat-lbl">SLH-DSA Signing</div></div>
+    <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">CVEs Found</div></div>
+  </div>
+</div>
+
+<div class="section-title">LIVE DASHBOARDS</div>
+<div class="grid">
+  <a class="card" href="/dashboard">
+    <div class="card-icon">⚡</div>
+    <h3>Unified Command Dashboard</h3>
+    <p>Real-time threat feed, ATT&CK coverage matrix, detection engine status, and live event stream.</p>
+    <span class="card-badge">LIVE · v4.0.0</span>
+  </a>
+  <a class="card" href="/command-center">
+    <div class="card-icon">🛡️</div>
+    <h3>Command Center v6</h3>
+    <p>6-tab operations center: Threat Feed, ATT&CK Heatmap, RF Health Board, Mission Board, Evidence Chain.</p>
+    <span class="card-badge">VSAT · SIGINT</span>
+  </a>
+  <a class="card" href="/threat-board">
+    <div class="card-icon">🗺️</div>
+    <h3>Threat Board</h3>
+    <p>Real-time threat stream with ATT&CK heatmap overlay, drill-down, and behavioral correlation.</p>
+    <span class="card-badge">ATT&CK · MITRE</span>
+  </a>
+  <a class="card" href="/ssp">
+    <div class="card-icon">📋</div>
+    <h3>SSP Dashboard</h3>
+    <p>System Security Plan — NIST 800-53, FedRAMP, CMMC compliance posture with gap analysis.</p>
+    <span class="card-badge">CMMC L2 · FedRAMP</span>
+  </a>
+  <a class="card" href="/architecture">
+    <div class="card-icon">🏗️</div>
+    <h3>Architecture Map</h3>
+    <p>Full Shadow313 NEXUS architecture — modules, data flows, trust boundaries, and integration points.</p>
+    <span class="card-badge">v4 · NEXUS</span>
+  </a>
+  <a class="card" href="/ai-stack">
+    <div class="card-icon">🤖</div>
+    <h3>AI Stack Map</h3>
+    <p>Local AI gateway architecture — Ollama, Open WebUI, Docker, WSL2, and Shadow313 FastAPI integration.</p>
+    <span class="card-badge">LOCAL · OFFLINE</span>
+  </a>
+</div>
+
+<footer>
+  Shadow313 NEXUS v4.0.0 &nbsp;·&nbsp; 313 Temporal Binding Protocol &nbsp;·&nbsp;
+  Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp;
+  <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green);text-decoration:none">GitHub</a>
+</footer>
 </body>
 </html>

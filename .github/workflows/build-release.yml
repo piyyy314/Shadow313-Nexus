@@ -1,0 +1,174 @@
+# Shadow313 NEXUS — Build & Release Binaries
+# Builds standalone executables for Windows, Linux (Ubuntu), and macOS
+# Triggers on: version tags (v*.*.*) or manual dispatch
+
+name: Build & Release Binaries
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (e.g. 4.0.1)"
+        required: false
+        default: "dev"
+
+permissions:
+  contents: write
+
+jobs:
+  # ── Build binaries on each platform ────────────────────────────────────────
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            artifact_name: shadow313-linux-x64
+            asset_name: shadow313-linux-x64
+          - os: windows-latest
+            artifact_name: shadow313-windows-x64.exe
+            asset_name: shadow313-windows-x64.exe
+          - os: macos-latest
+            artifact_name: shadow313-macos-x64
+            asset_name: shadow313-macos-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[full]"
+          pip install pyinstaller pyyaml rich pyspx cryptography
+
+      - name: Build binary (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          pyinstaller \
+            --onefile \
+            --name shadow313 \
+            --add-data "shadow313:shadow313" \
+            --hidden-import shadow313.cli.main \
+            --hidden-import shadow313.core \
+            --hidden-import pyyaml \
+            --hidden-import rich \
+            shadow313/cli/main.py
+          ls -lh dist/
+
+      - name: Build binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller `
+            --onefile `
+            --name shadow313 `
+            --add-data "shadow313;shadow313" `
+            --hidden-import shadow313.cli.main `
+            --hidden-import shadow313.core `
+            --hidden-import pyyaml `
+            --hidden-import rich `
+            shadow313/cli/main.py
+          dir dist\
+
+      - name: Rename artifact (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: mv dist/shadow313 dist/${{ matrix.artifact_name }}
+
+      - name: Rename artifact (Windows)
+        if: runner.os == 'Windows'
+        run: Rename-Item dist\shadow313.exe dist\${{ matrix.artifact_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.artifact_name }}
+          retention-days: 30
+
+  # ── Create GitHub Release with all binaries ─────────────────────────────────
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+
+      - name: List artifacts
+        run: find dist/ -type f | sort
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Shadow313 NEXUS ${{ github.ref_name }}
+          body: |
+            ## Shadow313 NEXUS ${{ github.ref_name }}
+
+            ### Downloads
+            | Platform | File |
+            |---|---|
+            | 🐧 Linux (x64) | `shadow313-linux-x64` |
+            | 🪟 Windows (x64) | `shadow313-windows-x64.exe` |
+            | 🍎 macOS (x64) | `shadow313-macos-x64` |
+
+            ### Installation
+            ```bash
+            # Linux/macOS
+            chmod +x shadow313-linux-x64
+            ./shadow313-linux-x64 --help
+
+            # Windows
+            shadow313-windows-x64.exe --help
+            ```
+
+            ### What's New
+            See [CHANGELOG.md](https://github.com/piyyy314/Shadow313-Nexus/blob/master/CHANGELOG.md)
+          files: |
+            dist/shadow313-linux-x64/shadow313-linux-x64
+            dist/shadow313-windows-x64.exe/shadow313-windows-x64.exe
+            dist/shadow313-macos-x64/shadow313-macos-x64
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Build Python wheel + sdist ──────────────────────────────────────────────
+  build-python:
+    name: Build Python Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build wheel + sdist
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*
+
+      - name: Upload Python packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-packages
+          path: dist/
+          retention-days: 30
