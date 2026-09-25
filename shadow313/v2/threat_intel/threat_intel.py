@@ -247,7 +247,7 @@ class ThreatIntelDB:
 
     def stats(self) -> dict:
         def _count(table):
-            return self._conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+            return self._conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]  # nosec B608 — internal table/col names, not user input
         meta = {}
         for row in self._conn.execute("SELECT feed, last_sync, record_count FROM feed_meta"):
             meta[row[0]] = {"last_sync": row[1], "count": row[2]}
