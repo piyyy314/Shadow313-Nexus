@@ -53,3 +53,9 @@ shadow313_attack_layer.json
 # OS
 .DS_Store
 Thumbs.db
+
+docs-archive/copilot-files/
+*.itdb*
+*.itl
+*.wal
+
