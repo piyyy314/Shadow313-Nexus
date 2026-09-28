@@ -22,7 +22,7 @@ jobs:
     name: Full Dependency Audit
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
@@ -54,7 +54,7 @@ jobs:
     name: Container Security Scan (Trivy)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build image for scanning
         run: |
@@ -81,7 +81,7 @@ jobs:
     name: Full Git History Secret Scan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -96,7 +96,7 @@ jobs:
     name: Docker Compose Security Audit
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install checkov
         run: pip install checkov==3.2.0
