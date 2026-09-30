@@ -59,3 +59,18 @@ docs-archive/copilot-files/
 *.itl
 *.wal
 
+
+# Sensitive files - never commit
+docs-archive/rescued-from-pictures/crypto_*
+docs-archive/rescued-from-pictures/*harvester*
+docs-archive/rescued-from-pictures/*polymorphic*
+docs-archive/rescued-from-pictures/*offensive*
+docs-archive/rescued-from-pictures/ghost_c2*
+docs-archive/rescued-from-pictures/ghost_network*
+docs-archive/rescued-from-pictures/ghost_shell*
+docs-archive/rescued-from-pictures/*ignite*
+docs-archive/rescued-from-pictures/*phantom*
+docs-archive/rescued-from-pictures/*stealth_pivot*
+docs-archive/rescued-from-pictures/*infinite_payload*
+docs-archive/rescued-from-pictures/*shroud*
+docs-archive/rescued-from-pictures/system_core_service*
