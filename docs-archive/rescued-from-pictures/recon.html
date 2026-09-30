@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recon — Reconnaissance Module | Shadow313 NEXUS</title>
+  <meta name="description" content="Shadow313 Recon: DNS enumeration, subdomain discovery, async port scanning, web fingerprinting, WHOIS, GeoIP, and AI-generated target profiling." />
+  <link rel="canonical" href="https://shadow313.dev/tools/recon" />
+  <link rel="stylesheet" href="../assets/css/shadow313.css" />
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo"><div class="logo-mark">S3</div><span class="logo-text">Shadow313</span><span class="logo-version">NEXUS</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Tools</a></li>
+      <li><a href="../marketplace/index.html">Marketplace</a></li>
+      <li><a href="../docs/index.html">Docs</a></li>
+      <li><a href="../about/index.html">About</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="https://github.com/shadow313/shadow313" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">GitHub</a>
+      <a href="../index.html#waitlist" class="btn btn-primary btn-sm">Join Waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-content">
+  <!-- Hero -->
+  <section class="section-sm" style="background:var(--bg-secondary); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="../index.html">Home</a><span class="breadcrumb-sep">›</span>
+        <a href="index.html">Tools</a><span class="breadcrumb-sep">›</span>
+        <span>Recon</span>
+      </div>
+      <div class="flex gap-12 items-center" style="flex-wrap:wrap; margin-bottom:16px;">
+        <span class="badge badge-cyan">shadow313.modules.recon</span>
+        <span class="badge badge-green">AI-Augmented</span>
+        <span class="badge badge-cyan">Async</span>
+        <span class="badge badge-green">V1 Core</span>
+      </div>
+      <h1 style="font-size:clamp(28px,4vw,48px); margin-bottom:16px; letter-spacing:-0.02em;">
+        Reconnaissance Module
+        <span class="text-gradient-cyan" style="display:block; font-size:0.55em; margin-top:4px;">DNS · Subdomain · Port Scan · OSINT · AI Profiling</span>
+      </h1>
+      <p style="font-size:17px; color:var(--text-secondary); max-width:640px; margin-bottom:28px; line-height:1.7;">
+        Passive and active reconnaissance — DNS enumeration across 7 record types, subdomain discovery via certificate transparency logs and wordlist brute-force, async port scanning, web fingerprinting (15 technology signatures), WHOIS, GeoIP enrichment, and AI-generated target profiles.
+      </p>
+      <div class="flex gap-16" style="flex-wrap:wrap;">
+        <a href="../docs/index.html#recon" class="btn btn-primary">Read the Docs</a>
+        <a href="../index.html#install" class="btn btn-ghost">Install Shadow313</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section-sm" style="border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="stat-grid">
+        <div class="stat-item"><div class="stat-value">7</div><div class="stat-label">DNS Record Types</div></div>
+        <div class="stat-item"><div class="stat-value">15</div><div class="stat-label">Web Fingerprints</div></div>
+        <div class="stat-item"><div class="stat-value">3</div><div class="stat-label">Scan Modes</div></div>
+        <div class="stat-item"><div class="stat-value">10</div><div class="stat-label">Req/s Stealth Mode</div></div>
+        <div class="stat-item"><div class="stat-value">100%</div><div class="stat-label">Offline Capable</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Capabilities -->
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title" style="margin-bottom:40px;">What Recon Does</h2>
+      <div class="feature-grid">
+        <div class="card">
+          <div class="feature-icon feature-icon-cyan">🔍</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">DNS Enumeration</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">A, AAAA, MX, NS, TXT, CNAME, SOA record lookups against authoritative and recursive resolvers via dnspython / stdlib resolver.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon feature-icon-green">🌐</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">Subdomain Discovery</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">Certificate Transparency log queries (crt.sh API) combined with wordlist brute-force. Parallel execution. Deduplication and resolution.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon feature-icon-orange">⚡</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">Async Port Scanning</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">asyncio TCP connect scan. Supports port ranges (1-1024) and explicit lists (80,443,8080). Pure-Python stdlib — no scapy dependency.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon feature-icon-purple">🖥</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">Web Fingerprinting</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">15 technology signatures: WordPress, Nginx, Apache, Django, Laravel, React, Vue, Angular, PHP, ASP.NET, IIS, Tomcat, Flask, Express, CMS.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon feature-icon-cyan">📋</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">WHOIS + GeoIP</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">Registrar, creation date, expiry, nameservers via python-whois. GeoIP enrichment via ip-api.com: country, city, ASN, ISP per discovered IP.</p>
+        </div>
+        <div class="card">
+          <div class="feature-icon feature-icon-green">🤖</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">AI Target Profiling</h3>
+          <p style="font-size:13px; color:var(--text-secondary);">LLM synthesizes all gathered recon data into a structured threat profile with attack surface summary and recommended next steps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLI Reference -->
+  <section class="section" style="background:var(--bg-secondary);">
+    <div class="container">
+      <div class="section-label">CLI Reference</div>
+      <h2 class="section-title" style="margin-bottom:32px;">Recon Commands</h2>
+      <div class="grid-2" style="gap:32px;">
+        <div>
+          <div class="code-block">
+            <pre><span class="comment"># Full passive + active recon</span>
+<span class="cmd">shadow313 recon --target example.com --mode full</span>
+
+<span class="comment"># Active scan on IP range</span>
+<span class="cmd">shadow313 recon --target 192.168.1.0/24 \</span>
+<span class="cmd">  --mode active --ports 1-1024</span>
+
+<span class="comment"># Passive only with stealth mode</span>
+<span class="cmd">shadow313 recon --target example.com \</span>
+<span class="cmd">  --mode passive --stealth</span>
+
+<span class="comment"># Custom ports + JSON output</span>
+<span class="cmd">shadow313 recon --target example.com \</span>
+<span class="cmd">  --ports 80,443,8080 --output json</span>
+
+<span class="comment"># Custom subdomain wordlist</span>
+<span class="cmd">shadow313 recon --target example.com \</span>
+<span class="cmd">  --wordlist ./subdomains.txt</span></pre>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="font-size:15px; margin-bottom:16px;">Flags Reference</h3>
+            <table class="data-table">
+              <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>--target</td><td>Domain / IP / CIDR / URL</td></tr>
+                <tr><td>--mode</td><td>full | active | passive</td></tr>
+                <tr><td>--ports</td><td>Range (1-1024) or list (80,443)</td></tr>
+                <tr><td>--stealth</td><td>Rate limit to 10 req/s</td></tr>
+                <tr><td>--wordlist</td><td>Custom subdomain wordlist path</td></tr>
+                <tr><td>--output</td><td>rich | json | markdown | plain</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <h3 style="font-size:15px; margin-bottom:12px;">Output Files</h3>
+            <div style="font-size:13px; color:var(--text-secondary); display:flex; flex-direction:column; gap:8px;">
+              <div><code style="color:var(--accent-cyan);">recon.json</code> — Full structured recon results</div>
+              <div><code style="color:var(--accent-cyan);">target.json</code> — Condensed host summary for downstream modules</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Workflow</div>
+      <h2 class="section-title" style="margin-bottom:32px;">How Recon Works</h2>
+      <div style="max-width:640px;">
+        <div class="timeline">
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">1. Normalize target input</div><p style="font-size:13px; color:var(--text-secondary);">Detect domain vs. IP vs. CIDR vs. URL; extract hostname.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">2. DNS enumeration</div><p style="font-size:13px; color:var(--text-secondary);">Resolve all 7 record types for the target domain.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">3. Subdomain discovery</div><p style="font-size:13px; color:var(--text-secondary);">Query crt.sh CT logs + brute-force wordlist in parallel.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">4. Async port scan</div><p style="font-size:13px; color:var(--text-secondary);">TCP connect across configured port range; collect banners.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">5. Web fingerprinting</div><p style="font-size:13px; color:var(--text-secondary);">HTTP GET to open ports; match 15 technology signatures.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">6. WHOIS + GeoIP enrichment</div><p style="font-size:13px; color:var(--text-secondary);">Enrich each discovered IP with registrar data and geographic/ASN info.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">7. AI target profiling</div><p style="font-size:13px; color:var(--text-secondary);">LLM generates attack surface summary from aggregated data.</p></div>
+          <div class="timeline-item done"><div style="font-weight:600; margin-bottom:4px;">8. Write outputs + fire hooks</div><p style="font-size:13px; color:var(--text-secondary);">Write recon.json and target.json to session directory; fire recon.post plugin hook.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-sm" style="background:var(--bg-secondary); border-top:1px solid var(--border);">
+    <div class="container text-center">
+      <h2 style="font-size:26px; margin-bottom:16px;">Start Reconnaissance</h2>
+      <p style="color:var(--text-secondary); margin-bottom:28px;">Install Shadow313 and run your first recon scan in 60 seconds.</p>
+      <div class="flex gap-16" style="justify-content:center; flex-wrap:wrap;">
+        <a href="../index.html#install" class="btn btn-primary btn-lg">Install Shadow313</a>
+        <a href="vuln.html" class="btn btn-ghost btn-lg">Vuln Analysis →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="margin-bottom:12px; display:inline-flex;"><div class="logo-mark">S3</div><span class="logo-text">Shadow313</span></a>
+        <p>Local-first AI-powered security intelligence CLI. Every finding is a cryptographic fact.</p>
+      </div>
+      <div class="footer-col"><h4>Tools</h4><ul>
+        <li><a href="index.html">All Modules</a></li>
+        <li><a href="aegis-nexus.html">Aegis NEXUS</a></li>
+        <li><a href="sovereign-shield.html">Sovereign Shield</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Resources</h4><ul>
+        <li><a href="../docs/index.html">Documentation</a></li>
+        <li><a href="https://github.com/shadow313/shadow313" target="_blank" rel="noopener">GitHub</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Company</h4><ul>
+        <li><a href="../about/index.html">About</a></li>
+        <li><a href="mailto:ops@shadow313.dev">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Shadow313 NEXUS. MIT License. Ottawa, ON, Canada.</span>
+    </div>
+  </div>
+</footer>
+<script src="../assets/js/nexus.js"></script>
+</body>
+</html>

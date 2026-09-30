@@ -1,0 +1,67 @@
+{
+  "module_name": "PE Static Header Analyzer",
+  "file_name": "svchost.exe",
+  "file_size_bytes": 45056,
+  "target_machine": "x86_64 (AMD64)",
+  "entry_point_pointer": "0x00018a30",
+  "pe_sections": [
+    {
+      "name": ".text",
+      "virtualSize": 24576,
+      "virtualAddress": "0x00001000",
+      "rawSize": 24576,
+      "rawAddress": "0x00000400",
+      "entropy": 5.82,
+      "characteristics": [
+        "EXECUTABLE",
+        "READONLY"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".rdata",
+      "virtualSize": 8192,
+      "virtualAddress": "0x00007000",
+      "rawSize": 8192,
+      "rawAddress": "0x00006400",
+      "entropy": 4.15,
+      "characteristics": [
+        "READONLY"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".data",
+      "virtualSize": 4096,
+      "virtualAddress": "0x00009000",
+      "rawSize": 2048,
+      "rawAddress": "0x00008400",
+      "entropy": 2.3,
+      "characteristics": [
+        "WRITEABLE",
+        "READWRITE"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".reloc",
+      "virtualSize": 4096,
+      "virtualAddress": "0x0000B000",
+      "rawSize": 4096,
+      "rawAddress": "0x00008C00",
+      "entropy": 3.12,
+      "characteristics": [
+        "DISCARDABLE",
+        "READONLY"
+      ],
+      "anomalous": false
+    }
+  ],
+  "pe_imports": [
+    "ntdll.dll!RtlInitUnicodeString",
+    "kernel32.dll!RegisterServiceCtrlHandlerW",
+    "kernel32.dll!SetServiceStatus",
+    "advapi32.dll!RegOpenKeyExW",
+    "msvcrt.dll!memset"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-09-23T03:57:33.284Z",
+  "source": "SENTINEL_INTELLIGENCE_TS_VAULT",
+  "session_id": "419M6P85Y2",
+  "entries": [
+    {
+      "id": "intel-1",
+      "time": "13:30:17",
+      "src": "10.254.1.42",
+      "dst": "172.16.0.12",
+      "data": "POST /api/auth?pass=e3cfvk&session_id=zvcqw3js"
+    }
+  ]
+}

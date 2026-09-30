@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>CyberShield Suite — Interactive Product Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-deep': '#060d1a',
+            'bg-dark': '#0a1428',
+            'bg-card': '#0e1e3a',
+            'bg-card-hover': '#152847',
+            'text-primary': '#e8f0ff',
+            'text-muted': '#7aa4cc',
+            'accent-cyan': '#00c8f8',
+            'sentinel': '#ff6b35',
+            'atlas': '#00c8f8',
+            'forge': '#9b59ff',
+            'vault': '#f5a623',
+          }
+        }
+      }
+    };
+    </script>
+    <style>
+      :root {
+        --bg-deep: #060d1a;
+        --bg-dark: #0a1428;
+        --bg-card: #0e1e3a;
+        --bg-card-hover: #152847;
+        --text-primary: #e8f0ff;
+        --text-muted: #7aa4cc;
+        --accent-cyan: #00c8f8;
+        --accent-cyan-dim: rgba(0,200,248,0.15);
+        --sentinel: #ff6b35;
+        --atlas: #00c8f8;
+        --forge: #9b59ff;
+        --vault: #f5a623;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      .section-fade { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+      .section-fade.visible { opacity: 1; transform: translateY(0); }
+      #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+      .nav-scrolled { border-bottom: 1px solid rgba(0,200,248,0.3) !important; }
+      .nav-link { position: relative; transition: color 0.2s; }
+      .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--accent-cyan); transition: width 0.25s ease; }
+      .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+      .nav-link:hover, .nav-link.active { color: var(--accent-cyan); }
+      .product-card { transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
+      .product-card:hover { transform: translateY(-6px); }
+      .product-card[data-product="sentinel"]:hover { box-shadow: 0 8px 32px rgba(255,107,53,0.25); }
+      .product-card[data-product="atlas"]:hover { box-shadow: 0 8px 32px rgba(0,200,248,0.25); }
+      .product-card[data-product="forge"]:hover { box-shadow: 0 8px 32px rgba(155,89,255,0.25); }
+      .product-card[data-product="vault"]:hover { box-shadow: 0 8px 32px rgba(245,166,35,0.25); }
+      .feature-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .feature-card:hover { transform: translateY(-4px); }
+      .tab-pill { transition: color 0.2s, background 0.2s; cursor: pointer; position: relative; z-index: 1; }
+      .tab-pill.active { color: #fff; }
+      .tab-slider { transition: transform 0.3s ease, width 0.3s ease; }
+      .tab-content { display: none; animation: fadeTab 0.35s ease; }
+      .tab-content.active { display: block; }
+      @keyframes fadeTab { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+      .scroll-indicator { animation: bounce 2s infinite; }
+      @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+      .flow-line { animation: dashFlow 1s linear infinite; }
+      .pulse-dot { animation: pulseDot 2s infinite; }
+      @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+      @keyframes checkPop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+      .check-pop { animation: checkPop 0.5s ease forwards; }
+      .back-to-top { transition: opacity 0.3s, transform 0.3s; }
+      .comparison-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .arch-node { cursor: pointer; transition: filter 0.3s, transform 0.3s; }
+      .arch-node:hover { filter: brightness(1.3); transform: scale(1.05); }
+      .arch-node.highlight { filter: brightness(1.5) drop-shadow(0 0 12px currentColor); }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent-cyan) !important; box-shadow: 0 0 0 3px rgba(0,200,248,0.2); }
+      .mobile-menu { transform: translateX(100%); transition: transform 0.35s ease; }
+      .mobile-menu.open { transform: translateX(0); }
+      ::selection { background: rgba(0,200,248,0.3); color: #fff; }
+      .stat-card { border: 1px solid rgba(0,200,248,0.2); background: var(--bg-card); transition: border-color 0.3s; }
+      .stat-card:hover { border-color: rgba(0,200,248,0.5); }
+      .integration-card { border: 1px solid rgba(0,200,248,0.12); transition: border-color 0.3s, transform 0.3s; }
+      .integration-card:hover { border-color: rgba(0,200,248,0.35); transform: translateY(-3px); }
+      .takeaway-card { border-left: 3px solid var(--accent-cyan); }
+      .cta-pill { transition: background 0.2s, transform 0.2s; }
+      .cta-pill:hover { transform: translateY(-2px); }
+      .select-wrapper { position: relative; }
+      .select-wrapper::after {
+        content: '';
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid #7aa4cc;
+        pointer-events: none;
+      }
+      @media (max-width: 639px) {
+        .hero-headline { font-size: 2.5rem !important; }
+        .arch-svg { min-height: 300px; }
+      }
+    </style>
+</head>
+<body data-id="0" class="bg-bg-deep">
+    <app-icon data-id="1" hidden data-icon="shield" data-palette="Dark"></app-icon>
+
+    <!-- NAVIGATION -->
+    <nav data-id="2" id="main-nav-a1b2" class="fixed top-0 left-0 right-0 z-50 border-b border-transparent" style="background: rgba(6,13,26,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+      <div data-id="3" class="max-w-[1200px] mx-auto flex items-center justify-between px-5 py-3">
+        <a data-id="4" href="#" class="flex items-center gap-2 no-underline">
+          <svg data-id="5" width="32" height="32" viewBox="0 0 32 32" fill="none"><path data-id="6" d="M16 2L4 8v8c0 7.18 5.12 13.88 12 16 6.88-2.12 12-8.82 12-16V8L16 2z" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.1)"/><path data-id="7" d="M12 16l3 3 5-6" stroke="#00c8f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-id="8" class="text-lg font-bold"><span data-id="9" style="color:var(--accent-cyan)">CyberShield</span> <span data-id="10" class="text-white">Suite</span></span>
+        </a>
+        <div data-id="11" class="hidden md:flex items-center gap-6">
+          <a data-id="12" href="#hero-section-x1" class="nav-link text-sm text-text-muted no-underline" data-nav="hero-section-x1">Home</a>
+          <a data-id="13" href="#products-section-p1" class="nav-link text-sm text-text-muted no-underline" data-nav="products-section-p1">Products</a>
+          <a data-id="14" href="#architecture" class="nav-link text-sm text-text-muted no-underline" data-nav="architecture">Architecture</a>
+          <a data-id="15" href="#why-section-w1" class="nav-link text-sm text-text-muted no-underline" data-nav="why-section-w1">Why CyberShield</a>
+          <a data-id="16" href="#contact" class="nav-link text-sm text-text-muted no-underline" data-nav="contact">Contact</a>
+        </div>
+        <button data-id="17" id="mobile-menu-btn-m1" class="md:hidden p-2 text-text-muted" aria-label="Open menu">
+          <svg data-id="18" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line data-id="19" x1="3" y1="6" x2="21" y2="6"/><line data-id="20" x1="3" y1="12" x2="21" y2="12"/><line data-id="21" x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div data-id="22" id="mobile-menu-m2" class="mobile-menu fixed inset-0 z-[60] flex flex-col bg-bg-deep p-6">
+      <button data-id="23" id="mobile-close-m3" class="self-end p-2 text-text-muted mb-8" aria-label="Close menu">
+        <svg data-id="24" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line data-id="25" x1="18" y1="6" x2="6" y2="18"/><line data-id="26" x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div data-id="27" class="flex flex-col gap-6 text-xl">
+        <a data-id="28" href="#hero-section-x1" class="mobile-nav-link text-text-primary no-underline">Home</a>
+        <a data-id="29" href="#products-section-p1" class="mobile-nav-link text-text-primary no-underline">Products</a>
+        <a data-id="30" href="#architecture" class="mobile-nav-link text-text-primary no-underline">Architecture</a>
+        <a data-id="31" href="#why-section-w1" class="mobile-nav-link text-text-primary no-underline">Why CyberShield</a>
+        <a data-id="32" href="#contact" class="mobile-nav-link text-text-primary no-underline">Contact</a>
+      </div>
+    </div>
+
+    <main data-id="33">
+    <!-- HERO SECTION -->
+    <section data-id="34" id="hero-section-x1" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <canvas data-id="35" id="hero-canvas"></canvas>
+      <div data-id="36" class="relative z-10 text-center px-5 max-w-[900px] mx-auto">
+        <div data-id="37" class="inline-flex items-center gap-2 bg-bg-card border border-accent-cyan/20 rounded-full px-4 py-1.5 text-xs text-text-muted mb-6">
+          <span data-id="38" class="w-2 h-2 rounded-full bg-green-400 pulse-dot inline-block"></span>
+          Enterprise Cybersecurity Suite 2026
+        </div>
+        <h1 data-id="39" class="hero-headline text-5xl md:text-7xl font-bold text-white mb-2 leading-tight">Defend Everything.</h1>
+        <div data-id="40" class="w-24 h-1 mx-auto rounded mb-6" style="background:var(--accent-cyan)"></div>
+        <p data-id="41" class="text-text-muted text-base md:text-lg max-w-[650px] mx-auto mb-8">AI-powered threat detection. Real-time network intelligence. DevSecOps security. Quantum-safe encryption.</p>
+        <div data-id="42" class="flex flex-wrap justify-center gap-2 mb-8">
+          <span data-id="43" class="px-3 py-1 rounded-full text-xs font-semibold border" style="color:var(--sentinel); border-color:var(--sentinel); background:rgba(255,107,53,0.1);">SENTINEL</span>
+          <span data-id="44" class="px-3 py-1 rounded-full text-xs font-semibold border" style="color:var(--atlas); border-color:var(--atlas); background:rgba(0,200,248,0.1);">ATLAS</span>
+          <span data-id="45" class="px-3 py-1 rounded-full text-xs font-semibold border" style="color:var(--forge); border-color:var(--forge); background:rgba(155,89,255,0.1);">FORGE</span>
+          <span data-id="46" class="px-3 py-1 rounded-full text-xs font-semibold border" style="color:var(--vault); border-color:var(--vault); background:rgba(245,166,35,0.1);">QUANTUM VAULT</span>
+        </div>
+        <div data-id="47" class="flex flex-col sm:flex-row justify-center gap-3">
+          <a data-id="48" href="#products-section-p1" class="inline-block px-7 py-3 rounded-lg font-semibold text-sm text-bg-deep no-underline transition-transform hover:scale-105" style="background:var(--accent-cyan);">Explore Products</a>
+          <a data-id="49" href="#contact" class="inline-block px-7 py-3 rounded-lg font-semibold text-sm no-underline transition-transform hover:scale-105" style="border:2px solid var(--accent-cyan); color:var(--accent-cyan);">Request Demo</a>
+        </div>
+        <div data-id="50" class="mt-12 scroll-indicator text-text-muted">
+          <svg data-id="51" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto"><path data-id="52" d="M12 5v14M19 12l-7 7-7-7"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section data-id="53" id="stats-section-s1" class="py-20 md:py-28 section-fade" style="background:var(--bg-dark)">
+      <div data-id="54" class="max-w-[1200px] mx-auto px-5">
+        <h2 data-id="55" class="text-3xl md:text-4xl font-bold text-center text-white mb-3">The Stakes Have Never Been Higher</h2>
+        <p data-id="56" class="text-text-muted text-center max-w-xl mx-auto mb-14">Cyberattacks are growing faster than traditional defenses can adapt.</p>
+        <div data-id="57" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div data-id="58" class="stat-card rounded-xl p-6 text-center">
+            <svg data-id="59" class="mx-auto mb-4" width="40" height="40" viewBox="0 0 40 40" fill="none"><circle data-id="60" cx="20" cy="20" r="16" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.08)"/><path data-id="61" d="M20 12v5l4 2" stroke="#00c8f8" stroke-width="2" stroke-linecap="round"/><path data-id="62" d="M14 26l2-2m8 2l2-2" stroke="#00c8f8" stroke-width="1.5" stroke-linecap="round"/><text data-id="63" x="20" y="34" text-anchor="middle" fill="#00c8f8" font-size="6">$</text></svg>
+            <div data-id="64" class="text-3xl md:text-4xl font-bold mb-2 counter-value" style="color:var(--accent-cyan); font-variant-numeric: tabular-nums;" data-target="10.5" data-prefix="$" data-suffix="T">$0</div>
+            <p data-id="65" class="text-text-muted text-sm">Projected cybercrime cost by 2025</p>
+          </div>
+          <div data-id="66" class="stat-card rounded-xl p-6 text-center">
+            <svg data-id="67" class="mx-auto mb-4" width="40" height="40" viewBox="0 0 40 40" fill="none"><circle data-id="68" cx="20" cy="20" r="16" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.08)"/><circle data-id="69" cx="20" cy="20" r="2" fill="#00c8f8"/><path data-id="70" d="M20 10v4M20 26v4M10 20h4M26 20h4" stroke="#00c8f8" stroke-width="2" stroke-linecap="round"/></svg>
+            <div data-id="71" class="text-3xl md:text-4xl font-bold mb-2 counter-value" style="color:var(--accent-cyan); font-variant-numeric: tabular-nums;" data-target="277" data-prefix="" data-suffix="">0</div>
+            <p data-id="72" class="text-text-muted text-sm">Days average to identify &amp; contain a breach</p>
+          </div>
+          <div data-id="73" class="stat-card rounded-xl p-6 text-center">
+            <svg data-id="74" class="mx-auto mb-4" width="40" height="40" viewBox="0 0 40 40" fill="none"><circle data-id="75" cx="20" cy="20" r="16" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.08)"/><path data-id="76" d="M15 17l5 3-5 3z" fill="#00c8f8"/><path data-id="77" d="M22 15h5v10h-5" stroke="#00c8f8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div data-id="78" class="text-3xl md:text-4xl font-bold mb-2 counter-value" style="color:var(--accent-cyan); font-variant-numeric: tabular-nums;" data-target="4.88" data-prefix="$" data-suffix="M">$0</div>
+            <p data-id="79" class="text-text-muted text-sm">Average cost of a data breach in 2024</p>
+          </div>
+          <div data-id="80" class="stat-card rounded-xl p-6 text-center">
+            <svg data-id="81" class="mx-auto mb-4" width="40" height="40" viewBox="0 0 40 40" fill="none"><circle data-id="82" cx="20" cy="20" r="16" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.08)"/><path data-id="83" d="M20 12l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z" stroke="#00c8f8" stroke-width="1.5" fill="rgba(0,200,248,0.2)" stroke-linejoin="round"/></svg>
+            <div data-id="84" class="text-3xl md:text-4xl font-bold mb-2 counter-value" style="color:var(--accent-cyan); font-variant-numeric: tabular-nums;" data-target="2200" data-prefix="" data-suffix="+">0</div>
+            <p data-id="85" class="text-text-muted text-sm">Cyberattacks targeting organizations daily</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT SUITE OVERVIEW -->
+    <section data-id="86" id="products-section-p1" class="py-20 md:py-28 section-fade">
+      <div data-id="87" class="max-w-[1200px] mx-auto px-5">
+        <h2 data-id="88" class="text-3xl md:text-4xl font-bold text-center text-white mb-3">Four Products. One Unified Defense.</h2>
+        <p data-id="89" class="text-text-muted text-center max-w-2xl mx-auto mb-14">CyberShield Suite delivers end-to-end coverage across the modern enterprise attack surface.</p>
+        <div data-id="90" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Sentinel Card -->
+          <div data-id="91" class="product-card bg-bg-card rounded-xl p-6 border border-white/5" data-product="sentinel" data-scroll-to="sentinel" style="border-top: 4px solid var(--sentinel);">
+            <svg data-id="92" class="mb-4" width="44" height="44" viewBox="0 0 44 44" fill="none"><circle data-id="93" cx="22" cy="22" r="18" stroke="#ff6b35" stroke-width="2" fill="rgba(255,107,53,0.08)"/><circle data-id="94" cx="22" cy="22" r="6" stroke="#ff6b35" stroke-width="2"/><circle data-id="95" cx="22" cy="22" r="1.5" fill="#ff6b35"/><path data-id="96" d="M22 4v6M22 34v6M4 22h6M34 22h6" stroke="#ff6b35" stroke-width="1.5" opacity="0.5"/></svg>
+            <h3 data-id="97" class="text-xl font-bold mb-1" style="color:var(--sentinel)">SENTINEL</h3>
+            <p data-id="98" class="text-white font-semibold text-sm mb-2">AI-Powered Threat Detection &amp; Autonomous Response</p>
+            <p data-id="99" class="text-text-muted text-sm mb-4">Detects zero-day threats, reduces MTTD from hours to seconds.</p>
+            <span data-id="100" class="text-sm font-semibold" style="color:var(--sentinel)">Explore →</span>
+          </div>
+          <!-- Atlas Card -->
+          <div data-id="101" class="product-card bg-bg-card rounded-xl p-6 border border-white/5" data-product="atlas" data-scroll-to="atlas" style="border-top: 4px solid var(--atlas);">
+            <svg data-id="102" class="mb-4" width="44" height="44" viewBox="0 0 44 44" fill="none"><circle data-id="103" cx="22" cy="22" r="18" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.08)"/><circle data-id="104" cx="14" cy="18" r="2.5" fill="#00c8f8" opacity="0.7"/><circle data-id="105" cx="30" cy="16" r="2.5" fill="#00c8f8" opacity="0.7"/><circle data-id="106" cx="22" cy="30" r="2.5" fill="#00c8f8" opacity="0.7"/><line data-id="107" x1="14" y1="18" x2="30" y2="16" stroke="#00c8f8" stroke-width="1.5" opacity="0.4"/><line data-id="108" x1="30" y1="16" x2="22" y2="30" stroke="#00c8f8" stroke-width="1.5" opacity="0.4"/><line data-id="109" x1="22" y1="30" x2="14" y2="18" stroke="#00c8f8" stroke-width="1.5" opacity="0.4"/></svg>
+            <h3 data-id="110" class="text-xl font-bold mb-1" style="color:var(--atlas)">ATLAS</h3>
+            <p data-id="111" class="text-white font-semibold text-sm mb-2">Dynamic Network Mapping &amp; Attack Surface Intelligence</p>
+            <p data-id="112" class="text-text-muted text-sm mb-4">Real-time asset discovery, attack path simulation, continuous visibility.</p>
+            <span data-id="113" class="text-sm font-semibold" style="color:var(--atlas)">Explore →</span>
+          </div>
+          <!-- Forge Card -->
+          <div data-id="114" class="product-card bg-bg-card rounded-xl p-6 border border-white/5" data-product="forge" data-scroll-to="forge" style="border-top: 4px solid var(--forge);">
+            <svg data-id="115" class="mb-4" width="44" height="44" viewBox="0 0 44 44" fill="none"><circle data-id="116" cx="22" cy="22" r="18" stroke="#9b59ff" stroke-width="2" fill="rgba(155,89,255,0.08)"/><path data-id="117" d="M22 14a4 4 0 014 4v1h-8v-1a4 4 0 014-4z" stroke="#9b59ff" stroke-width="2"/><rect data-id="118" x="16" y="19" width="12" height="10" rx="2" stroke="#9b59ff" stroke-width="2"/><circle data-id="119" cx="22" cy="24" r="1.5" fill="#9b59ff"/></svg>
+            <h3 data-id="120" class="text-xl font-bold mb-1" style="color:var(--forge)">FORGE</h3>
+            <p data-id="121" class="text-white font-semibold text-sm mb-2">Integrated DevSecOps Security Pipeline</p>
+            <p data-id="122" class="text-text-muted text-sm mb-4">Shift-left security embedded in every commit, build, and deployment.</p>
+            <span data-id="123" class="text-sm font-semibold" style="color:var(--forge)">Explore →</span>
+          </div>
+          <!-- Quantum Vault Card -->
+          <div data-id="124" class="product-card bg-bg-card rounded-xl p-6 border border-white/5" data-product="vault" data-scroll-to="quantum-vault" style="border-top: 4px solid var(--vault);">
+            <svg data-id="125" class="mb-4" width="44" height="44" viewBox="0 0 44 44" fill="none"><circle data-id="126" cx="22" cy="22" r="18" stroke="#f5a623" stroke-width="2" fill="rgba(245,166,35,0.08)"/><ellipse data-id="127" cx="22" cy="22" rx="10" ry="4" stroke="#f5a623" stroke-width="1.5" fill="none"/><ellipse data-id="128" cx="22" cy="22" rx="4" ry="10" stroke="#f5a623" stroke-width="1.5" fill="none"/><circle data-id="129" cx="22" cy="22" r="2" fill="#f5a623"/></svg>
+            <h3 data-id="130" class="text-xl font-bold mb-1" style="color:var(--vault)">QUANTUM VAULT</h3>
+            <p data-id="131" class="text-white font-semibold text-sm mb-2">Post-Quantum Cryptographic Encryption</p>
+            <p data-id="132" class="text-text-muted text-sm mb-4">NIST-standardized PQC algorithms, crypto-agility, future-proof encryption.</p>
+            <span data-id="133" class="text-sm font-semibold" style="color:var(--vault)">Explore →</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRODUCT DEEP DIVES ═══ -->
+
+    <!-- SENTINEL DEEP DIVE -->
+    <section data-id="134" id="sentinel" class="py-20 md:py-28 section-fade" style="background:var(--bg-dark)">
+      <div data-id="135" class="max-w-[1200px] mx-auto px-5">
+        <div data-id="136" class="relative rounded-xl overflow-hidden p-8 md:p-10 mb-10" style="background: linear-gradient(135deg, rgba(255,107,53,0.12) 0%, rgba(255,107,53,0.03) 100%); border: 1px solid rgba(255,107,53,0.2);">
+          <span data-id="137" class="absolute top-2 right-6 text-[6rem] md:text-[8rem] font-black leading-none pointer-events-none select-none" style="color:rgba(255,107,53,0.07)">01</span>
+          <h2 data-id="138" class="text-3xl md:text-4xl font-bold text-white relative z-10">SENTINEL</h2>
+          <p data-id="139" class="text-lg relative z-10" style="color:var(--sentinel)">AI-Powered Threat Detection &amp; Autonomous Response</p>
+        </div>
+        <!-- Tabs -->
+        <div data-id="140" class="relative inline-flex bg-bg-card rounded-full p-1 mb-10 border border-white/5">
+          <div data-id="141" id="sentinel-slider" class="tab-slider absolute top-1 bottom-1 rounded-full" style="background:var(--sentinel);"></div>
+          <button data-id="142" class="tab-pill sentinel-tab active px-5 py-2 rounded-full text-sm font-semibold" data-tab="sentinel-value">Value Prop</button>
+          <button data-id="143" class="tab-pill sentinel-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="sentinel-features">Features</button>
+          <button data-id="144" class="tab-pill sentinel-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="sentinel-compare">vs Competition</button>
+        </div>
+        <!-- Value Prop -->
+        <div data-id="145" id="sentinel-value" class="tab-content active">
+          <div data-id="146" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-id="147">
+              <h3 data-id="148" class="text-xl font-bold text-white mb-4">Why Sentinel?</h3>
+              <div data-id="149" class="space-y-4">
+                <div data-id="150" class="flex gap-3"><svg data-id="151" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="152" cx="11" cy="11" r="10" fill="rgba(255,107,53,0.15)"/><path data-id="153" d="M7 11l3 3 5-6" stroke="#ff6b35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="154" class="text-text-muted text-sm">Detects zero-day threats using behavioral AI — not just signatures</p></div>
+                <div data-id="155" class="flex gap-3"><svg data-id="156" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="157" cx="11" cy="11" r="10" fill="rgba(255,107,53,0.15)"/><path data-id="158" d="M7 11l3 3 5-6" stroke="#ff6b35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="159" class="text-text-muted text-sm">Reduces mean time to detect (MTTD) from hours to seconds</p></div>
+                <div data-id="160" class="flex gap-3"><svg data-id="161" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="162" cx="11" cy="11" r="10" fill="rgba(255,107,53,0.15)"/><path data-id="163" d="M7 11l3 3 5-6" stroke="#ff6b35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="164" class="text-text-muted text-sm">Correlates signals across endpoints, cloud, OT/IoT in one unified view</p></div>
+              </div>
+            </div>
+            <div data-id="165">
+              <h3 data-id="166" class="text-xl font-bold text-white mb-4">Who It Serves</h3>
+              <div data-id="167" class="flex flex-wrap gap-2">
+                <span data-id="168" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Enterprise SOC teams overwhelmed by alert fatigue</span>
+                <span data-id="169" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">MSSPs managing security for multiple clients</span>
+                <span data-id="170" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Financial services, healthcare, and critical infrastructure</span>
+                <span data-id="171" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Organizations moving from reactive to proactive security</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Features -->
+        <div data-id="172" id="sentinel-features" class="tab-content">
+          <div data-id="173" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div data-id="174" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="175" class="font-bold text-white mb-2">Behavioral AI Engine</h4><p data-id="176" class="text-text-muted text-sm">Identifies novel attack patterns using deep learning on network telemetry.</p></div>
+            <div data-id="177" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="178" class="font-bold text-white mb-2">Sub-Second Detection</h4><p data-id="179" class="text-text-muted text-sm">Threat correlation and alerting in under 500ms at enterprise scale.</p></div>
+            <div data-id="180" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="181" class="font-bold text-white mb-2">Autonomous Playbooks</h4><p data-id="182" class="text-text-muted text-sm">Predefined and custom SOAR playbooks auto-contain threats without analyst intervention.</p></div>
+            <div data-id="183" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="184" class="font-bold text-white mb-2">Unified Telemetry</h4><p data-id="185" class="text-text-muted text-sm">Ingests logs from 300+ sources: endpoints, SIEM, cloud, OT, identity providers.</p></div>
+            <div data-id="186" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="187" class="font-bold text-white mb-2">Threat Intelligence Fusion</h4><p data-id="188" class="text-text-muted text-sm">Real-time integration with global threat feeds (MISP, ISACs, dark web).</p></div>
+            <div data-id="189" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--sentinel)"><h4 data-id="190" class="font-bold text-white mb-2">MITRE ATT&amp;CK Mapping</h4><p data-id="191" class="text-text-muted text-sm">Every alert mapped to ATT&amp;CK tactics and techniques for context-rich investigations.</p></div>
+          </div>
+        </div>
+        <!-- Comparison -->
+        <div data-id="192" id="sentinel-compare" class="tab-content">
+          <div data-id="193" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div data-id="194" class="rounded-xl p-6" style="background:rgba(200,50,50,0.06); border:1px solid rgba(200,50,50,0.15);">
+              <h4 data-id="195" class="font-bold text-red-400 mb-4 text-center">Legacy SIEM</h4>
+              <div data-id="196" class="space-y-1">
+                <div data-id="197" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="198" class="text-red-400 font-bold">✗</span> Rule-based detection misses novel threats</div>
+                <div data-id="199" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="200" class="text-red-400 font-bold">✗</span> Requires months of tuning before delivering value</div>
+                <div data-id="201" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="202" class="text-red-400 font-bold">✗</span> Alert fatigue — 10,000+ false positives daily</div>
+                <div data-id="203" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="204" class="text-red-400 font-bold">✗</span> No automated response — analysts do everything manually</div>
+                <div data-id="205" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="206" class="text-red-400 font-bold">✗</span> Rigid on-premise architecture can't scale to cloud</div>
+              </div>
+            </div>
+            <div data-id="207" class="rounded-xl p-6" style="background:rgba(255,107,53,0.06); border:1px solid rgba(255,107,53,0.2);">
+              <h4 data-id="208" class="font-bold mb-4 text-center" style="color:var(--sentinel)">Sentinel</h4>
+              <div data-id="209" class="space-y-1">
+                <div data-id="210" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="211" style="color:var(--sentinel)" class="font-bold">✓</span> AI-driven behavioral detection — no rules required</div>
+                <div data-id="212" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="213" style="color:var(--sentinel)" class="font-bold">✓</span> Deploys in hours, returns value in days</div>
+                <div data-id="214" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="215" style="color:var(--sentinel)" class="font-bold">✓</span> 98.7% alert fidelity — precision over volume</div>
+                <div data-id="216" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="217" style="color:var(--sentinel)" class="font-bold">✓</span> Autonomous response cuts analyst toil by 70%</div>
+                <div data-id="218" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="219" style="color:var(--sentinel)" class="font-bold">✓</span> Cloud-native, elastic — scales to petabytes per day</div>
+              </div>
+            </div>
+          </div>
+          <div data-id="220" class="mt-6 text-center py-3 px-4 rounded-lg text-sm" style="background:rgba(255,107,53,0.08); border:1px solid rgba(255,107,53,0.2); color:var(--sentinel);">
+            Sentinel customers report <strong data-id="221">60% reduction in breach dwell time</strong> within 90 days.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATLAS DEEP DIVE -->
+    <section data-id="222" id="atlas" class="py-20 md:py-28 section-fade">
+      <div data-id="223" class="max-w-[1200px] mx-auto px-5">
+        <div data-id="224" class="relative rounded-xl overflow-hidden p-8 md:p-10 mb-10" style="background: linear-gradient(135deg, rgba(0,200,248,0.12) 0%, rgba(0,200,248,0.03) 100%); border: 1px solid rgba(0,200,248,0.2);">
+          <span data-id="225" class="absolute top-2 right-6 text-[6rem] md:text-[8rem] font-black leading-none pointer-events-none select-none" style="color:rgba(0,200,248,0.07)">02</span>
+          <h2 data-id="226" class="text-3xl md:text-4xl font-bold text-white relative z-10">ATLAS</h2>
+          <p data-id="227" class="text-lg relative z-10" style="color:var(--atlas)">Dynamic Network Mapping &amp; Attack Surface Intelligence</p>
+        </div>
+        <div data-id="228" class="relative inline-flex bg-bg-card rounded-full p-1 mb-10 border border-white/5">
+          <div data-id="229" id="atlas-slider" class="tab-slider absolute top-1 bottom-1 rounded-full" style="background:var(--atlas);"></div>
+          <button data-id="230" class="tab-pill atlas-tab active px-5 py-2 rounded-full text-sm font-semibold" data-tab="atlas-value">Value Prop</button>
+          <button data-id="231" class="tab-pill atlas-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="atlas-features">Features</button>
+          <button data-id="232" class="tab-pill atlas-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="atlas-compare">vs Competition</button>
+        </div>
+        <div data-id="233" id="atlas-value" class="tab-content active">
+          <div data-id="234" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-id="235"><h3 data-id="236" class="text-xl font-bold text-white mb-4">Why ATLAS?</h3>
+              <div data-id="237" class="space-y-4">
+                <div data-id="238" class="flex gap-3"><svg data-id="239" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="240" cx="11" cy="11" r="10" fill="rgba(0,200,248,0.15)"/><path data-id="241" d="M7 11l3 3 5-6" stroke="#00c8f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="242" class="text-text-muted text-sm">Delivers a living, auto-updating map of every asset, connection, and exposure</p></div>
+                <div data-id="243" class="flex gap-3"><svg data-id="244" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="245" cx="11" cy="11" r="10" fill="rgba(0,200,248,0.15)"/><path data-id="246" d="M7 11l3 3 5-6" stroke="#00c8f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="247" class="text-text-muted text-sm">Identifies lateral movement paths and blast-radius risk before attackers exploit them</p></div>
+                <div data-id="248" class="flex gap-3"><svg data-id="249" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="250" cx="11" cy="11" r="10" fill="rgba(0,200,248,0.15)"/><path data-id="251" d="M7 11l3 3 5-6" stroke="#00c8f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="252" class="text-text-muted text-sm">Discovers shadow IT, unmanaged devices, and cloud sprawl automatically</p></div>
+              </div>
+            </div>
+            <div data-id="253"><h3 data-id="254" class="text-xl font-bold text-white mb-4">Who It Serves</h3>
+              <div data-id="255" class="flex flex-wrap gap-2">
+                <span data-id="256" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Network security engineers and IT operations teams</span>
+                <span data-id="257" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Red team and penetration testing professionals</span>
+                <span data-id="258" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Compliance officers needing real-time asset inventory</span>
+                <span data-id="259" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Enterprises managing hybrid, multi-cloud environments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-id="260" id="atlas-features" class="tab-content">
+          <div data-id="261" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div data-id="262" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="263" class="font-bold text-white mb-2">Continuous Discovery</h4><p data-id="264" class="text-text-muted text-sm">Passive and active scanning detects every device, service, and connection in real time.</p></div>
+            <div data-id="265" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="266" class="font-bold text-white mb-2">Topology Visualization</h4><p data-id="267" class="text-text-muted text-sm">Interactive 3D network maps with drill-down into segments, VLANs, and cloud VPCs.</p></div>
+            <div data-id="268" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="269" class="font-bold text-white mb-2">Attack Path Analysis</h4><p data-id="270" class="text-text-muted text-sm">Simulates adversary lateral movement to expose critical chokepoints and blast radii.</p></div>
+            <div data-id="271" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="272" class="font-bold text-white mb-2">Change Detection</h4><p data-id="273" class="text-text-muted text-sm">Instant alerts when topology changes unexpectedly, flagging unauthorized access or misconfigs.</p></div>
+            <div data-id="274" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="275" class="font-bold text-white mb-2">Risk Scoring</h4><p data-id="276" class="text-text-muted text-sm">Each asset and path assigned a dynamic risk score based on exposure, criticality, and threat context.</p></div>
+            <div data-id="277" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--atlas)"><h4 data-id="278" class="font-bold text-white mb-2">Multi-Cloud Coverage</h4><p data-id="279" class="text-text-muted text-sm">Native integration with AWS, Azure, GCP, and Kubernetes for unified hybrid visibility.</p></div>
+          </div>
+        </div>
+        <div data-id="280" id="atlas-compare" class="tab-content">
+          <div data-id="281" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div data-id="282" class="rounded-xl p-6" style="background:rgba(200,150,50,0.06); border:1px solid rgba(200,150,50,0.15);">
+              <h4 data-id="283" class="font-bold text-yellow-500 mb-4 text-center">Traditional Scanners</h4>
+              <div data-id="284" class="space-y-1">
+                <div data-id="285" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="286" class="text-red-400 font-bold">✗</span> Weekly or monthly scan cycles leave blind spots for days</div>
+                <div data-id="287" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="288" class="text-red-400 font-bold">✗</span> No context — raw IP lists with no risk prioritization</div>
+                <div data-id="289" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="290" class="text-red-400 font-bold">✗</span> Cannot discover cloud resources or containerized workloads</div>
+                <div data-id="291" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="292" class="text-red-400 font-bold">✗</span> No attack path simulation — just asset inventory</div>
+                <div data-id="293" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="294" class="text-red-400 font-bold">✗</span> Generates noise without actionable intelligence</div>
+              </div>
+            </div>
+            <div data-id="295" class="rounded-xl p-6" style="background:rgba(0,200,248,0.06); border:1px solid rgba(0,200,248,0.2);">
+              <h4 data-id="296" class="font-bold mb-4 text-center" style="color:var(--atlas)">ATLAS</h4>
+              <div data-id="297" class="space-y-1">
+                <div data-id="298" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="299" style="color:var(--atlas)" class="font-bold">✓</span> Continuous, passive discovery — real-time topology at all times</div>
+                <div data-id="300" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="301" style="color:var(--atlas)" class="font-bold">✓</span> Risk-scored, business-context-aware asset prioritization</div>
+                <div data-id="302" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="303" style="color:var(--atlas)" class="font-bold">✓</span> Native cloud and container discovery across all major platforms</div>
+                <div data-id="304" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="305" style="color:var(--atlas)" class="font-bold">✓</span> Attack path simulation with blast-radius modeling</div>
+                <div data-id="306" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="307" style="color:var(--atlas)" class="font-bold">✓</span> Integrates with Sentinel, CMDB, and ticketing for closed-loop response</div>
+              </div>
+            </div>
+          </div>
+          <div data-id="308" class="mt-6 text-center py-3 px-4 rounded-lg text-sm" style="background:rgba(0,200,248,0.08); border:1px solid rgba(0,200,248,0.2); color:var(--atlas);">
+            ATLAS customers discover <strong data-id="309">40% more assets</strong> than their existing CMDB records on first scan.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORGE DEEP DIVE -->
+    <section data-id="310" id="forge" class="py-20 md:py-28 section-fade" style="background:var(--bg-dark)">
+      <div data-id="311" class="max-w-[1200px] mx-auto px-5">
+        <div data-id="312" class="relative rounded-xl overflow-hidden p-8 md:p-10 mb-10" style="background: linear-gradient(135deg, rgba(155,89,255,0.12) 0%, rgba(155,89,255,0.03) 100%); border: 1px solid rgba(155,89,255,0.2);">
+          <span data-id="313" class="absolute top-2 right-6 text-[6rem] md:text-[8rem] font-black leading-none pointer-events-none select-none" style="color:rgba(155,89,255,0.07)">03</span>
+          <h2 data-id="314" class="text-3xl md:text-4xl font-bold text-white relative z-10">FORGE</h2>
+          <p data-id="315" class="text-lg relative z-10" style="color:var(--forge)">Integrated DevSecOps Security Pipeline</p>
+        </div>
+        <div data-id="316" class="relative inline-flex bg-bg-card rounded-full p-1 mb-10 border border-white/5">
+          <div data-id="317" id="forge-slider" class="tab-slider absolute top-1 bottom-1 rounded-full" style="background:var(--forge);"></div>
+          <button data-id="318" class="tab-pill forge-tab active px-5 py-2 rounded-full text-sm font-semibold" data-tab="forge-value">Value Prop</button>
+          <button data-id="319" class="tab-pill forge-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="forge-features">Features</button>
+          <button data-id="320" class="tab-pill forge-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="forge-compare">vs Competition</button>
+        </div>
+        <div data-id="321" id="forge-value" class="tab-content active">
+          <div data-id="322" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-id="323"><h3 data-id="324" class="text-xl font-bold text-white mb-4">Why FORGE?</h3>
+              <div data-id="325" class="space-y-4">
+                <div data-id="326" class="flex gap-3"><svg data-id="327" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="328" cx="11" cy="11" r="10" fill="rgba(155,89,255,0.15)"/><path data-id="329" d="M7 11l3 3 5-6" stroke="#9b59ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="330" class="text-text-muted text-sm">Embeds security checks directly into CI/CD pipelines — catching vulnerabilities before production</p></div>
+                <div data-id="331" class="flex gap-3"><svg data-id="332" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="333" cx="11" cy="11" r="10" fill="rgba(155,89,255,0.15)"/><path data-id="334" d="M7 11l3 3 5-6" stroke="#9b59ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="335" class="text-text-muted text-sm">Automates SAST, DAST, SCA, and IaC scanning in developer-native workflows</p></div>
+                <div data-id="336" class="flex gap-3"><svg data-id="337" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="338" cx="11" cy="11" r="10" fill="rgba(155,89,255,0.15)"/><path data-id="339" d="M7 11l3 3 5-6" stroke="#9b59ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="340" class="text-text-muted text-sm">Reduces remediation cost by catching issues 100× earlier in the development lifecycle</p></div>
+              </div>
+            </div>
+            <div data-id="341"><h3 data-id="342" class="text-xl font-bold text-white mb-4">Who It Serves</h3>
+              <div data-id="343" class="flex flex-wrap gap-2">
+                <span data-id="344" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Application security engineers and DevOps teams</span>
+                <span data-id="345" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Software companies with high-velocity release cycles</span>
+                <span data-id="346" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Regulated industries requiring SOC 2, PCI-DSS, ISO 27001</span>
+                <span data-id="347" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Enterprises adopting cloud-native and microservices architectures</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-id="348" id="forge-features" class="tab-content">
+          <div data-id="349" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div data-id="350" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="351" class="font-bold text-white mb-2">SAST / DAST Integration</h4><p data-id="352" class="text-text-muted text-sm">Static and dynamic analysis runs automatically on every pull request and build.</p></div>
+            <div data-id="353" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="354" class="font-bold text-white mb-2">SCA &amp; Dependency Scanning</h4><p data-id="355" class="text-text-muted text-sm">Detects vulnerable open-source libraries with CVSS-scored remediation guidance.</p></div>
+            <div data-id="356" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="357" class="font-bold text-white mb-2">IaC Security Scanning</h4><p data-id="358" class="text-text-muted text-sm">Scans Terraform, CloudFormation, and Helm charts for misconfigurations before deployment.</p></div>
+            <div data-id="359" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="360" class="font-bold text-white mb-2">Secret Detection</h4><p data-id="361" class="text-text-muted text-sm">Identifies exposed credentials, API keys, and tokens across repos and build logs.</p></div>
+            <div data-id="362" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="363" class="font-bold text-white mb-2">Policy-as-Code Engine</h4><p data-id="364" class="text-text-muted text-sm">Define security gates as code; enforce pass/fail criteria per branch or environment.</p></div>
+            <div data-id="365" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--forge)"><h4 data-id="366" class="font-bold text-white mb-2">Developer-Friendly Reporting</h4><p data-id="367" class="text-text-muted text-sm">Inline IDE feedback, PR comments, and JIRA integration for zero-friction remediation.</p></div>
+          </div>
+        </div>
+        <div data-id="368" id="forge-compare" class="tab-content">
+          <div data-id="369" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div data-id="370" class="rounded-xl p-6" style="background:rgba(200,50,50,0.06); border:1px solid rgba(200,50,50,0.15);">
+              <h4 data-id="371" class="font-bold text-red-400 mb-4 text-center">Bolt-On Security</h4>
+              <div data-id="372" class="space-y-1">
+                <div data-id="373" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="374" class="text-red-400 font-bold">✗</span> Security reviews happen at end of sprint, blocking releases</div>
+                <div data-id="375" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="376" class="text-red-400 font-bold">✗</span> Developers context-switch to a separate security portal</div>
+                <div data-id="377" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="378" class="text-red-400 font-bold">✗</span> No prioritization — developers face 500+ findings with no guidance</div>
+                <div data-id="379" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="380" class="text-red-400 font-bold">✗</span> IaC and secrets not covered by traditional scanners</div>
+                <div data-id="381" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="382" class="text-red-400 font-bold">✗</span> No policy enforcement — findings are recommendations, not gates</div>
+              </div>
+            </div>
+            <div data-id="383" class="rounded-xl p-6" style="background:rgba(155,89,255,0.06); border:1px solid rgba(155,89,255,0.2);">
+              <h4 data-id="384" class="font-bold mb-4 text-center" style="color:var(--forge)">FORGE</h4>
+              <div data-id="385" class="space-y-1">
+                <div data-id="386" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="387" style="color:var(--forge)" class="font-bold">✓</span> Security runs inline with every commit — zero release delays</div>
+                <div data-id="388" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="389" style="color:var(--forge)" class="font-bold">✓</span> Native IDE plugins and PR comments keep devs in flow</div>
+                <div data-id="390" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="391" style="color:var(--forge)" class="font-bold">✓</span> AI-driven prioritization shows top 10 critical findings per build</div>
+                <div data-id="392" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="393" style="color:var(--forge)" class="font-bold">✓</span> Full coverage: SAST, DAST, SCA, IaC, secrets, and containers</div>
+                <div data-id="394" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="395" style="color:var(--forge)" class="font-bold">✓</span> Configurable policy gates enforce standards automatically</div>
+              </div>
+            </div>
+          </div>
+          <div data-id="396" class="mt-6 text-center py-3 px-4 rounded-lg text-sm" style="background:rgba(155,89,255,0.08); border:1px solid rgba(155,89,255,0.2); color:var(--forge);">
+            FORGE reduces vulnerability discovery-to-fix time from <strong data-id="397">148 days to under 5</strong>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUANTUM VAULT DEEP DIVE -->
+    <section data-id="398" id="quantum-vault" class="py-20 md:py-28 section-fade">
+      <div data-id="399" class="max-w-[1200px] mx-auto px-5">
+        <div data-id="400" class="relative rounded-xl overflow-hidden p-8 md:p-10 mb-10" style="background: linear-gradient(135deg, rgba(245,166,35,0.12) 0%, rgba(245,166,35,0.03) 100%); border: 1px solid rgba(245,166,35,0.2);">
+          <span data-id="401" class="absolute top-2 right-6 text-[6rem] md:text-[8rem] font-black leading-none pointer-events-none select-none" style="color:rgba(245,166,35,0.07)">04</span>
+          <h2 data-id="402" class="text-3xl md:text-4xl font-bold text-white relative z-10">QUANTUM VAULT</h2>
+          <p data-id="403" class="text-lg relative z-10" style="color:var(--vault)">Post-Quantum Cryptographic Encryption</p>
+        </div>
+        <div data-id="404" class="relative inline-flex bg-bg-card rounded-full p-1 mb-10 border border-white/5">
+          <div data-id="405" id="vault-slider" class="tab-slider absolute top-1 bottom-1 rounded-full" style="background:var(--vault);"></div>
+          <button data-id="406" class="tab-pill vault-tab active px-5 py-2 rounded-full text-sm font-semibold" data-tab="vault-value">Value Prop</button>
+          <button data-id="407" class="tab-pill vault-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="vault-features">Features</button>
+          <button data-id="408" class="tab-pill vault-tab px-5 py-2 rounded-full text-sm font-semibold text-text-muted" data-tab="vault-compare">vs Competition</button>
+        </div>
+        <div data-id="409" id="vault-value" class="tab-content active">
+          <div data-id="410" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-id="411"><h3 data-id="412" class="text-xl font-bold text-white mb-4">Why Quantum Vault?</h3>
+              <div data-id="413" class="space-y-4">
+                <div data-id="414" class="flex gap-3"><svg data-id="415" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="416" cx="11" cy="11" r="10" fill="rgba(245,166,35,0.15)"/><path data-id="417" d="M7 11l3 3 5-6" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="418" class="text-text-muted text-sm">Implements NIST-standardized post-quantum algorithms (CRYSTALS-Kyber, CRYSTALS-Dilithium)</p></div>
+                <div data-id="419" class="flex gap-3"><svg data-id="420" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="421" cx="11" cy="11" r="10" fill="rgba(245,166,35,0.15)"/><path data-id="422" d="M7 11l3 3 5-6" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="423" class="text-text-muted text-sm">Provides crypto-agility — swap algorithms without changing applications or infrastructure</p></div>
+                <div data-id="424" class="flex gap-3"><svg data-id="425" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle data-id="426" cx="11" cy="11" r="10" fill="rgba(245,166,35,0.15)"/><path data-id="427" d="M7 11l3 3 5-6" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><p data-id="428" class="text-text-muted text-sm">Protects sensitive long-lived data that adversaries are harvesting today to decrypt later</p></div>
+              </div>
+            </div>
+            <div data-id="429"><h3 data-id="430" class="text-xl font-bold text-white mb-4">Who It Serves</h3>
+              <div data-id="431" class="flex flex-wrap gap-2">
+                <span data-id="432" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Government agencies and defense contractors</span>
+                <span data-id="433" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Financial institutions and banking infrastructure</span>
+                <span data-id="434" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Healthcare systems with long-retention patient records</span>
+                <span data-id="435" class="px-3 py-2 bg-bg-card rounded-lg text-sm text-text-muted border border-white/5">Any enterprise with data that must remain confidential 10+ years</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-id="436" id="vault-features" class="tab-content">
+          <div data-id="437" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div data-id="438" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="439" class="font-bold text-white mb-2">PQC Algorithm Suite</h4><p data-id="440" class="text-text-muted text-sm">Full NIST PQC standards: CRYSTALS-Kyber (KEM), CRYSTALS-Dilithium (signatures), SPHINCS+.</p></div>
+            <div data-id="441" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="442" class="font-bold text-white mb-2">Enterprise Key Management</h4><p data-id="443" class="text-text-muted text-sm">Centralized HSM-backed key lifecycle management with full audit trails.</p></div>
+            <div data-id="444" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="445" class="font-bold text-white mb-2">Crypto-Agility Layer</h4><p data-id="446" class="text-text-muted text-sm">Middleware abstraction that lets applications swap crypto primitives without code changes.</p></div>
+            <div data-id="447" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="448" class="font-bold text-white mb-2">Hybrid Classical-PQC Mode</h4><p data-id="449" class="text-text-muted text-sm">Dual-layer encryption combining RSA/ECC with PQC for transition-period safety.</p></div>
+            <div data-id="450" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="451" class="font-bold text-white mb-2">TLS 1.3 + PQC Integration</h4><p data-id="452" class="text-text-muted text-sm">Drop-in library for securing web, API, and microservice communications post-quantum.</p></div>
+            <div data-id="453" class="feature-card bg-bg-card rounded-xl p-5 border border-white/5" style="border-top:3px solid var(--vault)"><h4 data-id="454" class="font-bold text-white mb-2">FIPS 140-3 Validated</h4><p data-id="455" class="text-text-muted text-sm">Meets federal and regulated-industry cryptographic module requirements.</p></div>
+          </div>
+        </div>
+        <div data-id="456" id="vault-compare" class="tab-content">
+          <div data-id="457" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div data-id="458" class="rounded-xl p-6" style="background:rgba(200,50,50,0.06); border:1px solid rgba(200,50,50,0.15);">
+              <h4 data-id="459" class="font-bold text-red-400 mb-4 text-center">Classical Encryption</h4>
+              <div data-id="460" class="space-y-1">
+                <div data-id="461" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="462" class="text-red-400 font-bold">✗</span> RSA and ECC vulnerable to Shor's algorithm on future quantum computers</div>
+                <div data-id="463" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="464" class="text-red-400 font-bold">✗</span> Harvest-now-decrypt-later attacks are already collecting encrypted data</div>
+                <div data-id="465" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="466" class="text-red-400 font-bold">✗</span> No crypto-agility — algorithm changes require full application rewrites</div>
+                <div data-id="467" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="468" class="text-red-400 font-bold">✗</span> Key management silos across business units create governance gaps</div>
+                <div data-id="469" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="470" class="text-red-400 font-bold">✗</span> No migration path — organizations face a hard cutover under pressure</div>
+              </div>
+            </div>
+            <div data-id="471" class="rounded-xl p-6" style="background:rgba(245,166,35,0.06); border:1px solid rgba(245,166,35,0.2);">
+              <h4 data-id="472" class="font-bold mb-4 text-center" style="color:var(--vault)">Quantum Vault</h4>
+              <div data-id="473" class="space-y-1">
+                <div data-id="474" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="475" style="color:var(--vault)" class="font-bold">✓</span> NIST-standardized PQC — mathematically secure against quantum attacks</div>
+                <div data-id="476" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="477" style="color:var(--vault)" class="font-bold">✓</span> Protects data today against future harvesting — zero exposure window</div>
+                <div data-id="478" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="479" style="color:var(--vault)" class="font-bold">✓</span> Crypto-agility middleware: algorithm changes in config, not code</div>
+                <div data-id="480" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="481" style="color:var(--vault)" class="font-bold">✓</span> Unified key management across all environments and applications</div>
+                <div data-id="482" class="comparison-item flex gap-2 text-sm text-text-muted"><span data-id="483" style="color:var(--vault)" class="font-bold">✓</span> Phased migration toolkit with classical-PQC hybrid mode</div>
+              </div>
+            </div>
+          </div>
+          <div data-id="484" class="mt-6 text-center py-3 px-4 rounded-lg text-sm" style="background:rgba(245,166,35,0.08); border:1px solid rgba(245,166,35,0.2); color:var(--vault);">
+            NIST estimates 2030–2035 as the critical migration window. Quantum Vault enables completion in <strong data-id="485">6 months</strong>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE SECTION -->
+    <section data-id="486" id="architecture" class="py-20 md:py-28 section-fade" style="background:var(--bg-dark)">
+      <div data-id="487" class="max-w-[1200px] mx-auto px-5">
+        <h2 data-id="488" class="text-3xl md:text-4xl font-bold text-center text-white mb-3">The CyberShield Integrated Architecture</h2>
+        <p data-id="489" class="text-text-muted text-center max-w-2xl mx-auto mb-14">Four products that work independently — and are exponentially more powerful together.</p>
+
+        <div data-id="490" class="overflow-x-auto mb-10">
+          <svg data-id="491" class="arch-svg w-full" viewBox="0 0 900 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="min-width:600px;">
+            <!-- Flow lines -->
+            <line data-id="492" x1="175" y1="65" x2="295" y2="65" stroke="#00c8f8" stroke-width="2" stroke-dasharray="6 4" class="flow-line" opacity="0.5"/>
+            <line data-id="493" x1="415" y1="65" x2="515" y2="65" stroke="#00c8f8" stroke-width="2" stroke-dasharray="6 4" class="flow-line" opacity="0.5"/>
+            <line data-id="494" x1="635" y1="65" x2="725" y2="65" stroke="#00c8f8" stroke-width="2" stroke-dasharray="6 4" class="flow-line" opacity="0.5"/>
+            <!-- Arrows -->
+            <polygon data-id="495" points="293,60 303,65 293,70" fill="#00c8f8" opacity="0.5"/>
+            <polygon data-id="496" points="513,60 523,65 513,70" fill="#00c8f8" opacity="0.5"/>
+            <polygon data-id="497" points="723,60 733,65 723,70" fill="#00c8f8" opacity="0.5"/>
+
+            <!-- SENTINEL node -->
+            <g data-id="498" class="arch-node" data-target="sentinel" style="color:#ff6b35">
+              <rect data-id="499" x="55" y="30" width="120" height="70" rx="12" fill="#0e1e3a" stroke="#ff6b35" stroke-width="2"/>
+              <circle data-id="500" cx="90" cy="58" r="8" fill="rgba(255,107,53,0.2)" stroke="#ff6b35" stroke-width="1.5"/>
+              <circle data-id="501" cx="90" cy="58" r="2" fill="#ff6b35"/>
+              <text data-id="502" x="108" y="63" fill="#ff6b35" font-size="12" font-weight="bold">SENTINEL</text>
+            </g>
+            <!-- ATLAS node -->
+            <g data-id="503" class="arch-node" data-target="atlas" style="color:#00c8f8">
+              <rect data-id="504" x="295" y="30" width="120" height="70" rx="12" fill="#0e1e3a" stroke="#00c8f8" stroke-width="2"/>
+              <circle data-id="505" cx="330" cy="58" r="8" fill="rgba(0,200,248,0.2)" stroke="#00c8f8" stroke-width="1.5"/>
+              <circle data-id="506" cx="330" cy="58" r="2" fill="#00c8f8"/>
+              <text data-id="507" x="348" y="63" fill="#00c8f8" font-size="12" font-weight="bold">ATLAS</text>
+            </g>
+            <!-- FORGE node -->
+            <g data-id="508" class="arch-node" data-target="forge" style="color:#9b59ff">
+              <rect data-id="509" x="515" y="30" width="120" height="70" rx="12" fill="#0e1e3a" stroke="#9b59ff" stroke-width="2"/>
+              <circle data-id="510" cx="550" cy="58" r="8" fill="rgba(155,89,255,0.2)" stroke="#9b59ff" stroke-width="1.5"/>
+              <circle data-id="511" cx="550" cy="58" r="2" fill="#9b59ff"/>
+              <text data-id="512" x="568" y="63" fill="#9b59ff" font-size="12" font-weight="bold">FORGE</text>
+            </g>
+            <!-- QUANTUM VAULT node -->
+            <g data-id="513" class="arch-node" data-target="quantum-vault" style="color:#f5a623">
+              <rect data-id="514" x="725" y="30" width="120" height="70" rx="12" fill="#0e1e3a" stroke="#f5a623" stroke-width="2"/>
+              <circle data-id="515" cx="760" cy="58" r="8" fill="rgba(245,166,35,0.2)" stroke="#f5a623" stroke-width="1.5"/>
+              <circle data-id="516" cx="760" cy="58" r="2" fill="#f5a623"/>
+              <text data-id="517" x="778" y="55" fill="#f5a623" font-size="10" font-weight="bold">QUANTUM</text>
+              <text data-id="518" x="778" y="68" fill="#f5a623" font-size="10" font-weight="bold">VAULT</text>
+            </g>
+
+            <!-- Vertical connection lines -->
+            <line data-id="519" x1="115" y1="100" x2="115" y2="160" stroke="#00c8f8" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line" opacity="0.3"/>
+            <line data-id="520" x1="355" y1="100" x2="355" y2="160" stroke="#00c8f8" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line" opacity="0.3"/>
+            <line data-id="521" x1="575" y1="100" x2="575" y2="160" stroke="#00c8f8" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line" opacity="0.3"/>
+            <line data-id="522" x1="785" y1="100" x2="785" y2="160" stroke="#00c8f8" stroke-width="1.5" stroke-dasharray="4 3" class="flow-line" opacity="0.3"/>
+
+            <!-- Shared Intelligence Layer -->
+            <rect data-id="523" x="40" y="160" width="820" height="65" rx="12" fill="#0e1e3a" stroke="#00c8f8" stroke-width="1.5" opacity="0.8"/>
+            <text data-id="524" x="450" y="186" fill="#00c8f8" font-size="13" font-weight="bold" text-anchor="middle">Shared Intelligence Layer</text>
+            <text data-id="525" x="450" y="210" fill="#7aa4cc" font-size="10" text-anchor="middle">Unified Threat Graph  ·  Common Data Model  ·  Single API Fabric  ·  Centralized Audit &amp; Compliance</text>
+          </svg>
+        </div>
+
+        <!-- Integration cards -->
+        <div data-id="526" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div data-id="527" class="integration-card bg-bg-card rounded-xl p-5">
+            <div data-id="528" class="flex gap-2 mb-2">
+              <span data-id="529" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(255,107,53,0.15); color:var(--sentinel)">Sentinel</span>
+              <span data-id="530" class="text-text-muted text-xs">+</span>
+              <span data-id="531" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(0,200,248,0.15); color:var(--atlas)">Atlas</span>
+            </div>
+            <p data-id="532" class="text-text-muted text-sm">ATLAS feeds real-time network topology into SENTINEL, providing attack-path context for every threat alert.</p>
+          </div>
+          <div data-id="533" class="integration-card bg-bg-card rounded-xl p-5">
+            <div data-id="534" class="flex gap-2 mb-2">
+              <span data-id="535" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(255,107,53,0.15); color:var(--sentinel)">Sentinel</span>
+              <span data-id="536" class="text-text-muted text-xs">+</span>
+              <span data-id="537" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(155,89,255,0.15); color:var(--forge)">Forge</span>
+            </div>
+            <p data-id="538" class="text-text-muted text-sm">FORGE policy violations trigger SENTINEL alerts; SENTINEL threat data gates FORGE deployments.</p>
+          </div>
+          <div data-id="539" class="integration-card bg-bg-card rounded-xl p-5">
+            <div data-id="540" class="flex gap-2 mb-2">
+              <span data-id="541" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(0,200,248,0.15); color:var(--atlas)">Atlas</span>
+              <span data-id="542" class="text-text-muted text-xs">+</span>
+              <span data-id="543" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(155,89,255,0.15); color:var(--forge)">Forge</span>
+            </div>
+            <p data-id="544" class="text-text-muted text-sm">FORGE uses ATLAS runtime maps to correlate static code risks with live infrastructure exposure.</p>
+          </div>
+          <div data-id="545" class="integration-card bg-bg-card rounded-xl p-5">
+            <div data-id="546" class="flex gap-2 mb-2">
+              <span data-id="547" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(0,200,248,0.15); color:var(--accent-cyan)">All Products</span>
+              <span data-id="548" class="text-text-muted text-xs">+</span>
+              <span data-id="549" class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(245,166,35,0.15); color:var(--vault)">Quantum Vault</span>
+            </div>
+            <p data-id="550" class="text-text-muted text-sm">QUANTUM VAULT encrypts all inter-product telemetry, ensuring the security fabric itself is quantum-safe.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY CYBERSHIELD -->
+    <section data-id="551" id="why-section-w1" class="py-20 md:py-28 section-fade">
+      <div data-id="552" class="max-w-[1200px] mx-auto px-5">
+        <h2 data-id="553" class="text-3xl md:text-4xl font-bold text-center text-white mb-14">Why CyberShield Suite</h2>
+        <div data-id="554" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div data-id="555" class="takeaway-card bg-bg-card rounded-xl p-6">
+            <span data-id="556" class="text-3xl font-black block mb-2" style="color:var(--accent-cyan); opacity:0.4">01</span>
+            <h3 data-id="557" class="text-lg font-bold text-white mb-2">Complete Coverage</h3>
+            <p data-id="558" class="text-text-muted text-sm">Four integrated products eliminate security gaps across detection, visibility, development, and encryption.</p>
+          </div>
+          <div data-id="559" class="takeaway-card bg-bg-card rounded-xl p-6 md:mt-10">
+            <span data-id="560" class="text-3xl font-black block mb-2" style="color:var(--accent-cyan); opacity:0.4">02</span>
+            <h3 data-id="561" class="text-lg font-bold text-white mb-2">AI-Native Intelligence</h3>
+            <p data-id="562" class="text-text-muted text-sm">Machine learning runs through every product layer — from behavioral detection to risk scoring.</p>
+          </div>
+          <div data-id="563" class="takeaway-card bg-bg-card rounded-xl p-6">
+            <span data-id="564" class="text-3xl font-black block mb-2" style="color:var(--accent-cyan); opacity:0.4">03</span>
+            <h3 data-id="565" class="text-lg font-bold text-white mb-2">Unified Threat Graph</h3>
+            <p data-id="566" class="text-text-muted text-sm">A shared intelligence layer connects all four products, delivering cross-product context no point solution can match.</p>
+          </div>
+          <div data-id="567" class="takeaway-card bg-bg-card rounded-xl p-6 md:mt-10">
+            <span data-id="568" class="text-3xl font-black block mb-2" style="color:var(--accent-cyan); opacity:0.4">04</span>
+            <h3 data-id="569" class="text-lg font-bold text-white mb-2">Future-Proof by Design</h3>
+            <p data-id="570" class="text-text-muted text-sm">Quantum Vault and FORGE's policy-as-code engine ensure the suite grows with the threat landscape.</p>
+          </div>
+          <div data-id="571" class="takeaway-card bg-bg-card rounded-xl p-6 md:col-span-2 md:max-w-xl md:mx-auto">
+            <span data-id="572" class="text-3xl font-black block mb-2" style="color:var(--accent-cyan); opacity:0.4">05</span>
+            <h3 data-id="573" class="text-lg font-bold text-white mb-2">Proven ROI</h3>
+            <p data-id="574" class="text-text-muted text-sm">Customers report 60% reduction in breach dwell time, 70% analyst toil reduction, and 5-day MTTF from 148 days.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section data-id="575" id="contact" class="py-20 md:py-28 section-fade relative overflow-hidden">
+      <div data-id="576" class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(0,200,248,0.06) 0%, transparent 65%);"></div>
+      <div data-id="577" class="max-w-[650px] mx-auto px-5 relative z-10">
+        <h2 data-id="578" class="text-3xl md:text-4xl font-bold text-center text-white mb-3">Secure Your Enterprise.<br data-id="579">Today and Tomorrow.</h2>
+        <p data-id="580" class="text-text-muted text-center mb-12">Talk to our solutions team about a live demo, 30-day proof-of-concept, or architecture review.</p>
+
+        <form data-id="581" id="contact-form-c1" class="space-y-4" novalidate>
+          <div data-id="582">
+            <input data-id="583" type="text" id="form-name-n1" placeholder="Name" required class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-white placeholder-text-muted focus:border-accent-cyan" />
+            <p data-id="584" id="err-name" class="text-red-400 text-xs mt-1 hidden">Please enter your name.</p>
+          </div>
+          <div data-id="585">
+            <input data-id="586" type="email" id="form-email-e1" placeholder="Work Email" required class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-white placeholder-text-muted" />
+            <p data-id="587" id="err-email" class="text-red-400 text-xs mt-1 hidden">Please enter a valid work email.</p>
+          </div>
+          <div data-id="588">
+            <input data-id="589" type="text" id="form-company-co1" placeholder="Company" required class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-white placeholder-text-muted" />
+            <p data-id="590" id="err-company" class="text-red-400 text-xs mt-1 hidden">Please enter your company name.</p>
+          </div>
+          <div data-id="591" class="select-wrapper">
+            <select data-id="592" id="form-interest-i1" required class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-text-muted appearance-none cursor-pointer">
+              <option data-id="593" value="" disabled selected>I'm interested in...</option>
+              <option data-id="594">Sentinel</option>
+              <option data-id="595">ATLAS</option>
+              <option data-id="596">FORGE</option>
+              <option data-id="597">Quantum Vault</option>
+              <option data-id="598">Full Suite</option>
+              <option data-id="599">Just browsing</option>
+            </select>
+          </div>
+          <div data-id="600" class="select-wrapper">
+            <select data-id="601" id="form-request-r1" required class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-text-muted appearance-none cursor-pointer">
+              <option data-id="602" value="" disabled selected>Request type</option>
+              <option data-id="603">Live Demo</option>
+              <option data-id="604">30-Day POC</option>
+              <option data-id="605">Architecture Review</option>
+              <option data-id="606">Pricing &amp; Packaging</option>
+            </select>
+          </div>
+          <div data-id="607">
+            <textarea data-id="608" id="form-msg-m1" placeholder="Message (optional)" rows="3" class="w-full px-4 py-3 rounded-lg text-base bg-bg-card border border-white/10 text-white placeholder-text-muted resize-none"></textarea>
+          </div>
+          <button data-id="609" type="submit" id="submit-btn-s1" class="w-full py-3.5 rounded-lg font-semibold text-bg-deep text-base transition-transform hover:scale-[1.02]" style="background:var(--accent-cyan);">Request a Conversation →</button>
+        </form>
+
+        <!-- Success state -->
+        <div data-id="610" id="form-success-fs1" class="hidden text-center py-12">
+          <div data-id="611" class="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style="background:rgba(0,200,248,0.15); border:2px solid var(--accent-cyan);">
+            <svg data-id="612" class="check-pop" width="32" height="32" viewBox="0 0 32 32" fill="none"><path data-id="613" d="M9 16l5 5 9-11" stroke="#00c8f8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3 data-id="614" class="text-xl font-bold text-white mb-2">Thanks!</h3>
+          <p data-id="615" class="text-text-muted">Our team will be in touch within 1 business day.</p>
+        </div>
+
+        <div data-id="616" class="flex flex-wrap justify-center gap-3 mt-8">
+          <span data-id="617" class="cta-pill px-4 py-2 rounded-full text-sm cursor-pointer border" style="border-color:rgba(0,200,248,0.3); color:var(--accent-cyan); background:rgba(0,200,248,0.05);">Schedule a Live Demo</span>
+          <span data-id="618" class="cta-pill px-4 py-2 rounded-full text-sm cursor-pointer border" style="border-color:rgba(0,200,248,0.3); color:var(--accent-cyan); background:rgba(0,200,248,0.05);">Download Architecture Brief</span>
+          <span data-id="619" class="cta-pill px-4 py-2 rounded-full text-sm cursor-pointer border" style="border-color:rgba(0,200,248,0.3); color:var(--accent-cyan); background:rgba(0,200,248,0.05);">View Case Studies</span>
+        </div>
+        <p data-id="620" class="text-text-muted text-center text-xs mt-6">security@cybershield.io &nbsp;|&nbsp; cybershieldsuite.com &nbsp;|&nbsp; 1-800-SHIELD-1</p>
+      </div>
+    </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer data-id="621" class="py-10 border-t border-white/5" style="background:var(--bg-dark)">
+      <div data-id="622" class="max-w-[1200px] mx-auto px-5">
+        <div data-id="623" class="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+          <div data-id="624" class="flex items-center gap-2">
+            <svg data-id="625" width="24" height="24" viewBox="0 0 32 32" fill="none"><path data-id="626" d="M16 2L4 8v8c0 7.18 5.12 13.88 12 16 6.88-2.12 12-8.82 12-16V8L16 2z" stroke="#00c8f8" stroke-width="2" fill="rgba(0,200,248,0.1)"/><path data-id="627" d="M12 16l3 3 5-6" stroke="#00c8f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-id="628" class="text-sm font-semibold text-white">CyberShield</span>
+            <span data-id="629" class="text-text-muted text-sm ml-1">Defend Everything.</span>
+          </div>
+          <div data-id="630" class="flex flex-wrap justify-center gap-4 text-sm text-text-muted">
+            <span data-id="631" class="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
+            <span data-id="632" class="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+            <span data-id="633" class="hover:text-white cursor-pointer transition-colors">Security</span>
+            <span data-id="634" class="hover:text-white cursor-pointer transition-colors">Careers</span>
+            <span data-id="635" class="hover:text-white cursor-pointer transition-colors">Blog</span>
+          </div>
+          <div data-id="636" class="flex gap-4">
+            <svg data-id="637" class="cursor-pointer text-text-muted hover:text-white transition-colors" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path data-id="638" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect data-id="639" x="2" y="9" width="4" height="12"/><circle data-id="640" cx="4" cy="4" r="2"/></svg>
+            <svg data-id="641" class="cursor-pointer text-text-muted hover:text-white transition-colors" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path data-id="642" d="M4 4l11.733 16h4.267l-11.733-16z"/><path data-id="643" d="M4 20l6.768-6.768M20 4l-6.768 6.768"/></svg>
+            <svg data-id="644" class="cursor-pointer text-text-muted hover:text-white transition-colors" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path data-id="645" d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          </div>
+        </div>
+        <div data-id="646" class="text-center text-xs text-text-muted pt-4 border-t border-white/5">
+          © 2026 CyberShield Inc. All rights reserved. &nbsp;·&nbsp; Made by Copilot
+        </div>
+      </div>
+    </footer>
+
+    <!-- BACK TO TOP -->
+    <button data-id="647" id="back-to-top-bt1" class="back-to-top fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center opacity-0 pointer-events-none" style="background:var(--accent-cyan); color:var(--bg-deep);" aria-label="Back to top">
+      <svg data-id="648" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path data-id="649" d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
+
+    <script>
+    (function() {
+      // === LUCIDE ICONS ===
+      // Defer lucide initialization to ensure the deferred script has loaded
+      function initLucide() {
+        if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+          lucide.createIcons();
+        }
+      }
+      // Try now (in case script already loaded), and also on window load as fallback
+      initLucide();
+      window.addEventListener('load', initLucide);
+
+      // === PARTICLE CANVAS ===
+      const canvas = document.getElementById('hero-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const PARTICLE_COUNT = 80;
+      const CONNECTION_DIST = 120;
+
+      function resizeCanvas() {
+        const hero = canvas.parentElement;
+        if (!hero) return;
+        canvas.width = hero.offsetWidth;
+        canvas.height = hero.offsetHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          r: Math.random() * 1.5 + 0.5
+        });
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          ctx.fill();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < CONNECTION_DIST) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = 'rgba(0,200,248,' + (0.15 * (1 - dist / CONNECTION_DIST)) + ')';
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+
+      // === SCROLL FADE-IN ===
+      const fadeObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.section-fade').forEach(function(el) { fadeObserver.observe(el); });
+
+      // === ANIMATED COUNTERS ===
+      let countersAnimated = false;
+      const statsSection = document.getElementById('stats-section-s1');
+      const counterObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting && !countersAnimated) {
+            countersAnimated = true;
+            document.querySelectorAll('.counter-value[data-target]').forEach(function(el) {
+              var target = parseFloat(el.dataset.target);
+              var prefix = el.dataset.prefix || '';
+              var suffix = el.dataset.suffix || '';
+              var isFloat = target % 1 !== 0;
+              var duration = 2000;
+              var start = performance.now();
+              function animate(now) {
+                var elapsed = now - start;
+                var progress = Math.min(elapsed / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                var current = target * eased;
+                if (isFloat) {
+                  el.textContent = prefix + current.toFixed(2) + suffix;
+                } else {
+                  el.textContent = prefix + Math.floor(current).toLocaleString() + suffix;
+                }
+                if (progress < 1) requestAnimationFrame(animate);
+                else {
+                  if (isFloat) el.textContent = prefix + target.toFixed(2) + suffix;
+                  else el.textContent = prefix + target.toLocaleString() + suffix;
+                }
+              }
+              requestAnimationFrame(animate);
+            });
+          }
+        });
+      }, { threshold: 0.3 });
+      if (statsSection) counterObserver.observe(statsSection);
+
+      // === NAV SCROLL EFFECT ===
+      var nav = document.getElementById('main-nav-a1b2');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 80) nav.classList.add('nav-scrolled');
+        else nav.classList.remove('nav-scrolled');
+      });
+
+      // === ACTIVE NAV LINK ===
+      var navSections = ['hero-section-x1', 'products-section-p1', 'architecture', 'why-section-w1', 'contact'];
+      var navLinks = document.querySelectorAll('.nav-link[data-nav]');
+      var navObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            navLinks.forEach(function(l) { l.classList.remove('active'); });
+            var match = document.querySelector('.nav-link[data-nav="' + e.target.id + '"]');
+            if (match) match.classList.add('active');
+          }
+        });
+      }, { threshold: 0.2, rootMargin: '-80px 0px -50% 0px' });
+      navSections.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) navObserver.observe(el);
+      });
+
+      // === MOBILE MENU ===
+      var mobileMenu = document.getElementById('mobile-menu-m2');
+      var mobileMenuBtn = document.getElementById('mobile-menu-btn-m1');
+      var mobileCloseBtn = document.getElementById('mobile-close-m3');
+
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+          mobileMenu.classList.add('open');
+        });
+      }
+      if (mobileCloseBtn) {
+        mobileCloseBtn.addEventListener('click', function() {
+          mobileMenu.classList.remove('open');
+        });
+      }
+      document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+          mobileMenu.classList.remove('open');
+        });
+      });
+
+      // === PRODUCT CARD CLICKS ===
+      document.querySelectorAll('.product-card[data-scroll-to]').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var target = document.getElementById(this.dataset.scrollTo);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      // === TAB SYSTEM ===
+      function setupTabs(tabClass, sliderId) {
+        var tabs = document.querySelectorAll('.' + tabClass);
+        var slider = document.getElementById(sliderId);
+        if (!tabs.length || !slider) return;
+
+        function positionSlider(activeTab) {
+          var parentRect = slider.parentElement.getBoundingClientRect();
+          var tabRect = activeTab.getBoundingClientRect();
+          var offsetLeft = tabRect.left - parentRect.left;
+          slider.style.left = offsetLeft + 'px';
+          slider.style.width = tabRect.width + 'px';
+          // Reset transform since we're using left directly
+          slider.style.transform = 'none';
+        }
+
+        tabs.forEach(function(tab) {
+          tab.addEventListener('click', function() {
+            // Deactivate all tabs
+            tabs.forEach(function(t) { t.classList.remove('active'); t.classList.add('text-text-muted'); });
+            this.classList.add('active');
+            this.classList.remove('text-text-muted');
+
+            // Move slider
+            positionSlider(this);
+
+            // Show content
+            var targetId = this.dataset.tab;
+            var parent = this.closest('section');
+            parent.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+            var target = document.getElementById(targetId);
+            if (target) target.classList.add('active');
+          });
+        });
+
+        // Initialize slider position after layout is ready
+        function initSlider() {
+          var firstActive = document.querySelector('.' + tabClass + '.active');
+          if (firstActive) {
+            positionSlider(firstActive);
+          }
+        }
+
+        // Run after a short delay to ensure layout is complete
+        requestAnimationFrame(function() {
+          requestAnimationFrame(initSlider);
+        });
+
+        // Also re-position on resize
+        window.addEventListener('resize', initSlider);
+      }
+
+      setupTabs('sentinel-tab', 'sentinel-slider');
+      setupTabs('atlas-tab', 'atlas-slider');
+      setupTabs('forge-tab', 'forge-slider');
+      setupTabs('vault-tab', 'vault-slider');
+
+      // === ARCHITECTURE NODES ===
+      document.querySelectorAll('.arch-node').forEach(function(node) {
+        node.addEventListener('click', function() {
+          var targetId = this.dataset.target;
+          var target = document.getElementById(targetId);
+          var self = this;
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+            self.classList.add('highlight');
+            setTimeout(function() { self.classList.remove('highlight'); }, 1500);
+          }
+        });
+      });
+
+      // === CONTACT FORM ===
+      var form = document.getElementById('contact-form-c1');
+      var successEl = document.getElementById('form-success-fs1');
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var valid = true;
+
+          var name = document.getElementById('form-name-n1');
+          var email = document.getElementById('form-email-e1');
+          var company = document.getElementById('form-company-co1');
+          var errName = document.getElementById('err-name');
+          var errEmail = document.getElementById('err-email');
+          var errCompany = document.getElementById('err-company');
+
+          errName.classList.add('hidden');
+          errEmail.classList.add('hidden');
+          errCompany.classList.add('hidden');
+
+          if (!name.value.trim()) { errName.classList.remove('hidden'); valid = false; }
+          if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { errEmail.classList.remove('hidden'); valid = false; }
+          if (!company.value.trim()) { errCompany.classList.remove('hidden'); valid = false; }
+
+          if (valid) {
+            form.style.display = 'none';
+            successEl.classList.remove('hidden');
+          }
+        });
+      }
+
+      // === BACK TO TOP ===
+      var btt = document.getElementById('back-to-top-bt1');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 400) {
+          btt.style.opacity = '1';
+          btt.style.pointerEvents = 'auto';
+          btt.style.transform = 'translateY(0)';
+        } else {
+          btt.style.opacity = '0';
+          btt.style.pointerEvents = 'none';
+          btt.style.transform = 'translateY(12px)';
+        }
+      });
+      btt.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+    })();
+    </script>
+</body>
+</html>

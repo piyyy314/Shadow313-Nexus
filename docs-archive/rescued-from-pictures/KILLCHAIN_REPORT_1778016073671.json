@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "timestamp": "2026-05-05T21:21:13.670Z",
+    "status": "COMPLETED",
+    "currentStage": "Actions on Objectives"
+  },
+  "logs": [
+    {
+      "id": "0.1j75crmvwgg",
+      "msg": "CKC_COMPLETE: Objectives achieved. Target environment compromised.",
+      "time": "5:20:58 PM"
+    },
+    {
+      "id": "0.h1q0ki9hi8",
+      "msg": "STAGE_SUCCESS: Actions on Objectives phase complete.",
+      "time": "5:20:58 PM"
+    },
+    {
+      "id": "0.p1b4fpmanr",
+      "msg": "STAGE_SUCCESS: Command & Control phase complete.",
+      "time": "5:20:53 PM"
+    },
+    {
+      "id": "0.6psr1ozxzru",
+      "msg": "STAGE_SUCCESS: Installation phase complete.",
+      "time": "5:20:48 PM"
+    },
+    {
+      "id": "0.hfjwj7whgmb",
+      "msg": "STAGE_SUCCESS: Exploitation phase complete.",
+      "time": "5:20:44 PM"
+    }
+  ]
+}

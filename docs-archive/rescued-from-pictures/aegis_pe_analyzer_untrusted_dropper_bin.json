@@ -1,0 +1,79 @@
+{
+  "module_name": "PE Static Header Analyzer",
+  "file_name": "untrusted_dropper.bin",
+  "file_size_bytes": 92830,
+  "target_machine": "x86_64 (AMD64)",
+  "entry_point_pointer": "0x0002F440",
+  "pe_sections": [
+    {
+      "name": ".text",
+      "virtualSize": 32768,
+      "virtualAddress": "0x00001000",
+      "rawSize": 32768,
+      "rawAddress": "0x00000400",
+      "entropy": 5.92,
+      "characteristics": [
+        "EXECUTABLE",
+        "READONLY"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".rdata",
+      "virtualSize": 12288,
+      "virtualAddress": "0x00009000",
+      "rawSize": 12288,
+      "rawAddress": "0x00008400",
+      "entropy": 4.88,
+      "characteristics": [
+        "READONLY"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".data",
+      "virtualSize": 4096,
+      "virtualAddress": "0x0000C000",
+      "rawSize": 4096,
+      "rawAddress": "0x0000B400",
+      "entropy": 7.78,
+      "characteristics": [
+        "WRITEABLE",
+        "READWRITE"
+      ],
+      "anomalous": true
+    },
+    {
+      "name": ".reloc",
+      "virtualSize": 4096,
+      "virtualAddress": "0x0000E000",
+      "rawSize": 4096,
+      "rawAddress": "0x0000C400",
+      "entropy": 2.11,
+      "characteristics": [
+        "DISCARDABLE"
+      ],
+      "anomalous": false
+    },
+    {
+      "name": ".hidden",
+      "virtualSize": 24576,
+      "virtualAddress": "0x00010000",
+      "rawSize": 24576,
+      "rawAddress": "0x0000D400",
+      "entropy": 7.91,
+      "characteristics": [
+        "WRITEABLE",
+        "READWRITE",
+        "EXECUTABLE"
+      ],
+      "anomalous": true
+    }
+  ],
+  "pe_imports": [
+    "kernel32.dll!VirtualAllocEx",
+    "kernel32.dll!WriteProcessMemory",
+    "kernel32.dll!CreateRemoteThread",
+    "user32.dll!MessageBoxA"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": 3,
+  "skills": {
+    "microsoft-foundry": {
+      "source": "microsoft/azure-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/microsoft/azure-skills.git",
+      "skillPath": ".github/plugins/azure-skills/skills/microsoft-foundry/SKILL.md",
+      "skillFolderHash": "de53dbdc91f0166cfbb3ce3a54da873cbf7a7509",
+      "installedAt": "2026-04-11T09:46:44.846Z",
+      "updatedAt": "2026-08-14T02:48:07.704Z"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "skillFolderHash": "3116f3e62dbd02b44a598b1aa690d2a8938e8f89",
+      "installedAt": "2026-07-26T00:42:00.626Z",
+      "updatedAt": "2026-07-26T00:42:00.626Z"
+    }
+  },
+  "dismissed": {}
+}

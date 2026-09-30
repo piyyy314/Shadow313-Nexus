@@ -1,0 +1,17 @@
+{
+  "module_name": "YARA Malicious Byte Patterns Scanner",
+  "scanned_buffer_length_chars": 283,
+  "detections_count": 2,
+  "detections": [
+    {
+      "offset": 12,
+      "patternName": "UPX Pack Header Marker (UPX0)",
+      "matchedBytes": "55 50 58 30"
+    },
+    {
+      "offset": 28,
+      "patternName": "Aegis Sentinel Exploit pattern",
+      "matchedBytes": "c8 00 f2 ff"
+    }
+  ]
+}

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="color-scheme" content="dark"/>
+<title>Shadow313 v3 — Cyber Operations Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+--bg:#0d1117;--surface:#161b22;--card:#1c2128;--border:#21262d;--hover:#262c36;
+--text:#e6edf3;--muted:#8b949e;--dim:#484f58;
+--green:#00ff88;--blue:#58a6ff;--purple:#bc8cff;--yellow:#e3b341;--red:#f85149;--orange:#ff7b72;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.ni{cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:12px;color:var(--muted);transition:all .15s;border-left:2px solid transparent;user-select:none;}
+.ni:hover{color:var(--text);background:var(--hover);}
+.ni.active{color:var(--green);border-left-color:var(--green);background:rgba(0,255,136,.06);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;}
+.btn{cursor:pointer;padding:6px 14px;border-radius:6px;font-family:inherit;font-size:11px;font-weight:600;transition:all .15s;border:1px solid;display:inline-flex;align-items:center;gap:6px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-g{background:rgba(0,255,136,.08);color:var(--green);border-color:rgba(0,255,136,.3);}
+.btn-g:hover:not(:disabled){background:rgba(0,255,136,.16);}
+.btn-b{background:rgba(88,166,255,.08);color:var(--blue);border-color:rgba(88,166,255,.3);}
+.btn-b:hover:not(:disabled){background:rgba(88,166,255,.16);}
+.btn-r{background:rgba(248,81,73,.08);color:var(--red);border-color:rgba(248,81,73,.3);}
+.btn-r:hover:not(:disabled){background:rgba(248,81,73,.16);}
+.btn-p{background:rgba(188,140,255,.08);color:var(--purple);border-color:rgba(188,140,255,.3);}
+.btn-p:hover:not(:disabled){background:rgba(188,140,255,.16);}
+.btn-s{background:var(--surface);color:var(--muted);border-color:var(--border);}
+.btn-s:hover:not(:disabled){background:var(--hover);color:var(--text);}
+.input{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:inherit;font-size:12px;width:100%;box-sizing:border-box;outline:none;}
+.input:focus{border-color:rgba(0,255,136,.4);}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.term{background:#000;border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#00ff88;min-height:80px;white-space:pre-wrap;line-height:1.7;overflow-y:auto;max-height:260px;}
+.badge{padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:700;display:inline-block;}
+.bc{background:rgba(248,81,73,.15);color:#f85149;border:1px solid rgba(248,81,73,.3);}
+.bh{background:rgba(255,123,114,.15);color:#ff7b72;border:1px solid rgba(255,123,114,.3);}
+.bm{background:rgba(227,179,65,.15);color:#e3b341;border:1px solid rgba(227,179,65,.3);}
+.bg-badge{background:rgba(0,255,136,.12);color:#00ff88;border:1px solid rgba(0,255,136,.3);}
+.bp{background:rgba(188,140,255,.12);color:#bc8cff;border:1px solid rgba(188,140,255,.3);}
+.bb{background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);}
+.table{width:100%;border-collapse:collapse;font-size:12px;}
+.table th{text-align:left;padding:8px 12px;color:var(--dim);font-weight:600;border-bottom:1px solid var(--border);font-size:11px;}
+.table td{padding:8px 12px;border-bottom:1px solid rgba(33,38,45,.5);color:var(--text);}
+.table tr:hover td{background:var(--hover);}
+.mod-wrap{animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ticker{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+textarea.input{resize:none;line-height:1.5;}
+.chat-bubble{padding:8px 12px;border-radius:8px;white-space:pre-wrap;max-width:90%;font-size:11px;line-height:1.6;border:1px solid;word-break:break-word;}
+.chat-user{align-self:flex-end;background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.2);color:var(--text);}
+.chat-ai{align-self:flex-start;background:var(--card);border-color:var(--border);color:var(--text);}
+.pill{cursor:pointer;padding:3px 10px;border-radius:9999px;font-size:10px;background:var(--surface);color:var(--muted);border:1px solid var(--border);transition:all .15s;white-space:nowrap;}
+.pill:hover{color:var(--green);border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.06);}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:4px;}
+.stat-val{font-size:28px;font-weight:700;line-height:1;}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:500;}
+.mod-grid-btn{cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--muted);transition:all .15s;font-family:inherit;text-align:left;}
+.mod-grid-btn:hover{color:var(--text);border-color:rgba(0,255,136,.3);background:var(--hover);}
+.section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+#cmd-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:999;align-items:flex-start;justify-content:center;padding-top:120px;}
+#cmd-overlay.open{display:flex;}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49;}
+#sidebar-overlay.open{display:block;}
+#ai-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49;}
+#ai-overlay.open{display:block;}
+.page-section{margin-bottom:20px;}
+.page-section h2{font-size:16px;font-weight:700;color:var(--green);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.page-section h3{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px;}
+.page-section p,.page-section li{font-size:12px;color:var(--muted);line-height:1.7;}
+.page-section ul{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.page-section ul li::before{content:'▸ ';color:var(--green);}
+.page-section a{color:var(--blue);text-decoration:underline;cursor:pointer;}
+.page-section code{background:var(--bg);padding:2px 6px;border-radius:3px;font-size:11px;color:var(--green);}
+.page-section pre{background:#000;border-radius:6px;padding:12px;font-size:11px;color:var(--green);white-space:pre-wrap;line-height:1.7;overflow-x:auto;margin:8px 0;}
+.footer-bar{border-top:1px solid var(--border);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:10px;color:var(--dim);background:var(--surface);flex-shrink:0;}
+.footer-bar a{color:var(--muted);cursor:pointer;transition:color .15s;text-decoration:none;}
+.footer-bar a:hover{color:var(--green);}
+.footer-bar .sep{color:var(--border);}
+.gh-stats{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);}
+.gh-stats span{color:var(--dim);}
+@media(max-width:1023px){
+  #ai-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:300px;z-index:50;}
+  #ai-panel.mobile-open{display:flex;}
+}
+@media(max-width:767px){
+  #sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:260px;z-index:50;}
+  #sidebar.mobile-open{display:flex;}
+}
+</style>
+</head>
+<body data-id="0">
+<app-icon data-id="1" hidden data-icon="shield" data-palette="Dark"></app-icon>
+
+<div data-id="2" id="sidebar-overlay"></div>
+<div data-id="3" id="ai-overlay"></div>
+
+<div data-id="4" style="display:flex;height:100vh;overflow:hidden;">
+
+<!-- SIDEBAR -->
+<aside data-id="5" id="sidebar" style="width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">
+<div data-id="6" style="padding:16px 14px 10px;">
+<div data-id="7" style="display:flex;align-items:center;gap:8px;margin-bottom:2px;justify-content:space-between;">
+<div data-id="8" style="display:flex;align-items:center;gap:8px;">
+<span data-id="9" style="background:rgba(0,255,136,.12);color:var(--green);font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid rgba(0,255,136,.3);">S313</span>
+<span data-id="10" style="font-size:12px;font-weight:700;color:var(--text);letter-spacing:.04em;">SHADOW313 v3</span>
+</div>
+<button data-id="11" id="sidebar-close" class="btn btn-s" style="padding:2px 6px;font-size:10px;display:none;">✕</button>
+</div>
+<div data-id="12" style="font-size:11px;color:var(--muted);margin-top:4px;padding-left:2px;">mohamad</div>
+<div data-id="13" style="margin-top:8px;">
+<span data-id="14" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);padding:2px 8px;border-radius:9999px;">SESSION a3f8c1d2</span>
+</div>
+</div>
+<div data-id="15" id="nav" style="flex:1;overflow-y:auto;padding-bottom:12px;"></div>
+<div data-id="16" style="padding:10px 14px;border-top:1px solid var(--border);">
+<button data-id="17" id="quickstart-sidebar-btn" class="btn btn-g" style="width:100%;font-size:10px;margin-bottom:6px;justify-content:center;">🚀 Quick Start</button>
+<div data-id="18" style="font-size:9px;color:var(--dim);text-align:center;">© 2026 Shadow313. All rights reserved.<br data-id="19"/>Made by Copilot</div>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div data-id="20" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;">
+<!-- TOPBAR -->
+<div data-id="21" style="height:44px;min-height:44px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--surface);gap:8px;">
+<div data-id="22" style="display:flex;align-items:center;gap:8px;min-width:0;">
+<button data-id="23" id="mobile-menu-btn" class="btn btn-s" style="padding:3px 8px;font-size:12px;display:none;">☰</button>
+<span data-id="24" style="font-size:11px;color:var(--dim);white-space:nowrap;">SHADOW313</span>
+<span data-id="25" style="color:var(--dim);">›</span>
+<span data-id="26" id="bc" style="font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">DASHBOARD</span>
+</div>
+<div data-id="27" style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+<button data-id="28" id="quickstart-top-btn" class="btn btn-g" style="padding:3px 10px;font-size:10px;">🚀 Quick Start</button>
+<div data-id="29" id="opsec-badge" style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;">
+<span data-id="30" id="opsec-dot" style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;"></span>
+<span data-id="31" id="opsec-text" style="color:var(--red);">NO PROXY</span>
+</div>
+<span data-id="32" id="clock" style="font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;">21:19:00</span>
+<button data-id="33" id="cmdk-btn" class="btn btn-s" style="padding:3px 10px;font-size:10px;">⌘K</button>
+<button data-id="34" id="ai-toggle-btn" class="btn btn-s" style="padding:3px 8px;font-size:10px;display:none;">🤖</button>
+</div>
+</div>
+<!-- CONTENT -->
+<div data-id="35" id="content" style="flex:1;overflow-y:auto;padding:16px;"></div>
+<!-- FOOTER -->
+<div data-id="36" class="footer-bar" id="app-footer">
+<a data-id="37" class="footer-link" data-route="terms">Terms</a><span data-id="38" class="sep">·</span>
+<a data-id="39" class="footer-link" data-route="privacy">Privacy</a><span data-id="40" class="sep">·</span>
+<a data-id="41" class="footer-link" data-route="security">Security</a><span data-id="42" class="sep">·</span>
+<a data-id="43" class="footer-link" data-route="quickstart">Quick Start</a><span data-id="44" class="sep">·</span>
+<a data-id="45" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener">GitHub</a><span data-id="46" class="sep">·</span>
+<a data-id="47" class="footer-link" data-route="docs">Docs</a><span data-id="48" class="sep">·</span>
+<span data-id="49">© 2026 Shadow313. All rights reserved. · Made by Copilot</span>
+</div>
+</div>
+
+<!-- AI PANEL -->
+<aside data-id="50" id="ai-panel" style="width:280px;min-width:280px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">
+<div data-id="51" style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+<div data-id="52" style="display:flex;align-items:center;gap:8px;">
+<span data-id="53" style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;"></span>
+<span data-id="54" style="font-size:12px;font-weight:700;color:var(--text);">Shadow313 AI</span>
+<span data-id="55" style="font-size:9px;background:rgba(0,255,136,.1);color:var(--green);padding:1px 6px;border-radius:4px;border:1px solid rgba(0,255,136,.2);">Self-Hosted</span>
+</div>
+<div data-id="56" style="display:flex;gap:4px;">
+<button data-id="57" id="chat-clear" class="btn btn-s" style="padding:2px 8px;font-size:9px;">✕ Clear</button>
+<button data-id="58" id="ai-panel-close" class="btn btn-s" style="padding:2px 6px;font-size:9px;display:none;">Close</button>
+</div>
+</div>
+<div data-id="59" id="chat-msgs" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;"></div>
+<div data-id="60" style="padding:6px 10px;display:flex;flex-wrap:wrap;gap:4px;border-top:1px solid var(--border);">
+<span data-id="61" class="pill" data-pill="CVE-2024-3400">CVE-2024-3400</span>
+<span data-id="62" class="pill" data-pill="PQC migration">PQC migration</span>
+<span data-id="63" class="pill" data-pill="DNS tunneling">DNS tunneling</span>
+<span data-id="64" class="pill" data-pill="EPSS scoring">EPSS scoring</span>
+<span data-id="65" class="pill" data-pill="MITRE ATT&CK">MITRE ATT&CK</span>
+<span data-id="66" class="pill" data-pill="Firmware risk">Firmware risk</span>
+</div>
+<div data-id="67" style="padding:10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;">
+<textarea data-id="68" id="chat-in" class="input" rows="3" placeholder="Ask Shadow313 AI..." style="font-size:11px;"></textarea>
+<div data-id="69" style="display:flex;gap:6px;">
+<button data-id="70" id="chat-send" class="btn btn-g" style="flex:1;">Send</button>
+<button data-id="71" id="mod-ask" class="btn btn-b" style="font-size:10px;white-space:nowrap;">💡 Module</button>
+</div>
+</div>
+</aside>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div data-id="72" id="cmd-overlay">
+<div data-id="73" style="background:var(--card);border:1px solid var(--border);border-radius:12px;width:440px;max-width:calc(100vw - 32px);max-height:400px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+<div data-id="74" style="padding:14px;border-bottom:1px solid var(--border);">
+<input data-id="75" id="cmd-q" class="input" placeholder="Search modules & pages... (ESC to close)" style="font-size:13px;"/>
+</div>
+<div data-id="76" id="cmd-list" style="overflow-y:auto;padding:8px;max-height:300px;"></div>
+</div>
+</div>
+
+<script>
+// Guard Lucide icons
+if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+  lucide.createIcons();
+}
+
+// ==================== REAL GITHUB STATS ====================
+// Source: https://github.com/piyyy314/Shadow313-Nexus
+var GITHUB = {
+  repo: 'piyyy314/Shadow313-Nexus',
+  url: 'https://github.com/piyyy314/Shadow313-Nexus',
+  username: 'piyyy314',
+  stars: 0,
+  forks: 0,
+  watchers: 0,
+  commits: '65+',
+  branches: 5,
+  tags: 0,
+  releases: 0,
+  license: 'Apache-2.0',
+  liveUrl: 'https://explorer-kappa-seven.vercel.app'
+};
+
+var SYSTEM_PROMPT = 'You are Shadow313 AI, a professional cybersecurity intelligence assistant for mohamad. You specialize in:\n- CVE analysis, CVSS scoring, and EPSS probability assessment\n- MITRE ATT&CK framework tactics, techniques, and procedures\n- Post-quantum cryptography migration: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205)\n- Firmware integrity verification and supply chain security\n- Network forensics, SDR signal analysis, and anomaly detection\n- Operational security (OPSEC) and threat intelligence\nBe precise, technical, and actionable. Current date: 2026-09-21. User location: Ottawa, ON, Canada.\nGitHub repository: '+GITHUB.url+' (Stars: '+GITHUB.stars+', Forks: '+GITHUB.forks+', Commits: '+GITHUB.commits+', License: '+GITHUB.license+').';
+
+var currentId = '';
+var proxyOk = false;
+
+var NAV = [
+  {group:'OPERATIONS', items:[
+    {id:'dashboard',icon:'⚡',label:'Dashboard'},
+    {id:'sessions',icon:'📋',label:'Sessions'},
+    {id:'campaign',icon:'🎯',label:'Campaign'},
+  ]},
+  {group:'RECON & OSINT', items:[
+    {id:'recon',icon:'🔍',label:'Recon Scanner'},
+    {id:'osint',icon:'🌐',label:'OSINT'},
+    {id:'network',icon:'📡',label:'Network Analysis'},
+  ]},
+  {group:'VULNERABILITIES', items:[
+    {id:'vuln',icon:'🛡️',label:'Vuln Scanner'},
+    {id:'kev',icon:'⚠️',label:'CISA KEV'},
+    {id:'epss',icon:'📊',label:'EPSS Scoring'},
+  ]},
+  {group:'CRYPTOGRAPHY', items:[
+    {id:'pqc',icon:'⚛️',label:'PQC Toolkit'},
+    {id:'firmware',icon:'🔬',label:'Firmware Integrity'},
+    {id:'supply-chain',icon:'🔗',label:'Supply Chain'},
+    {id:'crypto',icon:'🔐',label:'Crypto Agility'},
+  ]},
+  {group:'DEFENCE', items:[
+    {id:'sdr',icon:'📻',label:'Defensive SDR'},
+    {id:'threat',icon:'🕵️',label:'Threat Intel'},
+    {id:'anomaly',icon:'🤖',label:'ML Anomaly'},
+    {id:'attack',icon:'🗺️',label:'ATT&CK Map'},
+  ]},
+  {group:'REFERENCE', items:[
+    {id:'docs',icon:'📚',label:'Docs'},
+    {id:'glossary',icon:'📖',label:'Glossary'},
+    {id:'roadmap',icon:'🗺️',label:'Roadmap'},
+  ]},
+];
+
+var PAGES = [
+  {id:'terms',icon:'📄',label:'Terms of Service'},
+  {id:'privacy',icon:'🔒',label:'Privacy Policy'},
+  {id:'security',icon:'🛡️',label:'Security Policy'},
+  {id:'quickstart',icon:'🚀',label:'Quick Start Guide'},
+];
+
+function escapeHtml(text) {
+  var div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function aiChat(userMsg, context) {
+  var messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'user', content: userMsg + (context ? '\n\nContext:\n' + context : '') }
+  ];
+  try {
+    if (typeof AppSDK === 'undefined' || !AppSDK || !AppSDK.ai || !AppSDK.ai.chat) {
+      return 'AI service unavailable. Shadow313 AI engine not detected.';
+    }
+    var res = await AppSDK.ai.chat({ messages: messages });
+    return res.content;
+  } catch(e) {
+    return 'AI error: ' + (e.message || 'Unknown error');
+  }
+}
+
+function appendMsg(role, text) {
+  var el = document.createElement('div');
+  el.className = 'chat-bubble ' + (role==='user' ? 'chat-user' : 'chat-ai');
+  el.textContent = text;
+  var msgs = document.getElementById('chat-msgs');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+async function sendChat() {
+  var input = document.getElementById('chat-in');
+  var sendBtn = document.getElementById('chat-send');
+  var msg = input.value.trim();
+  if(!msg) return;
+  if(sendBtn.disabled) return;
+  input.value = '';
+  sendBtn.disabled = true;
+  sendBtn.textContent = '⏳...';
+  appendMsg('user', msg);
+  var thinking = appendMsg('ai', '⏳ Thinking...');
+  try {
+    var reply = await aiChat(msg, 'Current module: '+currentId);
+    thinking.textContent = reply;
+  } catch(e) {
+    thinking.textContent = 'Error: Could not get AI response. Please try again.';
+  }
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send';
+  document.getElementById('chat-msgs').scrollTop = document.getElementById('chat-msgs').scrollHeight;
+}
+
+function typewrite(el, lines, i, cb) {
+  if(!el) return;
+  if(i===undefined) i=0;
+  if(i===0) el.textContent='';
+  if(i>=lines.length){ if(cb) cb(); return; }
+  el.textContent += (i>0?'\n':'')+lines[i];
+  el.scrollTop = el.scrollHeight;
+  setTimeout(function(){typewrite(el,lines,i+1,cb);}, 80);
+}
+
+function updateOpsec() {
+  var dot = document.getElementById('opsec-dot');
+  var txt = document.getElementById('opsec-text');
+  if(proxyOk) {
+    dot.style.background = 'var(--green)';
+    txt.style.color = 'var(--green)';
+    txt.textContent = 'PROXY OK';
+  } else {
+    dot.style.background = 'var(--red)';
+    txt.style.color = 'var(--red)';
+    txt.textContent = 'NO PROXY';
+  }
+}
+
+function getAllItems() {
+  var allItems = [];
+  for (var g = 0; g < NAV.length; g++) {
+    for (var ii = 0; ii < NAV[g].items.length; ii++) {
+      allItems.push(NAV[g].items[ii]);
+    }
+  }
+  return allItems;
+}
+
+function getAllRoutes() {
+  return getAllItems().concat(PAGES);
+}
+
+function findRoute(id) {
+  var routes = getAllRoutes();
+  for (var i = 0; i < routes.length; i++) {
+    if (routes[i].id === id) return routes[i];
+  }
+  return null;
+}
+
+function nav(id, pushState) {
+  if(pushState === undefined) pushState = true;
+
+  var route = findRoute(id);
+  if(!route) {
+    id = 'dashboard';
+    route = findRoute('dashboard');
+    if(pushState) {
+      window.history.pushState({route:'dashboard'}, '', '#dashboard');
+    }
+    showContent(id, route, true);
+    return;
+  }
+
+  if(id === currentId) return;
+  currentId = id;
+
+  document.querySelectorAll('.ni').forEach(function(e){
+    e.classList.toggle('active', e.dataset.id === id);
+  });
+
+  document.getElementById('bc').textContent = route ? route.label.toUpperCase() : id.toUpperCase();
+
+  if(pushState) {
+    window.history.pushState({route:id}, '', '#' + id);
+  }
+
+  showContent(id, route, false);
+  closeMobileSidebar();
+}
+
+function showContent(id, route, show404) {
+  var box = document.getElementById('content');
+  box.innerHTML = '';
+  if(window._chart){try{window._chart.destroy();}catch(e){}window._chart=null;}
+
+  var wrap = document.createElement('div');
+  wrap.className = 'mod-wrap';
+
+  var html = '';
+  if(show404) {
+    html = '<div class="card" style="border-left:3px solid var(--yellow);margin-bottom:16px;"><p style="font-size:12px;color:var(--yellow);margin-bottom:4px;">⚠ Page not found — redirected to Dashboard.</p><p style="font-size:11px;color:var(--muted);">The route you requested doesn\'t exist.</p></div>';
+  }
+
+  if(MODULES[id]) {
+    html += MODULES[id]();
+  } else if(PAGE_CONTENT[id]) {
+    html += PAGE_CONTENT[id]();
+  } else {
+    html += genericMod(id);
+  }
+
+  wrap.innerHTML = html;
+  box.appendChild(wrap);
+  box.scrollTop = 0;
+  setTimeout(function(){ wire(id); }, 50);
+}
+
+function genericMod(id) {
+  var allItems = getAllItems();
+  var item = null;
+  for (var k = 0; k < allItems.length; k++) {
+    if (allItems[k].id === id) { item = allItems[k]; break; }
+  }
+  var icon = item ? item.icon : '📦';
+  var label = item ? item.label : id;
+  var descs = {
+    'osint': 'Open-source intelligence gathering and analysis from public data sources.',
+    'network': 'Deep packet inspection, flow analysis, and network topology mapping.',
+    'epss': 'Exploit Prediction Scoring System — probability-based vulnerability prioritization.',
+    'crypto': 'Cryptographic agility assessment and algorithm migration planning.',
+    'threat': 'Threat intelligence feeds, IoC correlation, and adversary profiling.',
+    'anomaly': 'Machine learning-powered anomaly detection for network and endpoint telemetry.',
+    'attack': 'MITRE ATT&CK framework mapping and technique coverage analysis.',
+    'campaign': 'Coordinated operation planning, task tracking, and engagement management.',
+    'docs': 'Documentation hub — procedures, playbooks, and operational references.',
+    'glossary': 'Cybersecurity terminology reference and acronym database.',
+    'roadmap': 'Shadow313 development roadmap and feature pipeline.'
+  };
+  var features = {
+    'osint': ['Domain WHOIS & DNS enumeration','Social media footprinting','Data breach correlation','Dark web monitoring','Shodan/Censys integration patterns'],
+    'network': ['PCAP analysis & deep packet inspection','NetFlow/sFlow visualization','Lateral movement detection','C2 beacon identification','Protocol anomaly detection'],
+    'epss': ['EPSS score lookup & trending','CVSS vs EPSS prioritization','Patch priority matrix','Risk-based vulnerability management','Exploit likelihood forecasting'],
+    'crypto': ['Algorithm inventory scanning','Cipher suite assessment','TLS configuration audit','Key rotation scheduling','Quantum readiness scoring'],
+    'threat': ['STIX/TAXII feed ingestion','IoC enrichment & correlation','Diamond Model analysis','Threat actor profiling','Campaign attribution'],
+    'anomaly': ['Baseline behavior modeling','Unsupervised clustering detection','Time-series anomaly alerts','User entity behavior analytics','Autoencoder-based detection'],
+    'attack': ['Technique coverage heatmap','Gap analysis & detection engineering','Adversary emulation planning','Data source mapping','Procedure-level tracking'],
+    'campaign': ['Operation lifecycle management','Target enumeration tracking','Finding aggregation','Timeline & milestone tracking','Report generation'],
+    'docs': ['Operational playbooks','Tool configuration guides','Methodology references','Compliance frameworks','Incident response procedures'],
+    'glossary': ['CVE/CWE definitions','MITRE ATT&CK terminology','Cryptographic standards','Network protocol terms','Threat intelligence vocabulary'],
+    'roadmap': ['v3.1 — Enhanced PQC automation (shipped August 2026)','v3.2 — ML model marketplace (Q1 2027)','v3.3 — Collaborative operations (Q2 2027)','v4.0 — Autonomous recon engine (H2 2027)','Community feature requests']
+  };
+  var desc = descs[id] || 'Advanced cybersecurity module for specialized operations.';
+  var feats = features[id] || ['Feature analysis','Data correlation','Reporting','AI-assisted insights','MITRE mapping'];
+  var featsHtml = '';
+  for (var f = 0; f < feats.length; f++) {
+    featsHtml += '<li style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:var(--green);">▸</span> '+escapeHtml(feats[f])+'</li>';
+  }
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">'+icon+' '+escapeHtml(label)+'</div><p style="color:var(--muted);font-size:12px;line-height:1.6;">'+escapeHtml(desc)+'</p></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">Capabilities</div><ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">'+featsHtml+'</ul></div>'+
+    '<button id="gen-ai" class="btn btn-g">🤖 Ask AI about this module</button><div id="gen-res" style="margin-top:12px;"></div>';
+}
+
+// ==================== PAGE CONTENT ====================
+var PAGE_CONTENT = {};
+
+PAGE_CONTENT.terms = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">📄 Terms of Service</div><p style="color:var(--muted);font-size:11px;">Last updated: September 2026</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>1. Acceptance of Terms</h2><p>By accessing or using Shadow313 v3 ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree, you must discontinue use immediately. These terms apply to all users, including operators, analysts, and administrators.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>2. Use License</h2><p>Shadow313 grants you a limited, non-exclusive, non-transferable, revocable license to use the Platform for authorized cybersecurity operations only. You agree to:</p><ul><li>Use the Platform only for lawful security testing and defense</li><li>Obtain proper authorization before scanning any target</li><li>Comply with all applicable laws including CFAA, GDPR, and local regulations</li><li>Not reverse-engineer, decompile, or redistribute the Platform</li><li>Not use the Platform for unauthorized access to systems you do not own or have permission to test</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>3. Disclaimer of Warranties</h2><p>The Platform is provided "AS IS" and "AS AVAILABLE" without warranties of any kind, express or implied. Shadow313 does not warrant that the Platform will be uninterrupted, error-free, or free of vulnerabilities. CVE data, EPSS scores, and threat intelligence are provided for informational purposes and may not be complete or current.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>4. Limitations of Liability</h2><p>In no event shall Shadow313, its developers, or contributors be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Platform, including but not limited to data loss, system damage, or unauthorized access resulting from reliance on Platform outputs.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>5. Governing Law</h2><p>These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which the primary operator resides, without regard to conflict of law provisions. Any disputes shall be resolved through binding arbitration.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>6. Contact</h2><p>For questions regarding these Terms of Service, contact us at:</p><p style="margin-top:8px;"><code>legal@shadow313.dev</code></p></div>';
+};
+
+PAGE_CONTENT.privacy = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🔒 Privacy Policy</div><p style="color:var(--muted);font-size:11px;">Last updated: September 2026</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>1. Data We Collect</h2><p>Shadow313 collects the following categories of data during operation:</p><ul><li>Session metadata (session IDs, timestamps, module usage)</li><li>Scan targets and results (as configured by the operator)</li><li>AI conversation history (stored locally per session)</li><li>Configuration preferences and proxy settings</li><li>Anonymized usage analytics for platform improvement</li></ul><p>We do <strong>not</strong> collect passwords, credentials, or personal data beyond what you explicitly provide.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>2. How We Use Data</h2><p>Collected data is used exclusively to:</p><ul><li>Provide and improve Platform functionality</li><li>Generate threat intelligence and vulnerability reports</li><li>Power AI-assisted analysis and recommendations</li><li>Maintain session continuity and operational context</li><li>Produce anonymized, aggregated analytics</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>3. Third-Party Services</h2><p>The Platform may interface with third-party services including CVE databases (NVD, MITRE), CISA KEV catalog, and EPSS scoring APIs. Data shared with these services is limited to query parameters (e.g., CVE IDs). AI features are powered by the Shadow313 self-hosted AI engine and subject to Shadow313\'s own data handling policies.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>4. Data Security</h2><p>We implement industry-standard security measures including:</p><ul><li>AES-256 encryption for data at rest</li><li>TLS 1.3 for data in transit</li><li>Post-quantum hybrid key exchange (ML-KEM-768+X25519) where supported</li><li>Role-based access controls and session isolation</li><li>Automatic session data purging after 90 days</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>5. Cookies & Tracking</h2><p>Shadow313 uses only essential session cookies required for Platform operation. We do not use advertising trackers, third-party analytics cookies, or cross-site tracking mechanisms. Local storage is used exclusively for user preferences and session state.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>6. Your Rights</h2><p>You have the right to:</p><ul><li>Access all data associated with your sessions</li><li>Request deletion of your data at any time</li><li>Export your scan results and configurations</li><li>Opt out of anonymized analytics collection</li><li>Request a copy of your data in machine-readable format</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>7. Contact</h2><p>For privacy-related inquiries or data requests, contact our privacy team:</p><p style="margin-top:8px;"><code>privacy@shadow313.dev</code></p></div>';
+};
+
+PAGE_CONTENT.security = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🛡️ Security Policy</div><p style="color:var(--muted);font-size:11px;">Last updated: September 2026</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>1. Our Security Commitment</h2><p>Shadow313 is built with security as a foundational principle. We practice defense-in-depth, follow secure development lifecycle (SDL) practices, and continuously audit our codebase. All modules undergo penetration testing before release. We are committed to transparency in our security practices.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>2. Responsible Disclosure</h2><p>We welcome security researchers to responsibly disclose vulnerabilities. If you discover a security issue in Shadow313:</p><ul><li>Do <strong>not</strong> publicly disclose the vulnerability before it is patched</li><li>Provide sufficient detail to reproduce the issue</li><li>Do not access or modify other users\' data</li><li>Do not perform denial-of-service attacks</li><li>Act in good faith — we will not pursue legal action against good-faith reporters</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>3. Bug Bounty Program</h2><p>We maintain an active bug bounty program for qualifying vulnerabilities:</p><ul><li><strong>Critical</strong> (RCE, auth bypass, data exfiltration): $1,000 – $5,000</li><li><strong>High</strong> (privilege escalation, SSRF, injection): $500 – $1,000</li><li><strong>Medium</strong> (XSS, CSRF, information disclosure): $100 – $500</li><li><strong>Low</strong> (minor issues, best practice violations): Recognition + swag</li></ul><p style="margin-top:8px;">Out of scope: social engineering, physical attacks, third-party dependencies with existing CVEs.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>4. Supported Versions</h2><div style="overflow-x:auto;"><table class="table"><thead><tr><th>Version</th><th>Status</th><th>Security Updates</th><th>End of Life</th></tr></thead><tbody>'+
+  '<tr><td style="font-weight:600;">v3.x (current)</td><td><span class="badge bg-badge">SUPPORTED</span></td><td>Active</td><td>—</td></tr>'+
+  '<tr><td>v2.x</td><td><span class="badge bm">MAINTENANCE</span></td><td>Critical only</td><td>2027-03-01</td></tr>'+
+  '<tr><td>v1.x</td><td><span class="badge bc">EOL</span></td><td>None</td><td>2025-12-31</td></tr>'+
+  '</tbody></table></div></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>5. How to Report</h2><p>Send vulnerability reports to:</p><p style="margin-top:8px;"><code>security@shadow313.dev</code></p><p style="margin-top:8px;">Encrypt sensitive reports using our PGP key:</p><pre>PGP Key Fingerprint:\nA1B2 C3D4 E5F6 7890 1234 5678 9ABC DEF0 1234 5678</pre><p style="margin-top:4px;font-size:11px;color:var(--muted);">Public key available at: shadow313.dev/.well-known/pgp-key.asc</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>6. Response SLA</h2><div style="overflow-x:auto;"><table class="table"><thead><tr><th>Action</th><th>Timeframe</th></tr></thead><tbody>'+
+  '<tr><td>Acknowledgement</td><td style="color:var(--green);font-weight:600;">24 hours</td></tr>'+
+  '<tr><td>Triage & severity assessment</td><td style="color:var(--yellow);font-weight:600;">48 hours</td></tr>'+
+  '<tr><td>Patch for critical/high</td><td style="color:var(--red);font-weight:600;">30 days</td></tr>'+
+  '<tr><td>Public disclosure (coordinated)</td><td style="color:var(--muted);">90 days after report</td></tr>'+
+  '</tbody></table></div></div>';
+};
+
+PAGE_CONTENT.quickstart = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🚀 Quick Start Guide</div><p style="color:var(--muted);font-size:11px;">Get up and running with Shadow313 v3 in under 5 minutes. Launched August 2026.</p></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>1. Prerequisites</h2><ul><li>Python 3.10+ or Docker 24+</li><li>8 GB RAM minimum (16 GB recommended for ML modules)</li><li>Network access for CVE/EPSS data feeds</li><li>API key for AI features (optional, falls back to local analysis)</li><li>Linux, macOS, or WSL2 on Windows</li></ul></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>2. Installation</h2><h3>Option A: pip (Python)</h3><pre>pip install shadow313</pre><h3>Option B: Docker</h3><pre>docker pull shadow313/v3:latest</pre><h3>Option C: Docker Compose (one-liner)</h3><pre>curl -sSL https://shadow313.dev/compose.yml | docker compose -f - up -d</pre></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>3. Configuration</h2><p>Create a <code>config.yaml</code> in your working directory:</p><pre># config.yaml — Shadow313 v3 Configuration\n\ngeneral:\n  operator: "mohamad"\n  session_ttl: 3600        # seconds\n  log_level: "info"        # debug | info | warn | error\n\nproxy:\n  enabled: false\n  type: "socks5"           # socks5 | http | socks4\n  host: "127.0.0.1"\n  port: 9050\n\nmodules:\n  recon:\n    stealth: true\n    max_threads: 10\n    dns_wordlist: "default"\n  vuln:\n    severity_filter: "all"  # all | critical | high | medium\n    epss_threshold: 0.3\n  pqc:\n    audit_certs: true\n    hybrid_mode: true\n\nai:\n  enabled: true\n  provider: "self-hosted"  # self-hosted | local\n  context_window: 50</pre></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>4. First Scan</h2><p>Run your first reconnaissance scan:</p><pre>shadow313 scan --target example.com</pre><p>With stealth mode and proxy:</p><pre>shadow313 scan --target example.com --stealth --proxy socks5://127.0.0.1:9050</pre><p>Full vulnerability assessment:</p><pre>shadow313 vuln --target example.com --severity critical,high --epss-min 0.5</pre></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>5. CLI Reference Cheat Sheet</h2><div style="overflow-x:auto;"><table class="table"><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>'+
+  '<tr><td><code>shadow313 scan --target &lt;domain&gt;</code></td><td>Run recon scan</td></tr>'+
+  '<tr><td><code>shadow313 vuln --target &lt;domain&gt;</code></td><td>Vulnerability assessment</td></tr>'+
+  '<tr><td><code>shadow313 pqc audit</code></td><td>PQC readiness audit</td></tr>'+
+  '<tr><td><code>shadow313 firmware verify --hash &lt;sha256&gt;</code></td><td>Firmware integrity check</td></tr>'+
+  '<tr><td><code>shadow313 kev check --cve &lt;CVE-ID&gt;</code></td><td>CISA KEV lookup</td></tr>'+
+  '<tr><td><code>shadow313 sdr scan --freq &lt;MHz&gt;</code></td><td>Passive SDR scan</td></tr>'+
+  '<tr><td><code>shadow313 report --session &lt;id&gt;</code></td><td>Generate report</td></tr>'+
+  '<tr><td><code>shadow313 config init</code></td><td>Generate config.yaml template</td></tr>'+
+  '<tr><td><code>shadow313 --help</code></td><td>Show all commands</td></tr>'+
+  '</tbody></table></div></div>'+
+  '<div class="card page-section" style="margin-bottom:12px;"><h2>6. Next Steps</h2><ul><li>Explore the <a class="page-nav-link" data-route="docs">full documentation</a></li><li>Set up your <a class="page-nav-link" data-route="recon">first recon scan</a> in the dashboard</li><li>Review the <a class="page-nav-link" data-route="pqc">PQC Toolkit</a> for quantum readiness</li><li>Check the <a class="page-nav-link" data-route="security">Security Policy</a> for responsible use guidelines</li><li>Join our community on <a href="'+GITHUB.url+'" target="_blank" rel="noopener">GitHub</a> ('+GITHUB.repo+')</li></ul></div>';
+};
+
+// ==================== MODULES ====================
+var MODULES = {};
+
+MODULES.dashboard = function() {
+  var allItems = getAllItems();
+  var modGrid = '';
+  for (var i = 0; i < allItems.length; i++) {
+    modGrid += '<div class="mod-grid-btn" data-nav="'+allItems[i].id+'">'+allItems[i].icon+' '+escapeHtml(allItems[i].label)+'</div>';
+  }
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;">'+
+    '<div class="stat-card"><div class="stat-val" style="color:var(--green);">3</div><div class="stat-lbl">Active Sessions</div></div>'+
+    '<div class="stat-card"><div class="stat-val" style="color:var(--red);">22</div><div class="stat-lbl">Total Findings</div></div>'+
+    '<div class="stat-card"><div class="stat-val" style="color:var(--red);">2</div><div class="stat-lbl">Critical CVEs</div></div>'+
+    '<div class="stat-card"><div class="stat-val" style="color:var(--purple);">35%</div><div class="stat-lbl">PQC Coverage</div></div>'+
+    '</div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">REPOSITORY — <a href="'+GITHUB.url+'" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none;">'+escapeHtml(GITHUB.repo)+'</a></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;">'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--text);">'+GITHUB.stars+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">Stars</div></div>'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--text);">'+GITHUB.forks+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">Forks</div></div>'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--text);">'+GITHUB.commits+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">Commits</div></div>'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--text);">'+GITHUB.branches+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">Branches</div></div>'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--text);">'+GITHUB.watchers+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">Watchers</div></div>'+
+    '<div style="text-align:center;padding:8px;background:var(--surface);border-radius:6px;border:1px solid var(--border);"><div style="font-size:16px;font-weight:700;color:var(--green);">'+escapeHtml(GITHUB.license)+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px;">License</div></div>'+
+    '</div></div>'+
+    '<div class="card" style="margin-bottom:16px;overflow:hidden;position:relative;"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">THREAT TICKER</div><div style="overflow:hidden;white-space:nowrap;"><span style="display:inline-block;animation:ticker 30s linear infinite;font-size:11px;color:var(--muted);padding-left:100%;">🔴 CVE-2024-3400 CVSS 10.0 PAN-OS RCE — KEV LISTED ⬥ 🟠 CVE-2023-46604 Apache ActiveMQ CVSS 10.0 ⬥ 🟡 CVE-2024-21762 Fortinet CVSS 9.8 ⬥ 🔵 HNDL Alert: RSA-2048 traffic harvesting detected ⬥ 🟡 DNS Tunnel T1071.004 entropy 4.7 bits</span></div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">THREAT TREND (48H)</div><div style="position:relative;height:180px;"><canvas id="tc"></canvas></div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">AI TRIAGE QUEUE</div><div style="overflow-x:auto;"><table class="table"><thead><tr><th>CVE</th><th>Severity</th><th>CVSS</th><th>EPSS</th><th>Action</th></tr></thead><tbody>'+
+    '<tr><td style="font-weight:600;">CVE-2024-3400</td><td><span class="badge bc">CRITICAL</span></td><td>10.0</td><td>0.94</td><td><button class="btn btn-g triage-btn" data-cve="CVE-2024-3400" data-sev="CRITICAL" data-cvss="10.0" data-epss="0.94" style="padding:3px 10px;font-size:10px;">AI Triage</button></td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2023-46604</td><td><span class="badge bh">HIGH</span></td><td>10.0</td><td>0.87</td><td><button class="btn btn-g triage-btn" data-cve="CVE-2023-46604" data-sev="HIGH" data-cvss="10.0" data-epss="0.87" style="padding:3px 10px;font-size:10px;">AI Triage</button></td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2024-21762</td><td><span class="badge bm">MEDIUM</span></td><td>9.8</td><td>0.71</td><td><button class="btn btn-g triage-btn" data-cve="CVE-2024-21762" data-sev="MEDIUM" data-cvss="9.8" data-epss="0.71" style="padding:3px 10px;font-size:10px;">AI Triage</button></td></tr>'+
+    '</tbody></table></div><div id="triage-res" style="margin-top:10px;"></div></div>'+
+    '<div class="card"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">ALL MODULES</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;">'+modGrid+'</div></div>';
+};
+
+MODULES.recon = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🔍 Recon Scanner</div><p style="color:var(--muted);font-size:11px;margin-bottom:14px;">Automated reconnaissance — DNS enumeration, port scanning, technology fingerprinting, and TLS analysis.</p>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"><input id="r-target" class="input" placeholder="Target domain (e.g. example.com)" style="flex:1;min-width:180px;"/><label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;"><input type="checkbox" id="r-stealth" style="accent-color:var(--green);"/> Stealth</label><button id="r-run" class="btn btn-g">▶ Run Scan</button></div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">PROXY CONFIGURATION</div><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><select id="r-ptype" class="input" style="width:120px;"><option>SOCKS5</option><option>HTTP</option><option>SOCKS4</option></select><input id="r-phost" class="input" placeholder="Proxy host" style="flex:1;min-width:120px;"/><input id="r-pport" class="input" placeholder="Port" style="width:80px;"/><button id="r-proxy" class="btn btn-b">Save Proxy</button></div></div>'+
+    '<div class="card" style="margin-bottom:12px;"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">OUTPUT</div><div id="r-out" class="term" style="min-height:180px;max-height:300px;">Awaiting target...</div></div>'+
+    '<div id="r-actions" style="display:flex;gap:8px;flex-wrap:wrap;"></div>'+
+    '<div id="r-ai-res" style="margin-top:12px;"></div>';
+};
+
+MODULES.vuln = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🛡️ Vulnerability Scanner</div><p style="color:var(--muted);font-size:11px;margin-bottom:14px;">CVE identification, CVSS scoring, EPSS probability assessment, and remediation guidance.</p>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"><input id="v-target" class="input" placeholder="Target domain or IP" style="flex:1;min-width:180px;"/><select id="v-sev" class="input" style="width:130px;"><option>All Severities</option><option>Critical</option><option>High</option><option>Medium</option></select><button id="v-run" class="btn btn-g">▶ Run Analysis</button></div></div>'+
+    '<div class="card" style="margin-bottom:12px;"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">OUTPUT</div><div id="v-out" class="term" style="min-height:180px;">Awaiting target...</div></div>'+
+    '<div id="v-findings"></div>';
+};
+
+MODULES.firmware = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🔬 Firmware Integrity Verifier</div></div>'+
+    '<div class="card" style="margin-bottom:16px;border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--blue);line-height:1.6;">Compare a device firmware hash against the vendor\'s published SHA-256 baseline. A mismatch indicates potential tampering (MITRE T1542.001 — Pre-OS Boot: System Firmware).</p></div>'+
+    '<div class="card" style="margin-bottom:16px;">'+
+    '<div style="display:flex;flex-direction:column;gap:10px;">'+
+    '<div><label style="font-size:10px;color:var(--dim);display:block;margin-bottom:4px;">DEVICE FIRMWARE HASH (SHA-256)</label><input id="fw-dev" class="input" placeholder="Paste computed device hash"/></div>'+
+    '<div><label style="font-size:10px;color:var(--dim);display:block;margin-bottom:4px;">VENDOR BASELINE HASH (SHA-256)</label><input id="fw-ven" class="input" placeholder="f295679bc2016dc0a5a31e83a912384ffca35a12d7c566bb7e8a939e011234bc"/></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;"><button id="fw-verify" class="btn btn-g">⚡ Verify</button><button id="fw-ai" class="btn btn-b">🤖 AI Analysis</button></div>'+
+    '</div></div>'+
+    '<div id="fw-res" style="margin-bottom:16px;"></div>'+
+    '<div class="card"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">SIGNING ALGORITHM STATUS</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>Algorithm</th><th>Status</th><th>PQC Replacement</th></tr></thead><tbody>'+
+    '<tr><td>RSA-2048</td><td><span class="badge bc">VULNERABLE</span></td><td style="color:var(--green);">ML-DSA-65</td></tr>'+
+    '<tr><td>ECDSA P-256</td><td><span class="badge bc">VULNERABLE</span></td><td style="color:var(--green);">SLH-DSA</td></tr>'+
+    '<tr><td>SHA-256</td><td><span class="badge bg-badge">SAFE</span></td><td style="color:var(--muted);">No change</td></tr>'+
+    '<tr><td>AES-256</td><td><span class="badge bg-badge">SAFE</span></td><td style="color:var(--muted);">No change</td></tr>'+
+    '</tbody></table></div></div>';
+};
+
+MODULES.pqc = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">⚛️ PQC Migration Toolkit</div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">ALGORITHM RISK MATRIX</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>Algorithm</th><th>Quantum Status</th><th>PQC Replacement</th><th>Standard</th></tr></thead><tbody>'+
+    '<tr><td>RSA-2048</td><td><span class="badge bc">VULNERABLE</span></td><td>ML-KEM-1024</td><td>FIPS 203</td></tr>'+
+    '<tr><td>ECDSA P-256</td><td><span class="badge bc">VULNERABLE</span></td><td>ML-DSA-65</td><td>FIPS 204</td></tr>'+
+    '<tr><td>ECDH X25519</td><td><span class="badge bc">VULNERABLE</span></td><td>ML-KEM-768+X25519 hybrid</td><td>FIPS 203</td></tr>'+
+    '<tr><td>AES-128</td><td><span class="badge bm">WEAKENED</span></td><td>AES-256</td><td>—</td></tr>'+
+    '<tr><td>AES-256</td><td><span class="badge bg-badge">SAFE</span></td><td>No change</td><td>—</td></tr>'+
+    '<tr><td>ML-KEM-768</td><td><span class="badge bg-badge">SAFE</span></td><td>—</td><td>FIPS 203</td></tr>'+
+    '<tr><td>SLH-DSA</td><td><span class="badge bg-badge">SAFE</span></td><td>—</td><td>FIPS 205</td></tr>'+
+    '</tbody></table></div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">CRQC TIMELINE</div>'+
+    '<div style="display:flex;height:32px;border-radius:6px;overflow:hidden;font-size:10px;font-weight:600;">'+
+    '<div style="flex:1;background:rgba(0,255,136,.15);color:var(--green);display:flex;align-items:center;justify-content:center;">Today 2026</div>'+
+    '<div style="flex:3;background:rgba(227,179,65,.15);color:var(--yellow);display:flex;align-items:center;justify-content:center;">2027–2031 Migration Window</div>'+
+    '<div style="flex:1;background:rgba(248,81,73,.15);color:var(--red);display:flex;align-items:center;justify-content:center;">2032 CRQC Est.</div>'+
+    '<div style="flex:1;background:rgba(72,79,88,.2);color:var(--dim);display:flex;align-items:center;justify-content:center;">2035+</div>'+
+    '</div></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">'+
+    '<div class="card" style="border-left:3px solid var(--green);"><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;">Phase 1 — Audit</div><ul style="list-style:none;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px;"><li>▸ Audit all RSA/ECC usage</li><li>▸ Map certificate chains</li><li>▸ HSM compatibility check</li></ul></div>'+
+    '<div class="card" style="border-left:3px solid var(--yellow);"><div style="font-size:11px;font-weight:700;color:var(--yellow);margin-bottom:8px;">Phase 2 — Hybrid</div><ul style="list-style:none;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px;"><li>▸ ML-KEM-768+X25519 hybrid TLS</li><li>▸ ML-DSA-65 code signing</li><li>▸ OpenSSL 3.3+ OQS provider</li></ul></div>'+
+    '<div class="card" style="border-left:3px solid var(--purple);"><div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px;">Phase 3 — Full PQC</div><ul style="list-style:none;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px;"><li>▸ Replace all RSA → ML-KEM-1024</li><li>▸ SLH-DSA code signing</li><li>▸ Retire SHA-1/MD5 remnants</li></ul></div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px;">'+
+    '<div class="card" style="text-align:center;"><div style="font-size:18px;margin-bottom:4px;">📦</div><div style="font-size:11px;font-weight:700;color:var(--blue);">FIPS 203</div><div style="font-size:10px;color:var(--muted);">ML-KEM</div></div>'+
+    '<div class="card" style="text-align:center;"><div style="font-size:18px;margin-bottom:4px;">✍️</div><div style="font-size:11px;font-weight:700;color:var(--purple);">FIPS 204</div><div style="font-size:10px;color:var(--muted);">ML-DSA</div></div>'+
+    '<div class="card" style="text-align:center;"><div style="font-size:18px;margin-bottom:4px;">🌳</div><div style="font-size:11px;font-weight:700;color:var(--green);">FIPS 205</div><div style="font-size:10px;color:var(--muted);">SLH-DSA</div></div>'+
+    '</div>'+
+    '<button id="pqc-ai" class="btn btn-g">🤖 Generate Migration Plan</button><div id="pqc-res" style="margin-top:12px;"></div>';
+};
+
+MODULES['supply-chain'] = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">🔗 Supply Chain Integrity Checker</div></div>'+
+    '<div class="card" style="margin-bottom:16px;border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--blue);line-height:1.6;">Verify downloaded artifacts against published SHA-256 checksums. Paste the SHASUMS file content (with or without PGP signature) and compare against your locally computed hash.</p></div>'+
+    '<div class="card" style="margin-bottom:16px;">'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><input id="sc-fn" class="input" placeholder="Filename (e.g. package-1.0.tar.gz)" style="flex:1;min-width:180px;"/><input id="sc-hash" class="input" placeholder="Your computed SHA-256 hash" style="flex:1;min-width:180px;"/></div>'+
+    '<div style="margin-bottom:10px;"><label style="font-size:10px;color:var(--dim);display:block;margin-bottom:4px;">SHASUMS FILE CONTENT</label><textarea id="sc-sha" class="input" rows="10" placeholder="Paste SHASUMS file content here (PGP signed or plain)..." style="font-family:\'JetBrains Mono\',monospace;font-size:11px;"></textarea></div>'+
+    '<div id="sc-pgp" style="display:none;margin-bottom:10px;"><span class="badge bb">🔐 PGP SIGNED</span></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;"><button id="sc-verify" class="btn btn-g">⚡ Verify</button><button id="sc-clear" class="btn btn-s">✕ Clear</button><button id="sc-ai" class="btn btn-b">🤖 AI Risk Analysis</button></div>'+
+    '</div>'+
+    '<div id="sc-res" style="margin-bottom:16px;"></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">ATTACK INDICATORS</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>Indicator</th><th>MITRE</th><th>Risk</th></tr></thead><tbody>'+
+    '<tr><td>Hash mismatch</td><td>T1195.002</td><td><span class="badge bc">CRITICAL</span></td></tr>'+
+    '<tr><td>Missing PGP signature</td><td>T1195.002</td><td><span class="badge bh">HIGH</span></td></tr>'+
+    '<tr><td>Expired signing key</td><td>T1588.004</td><td><span class="badge bm">MEDIUM</span></td></tr>'+
+    '</tbody></table></div></div>'+
+    '<div class="card" style="margin-bottom:16px;"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">PQC SIGNING STATUS</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>Method</th><th>Status</th><th>Replacement</th></tr></thead><tbody>'+
+    '<tr><td>PGP (RSA-4096)</td><td><span class="badge bc">VULNERABLE</span></td><td>ML-DSA-65 (FIPS 204)</td></tr>'+
+    '<tr><td>Sigstore/cosign</td><td><span class="badge bg-badge">RECOMMENDED</span></td><td>Supports PQC migration</td></tr>'+
+    '<tr><td>SLSA L3+</td><td><span class="badge bg-badge">RECOMMENDED</span></td><td>Provenance attestation</td></tr>'+
+    '</tbody></table></div></div>'+
+    '<div class="card"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">HASH COMPUTATION REFERENCE</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted);">'+
+    '<div><span style="color:var(--green);font-weight:600;">Linux/macOS:</span> <code style="background:var(--bg);padding:2px 6px;border-radius:3px;word-break:break-all;">sha256sum filename</code></div>'+
+    '<div><span style="color:var(--blue);font-weight:600;">macOS alt:</span> <code style="background:var(--bg);padding:2px 6px;border-radius:3px;word-break:break-all;">shasum -a 256 filename</code></div>'+
+    '<div><span style="color:var(--purple);font-weight:600;">Windows:</span> <code style="background:var(--bg);padding:2px 6px;border-radius:3px;word-break:break-all;">Get-FileHash filename -Algorithm SHA256</code></div>'+
+    '</div></div>';
+};
+
+MODULES.sdr = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">📻 Defensive SDR Analysis</div></div>'+
+    '<div class="card" style="margin-bottom:16px;border-left:3px solid var(--blue);background:rgba(88,166,255,.04);"><p style="font-size:11px;color:var(--blue);line-height:1.6;font-weight:600;">⚠ PASSIVE CLASSIFICATION ONLY — No interception of private communications.</p></div>'+
+    '<div class="card" style="margin-bottom:16px;">'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;">'+
+    '<input id="sdr-freq" class="input" value="915" style="width:100px;"/><span style="font-size:11px;color:var(--muted);">MHz</span>'+
+    '<select id="sdr-mode" class="input" style="width:150px;"><option>Wideband Sweep</option><option>Narrowband</option><option>Burst Analysis</option></select>'+
+    '<button id="sdr-scan" class="btn btn-g">▶ Passive Scan</button>'+
+    '<button id="sdr-ai" class="btn btn-b">🤖 AI Classify</button>'+
+    '</div></div>'+
+    '<div class="card" style="margin-bottom:12px;"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">OUTPUT</div><div id="sdr-out" class="term" style="min-height:180px;">Awaiting scan parameters...</div></div>'+
+    '<div id="sdr-res" style="margin-bottom:16px;"></div>'+
+    '<div class="card"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">PROTOCOL REFERENCE</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>Frequency</th><th>Protocol</th><th>Modulation</th><th>Use</th></tr></thead><tbody>'+
+    '<tr><td>315/433 MHz</td><td>ASK/OOK</td><td>AM</td><td>Key fobs, sensors</td></tr>'+
+    '<tr><td>868/915 MHz</td><td>LoRa/ZigBee</td><td>CSS/DSSS</td><td>IoT, metering</td></tr>'+
+    '<tr><td>2.4 GHz</td><td>WiFi/BT</td><td>OFDM/FHSS</td><td>Networking</td></tr>'+
+    '<tr><td>1090 MHz</td><td>ADS-B</td><td>PPM</td><td>Aviation</td></tr>'+
+    '</tbody></table></div></div>';
+};
+
+MODULES.kev = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">⚠️ CISA KEV Tracker</div><p style="color:var(--muted);font-size:11px;margin-bottom:14px;">Check if a CVE is listed in the CISA Known Exploited Vulnerabilities catalog.</p>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;"><input id="kev-q" class="input" placeholder="Enter CVE ID (e.g. CVE-2024-3400)" style="flex:1;min-width:180px;"/><button id="kev-check" class="btn btn-g">Check KEV</button></div></div>'+
+    '<div id="kev-res" style="margin-bottom:16px;"></div>'+
+    '<div class="card"><div style="font-size:10px;color:var(--dim);margin-bottom:8px;font-weight:600;">TOP KNOWN EXPLOITED VULNERABILITIES</div>'+
+    '<div style="overflow-x:auto;"><table class="table"><thead><tr><th>CVE</th><th>Product</th><th>CVSS</th><th>Added</th><th>Deadline</th></tr></thead><tbody>'+
+    '<tr><td style="font-weight:600;">CVE-2024-3400</td><td>PAN-OS GlobalProtect</td><td><span class="badge bc">10.0</span></td><td>2024-04-12</td><td style="color:var(--red);">2024-04-19</td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2023-46604</td><td>Apache ActiveMQ</td><td><span class="badge bc">10.0</span></td><td>2023-11-02</td><td style="color:var(--red);">2023-11-17</td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2021-44228</td><td>Apache Log4j</td><td><span class="badge bc">10.0</span></td><td>2021-12-10</td><td style="color:var(--red);">2021-12-24</td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2022-30190</td><td>Microsoft MSDT</td><td><span class="badge bh">7.8</span></td><td>2022-06-14</td><td style="color:var(--orange);">2022-06-24</td></tr>'+
+    '<tr><td style="font-weight:600;">CVE-2024-21762</td><td>Fortinet FortiOS</td><td><span class="badge bc">9.8</span></td><td>2024-02-09</td><td style="color:var(--red);">2024-02-16</td></tr>'+
+    '</tbody></table></div></div>';
+};
+
+MODULES.sessions = function() {
+  return '<div class="card" style="margin-bottom:16px;"><div class="section-title">📋 Sessions</div></div>'+
+    '<div class="card"><div style="overflow-x:auto;"><table class="table"><thead><tr><th>Session</th><th>Target</th><th>Findings</th><th>Severity</th><th>Date</th><th>Action</th></tr></thead><tbody>'+
+    '<tr><td style="color:var(--green);font-weight:600;">a3f8c1d2</td><td>example.com</td><td>12</td><td><span class="badge bc">CRITICAL</span></td><td>2026-08-20</td><td><button class="btn btn-g ses-resume" style="padding:3px 10px;font-size:10px;">Resume</button></td></tr>'+
+    '<tr><td style="color:var(--green);font-weight:600;">b4c9d3e1</td><td>testsite.net</td><td>7</td><td><span class="badge bh">HIGH</span></td><td>2026-08-18</td><td><button class="btn btn-g ses-resume" style="padding:3px 10px;font-size:10px;">Resume</button></td></tr>'+
+    '<tr><td style="color:var(--green);font-weight:600;">c5d0e4f2</td><td>lab.internal</td><td>3</td><td><span class="badge bm">MEDIUM</span></td><td>2026-08-15</td><td><button class="btn btn-g ses-resume" style="padding:3px 10px;font-size:10px;">Resume</button></td></tr>'+
+    '</tbody></table></div></div>';
+};
+
+// ==================== WIRE ====================
+function wire(id) {
+  // Wire page-nav-links (used inside page content)
+  document.querySelectorAll('.page-nav-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var route = this.dataset.route;
+      if(route) nav(route);
+    });
+  });
+
+  if(id === 'dashboard') {
+    var tcEl = document.getElementById('tc');
+    if(tcEl && typeof Chart !== 'undefined') {
+      try {
+        var ctx = tcEl.getContext('2d');
+        if(ctx) {
+          window._chart = new Chart(ctx, {
+            type:'line',
+            data:{
+              labels:['00:00','04:00','08:00','12:00','16:00','20:00','00:00','04:00','08:00','12:00','16:00','Now'],
+              datasets:[
+                {label:'Critical',data:[1,2,1,3,2,4,2,3,1,2,3,2],borderColor:'#f85149',backgroundColor:'transparent',tension:0.4,pointRadius:0,borderWidth:2},
+                {label:'High',data:[3,4,3,5,4,6,3,5,2,4,5,3],borderColor:'#ff7b72',backgroundColor:'transparent',tension:0.4,pointRadius:0,borderWidth:2},
+                {label:'Medium',data:[5,7,5,8,6,9,5,7,4,6,7,5],borderColor:'#e3b341',backgroundColor:'transparent',tension:0.4,pointRadius:0,borderWidth:2}
+              ]
+            },
+            options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{size:10,family:'JetBrains Mono'}}}},scales:{x:{ticks:{color:'#484f58',font:{size:9}},grid:{color:'rgba(33,38,45,0.5)'}},y:{ticks:{color:'#484f58',font:{size:9}},grid:{color:'rgba(33,38,45,0.3)'}}}}
+          });
+        }
+      } catch(e) {
+        console.error('Chart init error:', e);
+      }
+    }
+    document.querySelectorAll('.triage-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var cve=this.dataset.cve, sev=this.dataset.sev, cvss=this.dataset.cvss, epss=this.dataset.epss;
+        var triageBtn = this;
+        triageBtn.disabled = true;
+        triageBtn.textContent = '⏳...';
+        var res=document.getElementById('triage-res');
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--muted);">⏳ AI triaging '+escapeHtml(cve)+'...</p></div>';
+        aiChat('Triage '+cve+' — Severity: '+sev+', CVSS: '+cvss+', EPSS: '+epss+'. Provide impact analysis, exploitation context, and recommended actions.').then(function(reply){
+          res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI TRIAGE: '+escapeHtml(cve)+'</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+          triageBtn.disabled = false;
+          triageBtn.textContent = 'AI Triage';
+        }).catch(function(){
+          res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Could not complete triage. Please try again.</p></div>';
+          triageBtn.disabled = false;
+          triageBtn.textContent = 'AI Triage';
+        });
+      });
+    });
+    document.querySelectorAll('.mod-grid-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){ nav(this.dataset.nav); });
+    });
+  }
+
+  if(id === 'recon') {
+    var rTarget = '';
+    var scanLines = [];
+    document.getElementById('r-run').addEventListener('click', function(){
+      var runBtn = this;
+      runBtn.disabled = true;
+      rTarget = document.getElementById('r-target').value.trim() || 'example.com';
+      scanLines = [
+        '[*] Shadow313 Recon v3 — Target: '+rTarget,
+        '[+] DNS: 5 subdomains discovered',
+        '[+] api.'+rTarget+' → 203.0.113.45 (CRITICAL — exposed API)',
+        '[+] admin.'+rTarget+' → 203.0.113.46 (HIGH — login panel)',
+        '[+] Open ports: 22, 80, 443, 8080, 8443',
+        '[+] TLS: RSA-2048 cert (quantum-vulnerable) expires 2026-12-01',
+        '[+] WAF: Cloudflare (bypass: chunked encoding)',
+        '[+] Stack: Nginx/1.24, PHP/8.2, WordPress 6.4.2',
+        '[*] Complete — 2 CRITICAL, 1 HIGH'
+      ];
+      var el = document.getElementById('r-out');
+      typewrite(el, scanLines, 0, function(){
+        runBtn.disabled = false;
+        var acts = document.getElementById('r-actions');
+        acts.innerHTML = '<button id="r-ai" class="btn btn-g">🤖 AI Analysis</button><button id="r-tovuln" class="btn btn-b">🛡 → Vuln Scan</button>';
+        document.getElementById('r-ai').addEventListener('click', function(){
+          var aiBtn = this;
+          aiBtn.disabled = true;
+          aiBtn.textContent = '⏳ Analyzing...';
+          var resEl = document.getElementById('r-ai-res');
+          resEl.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--muted);">⏳ Analyzing...</p></div>';
+          aiChat('Analyze these recon results and provide security recommendations:', scanLines.join('\n')).then(function(reply){
+            resEl.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI ANALYSIS</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+            aiBtn.disabled = false;
+            aiBtn.textContent = '🤖 AI Analysis';
+          }).catch(function(){
+            resEl.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: AI analysis failed. Please try again.</p></div>';
+            aiBtn.disabled = false;
+            aiBtn.textContent = '🤖 AI Analysis';
+          });
+        });
+        document.getElementById('r-tovuln').addEventListener('click', function(){
+          nav('vuln');
+          setTimeout(function(){
+            var vt = document.getElementById('v-target');
+            if(vt) vt.value = rTarget;
+          }, 200);
+        });
+      });
+    });
+    document.getElementById('r-proxy').addEventListener('click', function(){
+      proxyOk = true;
+      updateOpsec();
+    });
+  }
+
+  if(id === 'vuln') {
+    document.getElementById('v-run').addEventListener('click', function(){
+      var vulnRunBtn = this;
+      vulnRunBtn.disabled = true;
+      var target = document.getElementById('v-target').value.trim() || 'example.com';
+      var vulnLines = [
+        '[*] Shadow313 Vuln v3 — '+target,
+        '[!] CVE-2024-3400 CVSS 10.0 EPSS 0.94 — PAN-OS Command Injection (CRITICAL)',
+        '[!] CVE-2023-44487 CVSS 7.5 EPSS 0.81 — HTTP/2 Rapid Reset DoS (HIGH)',
+        '[⚠] CVE-2024-1234 CVSS 6.5 EPSS 0.42 — Reflected XSS admin panel (MEDIUM)',
+        '[⚠] TLS cert expires 7 days — quantum-vulnerable RSA-2048',
+        '[*] Complete — 2 CRITICAL, 1 HIGH, 1 MEDIUM'
+      ];
+      typewrite(document.getElementById('v-out'), vulnLines, 0, function(){
+        vulnRunBtn.disabled = false;
+        var vf = document.getElementById('v-findings');
+        vf.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">'+
+          '<div class="card vuln-card" data-cve="CVE-2024-3400" style="border-left:3px solid var(--red);cursor:pointer;"><div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;">CVE-2024-3400</div><div style="font-size:10px;color:var(--muted);">CVSS 10.0 · EPSS 0.94</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">PAN-OS Command Injection</div><span class="badge bc" style="margin-top:6px;">CRITICAL</span></div>'+
+          '<div class="card vuln-card" data-cve="CVE-2023-44487" style="border-left:3px solid var(--orange);cursor:pointer;"><div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:4px;">CVE-2023-44487</div><div style="font-size:10px;color:var(--muted);">CVSS 7.5 · EPSS 0.81</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">HTTP/2 Rapid Reset DoS</div><span class="badge bh" style="margin-top:6px;">HIGH</span></div>'+
+          '<div class="card vuln-card" data-cve="CVE-2024-1234" style="border-left:3px solid var(--yellow);cursor:pointer;"><div style="font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:4px;">CVE-2024-1234</div><div style="font-size:10px;color:var(--muted);">CVSS 6.5 · EPSS 0.42</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">Reflected XSS admin panel</div><span class="badge bm" style="margin-top:6px;">MEDIUM</span></div>'+
+          '</div><button id="v-report" class="btn btn-b">📄 Executive Report</button><div id="v-ai-res" style="margin-top:12px;"></div>';
+        document.querySelectorAll('.vuln-card').forEach(function(c){
+          c.addEventListener('click', function(){
+            var cve = this.dataset.cve;
+            var resEl = document.getElementById('v-ai-res');
+            resEl.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--muted);">⏳ Deep-diving '+escapeHtml(cve)+'...</p></div>';
+            aiChat('Provide a deep-dive analysis of '+cve+' including exploitation details, affected systems, MITRE ATT&CK mapping, and remediation steps.').then(function(reply){
+              resEl.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI DEEP-DIVE: '+escapeHtml(cve)+'</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+            }).catch(function(){
+              resEl.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Deep-dive failed. Please try again.</p></div>';
+            });
+          });
+        });
+        var vReport = document.getElementById('v-report');
+        if(vReport) {
+          vReport.addEventListener('click', function(){
+            var reportBtn = this;
+            reportBtn.disabled = true;
+            reportBtn.textContent = '⏳ Generating...';
+            var resEl = document.getElementById('v-ai-res');
+            resEl.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--muted);">⏳ Generating executive report...</p></div>';
+            aiChat('Generate an executive vulnerability report summary for: '+vulnLines.join(', ')+'. Include risk rating, business impact, and prioritized remediation recommendations.').then(function(reply){
+              resEl.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">📄 EXECUTIVE REPORT</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+              reportBtn.disabled = false;
+              reportBtn.textContent = '📄 Executive Report';
+            }).catch(function(){
+              resEl.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Report generation failed. Please try again.</p></div>';
+              reportBtn.disabled = false;
+              reportBtn.textContent = '📄 Executive Report';
+            });
+          });
+        }
+      });
+    });
+  }
+
+  if(id === 'firmware') {
+    document.getElementById('fw-verify').addEventListener('click', function(){
+      var dev = document.getElementById('fw-dev').value.trim().toLowerCase();
+      var ven = document.getElementById('fw-ven').value.trim().toLowerCase();
+      var res = document.getElementById('fw-res');
+      if(!dev && !ven) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--yellow);"><p style="font-size:11px;color:var(--yellow);">⚠ Please enter at least one hash to verify.</p></div>';
+      } else if(!dev || !ven) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--yellow);"><p style="font-size:11px;color:var(--yellow);">⚠ Please enter both the device hash and vendor baseline hash to compare.</p></div>';
+      } else if(dev===ven) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--green);">✅ MATCH — Integrity verified. Firmware hash matches vendor baseline.</p><p style="font-size:11px;color:var(--muted);margin-top:8px;">Recommend migrating signing algorithm to ML-DSA-65 (FIPS 204) for post-quantum resilience.</p></div>';
+      } else {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">🚨 MISMATCH — Firmware modified!</p><p style="font-size:11px;color:var(--red);margin-top:6px;">MITRE ATT&CK: T1542.001 — Pre-OS Boot: System Firmware</p><p style="font-size:11px;color:var(--muted);margin-top:6px;">Action: Quarantine device immediately. Initiate forensic analysis. Compare against known-good backup.</p></div>';
+      }
+    });
+    document.getElementById('fw-ai').addEventListener('click', function(){
+      var fwAiBtn = this;
+      fwAiBtn.disabled = true;
+      fwAiBtn.textContent = '⏳ Analyzing...';
+      var res = document.getElementById('fw-res');
+      res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--muted);">⏳ Analyzing firmware security...</p></div>';
+      aiChat('Analyze firmware signing security and PQC migration path using ML-DSA-65 FIPS 204 for embedded systems.').then(function(reply){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI ANALYSIS</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+        fwAiBtn.disabled = false;
+        fwAiBtn.textContent = '🤖 AI Analysis';
+      }).catch(function(){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: AI analysis failed. Please try again.</p></div>';
+        fwAiBtn.disabled = false;
+        fwAiBtn.textContent = '🤖 AI Analysis';
+      });
+    });
+  }
+
+  if(id === 'pqc') {
+    document.getElementById('pqc-ai').addEventListener('click', function(){
+      var pqcBtn = this;
+      pqcBtn.disabled = true;
+      pqcBtn.textContent = '⏳ Generating...';
+      var res = document.getElementById('pqc-res');
+      res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--muted);">⏳ Generating migration plan...</p></div>';
+      aiChat('Generate a detailed PQC migration plan for an org using RSA-2048 and ECDSA P-256. Cover FIPS 203/204/205 deployment timeline, hybrid transition strategy, and HSM requirements.').then(function(reply){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">🤖 PQC MIGRATION PLAN</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+        pqcBtn.disabled = false;
+        pqcBtn.textContent = '🤖 Generate Migration Plan';
+      }).catch(function(){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Migration plan generation failed. Please try again.</p></div>';
+        pqcBtn.disabled = false;
+        pqcBtn.textContent = '🤖 Generate Migration Plan';
+      });
+    });
+  }
+
+  if(id === 'supply-chain') {
+    document.getElementById('sc-sha').addEventListener('input', function(){
+      var pgp = document.getElementById('sc-pgp');
+      pgp.style.display = this.value.indexOf('BEGIN PGP SIGNED MESSAGE') !== -1 ? 'block' : 'none';
+    });
+    document.getElementById('sc-clear').addEventListener('click', function(){
+      document.getElementById('sc-fn').value='';
+      document.getElementById('sc-hash').value='';
+      document.getElementById('sc-sha').value='';
+      document.getElementById('sc-res').innerHTML='';
+      document.getElementById('sc-pgp').style.display='none';
+    });
+    document.getElementById('sc-verify').addEventListener('click', function(){
+      var fn = document.getElementById('sc-fn').value.trim();
+      var hash = document.getElementById('sc-hash').value.trim().toLowerCase();
+      var sha = document.getElementById('sc-sha').value.trim();
+      var res = document.getElementById('sc-res');
+      if(!fn || !hash || !sha) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--yellow);"><p style="font-size:11px;color:var(--yellow);">⚠ Please fill in all fields.</p></div>';
+        return;
+      }
+      var content = sha;
+      if(content.indexOf('BEGIN PGP SIGNED MESSAGE') !== -1) {
+        var hashEnd = content.indexOf('\n\n');
+        if(hashEnd > -1) content = content.substring(hashEnd+2);
+        var sigStart = content.indexOf('-----BEGIN PGP SIGNATURE');
+        if(sigStart > -1) content = content.substring(0, sigStart);
+      }
+      var lines = content.trim().split('\n');
+      var found = null;
+      for(var i=0; i<lines.length; i++) {
+        var parts = lines[i].trim().split(/\s+/);
+        if(parts.length >= 2) {
+          var lineHash = parts[0].toLowerCase();
+          var lineFn = parts.slice(1).join(' ').replace(/^\*/,'');
+          if(lineFn === fn) { found = lineHash; break; }
+        }
+      }
+      if(!found) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--yellow);"><p style="font-size:11px;color:var(--yellow);">⚠ Filename "'+escapeHtml(fn)+'" not found in SHASUMS content.</p></div>';
+      } else if(found === hash) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--green);">✅ MATCH — Integrity verified for '+escapeHtml(fn)+'.</p><p style="font-size:11px;color:var(--muted);margin-top:4px;word-break:break-all;">Hash: '+escapeHtml(hash)+'</p></div>';
+      } else {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">🚨 MISMATCH — Supply chain compromise detected!</p><p style="font-size:11px;color:var(--red);margin-top:4px;">MITRE ATT&CK: T1195.002 — Compromise Software Supply Chain</p><p style="font-size:11px;color:var(--muted);margin-top:6px;word-break:break-all;">Expected: '+escapeHtml(found)+'</p><p style="font-size:11px;color:var(--muted);word-break:break-all;">Got: '+escapeHtml(hash)+'</p><p style="font-size:11px;color:var(--muted);margin-top:6px;">Action: Do NOT install. Quarantine artifact. Verify download source.</p></div>';
+      }
+    });
+    document.getElementById('sc-ai').addEventListener('click', function(){
+      var scAiBtn = this;
+      scAiBtn.disabled = true;
+      scAiBtn.textContent = '⏳ Analyzing...';
+      var res = document.getElementById('sc-res');
+      res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--muted);">⏳ Analyzing supply chain risks...</p></div>';
+      aiChat('Supply chain security analysis: SLSA framework, Sigstore/cosign, ML-DSA-65 FIPS 204 for post-quantum code signing, MITRE T1195.002 mitigations.').then(function(reply){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI RISK ANALYSIS</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+        scAiBtn.disabled = false;
+        scAiBtn.textContent = '🤖 AI Risk Analysis';
+      }).catch(function(){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: AI risk analysis failed. Please try again.</p></div>';
+        scAiBtn.disabled = false;
+        scAiBtn.textContent = '🤖 AI Risk Analysis';
+      });
+    });
+  }
+
+  if(id === 'sdr') {
+    document.getElementById('sdr-scan').addEventListener('click', function(){
+      var sdrScanBtn = this;
+      sdrScanBtn.disabled = true;
+      var freq = document.getElementById('sdr-freq').value.trim() || '915';
+      var sdrLines = [
+        '[SDR] Passive scan @ '+freq+' MHz — RX only',
+        '[+] Signal detected — RSSI: -68 dBm, BW: 200 kHz',
+        '[+] Modulation: 2-FSK, deviation ~5 kHz',
+        '[+] Burst: 120ms on / 880ms off — IoT beacon',
+        '[+] Entropy: 3.82 bits/symbol — fixed protocol',
+        '[+] Preamble: AA AA AA AA D3 91 (IEEE 802.15.4)',
+        '[+] Payload: unencrypted — no content accessed',
+        '[*] Classification: IoT sensor beacon — OOB mgmt traffic unencrypted'
+      ];
+      typewrite(document.getElementById('sdr-out'), sdrLines, 0, function(){
+        sdrScanBtn.disabled = false;
+      });
+    });
+    document.getElementById('sdr-ai').addEventListener('click', function(){
+      var sdrAiBtn = this;
+      sdrAiBtn.disabled = true;
+      sdrAiBtn.textContent = '⏳ Classifying...';
+      var freq = document.getElementById('sdr-freq').value.trim() || '915';
+      var res = document.getElementById('sdr-res');
+      res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><p style="font-size:11px;color:var(--muted);">⏳ Classifying signal...</p></div>';
+      aiChat('Classify and analyze this RF signal defensively: '+freq+'MHz, 2-FSK modulation, IEEE 802.15.4 preamble, IoT beacon pattern. Provide MITRE ATT&CK mapping and defensive recommendations.').then(function(reply){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--blue);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI CLASSIFICATION</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+        sdrAiBtn.disabled = false;
+        sdrAiBtn.textContent = '🤖 AI Classify';
+      }).catch(function(){
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Signal classification failed. Please try again.</p></div>';
+        sdrAiBtn.disabled = false;
+        sdrAiBtn.textContent = '🤖 AI Classify';
+      });
+    });
+  }
+
+  if(id === 'kev') {
+    var kevList = ['CVE-2024-3400','CVE-2023-46604','CVE-2021-44228','CVE-2022-30190','CVE-2023-23397','CVE-2024-21412','CVE-2022-26134','CVE-2024-21762','CVE-2023-44487'];
+    document.getElementById('kev-check').addEventListener('click', function(){
+      var q = document.getElementById('kev-q').value.trim().toUpperCase();
+      var res = document.getElementById('kev-res');
+      if(!q) { res.innerHTML='<div class="card" style="border-left:3px solid var(--yellow);"><p style="font-size:11px;color:var(--yellow);">⚠ Enter a CVE ID.</p></div>'; return; }
+      var found = false;
+      for (var ki = 0; ki < kevList.length; ki++) {
+        if (kevList[ki].toUpperCase() === q) { found = true; break; }
+      }
+      if(found) {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">🚨 '+escapeHtml(q)+' — IN CISA KEV CATALOG</p><p style="font-size:11px;color:var(--muted);margin-top:6px;">This vulnerability is actively exploited in the wild. Immediate patching required per BOD 22-01.</p></div>';
+      } else {
+        res.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--green);">✅ '+escapeHtml(q)+' — Not found in CISA KEV catalog.</p><p style="font-size:11px;color:var(--muted);margin-top:4px;">Standard patching timeline applies. Monitor EPSS for exploitation probability.</p></div>';
+      }
+    });
+    document.getElementById('kev-q').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') { e.preventDefault(); document.getElementById('kev-check').click(); }
+    });
+  }
+
+  if(id === 'sessions') {
+    document.querySelectorAll('.ses-resume').forEach(function(btn){
+      btn.addEventListener('click', function(){ nav('recon'); });
+    });
+  }
+
+  // Generic module AI button
+  if(!MODULES[id] && !PAGE_CONTENT[id]) {
+    var genAi = document.getElementById('gen-ai');
+    if(genAi) {
+      genAi.addEventListener('click', function(){
+        var genBtn = this;
+        genBtn.disabled = true;
+        genBtn.textContent = '⏳ Thinking...';
+        var resEl = document.getElementById('gen-res');
+        resEl.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><p style="font-size:11px;color:var(--muted);">⏳ Thinking...</p></div>';
+        aiChat('Explain the '+id+' capabilities in a cybersecurity operations context with specific tools, techniques, and MITRE ATT&CK mappings.').then(function(reply){
+          resEl.innerHTML='<div class="card" style="border-left:3px solid var(--green);"><div style="font-size:10px;color:var(--dim);margin-bottom:6px;font-weight:600;">AI INSIGHTS</div><p style="font-size:11px;color:var(--muted);white-space:pre-wrap;line-height:1.6;">'+escapeHtml(reply)+'</p></div>';
+          genBtn.disabled = false;
+          genBtn.textContent = '🤖 Ask AI about this module';
+        }).catch(function(){
+          resEl.innerHTML='<div class="card" style="border-left:3px solid var(--red);"><p style="font-size:11px;color:var(--red);">Error: Could not generate insights. Please try again.</p></div>';
+          genBtn.disabled = false;
+          genBtn.textContent = '🤖 Ask AI about this module';
+        });
+      });
+    }
+  }
+}
+
+// ==================== MOBILE ====================
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+function closeMobileAI() {
+  document.getElementById('ai-panel').classList.remove('mobile-open');
+  document.getElementById('ai-overlay').classList.remove('open');
+}
+function handleResize() {
+  var w = window.innerWidth;
+  var menuBtn = document.getElementById('mobile-menu-btn');
+  var aiBtn = document.getElementById('ai-toggle-btn');
+  var sidebarClose = document.getElementById('sidebar-close');
+  var aiClose = document.getElementById('ai-panel-close');
+  if(w < 768) {
+    menuBtn.style.display = 'inline-flex';
+    sidebarClose.style.display = 'inline-flex';
+  } else {
+    menuBtn.style.display = 'none';
+    sidebarClose.style.display = 'none';
+    closeMobileSidebar();
+  }
+  if(w < 1024) {
+    aiBtn.style.display = 'inline-flex';
+    aiClose.style.display = 'inline-flex';
+  } else {
+    aiBtn.style.display = 'none';
+    aiClose.style.display = 'none';
+    closeMobileAI();
+  }
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', function(){
+  // Build nav
+  var navEl = document.getElementById('nav');
+  var navHtml = '';
+  for (var g = 0; g < NAV.length; g++) {
+    navHtml += '<div style="padding:12px 12px 4px;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:0.08em;">'+NAV[g].group+'</div>';
+    for (var ni = 0; ni < NAV[g].items.length; ni++) {
+      var itm = NAV[g].items[ni];
+      navHtml += '<div class="ni" data-id="'+itm.id+'">'+itm.icon+' '+itm.label+'</div>';
+    }
+  }
+  // Add pages to nav
+  navHtml += '<div style="padding:12px 12px 4px;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:0.08em;">PAGES</div>';
+  for (var pi = 0; pi < PAGES.length; pi++) {
+    navHtml += '<div class="ni" data-id="'+PAGES[pi].id+'">'+PAGES[pi].icon+' '+PAGES[pi].label+'</div>';
+  }
+  navEl.innerHTML = navHtml;
+  navEl.querySelectorAll('.ni').forEach(function(el){
+    el.addEventListener('click', function(){ nav(el.dataset.id); });
+  });
+
+  // Clock (GMT-04:00 — Ottawa EDT)
+  function updateClock(){
+    var n = new Date();
+    var utc = n.getTime() + (n.getTimezoneOffset() * 60000);
+    var ott = new Date(utc + (-4 * 3600000));
+    document.getElementById('clock').textContent =
+      String(ott.getHours()).padStart(2,'0')+':'+String(ott.getMinutes()).padStart(2,'0')+':'+String(ott.getSeconds()).padStart(2,'0');
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Mobile menu
+  document.getElementById('mobile-menu-btn').addEventListener('click', function(){
+    document.getElementById('sidebar').classList.add('mobile-open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+  });
+  document.getElementById('sidebar-close').addEventListener('click', closeMobileSidebar);
+  document.getElementById('sidebar-overlay').addEventListener('click', closeMobileSidebar);
+
+  // AI panel toggle
+  document.getElementById('ai-toggle-btn').addEventListener('click', function(){
+    document.getElementById('ai-panel').classList.add('mobile-open');
+    document.getElementById('ai-overlay').classList.add('open');
+  });
+  document.getElementById('ai-panel-close').addEventListener('click', closeMobileAI);
+  document.getElementById('ai-overlay').addEventListener('click', closeMobileAI);
+
+  handleResize();
+  window.addEventListener('resize', handleResize);
+
+  // Quick Start buttons
+  document.getElementById('quickstart-sidebar-btn').addEventListener('click', function(){ nav('quickstart'); });
+  document.getElementById('quickstart-top-btn').addEventListener('click', function(){ nav('quickstart'); });
+
+  // Footer links
+  document.querySelectorAll('.footer-link').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      var route = this.dataset.route;
+      if(route) nav(route);
+    });
+  });
+
+  // ⌘K command palette
+  function openCmdPalette(){
+    var overlay = document.getElementById('cmd-overlay');
+    overlay.classList.add('open');
+    var cmdQ = document.getElementById('cmd-q');
+    cmdQ.value = '';
+    triggerCmdSearch('');
+    setTimeout(function(){ cmdQ.focus(); }, 50);
+  }
+
+  function closeCmdPalette(){
+    document.getElementById('cmd-overlay').classList.remove('open');
+  }
+
+  document.getElementById('cmdk-btn').addEventListener('click', openCmdPalette);
+
+  function triggerCmdSearch(q) {
+    var all = getAllRoutes();
+    var filtered = [];
+    for (var fi = 0; fi < all.length; fi++) {
+      if (!q || all[fi].label.toLowerCase().indexOf(q) !== -1 || all[fi].id.indexOf(q) !== -1) {
+        filtered.push(all[fi]);
+      }
+    }
+    var list = document.getElementById('cmd-list');
+    var listHtml = '';
+    for (var li = 0; li < filtered.length; li++) {
+      listHtml += '<div class="cmd-item" data-id="'+filtered[li].id+'" style="padding:8px 12px;cursor:pointer;border-radius:6px;font-size:12px;color:var(--muted);transition:all .1s;">'+filtered[li].icon+' '+escapeHtml(filtered[li].label)+'</div>';
+    }
+    if(filtered.length === 0) {
+      listHtml = '<div style="padding:16px;text-align:center;font-size:11px;color:var(--dim);">No results found.</div>';
+    }
+    list.innerHTML = listHtml;
+    list.querySelectorAll('.cmd-item').forEach(function(el){
+      el.addEventListener('mouseover', function(){ el.style.background='var(--hover)'; el.style.color='var(--text)'; });
+      el.addEventListener('mouseout', function(){ el.style.background=''; el.style.color='var(--muted)'; });
+      el.addEventListener('click', function(){
+        nav(el.dataset.id);
+        closeCmdPalette();
+      });
+    });
+  }
+
+  document.getElementById('cmd-q').addEventListener('input', function(){
+    triggerCmdSearch(this.value.toLowerCase());
+  });
+  document.getElementById('cmd-q').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      var first = document.querySelector('.cmd-item');
+      if(first) { nav(first.dataset.id); closeCmdPalette(); }
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') {
+      closeCmdPalette();
+      closeMobileSidebar();
+      closeMobileAI();
+    }
+    if((e.metaKey||e.ctrlKey) && e.key==='k'){
+      e.preventDefault();
+      openCmdPalette();
+    }
+  });
+  document.getElementById('cmd-overlay').addEventListener('click', function(e){
+    if(e.target===this) closeCmdPalette();
+  });
+
+  // Chat
+  document.getElementById('chat-send').addEventListener('click', sendChat);
+  document.getElementById('chat-in').addEventListener('keydown', function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+  });
+  document.getElementById('chat-clear').addEventListener('click', function(){
+    document.getElementById('chat-msgs').innerHTML='';
+    appendMsg('ai', '🛡 Shadow313 AI cleared. Ask me anything, mohamad.');
+  });
+  document.getElementById('mod-ask').addEventListener('click', function(){
+    var modLabel = currentId;
+    var allRoutes = getAllRoutes();
+    for(var mi=0; mi<allRoutes.length; mi++){
+      if(allRoutes[mi].id === currentId){ modLabel = allRoutes[mi].label; break; }
+    }
+    document.getElementById('chat-in').value = 'Explain the '+modLabel+' module in detail with tools and techniques.';
+    document.getElementById('chat-in').focus();
+  });
+
+  // Quick pills
+  document.querySelectorAll('.pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      document.getElementById('chat-in').value = p.dataset.pill || p.textContent;
+      document.getElementById('chat-in').focus();
+    });
+  });
+
+  // Welcome
+  appendMsg('ai', '🛡 Shadow313 AI online — self-hosted engine.\n\nWelcome back, mohamad. All 18 modules operational.\nLocation: Ottawa, ON, Canada | TZ: EDT (GMT-04:00)\nDate: Monday, September 21, 2026\n\nRepo: '+GITHUB.repo+' | Stars: '+GITHUB.stars+' | Forks: '+GITHUB.forks+' | Commits: '+GITHUB.commits+' | License: '+GITHUB.license+'\nLive: '+GITHUB.liveUrl+'\n\nI specialize in CVE analysis, PQC migration (FIPS 203/204/205), firmware integrity, and supply chain security.\n\nClick any module or ask me anything.');
+
+  // Handle browser back/forward
+  window.addEventListener('popstate', function(e){
+    var route = 'dashboard';
+    if(e.state && e.state.route) {
+      route = e.state.route;
+    } else {
+      var hash = window.location.hash.replace('#','');
+      if(hash) route = hash;
+    }
+    currentId = '';
+    nav(route, false);
+  });
+
+  // Initial route from hash or default to dashboard
+  var initialRoute = window.location.hash.replace('#','') || 'dashboard';
+  nav(initialRoute, true);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "module_name": "PE Static Header Analyzer",
+  "file_name": "crypt_untrusted_loader.exe",
+  "file_size_bytes": 154820,
+  "target_machine": "I386 (Intel 386)",
+  "entry_point_pointer": "0x000F4010",
+  "pe_sections": [
+    {
+      "name": "UPX0",
+      "virtualSize": 81920,
+      "virtualAddress": "0x00001000",
+      "rawSize": 0,
+      "rawAddress": "0x00000000",
+      "entropy": 0,
+      "characteristics": [
+        "WRITEABLE",
+        "READWRITE",
+        "EXECUTABLE"
+      ],
+      "anomalous": true
+    },
+    {
+      "name": "UPX1",
+      "virtualSize": 45056,
+      "virtualAddress": "0x00015000",
+      "rawSize": 45056,
+      "rawAddress": "0x00000400",
+      "entropy": 7.95,
+      "characteristics": [
+        "WRITEABLE",
+        "READWRITE",
+        "EXECUTABLE"
+      ],
+      "anomalous": true
+    },
+    {
+      "name": ".rsrc",
+      "virtualSize": 4096,
+      "virtualAddress": "0x00020000",
+      "rawSize": 4096,
+      "rawAddress": "0x0000B400",
+      "entropy": 6.2,
+      "characteristics": [
+        "READONLY"
+      ],
+      "anomalous": false
+    }
+  ],
+  "pe_imports": [
+    "kernel32.dll!LoadLibraryA",
+    "kernel32.dll!GetProcAddress",
+    "kernel32.dll!VirtualAlloc",
+    "kernel32.dll!VirtualFree"
+  ]
+}

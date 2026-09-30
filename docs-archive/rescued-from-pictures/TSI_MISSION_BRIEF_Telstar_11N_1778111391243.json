@@ -1,0 +1,54 @@
+{
+  "mission_timestamp": "2026-05-06T23:49:51.241Z",
+  "mission_context": {
+    "stealth_mode_active": true,
+    "electronic_warfare": {
+      "jamming_active": false,
+      "jamming_intensity": "50%",
+      "protocol": "Continuous Wave Overlay"
+    },
+    "environment": {
+      "weather_condition": "CLEAR",
+      "rain_fade_estimate": "0.5dB"
+    }
+  },
+  "asset_specifications": {
+    "id": "t-11w",
+    "name": "Telstar 11N",
+    "orbital_slot": "37.5°W",
+    "operator": "Telesat",
+    "current_status": "active"
+  },
+  "live_telemetry": {
+    "snr_margin": "20.36 dB",
+    "rx_power": "-30.4 dBm",
+    "buc_temp": "35.2 °C",
+    "packet_loss_rate": "0.14%",
+    "link_state": "NOMINAL"
+  },
+  "ground_station": {
+    "coordinates": {
+      "lat": 51.5074,
+      "lng": -0.1278
+    },
+    "datum": "WGS84"
+  },
+  "tactical_event_log": [
+    {
+      "id": "dgxhxufj8",
+      "timestamp": "19:39:08",
+      "satName": "Telstar 11N",
+      "satId": "t-11w",
+      "status": "STRIKE",
+      "detail": "Offensive strike against 10.254.1.42 completed."
+    },
+    {
+      "id": "arbntky3g",
+      "timestamp": "19:32:43",
+      "satName": "Telstar 11N",
+      "satId": "t-11w",
+      "status": "INFO",
+      "detail": "Deep packet inspection triggered on SAT_Telstar 11N"
+    }
+  ]
+}

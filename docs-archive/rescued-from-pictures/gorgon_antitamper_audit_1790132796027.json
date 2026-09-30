@@ -1,0 +1,126 @@
+{
+  "classification": "GHOST-WATCH GORGON ANTI-TAMPER SECURITY AUDIT",
+  "exportedAt": "2026-09-23T03:06:36.024Z",
+  "state": {
+    "integrityStatus": "PRISTINE",
+    "activePqcKey": {
+      "keyId": "PQC-KEY-7-U4GL",
+      "algorithm": "ML-KEM-768",
+      "epoch": 7,
+      "fingerprintSha256": "SHA256:c2556bde996186aff3429b81592015cd...83129273f0694531",
+      "latticeSeedEntropy": "0xcc96b575f34ae4a3b6cdfc1fff1bf55291f389b4c24675800258a6cc6b6d18b0",
+      "volatileBufferAddress": "0x7FFF9700",
+      "generatedAt": "2026-09-23T03:06:19.029Z",
+      "status": "ACTIVE"
+    },
+    "keyEpoch": 7,
+    "scansPerformed": 105,
+    "threatsIntercepted": 6,
+    "autoScanEnabled": true,
+    "memoryIntegrityScore": 99.6,
+    "memoryRegions": [
+      {
+        "address": "0x7FFF9700:0x7FFFA6FF",
+        "label": "PQC Lattice Secret Key Ring (ML-KEM-768 - Epoch 7)",
+        "status": "SECURE",
+        "entropy": 7.96,
+        "hexDumpSample": "25B7 E85A D0F1 0C22 5D38 9BD8 3F3C 23C8  ..KEM..LATTICE.."
+      },
+      {
+        "address": "0x7FFFA000:0x7FFFAFFF",
+        "label": "LoRa Mesh Decryption Ephemeral Matrix (Re-keyed)",
+        "status": "SECURE",
+        "entropy": 7.91,
+        "hexDumpSample": "EF67 47B6 90 2A 11 88 55 FD  E0 45 A2 33 19 80 CC 0A"
+      },
+      {
+        "address": "0x7FFFB000:0x7FFFBFFF",
+        "label": "Hardware Security Element Tether DMA Buffer",
+        "status": "SECURE",
+        "entropy": 7.98,
+        "hexDumpSample": "A9 12 00 FE 44 91 3C BB  7E 22 10 99 FA 04 C1 6B"
+      },
+      {
+        "address": "0x7FFFC000:0x7FFFCFFF",
+        "label": "C2 Polymorphic Route Scratchpad RAM",
+        "status": "SECURE",
+        "entropy": 7.85,
+        "hexDumpSample": "70A0 095E 73 6B 2D 4D 762D 73  68 2D 53 79 6E 63 2D 31"
+      }
+    ],
+    "recentEvents": [
+      {
+        "id": "EVT-TAMPER-MUDIU4GL",
+        "timestamp": "2026-09-23T03:06:19.029Z",
+        "threatType": "DEBUGGER_HOOK",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9600:0x7FFFA5FF",
+        "signature": "SIG-0x90E67F1127CD",
+        "processVector": "Hardware Debug Register (DR0-DR3) breakpoint trap detected on volatile PQC key buffer.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #7 (ML-KEM-768).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 7
+      },
+      {
+        "id": "EVT-TAMPER-MUDIU0JG",
+        "timestamp": "2026-09-23T03:06:13.948Z",
+        "threatType": "HEAP_SCRAPER",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9500:0x7FFFA4FF",
+        "signature": "SIG-0xDA02CA83B0D9",
+        "processVector": "Unauthorized heap memory scraper scanning for high-entropy ML-KEM private lattice keys.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #6 (FIPS-203-Hybrid).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 6
+      },
+      {
+        "id": "EVT-TAMPER-MUDITQYV",
+        "timestamp": "2026-09-23T03:06:01.543Z",
+        "threatType": "HEAP_SCRAPER",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9400:0x7FFFA3FF",
+        "signature": "SIG-0x9C9AE6CDC649",
+        "processVector": "Unauthorized heap memory scraper scanning for high-entropy ML-KEM private lattice keys.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #5 (ML-KEM-1024).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 5
+      },
+      {
+        "id": "EVT-TAMPER-MUDITN6S",
+        "timestamp": "2026-09-23T03:05:56.644Z",
+        "threatType": "DEBUGGER_HOOK",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9300:0x7FFFA2FF",
+        "signature": "SIG-0x06E82C52D8A3",
+        "processVector": "Hardware Debug Register (DR0-DR3) breakpoint trap detected on volatile PQC key buffer.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #4 (ML-KEM-768).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 4
+      },
+      {
+        "id": "EVT-TAMPER-MUDITCZ5",
+        "timestamp": "2026-09-23T03:05:43.409Z",
+        "threatType": "HEAP_SCRAPER",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9200:0x7FFFA1FF",
+        "signature": "SIG-0xDA6AE4237580",
+        "processVector": "Unauthorized heap memory scraper scanning for high-entropy ML-KEM private lattice keys.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #3 (FIPS-203-Hybrid).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 3
+      },
+      {
+        "id": "EVT-TAMPER-MUDISP8I",
+        "timestamp": "2026-09-23T03:05:12.642Z",
+        "threatType": "DEBUGGER_HOOK",
+        "severity": "CRITICAL",
+        "memoryAddress": "0x7FFF9000:0x7FFF9FFF",
+        "signature": "SIG-0xB202EB0DA710",
+        "processVector": "Hardware Debug Register (DR0-DR3) breakpoint trap detected on volatile PQC key buffer.",
+        "actionTaken": "Scrubbed volatile buffer, zeroized old keys, migrated to PQC Epoch #2 (ML-KEM-1024).",
+        "pqcKeysPurged": true,
+        "newEpochAssigned": 2
+      }
+    ]
+  }
+}

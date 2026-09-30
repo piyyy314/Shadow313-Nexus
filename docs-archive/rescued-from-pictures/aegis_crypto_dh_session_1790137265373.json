@@ -1,0 +1,13 @@
+{
+  "module_name": "Diffie-Hellman Key Exchange",
+  "modulus_prime_p": "3571",
+  "generator_base_g": "11",
+  "alice_private_secret": 127,
+  "bob_private_secret": 211,
+  "alice_public_key": 2889,
+  "bob_public_key": 1626,
+  "shared_secret_alice": 2073,
+  "shared_secret_bob": 2073,
+  "derived_key_alice": "HKDF_PRK_SHA256_57aa6d45a8c7e9f2b1d30f4e",
+  "derived_key_bob": "HKDF_PRK_SHA256_57aa6d45a8c7e9f2b1d30f4e"
+}

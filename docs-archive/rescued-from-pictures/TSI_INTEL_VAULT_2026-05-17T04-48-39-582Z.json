@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-05-17T04:48:39.579Z",
+  "source": "SENTINEL_INTELLIGENCE_TS_VAULT",
+  "session_id": "JO2Z9KF4MS",
+  "entries": [
+    {
+      "id": "intel-1778993179622",
+      "time": "00:46:14",
+      "src": "DPI",
+      "dst": "SIEM_VAULT",
+      "data": "Unauthorized encrypted tunnel detected. Potential C2 callback bypassing primary firewall."
+    },
+    {
+      "id": "intel-1778993177874",
+      "time": "00:46:12",
+      "src": "SIEM",
+      "dst": "SIEM_VAULT",
+      "data": "Potential payload delivery attempt matching AFRINIC signature 18:53:53."
+    },
+    {
+      "id": "intel-1",
+      "time": "13:30:17",
+      "src": "10.254.1.42",
+      "dst": "172.16.0.12",
+      "data": "POST /api/auth?pass=e3cfvk&session_id=zvcqw3js"
+    }
+  ]
+}

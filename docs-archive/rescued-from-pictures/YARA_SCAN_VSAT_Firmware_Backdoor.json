@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "timestamp": "2026-05-06T23:35:17.298Z",
+    "status": "COMPLETED",
+    "rule": "VSAT_Firmware_Backdoor"
+  },
+  "logs": [
+    {
+      "msg": "STIA_YARA_INIT: Loading signature database...",
+      "type": "info"
+    },
+    {
+      "msg": "Mapping virtual memory segments...",
+      "type": "info"
+    },
+    {
+      "msg": "Mapping virtual memory segments...",
+      "type": "info"
+    },
+    {
+      "msg": "Applying: VSAT_Firmware_Backdoor signature matrix...",
+      "type": "info"
+    },
+    {
+      "msg": "Applying: VSAT_Firmware_Backdoor signature matrix...",
+      "type": "info"
+    },
+    {
+      "msg": "SCAN_COMPLETE: No threats detected in buffer.",
+      "type": "info"
+    }
+  ]
+}

@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SatExpert TSI v7 — Tactical Satellite Intelligence Platform</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM
+═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:       #000d1a;
+  --surface:  #001428;
+  --card:     #001e38;
+  --border:   rgba(0,212,255,0.15);
+  --cyan:     #00d4ff;
+  --green:    #00ff88;
+  --amber:    #ffaa00;
+  --red:      #ff3355;
+  --violet:   #aa44ff;
+  --text:     #c8e8ff;
+  --muted:    #5a8aaa;
+  --hfont:    'Courier New', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--hfont);font-size:13px}
+
+/* ── Header ── */
+#header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 16px;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  height:38px;flex-shrink:0;
+}
+.hdr-logo{color:var(--cyan);font-weight:700;font-size:14px;letter-spacing:2px}
+.hdr-status{display:flex;gap:16px;align-items:center;font-size:11px}
+.hdr-stat{display:flex;align-items:center;gap:5px}
+.dot{width:7px;height:7px;border-radius:50%;animation:blink 1.5s infinite}
+.dot-g{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-a{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.dot-r{background:var(--red);box-shadow:0 0 6px var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#hdr-time{color:var(--cyan);font-size:12px;letter-spacing:1px}
+
+/* ── Nav ── */
+#nav{
+  display:flex;gap:2px;padding:4px 8px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.nav-btn{
+  padding:4px 14px;background:transparent;border:1px solid transparent;
+  color:var(--muted);cursor:pointer;font-family:var(--hfont);font-size:11px;
+  letter-spacing:1px;text-transform:uppercase;border-radius:3px;
+  transition:all .15s;
+}
+.nav-btn:hover{color:var(--cyan);border-color:var(--border)}
+.nav-btn.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,212,255,.08)}
+
+/* ── Layout ── */
+#app{display:flex;flex-direction:column;height:100vh}
+#content{flex:1;overflow:hidden;position:relative}
+.section{display:none;width:100%;height:100%;overflow:auto}
+.section.active{display:flex;flex-direction:column}
+
+/* ── Cards ── */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:10px}
+.panel-title{color:var(--cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:5px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px}
+.badge-green{background:rgba(0,255,136,.15);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+.badge-amber{background:rgba(255,170,0,.15);color:var(--amber);border:1px solid rgba(255,170,0,.3)}
+.badge-red{background:rgba(255,51,85,.15);color:var(--red);border:1px solid rgba(255,51,85,.3)}
+.badge-cyan{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.3)}
+.badge-violet{background:rgba(170,68,255,.15);color:var(--violet);border:1px solid rgba(170,68,255,.3)}
+
+/* ── Metrics ── */
+.metric{text-align:center;padding:8px}
+.metric-val{font-size:22px;font-weight:700;line-height:1}
+.metric-lbl{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:1px}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{color:var(--muted);text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);font-weight:400;letter-spacing:1px;text-transform:uppercase}
+td{padding:5px 8px;border-bottom:1px solid rgba(0,212,255,.05)}
+tr:hover td{background:rgba(0,212,255,.04)}
+
+/* ── Canvas wrappers ── */
+.canvas-wrap{position:relative;width:100%;background:#000;border-radius:3px;overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+
+/* ── Controls ── */
+.ctrl-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.ctrl-btn{
+  padding:4px 12px;background:rgba(0,212,255,.1);border:1px solid var(--border);
+  color:var(--cyan);cursor:pointer;font-family:var(--hfont);font-size:11px;
+  border-radius:3px;transition:all .15s;letter-spacing:1px;
+}
+.ctrl-btn:hover{background:rgba(0,212,255,.2)}
+.ctrl-btn.active{background:rgba(0,212,255,.25);border-color:var(--cyan)}
+.ctrl-btn.danger{color:var(--red);border-color:rgba(255,51,85,.3);background:rgba(255,51,85,.08)}
+.ctrl-btn.danger:hover{background:rgba(255,51,85,.18)}
+.ctrl-btn.success{color:var(--green);border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.08)}
+label{color:var(--muted);font-size:11px}
+select,input[type=range],input[type=number],input[type=text]{
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  padding:3px 8px;border-radius:3px;font-family:var(--hfont);font-size:11px;
+}
+select:focus,input:focus{outline:none;border-color:var(--cyan)}
+
+/* ── Log ── */
+.log-box{
+  background:#000;border:1px solid var(--border);border-radius:3px;
+  padding:8px;height:120px;overflow-y:auto;font-size:11px;line-height:1.6;
+}
+.log-box::-webkit-scrollbar{width:4px}
+.log-box::-webkit-scrollbar-thumb{background:var(--border)}
+.log-info{color:var(--cyan)}
+.log-warn{color:var(--amber)}
+.log-crit{color:var(--red)}
+.log-ok{color:var(--green)}
+
+/* ── Progress bars ── */
+.pbar-wrap{background:rgba(0,0,0,.5);border-radius:2px;height:6px;overflow:hidden;margin-top:4px}
+.pbar{height:100%;border-radius:2px;transition:width .3s}
+.pbar-cyan{background:linear-gradient(90deg,var(--cyan),#0088aa)}
+.pbar-green{background:linear-gradient(90deg,var(--green),#008844)}
+.pbar-amber{background:linear-gradient(90deg,var(--amber),#aa6600)}
+.pbar-red{background:linear-gradient(90deg,var(--red),#aa0022)}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ═══ SECTION LAYOUTS ═══ */
+/* Orbital */
+#sec-orbital{padding:8px;gap:8px}
+.orbital-main{display:grid;grid-template-columns:1fr 320px;gap:8px;flex:1;min-height:0}
+.orbital-canvas-wrap{height:100%;min-height:400px}
+.orbital-sidebar{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+
+/* Doppler */
+#sec-doppler{padding:8px;gap:8px}
+.doppler-layout{display:grid;grid-template-columns:1fr 280px;gap:8px;flex:1;min-height:0}
+
+/* Look Angle */
+#sec-lookangle{padding:8px;gap:8px}
+.look-layout{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0}
+
+/* Link Budget */
+#sec-link{padding:8px;gap:8px;overflow-y:auto}
+
+/* Signal */
+#sec-signal{padding:8px;gap:8px}
+.signal-layout{display:grid;grid-template-columns:1fr 300px;gap:8px;flex:1;min-height:0}
+
+/* RL/AI */
+#sec-ai{padding:8px;gap:8px;overflow-y:auto}
+.ai-layout{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Threat */
+#sec-threat{padding:8px;gap:8px;overflow-y:auto}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── HEADER ── -->
+<div id="header">
+  <div class="hdr-logo">⬡ SATEXPERT TSI v7 // TACTICAL SATELLITE INTELLIGENCE</div>
+  <div class="hdr-status">
+    <div class="hdr-stat"><span class="dot dot-g"></span><span>NEXUS-1 NOMINAL</span></div>
+    <div class="hdr-stat"><span class="dot dot-a"></span><span>RECON-3 DEGRADED</span></div>
+    <div class="hdr-stat"><span class="dot dot-g"></span><span>GS-ALPHA ONLINE</span></div>
+    <div class="hdr-stat"><span class="dot dot-r" id="ew-dot"></span><span id="ew-status">EW: STANDBY</span></div>
+    <div id="hdr-time">--:--:--</div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <button class="nav-btn active" onclick="showSection('orbital',this)">ORBITAL</button>
+  <button class="nav-btn" onclick="showSection('doppler',this)">DOPPLER</button>
+  <button class="nav-btn" onclick="showSection('lookangle',this)">LOOK ANGLE</button>
+  <button class="nav-btn" onclick="showSection('link',this)">LINK BUDGET</button>
+  <button class="nav-btn" onclick="showSection('signal',this)">SIGNAL CAP</button>
+  <button class="nav-btn" onclick="showSection('ai',this)">RL / AI</button>
+  <button class="nav-btn" onclick="showSection('threat',this)">THREAT SIM</button>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+<!-- ════ ORBITAL ════ -->
+<div class="section active" id="sec-orbital">
+  <div class="ctrl-row">
+    <button class="ctrl-btn active" id="simToggle" onclick="toggleSim()">⏸ PAUSE SIM</button>
+    <label>Speed:</label>
+    <input type="range" id="speedSlider" min="1" max="100" value="20" oninput="simSpeedVal=+this.value;document.getElementById('speedVal').textContent=this.value+'×'">
+    <span id="speedVal" style="color:var(--cyan)">20×</span>
+    <label>View:</label>
+    <button class="ctrl-btn active" id="view3dBtn" onclick="toggleView()">3D GLOBE</button>
+    <span id="epochDisplay" style="color:var(--amber);font-size:11px">J2000.0 + 0.000d</span>
+    <button class="ctrl-btn" onclick="resetSim()">↺ RESET</button>
+  </div>
+  <div class="orbital-main">
+    <div class="panel orbital-canvas-wrap">
+      <div class="panel-title">ORBITAL MECHANICS — REAL-TIME PROPAGATION</div>
+      <div class="canvas-wrap" style="height:calc(100% - 30px)">
+        <canvas id="orbitalCanvas"></canvas>
+      </div>
+    </div>
+    <div class="orbital-sidebar">
+      <div class="panel">
+        <div class="panel-title">CONSTELLATION STATUS</div>
+        <table id="satTableBody-wrap">
+          <thead><tr><th>ID</th><th>NAME</th><th>ALT km</th><th>STATUS</th><th>SNR</th></tr></thead>
+          <tbody id="satTableBody"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-title">GROUND STATION</div>
+        <div class="grid-2">
+          <div class="metric"><div class="metric-val" style="color:var(--green)" id="gs-el">42.7°</div><div class="metric-lbl">ELEVATION</div></div>
+          <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="gs-az">247.3°</div><div class="metric-lbl">AZIMUTH</div></div>
+          <div class="metric"><div class="metric-val" style="color:var(--amber)" id="gs-range">1,247 km</div><div class="metric-lbl">SLANT RANGE</div></div>
+          <div class="metric"><div class="metric-val" style="color:var(--violet)" id="gs-doppler">+4.2 km/s</div><div class="metric-lbl">DOPPLER VEL</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">PASS PREDICTION</div>
+        <div style="font-size:11px;line-height:2">
+          <div>AOS: <span style="color:var(--green)" id="pp-aos">14:23:07 UTC</span></div>
+          <div>MAX EL: <span style="color:var(--cyan)" id="pp-maxel">67.4°</span></div>
+          <div>LOS: <span style="color:var(--red)" id="pp-los">14:31:42 UTC</span></div>
+          <div>Duration: <span style="color:var(--amber)" id="pp-dur">8m 35s</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DOPPLER ════ -->
+<div class="section" id="sec-doppler">
+  <div class="ctrl-row">
+    <label>Satellite:</label>
+    <select id="dopplerSat" onchange="updateDopplerSat()">
+      <option>NEXUS-1</option><option>NEXUS-2</option><option>RELAY-7</option>
+      <option>GEO-COMM</option><option>RECON-3</option>
+    </select>
+    <label>Freq Band:</label>
+    <select id="dopplerBand">
+      <option value="1500">L-Band (1.5 GHz)</option>
+      <option value="2400">S-Band (2.4 GHz)</option>
+      <option value="6000">C-Band (6 GHz)</option>
+      <option value="14000" selected>Ku-Band (14 GHz)</option>
+      <option value="26000">Ka-Band (26 GHz)</option>
+    </select>
+    <span id="pllState" class="badge badge-green">PLL LOCKED</span>
+  </div>
+  <div class="doppler-layout">
+    <div class="panel" style="display:flex;flex-direction:column">
+      <div class="panel-title">DOPPLER SHIFT — REAL-TIME VELOCITY PROFILE</div>
+      <div class="canvas-wrap" style="flex:1;min-height:200px">
+        <canvas id="dopplerCanvas"></canvas>
+      </div>
+      <div class="canvas-wrap" style="height:100px;margin-top:8px">
+        <canvas id="spectrumCanvas"></canvas>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="panel">
+        <div class="panel-title">DOPPLER METRICS</div>
+        <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="dopplerVel">+4.20</div><div class="metric-lbl">RADIAL VEL (km/s)</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--green)" id="dopplerShift">+196.0</div><div class="metric-lbl">FREQ SHIFT (kHz)</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--amber)" id="dopplerSNR">18.4</div><div class="metric-lbl">SNR (dB)</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">PLL TRACKING</div>
+        <div style="font-size:11px;line-height:2">
+          <div>Loop BW: <span style="color:var(--cyan)">50 Hz</span></div>
+          <div>Phase Err: <span style="color:var(--green)" id="phaseErr">±0.3°</span></div>
+          <div>Lock Time: <span style="color:var(--amber)">1.2 ms</span></div>
+          <div>Carrier: <span style="color:var(--violet)" id="carrierFreq">14,000.196 MHz</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">DSSS PROCESSING</div>
+        <div style="font-size:11px;line-height:2">
+          <div>Chip Rate: <span style="color:var(--cyan)">10.24 Mcps</span></div>
+          <div>Data Rate: <span style="color:var(--green)">16 kbps</span></div>
+          <div>Proc Gain: <span style="color:var(--amber)">+28.1 dB</span></div>
+          <div>J/S Margin: <span style="color:var(--violet)" id="jsMargin">+13.1 dB</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ LOOK ANGLE ════ -->
+<div class="section" id="sec-lookangle">
+  <div class="ctrl-row">
+    <label>GS Location:</label>
+    <select id="gsLocation" onchange="updateGS()">
+      <option value="51.5,-0.13">London, UK</option>
+      <option value="40.7,-74.0">New York, USA</option>
+      <option value="35.7,139.7">Tokyo, Japan</option>
+      <option value="48.9,2.3">Paris, France</option>
+      <option value="32.1,34.8">Tel Aviv, Israel</option>
+      <option value="45.4,-75.7">Ottawa, Canada</option>
+    </select>
+    <label>Target Sat:</label>
+    <select id="lookSat">
+      <option>NEXUS-1 (550km LEO)</option>
+      <option>RELAY-7 (MEO)</option>
+      <option>GEO-COMM (GEO)</option>
+    </select>
+  </div>
+  <div class="look-layout">
+    <div class="panel" style="display:flex;flex-direction:column">
+      <div class="panel-title">POLAR LOOK ANGLE PLOT — AZIMUTH / ELEVATION</div>
+      <div class="canvas-wrap" style="flex:1;min-height:300px">
+        <canvas id="lookAngleCanvas"></canvas>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="panel">
+        <div class="panel-title">POINTING ANGLES</div>
+        <div class="grid-2">
+          <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="azimuth">247.3°</div><div class="metric-lbl">AZIMUTH</div></div>
+          <div class="metric"><div class="metric-val" style="color:var(--green)" id="elevation">42.7°</div><div class="metric-lbl">ELEVATION</div></div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;line-height:2">
+          <div>Slant Range: <span style="color:var(--amber)" id="slantRangeDisplay">1,247 km</span></div>
+          <div>Free Space Loss: <span style="color:var(--red)" id="fsplDisplay">-168.4 dB</span></div>
+          <div>Atm Loss: <span style="color:var(--muted)">-0.3 dB</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">ANTENNA CONTROL</div>
+        <div style="font-size:11px;line-height:2">
+          <div>Mode: <span class="badge badge-green">AUTO-TRACK</span></div>
+          <div>Az Rate: <span style="color:var(--cyan)" id="azRate">+0.42°/s</span></div>
+          <div>El Rate: <span style="color:var(--green)" id="elRate">+0.18°/s</span></div>
+          <div>Pointing Err: <span style="color:var(--amber)">±0.05°</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">VISIBILITY WINDOW</div>
+        <div class="canvas-wrap" style="height:100px">
+          <canvas id="visibilityCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ LINK BUDGET ════ -->
+<div class="section" id="sec-link">
+  <div class="ctrl-row">
+    <label>Freq Band:</label>
+    <select id="freqBand" onchange="calcLinkBudget()">
+      <option value="L">L-Band (1.5 GHz)</option>
+      <option value="S">S-Band (2.4 GHz)</option>
+      <option value="C">C-Band (6 GHz)</option>
+      <option value="Ku" selected>Ku-Band (14 GHz)</option>
+      <option value="Ka">Ka-Band (26 GHz)</option>
+      <option value="Q">Q-Band (45 GHz)</option>
+    </select>
+    <label>Tx Power (dBW):</label>
+    <input type="number" id="txPower" value="10" min="-10" max="60" step="1" oninput="calcLinkBudget()" style="width:70px">
+    <label>Slant Range (km):</label>
+    <input type="number" id="slantRange" value="1247" min="300" max="40000" step="10" oninput="calcLinkBudget()" style="width:80px">
+    <button class="ctrl-btn" onclick="calcLinkBudget()">▶ CALCULATE</button>
+  </div>
+  <div class="grid-2" style="gap:8px">
+    <!-- Uplink -->
+    <div class="panel">
+      <div class="panel-title">UPLINK BUDGET</div>
+      <table id="uplinkTable">
+        <thead><tr><th>PARAMETER</th><th>VALUE</th><th>UNIT</th></tr></thead>
+        <tbody id="uplinkBody"></tbody>
+      </table>
+    </div>
+    <!-- Downlink -->
+    <div class="panel">
+      <div class="panel-title">DOWNLINK BUDGET</div>
+      <table>
+        <thead><tr><th>PARAMETER</th><th>VALUE</th><th>UNIT</th></tr></thead>
+        <tbody id="downlinkBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="grid-3" style="gap:8px;margin-top:8px">
+    <div class="panel">
+      <div class="panel-title">LINK MARGIN SUMMARY</div>
+      <div id="linkMarginDisplay"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">RAIN FADE ANALYSIS</div>
+      <div id="rainFadeDisplay"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">JAMMER IMPACT (RF EW)</div>
+      <div id="jammerDisplay"></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-title">LINK BUDGET WATERFALL</div>
+    <div class="canvas-wrap" style="height:120px">
+      <canvas id="linkWaterfallCanvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SIGNAL CAPTURE ════ -->
+<div class="section" id="sec-signal">
+  <div class="ctrl-row">
+    <button class="ctrl-btn" id="captureBtn" onclick="toggleCapture()">▶ START CAPTURE</button>
+    <button class="ctrl-btn danger" id="interceptBtn" onclick="toggleIntercept()">⚡ INTERCEPT</button>
+    <label>Center Freq (MHz):</label>
+    <input type="number" id="centerFreq" value="14000" style="width:90px" oninput="updateSignalParams()">
+    <label>BW (MHz):</label>
+    <input type="number" id="bwMHz" value="36" style="width:60px" oninput="updateSignalParams()">
+    <label>Gain (dB):</label>
+    <input type="range" id="gainSlider" min="0" max="60" value="30" oninput="document.getElementById('gainVal').textContent=this.value+'dB'">
+    <span id="gainVal" style="color:var(--cyan)">30dB</span>
+  </div>
+  <div class="signal-layout">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="panel" style="flex:1">
+        <div class="panel-title">SPECTRUM ANALYZER — REAL-TIME FFT</div>
+        <div class="canvas-wrap" style="height:180px">
+          <canvas id="specAnalyzerCanvas"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="flex:1">
+        <div class="panel-title">WATERFALL DISPLAY — TIME vs FREQUENCY</div>
+        <div class="canvas-wrap" style="height:160px">
+          <canvas id="waterfallCanvas"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">CONSTELLATION DIAGRAM</div>
+        <div class="canvas-wrap" style="height:120px">
+          <canvas id="constellationCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="panel">
+        <div class="panel-title">SIGNAL METRICS</div>
+        <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="sigPower">-87.3</div><div class="metric-lbl">SIGNAL POWER (dBm)</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--green)" id="sigSNR">18.4</div><div class="metric-lbl">SNR (dB)</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--amber)" id="sigBER">1.2e-6</div><div class="metric-lbl">BIT ERROR RATE</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--violet)" id="sigMod">QPSK</div><div class="metric-lbl">MODULATION</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">CAPTURE STATUS</div>
+        <div style="font-size:11px;line-height:2">
+          <div>Frames: <span style="color:var(--cyan)" id="captureFrames">0</span></div>
+          <div>Bytes: <span style="color:var(--green)" id="captureBytes">0</span></div>
+          <div>Duration: <span style="color:var(--amber)" id="captureDur">00:00:00</span></div>
+          <div>Status: <span id="captureStatus" class="badge badge-amber">STANDBY</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">INTERCEPT LOG</div>
+        <div class="log-box" id="interceptLog">
+          <div class="log-info">[SYSTEM] Signal capture module ready</div>
+          <div class="log-info">[SYSTEM] Awaiting operator command...</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">SIGNAL ANOMALIES</div>
+        <div style="font-size:11px;line-height:2">
+          <div>Jamming: <span id="jamDetect" class="badge badge-green">NONE</span></div>
+          <div>Spoofing: <span id="spoofDetect" class="badge badge-green">NONE</span></div>
+          <div>Anomaly Score: <span style="color:var(--amber)" id="anomalyScore">0.12</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ RL / AI ════ -->
+<div class="section" id="sec-ai">
+  <div class="ctrl-row">
+    <button class="ctrl-btn active" onclick="toggleRL()">⚡ RL TRAINING</button>
+    <button class="ctrl-btn" onclick="resetRL()">↺ RESET AGENT</button>
+    <label>Algorithm:</label>
+    <select id="rlAlgo"><option>PPO</option><option>SAC</option><option>TD3</option><option>DQN</option></select>
+    <label>Learning Rate:</label>
+    <select id="rlLR"><option>1e-4</option><option>3e-4</option><option>1e-3</option></select>
+  </div>
+  <div class="ai-layout">
+    <div class="panel">
+      <div class="panel-title">RL TRAINING — REWARD CURVE</div>
+      <div class="canvas-wrap" style="height:200px">
+        <canvas id="rlRewardCanvas"></canvas>
+      </div>
+      <div class="grid-3" style="margin-top:8px">
+        <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="rlEpisodes">1,247</div><div class="metric-lbl">EPISODES</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--green)" id="rlReward">847.3</div><div class="metric-lbl">AVG REWARD</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--amber)" id="rlExplore">12.4%</div><div class="metric-lbl">EXPLORATION</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">NEURAL NETWORK — ACCURACY</div>
+      <div class="canvas-wrap" style="height:200px">
+        <canvas id="nnAccuracyCanvas"></canvas>
+      </div>
+      <div class="grid-3" style="margin-top:8px">
+        <div class="metric"><div class="metric-val" style="color:var(--green)" id="nnAcc">97.3%</div><div class="metric-lbl">ACCURACY</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--cyan)" id="nnLoss">0.023</div><div class="metric-lbl">LOSS</div></div>
+        <div class="metric"><div class="metric-val" style="color:var(--amber)" id="nnEpoch">342</div><div class="metric-lbl">EPOCH</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">ANOMALY DETECTION — ML CLASSIFIER</div>
+      <div class="canvas-wrap" style="height:160px">
+        <canvas id="anomalyCanvas"></canvas>
+      </div>
+      <div style="margin-top:8px;font-size:11px;line-height:2">
+        <div>Anomalies Detected: <span style="color:var(--red)" id="anomalyCount">3</span></div>
+        <div>False Positive Rate: <span style="color:var(--amber)">0.8%</span></div>
+        <div>Model: <span style="color:var(--cyan)">Isolation Forest + LSTM</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">BEAM STEERING — RL POLICY</div>
+      <div class="canvas-wrap" style="height:160px">
+        <canvas id="beamCanvas"></canvas>
+      </div>
+      <div style="margin-top:8px;font-size:11px;line-height:2">
+        <div>Policy: <span style="color:var(--cyan)">PPO Actor-Critic</span></div>
+        <div>Action Space: <span style="color:var(--green)">Az/El continuous</span></div>
+        <div>Reward: <span style="color:var(--amber)">SNR maximization</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-title">AI DECISION LOG</div>
+    <div class="log-box" id="aiLog">
+      <div class="log-ok">[RL] Episode 1247 complete — reward: 847.3 — policy updated</div>
+      <div class="log-info">[NN] Epoch 342 — loss: 0.023 — accuracy: 97.3%</div>
+      <div class="log-warn">[ANOMALY] 3 anomalies detected in last 100 frames</div>
+      <div class="log-ok">[BEAM] Optimal pointing: Az=247.3° El=42.7° — SNR gain: +2.1 dB</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ THREAT SIM ════ -->
+<div class="section" id="sec-threat">
+  <div class="ctrl-row">
+    <label>Threat Actor:</label>
+    <select id="threatActor">
+      <option value="apt28">APT28 (Fancy Bear) — RF Jamming</option>
+      <option value="apt40">APT40 (Bronze Mohawk) — Uplink Spoof</option>
+      <option value="lazarus">Lazarus Group — Signal Intercept</option>
+      <option value="sandworm">Sandworm — GPS Denial</option>
+      <option value="custom">Custom EW Scenario</option>
+    </select>
+    <button class="ctrl-btn danger" onclick="launchThreat()">⚡ LAUNCH ATTACK</button>
+    <button class="ctrl-btn success" onclick="mitigateThreat()">🛡 MITIGATE</button>
+    <button class="ctrl-btn" onclick="clearThreat()">✕ CLEAR</button>
+  </div>
+  <div class="grid-2" style="gap:8px">
+    <div class="panel">
+      <div class="panel-title">THREAT SCENARIO</div>
+      <div id="threatScenario" style="font-size:11px;line-height:1.8;color:var(--text)">
+        Select a threat actor and click LAUNCH ATTACK to begin simulation.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">ATTACK VECTOR ANALYSIS</div>
+      <div class="canvas-wrap" style="height:160px">
+        <canvas id="threatCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3" style="gap:8px;margin-top:8px">
+    <div class="panel">
+      <div class="panel-title">RF JAMMING SIMULATION</div>
+      <div style="font-size:11px;line-height:2">
+        <div>J/S Ratio: <span style="color:var(--red)" id="jsRatio">N/A</span></div>
+        <div>Jammed SNR: <span style="color:var(--amber)" id="jammedSNR">N/A</span></div>
+        <div>Proc Gain: <span style="color:var(--green)" id="procGain">N/A</span></div>
+        <div>Mitigated SNR: <span style="color:var(--cyan)" id="mitigatedSNR">N/A</span></div>
+      </div>
+      <div class="pbar-wrap"><div class="pbar pbar-red" id="jamBar" style="width:0%"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">COUNTERMEASURES</div>
+      <div style="font-size:11px;line-height:2">
+        <div>DSSS: <span id="cm-dsss" class="badge badge-amber">STANDBY</span></div>
+        <div>Freq Hop: <span id="cm-fhop" class="badge badge-amber">STANDBY</span></div>
+        <div>Pol Switch: <span id="cm-pol" class="badge badge-amber">STANDBY</span></div>
+        <div>Beam Null: <span id="cm-null" class="badge badge-amber">STANDBY</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">THREAT INTELLIGENCE</div>
+      <div style="font-size:11px;line-height:2">
+        <div>TTP: <span style="color:var(--cyan)" id="ti-ttp">—</span></div>
+        <div>MITRE: <span style="color:var(--amber)" id="ti-mitre">—</span></div>
+        <div>Confidence: <span style="color:var(--green)" id="ti-conf">—</span></div>
+        <div>Attribution: <span style="color:var(--violet)" id="ti-attr">—</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-title">TACTICAL THREAT LOG</div>
+    <div class="log-box" id="threatLog">
+      <div class="log-info">[STIA] Tactical Satellite Intelligence Analysis system ready</div>
+      <div class="log-info">[STIA] Threat simulation engine v7 initialised</div>
+      <div class="log-info">[STIA] Select threat actor and launch attack to begin</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SATEXPERT TSI v7 — COMPLETE SIMULATION ENGINE
+// ═══════════════════════════════════════════════════════════════
+
+// ── Global State ─────────────────────────────────────────────
+let simRunning = true;
+let simSpeedVal = 20;
+let simTime = 0;
+let captureRunning = false;
+let interceptRunning = false;
+let rlRunning = true;
+let rlEpisodeCount = 1247;
+let rlRewardVal = 847.3;
+let nnAccuracyVal = 97.3;
+let anomalyCountVal = 3;
+let captureFrames = 0;
+let captureBytes = 0;
+let captureStartTime = null;
+let threatActive = false;
+let waterfallRows = [];
+let rlRewardHistory = [];
+let nnLossHistory = [];
+let anomalyHistory = [];
+let beamHistory = [];
+
+// ── Satellite Data ────────────────────────────────────────────
+const satData = [
+  {id:'SAT-001',name:'NEXUS-1',  alt:550,   inc:53.0, period:95.6,  vel:7.61, status:'NOMINAL',  signal:-85},
+  {id:'SAT-002',name:'NEXUS-2',  alt:550,   inc:53.0, period:95.6,  vel:7.61, status:'NOMINAL',  signal:-87},
+  {id:'SAT-003',name:'RELAY-7',  alt:20200, inc:55.0, period:718,   vel:3.87, status:'NOMINAL',  signal:-120},
+  {id:'SAT-004',name:'GEO-COMM', alt:35786, inc:0.1,  period:1436,  vel:3.07, status:'NOMINAL',  signal:-130},
+  {id:'SAT-005',name:'RECON-3',  alt:400,   inc:97.4, period:92.4,  vel:7.67, status:'DEGRADED', signal:-82},
+  {id:'SAT-006',name:'WEATHER-1',alt:850,   inc:98.7, period:101.8, vel:7.45, status:'NOMINAL',  signal:-95},
+  {id:'SAT-007',name:'SIGINT-2', alt:600,   inc:45.0, period:96.7,  vel:7.56, status:'NOMINAL',  signal:-88},
+  {id:'SAT-008',name:'COMMS-4',  alt:35786, inc:0.05, period:1436,  vel:3.07, status:'NOMINAL',  signal:-128},
+];
+
+// ── Navigation ────────────────────────────────────────────────
+function showSection(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  setTimeout(resizeAllCanvases, 60);
+}
+
+// ── Clock ─────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const el = document.getElementById('hdr-time');
+  if (el) el.textContent = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())} UTC`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ── Canvas resize ─────────────────────────────────────────────
+function resizeCanvas(canvas) {
+  if (!canvas) return;
+  const wrap = canvas.parentElement;
+  if (!wrap) return;
+  const w = wrap.clientWidth || 600;
+  const h = wrap.clientHeight || 300;
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w; canvas.height = h;
+  }
+}
+function resizeAllCanvases() {
+  document.querySelectorAll('canvas').forEach(resizeCanvas);
+}
+window.addEventListener('resize', resizeAllCanvases);
+
+// ── Satellite Table ───────────────────────────────────────────
+function populateSatTable() {
+  const tbody = document.getElementById('satTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  satData.forEach(s => {
+    const sc = s.status==='NOMINAL'?'badge-green':s.status==='DEGRADED'?'badge-amber':'badge-red';
+    const sigColor = s.signal>-90?'var(--green)':s.signal>-110?'var(--amber)':'var(--red)';
+    tbody.innerHTML += `<tr>
+      <td style="color:var(--cyan)">${s.id}</td>
+      <td>${s.name}</td>
+      <td>${s.alt.toLocaleString()}</td>
+      <td><span class="badge ${sc}">${s.status}</span></td>
+      <td style="color:${sigColor}">${s.signal}</td>
+    </tr>`;
+  });
+}
+
+// ── Sim controls ──────────────────────────────────────────────
+function toggleSim() {
+  simRunning = !simRunning;
+  const btn = document.getElementById('simToggle');
+  btn.textContent = simRunning ? '⏸ PAUSE SIM' : '▶ RESUME SIM';
+  btn.classList.toggle('active', simRunning);
+}
+function resetSim() { simTime = 0; }
+function toggleView() {
+  const btn = document.getElementById('view3dBtn');
+  btn.classList.toggle('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ORBITAL CANVAS
+// ═══════════════════════════════════════════════════════════════
+function drawOrbital() {
+  const canvas = document.getElementById('orbitalCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const earthR = Math.min(W,H)*0.17;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000408';
+  ctx.fillRect(0,0,W,H);
+
+  // Starfield
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  for (let i=0; i<120; i++) {
+    const sx = (Math.sin(i*137.5)*0.5+0.5)*W;
+    const sy = (Math.cos(i*97.3)*0.5+0.5)*H;
+    const sr = Math.random()<0.1?1.5:0.7;
+    ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+  }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,212,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let i=0; i<W; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,H); ctx.stroke(); }
+  for (let i=0; i<H; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(W,i); ctx.stroke(); }
+
+  // Earth glow
+  const glow = ctx.createRadialGradient(cx,cy,earthR*0.5,cx,cy,earthR*2.5);
+  glow.addColorStop(0,'rgba(0,80,180,0.18)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(cx,cy,earthR*2.5,0,Math.PI*2); ctx.fill();
+
+  // Earth
+  const eg = ctx.createRadialGradient(cx-earthR*0.3,cy-earthR*0.3,earthR*0.05,cx,cy,earthR);
+  eg.addColorStop(0,'#1a6bb5'); eg.addColorStop(0.4,'#0d4a8a');
+  eg.addColorStop(0.7,'#0a3060'); eg.addColorStop(1,'#051830');
+  ctx.fillStyle = eg;
+  ctx.beginPath(); ctx.arc(cx,cy,earthR,0,Math.PI*2); ctx.fill();
+
+  // Atmosphere
+  ctx.strokeStyle = 'rgba(0,150,255,0.35)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(cx,cy,earthR+5,0,Math.PI*2); ctx.stroke();
+
+  // Continents
+  ctx.fillStyle = 'rgba(0,160,70,0.45)';
+  [[cx-earthR*0.3,cy-earthR*0.1,earthR*0.25,earthR*0.35],
+   [cx+earthR*0.1,cy-earthR*0.2,earthR*0.2,earthR*0.3],
+   [cx-earthR*0.1,cy+earthR*0.1,earthR*0.15,earthR*0.2],
+   [cx+earthR*0.3,cy+earthR*0.05,earthR*0.12,earthR*0.18]
+  ].forEach(([x,y,rx,ry]) => {
+    ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); ctx.fill();
+  });
+
+  // Satellites
+  const colors = ['#00ff88','#00d4ff','#ffaa00','#ff3355','#aa44ff','#00ff88','#00d4ff','#ffaa00'];
+  satData.forEach((sat, i) => {
+    const orbitR = earthR + (sat.alt/500)*earthR*0.14 + earthR*0.28;
+    const tilt = (sat.inc/180)*Math.PI*0.55;
+    const speed = (simRunning ? simTime * simSpeedVal * 0.0003 : 0) + i*(Math.PI*2/satData.length);
+    const angle = speed + i*0.8;
+    const col = colors[i%colors.length];
+
+    // Orbit ellipse
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(tilt);
+    ctx.strokeStyle = col+'28'; ctx.lineWidth = 1; ctx.setLineDash([3,5]);
+    ctx.beginPath(); ctx.ellipse(0,0,orbitR,orbitR*0.68,0,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+
+    // Satellite position
+    const sx = cx + Math.cos(angle)*orbitR;
+    const sy = cy + Math.sin(angle)*orbitR*0.68*Math.cos(tilt);
+
+    // Glow + dot
+    ctx.shadowColor = col; ctx.shadowBlur = 14;
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Label
+    ctx.fillStyle = col; ctx.font = '9px Courier New';
+    ctx.fillText(sat.name, sx+7, sy-3);
+
+    // Signal line
+    if (sat.status==='NOMINAL') {
+      ctx.strokeStyle = col+'18'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(cx,cy); ctx.stroke();
+    }
+  });
+
+  // Ground station
+  const gsX = cx + earthR*0.28, gsY = cy + earthR*0.08;
+  ctx.fillStyle = '#ff3355'; ctx.shadowColor = '#ff3355'; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.arc(gsX,gsY,5,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ff3355'; ctx.font = '9px Courier New';
+  ctx.fillText('GS-ALPHA', gsX+8, gsY+4);
+
+  // Epoch
+  if (simRunning) simTime += 0.016;
+  const epochDays = (simTime * simSpeedVal * 0.001).toFixed(3);
+  const el = document.getElementById('epochDisplay');
+  if (el) el.textContent = `J2000.0 + ${epochDays}d`;
+
+  // Update GS metrics
+  const curAz = (247.3 + simTime*1.8) % 360;
+  const curEl = 42.7 + Math.sin(simTime*0.25)*12;
+  const curRange = 1247 + Math.sin(simTime*0.1)*80;
+  const curDop = -Math.sin(simTime*0.5)*7.6;
+  setText('gs-el', curEl.toFixed(1)+'°');
+  setText('gs-az', curAz.toFixed(1)+'°');
+  setText('gs-range', curRange.toFixed(0)+' km');
+  setText('gs-doppler', (curDop>=0?'+':'')+curDop.toFixed(2)+' km/s');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DOPPLER CANVAS
+// ═══════════════════════════════════════════════════════════════
+function drawDoppler() {
+  const canvas = document.getElementById('dopplerCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,212,255,0.08)'; ctx.lineWidth = 1;
+  for (let i=0; i<=4; i++) {
+    const y = (H/4)*i;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+  for (let i=0; i<=8; i++) {
+    const x = (W/8)*i;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = 'rgba(0,212,255,0.4)'; ctx.font = '9px Courier New';
+  ['+7.6','+3.8','0','-3.8','-7.6'].forEach((l,i) => {
+    ctx.fillText(l, 2, (H/4)*i+10);
+  });
+
+  // Zero line
+  ctx.strokeStyle = 'rgba(0,212,255,0.25)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Doppler curve
+  const freqMHz = parseFloat(document.getElementById('dopplerBand')?.value||14000);
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
+  ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 5;
+  ctx.beginPath();
+  for (let x=0; x<W; x++) {
+    const t = (x/W)*Math.PI*2 - Math.PI;
+    const vel = -Math.sin(t + simTime*0.5)*7.6;
+    const y = H/2 - (vel/10)*H*0.42;
+    x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+
+  // Current marker
+  const curT = (simTime*0.5) % (Math.PI*2);
+  const curVel = -Math.sin(curT)*7.6;
+  const curX = (curT/(Math.PI*2))*W;
+  const curY = H/2 - (curVel/10)*H*0.42;
+  ctx.fillStyle = '#00d4ff'; ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.arc(curX%W, curY, 5, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Update metrics
+  const freqShift = curVel * freqMHz / 300000;
+  setText('dopplerVel', (curVel>=0?'+':'')+curVel.toFixed(2));
+  setText('dopplerShift', (freqShift>=0?'+':'')+freqShift.toFixed(1));
+  setText('dopplerSNR', (18.4+Math.sin(simTime*0.3)*1.2).toFixed(1));
+  setText('carrierFreq', (freqMHz + freqShift/1000).toFixed(3)+' MHz');
+  setText('phaseErr', '±'+(0.3+Math.random()*0.1).toFixed(1)+'°');
+  setText('jsMargin', '+'+(13.1+Math.sin(simTime*0.2)*0.5).toFixed(1)+' dB');
+
+  const pll = document.getElementById('pllState');
+  if (pll) {
+    const locked = Math.abs(curVel) < 7.2;
+    pll.textContent = locked ? 'PLL LOCKED' : 'ACQUIRING';
+    pll.className = 'badge ' + (locked ? 'badge-green' : 'badge-amber');
+  }
+
+  // Spectrum mini
+  drawSpectrum();
+}
+
+function drawSpectrum() {
+  const canvas = document.getElementById('spectrumCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  const freqMHz = parseFloat(document.getElementById('dopplerBand')?.value||14000);
+  const curT = (simTime*0.5) % (Math.PI*2);
+  const curVel = -Math.sin(curT)*7.6;
+  const shiftPx = (curVel/10)*W*0.1;
+
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let x=0; x<W; x++) {
+    const f = (x/W - 0.5)*10;
+    const noise = (Math.random()-0.5)*3;
+    const carrier = 20*Math.exp(-Math.pow(f-shiftPx/W*10,2)/0.05);
+    const y = H - (carrier + noise + 5) * H/35;
+    x===0 ? ctx.moveTo(x,Math.max(0,y)) : ctx.lineTo(x,Math.max(0,y));
+  }
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(0,212,255,0.3)'; ctx.font='8px Courier New';
+  ctx.fillText(`CF: ${freqMHz} MHz`, 4, H-4);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOOK ANGLE CANVAS
+// ═══════════════════════════════════════════════════════════════
+function drawLookAngle() {
+  const canvas = document.getElementById('lookAngleCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const R = Math.min(W,H)*0.42;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  // Elevation rings
+  [0,30,60,90].forEach(el => {
+    const r = R*(1-el/90);
+    ctx.strokeStyle = 'rgba(0,212,255,0.18)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    if (el>0) {
+      ctx.fillStyle = 'rgba(0,212,255,0.35)'; ctx.font = '9px Courier New';
+      ctx.fillText(el+'°', cx+r+2, cy+4);
+    }
+  });
+
+  // Cardinal directions
+  ctx.fillStyle = 'rgba(0,212,255,0.6)'; ctx.font = '10px Courier New';
+  ctx.fillText('N', cx-4, cy-R-5);
+  ctx.fillText('S', cx-4, cy+R+13);
+  ctx.fillText('E', cx+R+4, cy+4);
+  ctx.fillText('W', cx-R-14, cy+4);
+
+  // Cross hairs
+  ctx.strokeStyle = 'rgba(0,212,255,0.12)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.stroke();
+
+  // Satellite track history
+  const az = (247.3 + simTime*1.8) % 360;
+  const el = 42.7 + Math.sin(simTime*0.25)*12;
+
+  ctx.strokeStyle = 'rgba(0,255,136,0.25)'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let t=0; t<60; t++) {
+    const a = ((247.3 + (simTime-t*0.05)*1.8) % 360 - 90)*Math.PI/180;
+    const e = 42.7 + Math.sin((simTime-t*0.05)*0.25)*12;
+    const rr = R*(1-e/90);
+    const x = cx + Math.cos(a)*rr;
+    const y = cy + Math.sin(a)*rr;
+    t===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Current satellite
+  const azRad = (az-90)*Math.PI/180;
+  const r = R*(1-el/90);
+  const sx = cx + Math.cos(azRad)*r;
+  const sy = cy + Math.sin(azRad)*r;
+
+  ctx.fillStyle = '#00ff88'; ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 14;
+  ctx.beginPath(); ctx.arc(sx,sy,6,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#00ff88'; ctx.font = '9px Courier New';
+  ctx.fillText('NEXUS-1', sx+8, sy-4);
+
+  // Update displays
+  const slant = 1247 + Math.sin(simTime*0.1)*80;
+  const fspl = -20*Math.log10(slant*1000) - 20*Math.log10(14e9) - 20*Math.log10(4*Math.PI/3e8);
+  setText('azimuth', az.toFixed(1)+'°');
+  setText('elevation', el.toFixed(1)+'°');
+  setText('slantRangeDisplay', slant.toFixed(0)+' km');
+  setText('fsplDisplay', fspl.toFixed(1)+' dB');
+  setText('azRate', '+'+(0.42+Math.sin(simTime*0.1)*0.05).toFixed(2)+'°/s');
+  setText('elRate', '+'+(0.18+Math.sin(simTime*0.15)*0.02).toFixed(2)+'°/s');
+
+  drawVisibility();
+}
+
+function drawVisibility() {
+  const canvas = document.getElementById('visibilityCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  // Visibility window (elevation over time)
+  ctx.strokeStyle = 'rgba(0,212,255,0.2)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0,H*0.7); ctx.lineTo(W,H*0.7); ctx.stroke();
+  ctx.fillStyle = 'rgba(0,212,255,0.3)'; ctx.font='8px Courier New';
+  ctx.fillText('0°', 2, H*0.7+10);
+
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let x=0; x<W; x++) {
+    const t = (x/W)*Math.PI;
+    const elv = Math.max(0, Math.sin(t)*67.4);
+    const y = H*0.7 - (elv/90)*H*0.65;
+    x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Current position marker
+  const curPct = ((simTime*0.02) % 1);
+  const curElv = Math.max(0, Math.sin(curPct*Math.PI)*67.4);
+  const curX = curPct*W;
+  const curY = H*0.7 - (curElv/90)*H*0.65;
+  ctx.fillStyle = '#00d4ff'; ctx.beginPath(); ctx.arc(curX,curY,4,0,Math.PI*2); ctx.fill();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LINK BUDGET — COMPLETE IMPLEMENTATION
+// ═══════════════════════════════════════════════════════════════
+function calcLinkBudget() {
+  const bandFreqs = {L:1.5, S:2.4, C:6, Ku:14, Ka:26, Q:45};
+  const band = document.getElementById('freqBand')?.value || 'Ku';
+  const txPowEl = document.getElementById('txPower');
+  const slantEl = document.getElementById('slantRange');
+  if (!txPowEl || !slantEl) return;
+
+  const freqGHz = bandFreqs[band] || 14;
+  const freqHz  = freqGHz * 1e9;
+  const txPow_dBW = parseFloat(txPowEl.value) || 10;
+  const slantKm = parseFloat(slantEl.value) || 1247;
+  const slantM  = slantKm * 1000;
+
+  // Constants
+  const c = 3e8;
+  const k_dB = -228.6; // Boltzmann in dBW/K/Hz
+
+  // Free Space Path Loss
+  const fspl_dB = 20*Math.log10(4*Math.PI*slantM*freqHz/c);
+
+  // Antenna gains (typical values per band)
+  const txGain_dB = {L:30, S:33, C:38, Ku:44, Ka:48, Q:52}[band] || 44;
+  const rxGain_dB = {L:28, S:31, C:36, Ku:42, Ka:46, Q:50}[band] || 42;
+
+  // Noise
+  const sysTemp_K = {L:120, S:100, C:80, Ku:150, Ka:200, Q:300}[band] || 150;
+  const sysTemp_dBK = 10*Math.log10(sysTemp_K);
+  const bw_Hz = 36e6; // 36 MHz transponder BW
+  const bw_dBHz = 10*Math.log10(bw_Hz);
+  const noiseFloor_dBW = k_dB + sysTemp_dBK + bw_dBHz;
+
+  // Atmospheric losses
+  const atmLoss_dB = {L:0.1, S:0.2, C:0.3, Ku:0.5, Ka:1.5, Q:3.0}[band] || 0.5;
+  const rainLoss_dB = {L:0.2, S:0.4, C:0.8, Ku:2.5, Ka:6.0, Q:12.0}[band] || 2.5;
+
+  // UPLINK
+  const eirp_dBW = txPow_dBW + txGain_dB;
+  const rxPow_dBW = eirp_dBW - fspl_dB - atmLoss_dB;
+  const snr_dB = rxPow_dBW + rxGain_dB - noiseFloor_dBW;
+  const margin_dB = snr_dB - 3.0; // 3 dB required Eb/N0
+
+  // DOWNLINK (satellite Tx ~5W = 7 dBW typical)
+  const satTxPow_dBW = 7;
+  const satEIRP_dBW = satTxPow_dBW + txGain_dB - 3;
+  const dlRxPow_dBW = satEIRP_dBW - fspl_dB - atmLoss_dB;
+  const dlSNR_dB = dlRxPow_dBW + rxGain_dB - noiseFloor_dBW;
+  const dlMargin_dB = dlSNR_dB - 3.0;
+
+  // Rain fade margin
+  const rainMargin_dB = margin_dB - rainLoss_dB;
+
+  // Jammer impact (from threat sim)
+  const jamPow_dBm = -75;
+  const jamPow_dBW = jamPow_dBm - 30;
+  const js_dB = jamPow_dBW - rxPow_dBW;
+  const chipRate = 10.24e6, dataRate = 16e3;
+  const procGain_dB = 10*Math.log10(chipRate/dataRate);
+  const mitigatedSNR_dB = snr_dB - js_dB + procGain_dB;
+
+  // Populate uplink table
+  const ulRows = [
+    ['Tx Power',          txPow_dBW.toFixed(1),    'dBW'],
+    ['Tx Antenna Gain',   txGain_dB.toFixed(1),    'dBi'],
+    ['EIRP',              eirp_dBW.toFixed(1),     'dBW'],
+    ['Frequency',         freqGHz.toFixed(1),      'GHz'],
+    ['Slant Range',       slantKm.toFixed(0),      'km'],
+    ['Free Space Loss',   (-fspl_dB).toFixed(1),   'dB'],
+    ['Atmospheric Loss',  (-atmLoss_dB).toFixed(1),'dB'],
+    ['Rx Power at Sat',   rxPow_dBW.toFixed(1),    'dBW'],
+    ['Rx Antenna Gain',   rxGain_dB.toFixed(1),    'dBi'],
+    ['System Noise Temp', sysTemp_K.toFixed(0),    'K'],
+    ['Noise Floor',       noiseFloor_dBW.toFixed(1),'dBW'],
+    ['C/N₀',              snr_dB.toFixed(1),       'dB'],
+    ['Link Margin',       margin_dB.toFixed(1),    'dB'],
+  ];
+  const dlRows = [
+    ['Sat Tx Power',      satTxPow_dBW.toFixed(1), 'dBW'],
+    ['Sat EIRP',          satEIRP_dBW.toFixed(1),  'dBW'],
+    ['Frequency',         freqGHz.toFixed(1),      'GHz'],
+    ['Free Space Loss',   (-fspl_dB).toFixed(1),   'dB'],
+    ['Atmospheric Loss',  (-atmLoss_dB).toFixed(1),'dB'],
+    ['Rx Power at GS',    dlRxPow_dBW.toFixed(1),  'dBW'],
+    ['Rx Antenna Gain',   rxGain_dB.toFixed(1),    'dBi'],
+    ['System Noise Temp', sysTemp_K.toFixed(0),    'K'],
+    ['Noise Floor',       noiseFloor_dBW.toFixed(1),'dBW'],
+    ['C/N₀',              dlSNR_dB.toFixed(1),     'dB'],
+    ['Link Margin',       dlMargin_dB.toFixed(1),  'dB'],
+    ['Rain Fade Margin',  rainMargin_dB.toFixed(1),'dB'],
+    ['Availability',      rainMargin_dB>0?'99.7%':'<99%', ''],
+  ];
+
+  const renderTable = (id, rows) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = rows.map(([p,v,u]) => {
+      const color = p.includes('Margin') ? (parseFloat(v)>0?'var(--green)':'var(--red)') :
+                    p.includes('Loss') ? 'var(--amber)' :
+                    p.includes('EIRP')||p.includes('C/N') ? 'var(--cyan)' : 'var(--text)';
+      return `<tr><td>${p}</td><td style="color:${color};text-align:right">${v}</td><td style="color:var(--muted)">${u}</td></tr>`;
+    }).join('');
+  };
+  renderTable('uplinkBody', ulRows);
+  renderTable('downlinkBody', dlRows);
+
+  // Link margin summary
+  const lm = document.getElementById('linkMarginDisplay');
+  if (lm) {
+    const ulOk = margin_dB > 0, dlOk = dlMargin_dB > 0;
+    lm.innerHTML = `
+      <div style="font-size:11px;line-height:2">
+        <div>UL Margin: <span style="color:${ulOk?'var(--green)':'var(--red)'}">${margin_dB.toFixed(1)} dB ${ulOk?'✓':'✗'}</span></div>
+        <div>DL Margin: <span style="color:${dlOk?'var(--green)':'var(--red)'}">${dlMargin_dB.toFixed(1)} dB ${dlOk?'✓':'✗'}</span></div>
+        <div>Band: <span style="color:var(--cyan)">${band}-Band @ ${freqGHz} GHz</span></div>
+        <div>BW: <span style="color:var(--amber)">36 MHz</span></div>
+        <div>Overall: <span class="badge ${ulOk&&dlOk?'badge-green':'badge-red'}">${ulOk&&dlOk?'LINK CLOSED':'LINK OPEN'}</span></div>
+      </div>`;
+  }
+
+  // Rain fade
+  const rf = document.getElementById('rainFadeDisplay');
+  if (rf) {
+    rf.innerHTML = `
+      <div style="font-size:11px;line-height:2">
+        <div>Rain Loss: <span style="color:var(--amber)">${rainLoss_dB.toFixed(1)} dB</span></div>
+        <div>Rain Margin: <span style="color:${rainMargin_dB>0?'var(--green)':'var(--red)'}">${rainMargin_dB.toFixed(1)} dB</span></div>
+        <div>Availability: <span style="color:var(--cyan)">${rainMargin_dB>3?'99.9%':rainMargin_dB>0?'99.7%':'<99%'}</span></div>
+        <div>Zone: <span style="color:var(--muted)">ITU-R K (temperate)</span></div>
+      </div>`;
+  }
+
+  // Jammer impact
+  const jd = document.getElementById('jammerDisplay');
+  if (jd) {
+    jd.innerHTML = `
+      <div style="font-size:11px;line-height:2">
+        <div>J/S Ratio: <span style="color:var(--red)">${js_dB.toFixed(1)} dB</span></div>
+        <div>Jammed SNR: <span style="color:var(--amber)">${(snr_dB-js_dB).toFixed(1)} dB</span></div>
+        <div>DSSS Gain: <span style="color:var(--green)">+${procGain_dB.toFixed(1)} dB</span></div>
+        <div>Mitigated: <span style="color:var(--cyan)">${mitigatedSNR_dB.toFixed(1)} dB</span></div>
+      </div>`;
+  }
+
+  drawLinkWaterfall(eirp_dBW, fspl_dB, atmLoss_dB, rxGain_dB, noiseFloor_dBW, snr_dB);
+}
+
+function drawLinkWaterfall(eirp, fspl, atm, rxg, noise, snr) {
+  const canvas = document.getElementById('linkWaterfallCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  const steps = [
+    {label:'EIRP', val:eirp, color:'#00d4ff'},
+    {label:'-FSPL', val:-fspl, color:'#ff3355'},
+    {label:'-Atm', val:-atm, color:'#ffaa00'},
+    {label:'+RxG', val:rxg, color:'#00ff88'},
+    {label:'-Noise', val:-noise-200, color:'#aa44ff'},
+    {label:'SNR', val:snr, color:'#00d4ff'},
+  ];
+
+  const barW = W/steps.length - 8;
+  const maxVal = Math.max(...steps.map(s=>Math.abs(s.val)));
+
+  steps.forEach((s,i) => {
+    const x = i*(W/steps.length) + 4;
+    const barH = Math.abs(s.val)/maxVal*(H-30);
+    const y = s.val>=0 ? H-barH-15 : H-15;
+    ctx.fillStyle = s.color+'88';
+    ctx.fillRect(x, y, barW, barH);
+    ctx.strokeStyle = s.color;
+    ctx.strokeRect(x, y, barW, barH);
+    ctx.fillStyle = s.color;
+    ctx.font = '8px Courier New';
+    ctx.fillText(s.label, x+2, H-3);
+    ctx.fillText(s.val.toFixed(0), x+2, y-2);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIGNAL CAPTURE
+// ═══════════════════════════════════════════════════════════════
+function toggleCapture() {
+  captureRunning = !captureRunning;
+  const btn = document.getElementById('captureBtn');
+  const status = document.getElementById('captureStatus');
+  if (captureRunning) {
+    btn.textContent = '⏸ STOP CAPTURE';
+    btn.classList.add('active');
+    captureStartTime = Date.now();
+    if (status) { status.textContent='CAPTURING'; status.className='badge badge-green'; }
+    addInterceptLog('info', 'Signal capture started — CF: '+document.getElementById('centerFreq').value+' MHz');
+  } else {
+    btn.textContent = '▶ START CAPTURE';
+    btn.classList.remove('active');
+    if (status) { status.textContent='STANDBY'; status.className='badge badge-amber'; }
+    addInterceptLog('ok', `Capture stopped — ${captureFrames} frames, ${captureBytes} bytes`);
+  }
+}
+
+function toggleIntercept() {
+  interceptRunning = !interceptRunning;
+  const btn = document.getElementById('interceptBtn');
+  if (interceptRunning) {
+    btn.textContent = '⏸ STOP INTERCEPT';
+    addInterceptLog('warn', 'INTERCEPT MODE ACTIVE — monitoring all channels');
+    document.getElementById('ew-status').textContent = 'EW: INTERCEPT';
+    document.getElementById('ew-dot').className = 'dot dot-r';
+  } else {
+    btn.textContent = '⚡ INTERCEPT';
+    addInterceptLog('info', 'Intercept mode deactivated');
+    document.getElementById('ew-status').textContent = 'EW: STANDBY';
+    document.getElementById('ew-dot').className = 'dot dot-a';
+  }
+}
+
+function updateSignalParams() {
+  addInterceptLog('info', `Params updated — CF: ${document.getElementById('centerFreq').value} MHz, BW: ${document.getElementById('bwMHz').value} MHz`);
+}
+
+function drawSpecAnalyzer() {
+  const canvas = document.getElementById('specAnalyzerCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,212,255,0.08)'; ctx.lineWidth = 1;
+  for (let i=0; i<=6; i++) {
+    const y = (H/6)*i;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    ctx.fillStyle='rgba(0,212,255,0.3)'; ctx.font='8px Courier New';
+    ctx.fillText((-10*i)+'dB', 2, y+9);
+  }
+
+  // Noise floor
+  const noiseFloor = H*0.85;
+  ctx.strokeStyle = 'rgba(0,212,255,0.2)'; ctx.lineWidth=1; ctx.setLineDash([3,5]);
+  ctx.beginPath(); ctx.moveTo(0,noiseFloor); ctx.lineTo(W,noiseFloor); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Spectrum
+  const gain = parseInt(document.getElementById('gainSlider')?.value||30);
+  const gainFactor = gain/30;
+  ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let x=0; x<W; x++) {
+    const f = (x/W - 0.5)*2;
+    const noise = (Math.random()-0.5)*8;
+    // Main carrier
+    const carrier = 45*gainFactor*Math.exp(-f*f/0.002);
+    // Sidebands
+    const sb1 = 20*gainFactor*Math.exp(-(f-0.15)*(f-0.15)/0.001);
+    const sb2 = 20*gainFactor*Math.exp(-(f+0.15)*(f+0.15)/0.001);
+    // Jammer (if intercept active)
+    const jam = interceptRunning ? 15*gainFactor*Math.exp(-(f-0.3)*(f-0.3)/0.01) : 0;
+    const total = carrier + sb1 + sb2 + jam + noise;
+    const y = noiseFloor - total*(H*0.8/60);
+    x===0 ? ctx.moveTo(x,Math.max(2,y)) : ctx.lineTo(x,Math.max(2,y));
+  }
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle='rgba(0,212,255,0.5)'; ctx.font='8px Courier New';
+  ctx.fillText('CARRIER', W/2-20, 20);
+  if (interceptRunning) { ctx.fillStyle='var(--red)'; ctx.fillText('JAMMER', W*0.65, 40); }
+
+  // Update signal metrics
+  const snr = 18.4 + Math.sin(simTime*0.3)*1.5 + (interceptRunning?-8:0);
+  const ber = interceptRunning ? 1.2e-3 : 1.2e-6;
+  setText('sigPower', (-87.3+Math.sin(simTime*0.2)*0.5).toFixed(1));
+  setText('sigSNR', snr.toFixed(1));
+  setText('sigBER', ber.toExponential(1));
+  setText('jamDetect', interceptRunning?'ACTIVE':'NONE');
+  document.getElementById('jamDetect').className = 'badge '+(interceptRunning?'badge-red':'badge-green');
+  setText('anomalyScore', (0.12+Math.random()*0.05+(interceptRunning?0.4:0)).toFixed(2));
+}
+
+function drawWaterfall() {
+  const canvas = document.getElementById('waterfallCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Add new row
+  const row = new Uint8ClampedArray(W*4);
+  for (let x=0; x<W; x++) {
+    const f = (x/W - 0.5)*2;
+    const noise = Math.random()*20;
+    const carrier = 200*Math.exp(-f*f/0.002);
+    const sb = 80*Math.exp(-(Math.abs(f)-0.15)*(Math.abs(f)-0.15)/0.001);
+    const jam = interceptRunning ? 60*Math.exp(-(f-0.3)*(f-0.3)/0.01) : 0;
+    const v = Math.min(255, noise + carrier + sb + jam);
+    // Color map: dark blue → cyan → green → yellow → red
+    row[x*4]   = v>200?255:v>150?v-150:0;
+    row[x*4+1] = v>100?Math.min(255,v-50):0;
+    row[x*4+2] = v<150?Math.min(255,v+50):Math.max(0,255-(v-150)*2);
+    row[x*4+3] = 255;
+  }
+  waterfallRows.unshift(row);
+  if (waterfallRows.length > H) waterfallRows.pop();
+
+  ctx.clearRect(0,0,W,H);
+  waterfallRows.forEach((r,y) => {
+    if (y>=H) return;
+    const img = new ImageData(r, W, 1);
+    ctx.putImageData(img, 0, y);
+  });
+}
+
+function drawConstellation() {
+  const canvas = document.getElementById('constellationCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  // Axes
+  ctx.strokeStyle='rgba(0,212,255,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(W,cy); ctx.stroke();
+
+  // QPSK ideal points
+  const r = Math.min(W,H)*0.3;
+  const snr = 18.4 + (interceptRunning?-8:0);
+  const noise = Math.max(0.02, 0.5/Math.pow(10,snr/20));
+  [[1,1],[-1,1],[-1,-1],[1,-1]].forEach(([ix,iy]) => {
+    for (let j=0; j<30; j++) {
+      const x = cx + (ix*r + (Math.random()-0.5)*r*noise*4);
+      const y = cy + (iy*r + (Math.random()-0.5)*r*noise*4);
+      ctx.fillStyle = 'rgba(0,255,136,0.6)';
+      ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fill();
+    }
+    // Ideal point
+    ctx.fillStyle='#00d4ff'; ctx.shadowColor='#00d4ff'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(cx+ix*r,cy+iy*r,3,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+  });
+  ctx.fillStyle='rgba(0,212,255,0.4)'; ctx.font='8px Courier New';
+  ctx.fillText('QPSK', 4, H-4);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RL / AI CANVASES
+// ═══════════════════════════════════════════════════════════════
+function drawRLReward() {
+  const canvas = document.getElementById('rlRewardCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle='rgba(0,212,255,0.07)'; ctx.lineWidth=1;
+  for (let i=0; i<=4; i++) {
+    const y=(H/4)*i;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  if (rlRunning) {
+    rlRewardVal += (Math.random()-0.3)*15;
+    rlRewardVal = Math.max(0, Math.min(1000, rlRewardVal));
+    rlEpisodeCount++;
+    rlRewardHistory.push(rlRewardVal);
+    if (rlRewardHistory.length > W) rlRewardHistory.shift();
+    setText('rlEpisodes', rlEpisodeCount.toLocaleString());
+    setText('rlReward', rlRewardVal.toFixed(1));
+    setText('rlExplore', Math.max(1, 20-rlEpisodeCount/200).toFixed(1)+'%');
+  }
+
+  if (rlRewardHistory.length < 2) return;
+  const maxR = Math.max(...rlRewardHistory, 1);
+  ctx.strokeStyle='#00d4ff'; ctx.lineWidth=1.5;
+  ctx.shadowColor='#00d4ff'; ctx.shadowBlur=4;
+  ctx.beginPath();
+  rlRewardHistory.forEach((r,i) => {
+    const x = (i/rlRewardHistory.length)*W;
+    const y = H - (r/maxR)*(H-10) - 5;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // Moving average
+  ctx.strokeStyle='rgba(0,255,136,0.5)'; ctx.lineWidth=2;
+  ctx.beginPath();
+  const win=20;
+  rlRewardHistory.forEach((r,i) => {
+    if (i<win) return;
+    const avg = rlRewardHistory.slice(i-win,i).reduce((a,b)=>a+b,0)/win;
+    const x=(i/rlRewardHistory.length)*W;
+    const y=H-(avg/maxR)*(H-10)-5;
+    i===win ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+
+function drawNNAccuracy() {
+  const canvas = document.getElementById('nnAccuracyCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  if (rlRunning) {
+    nnAccuracyVal = Math.min(99.9, nnAccuracyVal + (Math.random()-0.3)*0.1);
+    const loss = Math.max(0.001, 0.5*Math.exp(-nnAccuracyVal/20));
+    nnLossHistory.push({acc:nnAccuracyVal, loss});
+    if (nnLossHistory.length > W) nnLossHistory.shift();
+    setText('nnAcc', nnAccuracyVal.toFixed(1)+'%');
+    setText('nnLoss', loss.toFixed(3));
+    setText('nnEpoch', Math.floor(rlEpisodeCount/3.6));
+  }
+
+  if (nnLossHistory.length < 2) return;
+
+  // Accuracy line
+  ctx.strokeStyle='#00ff88'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  nnLossHistory.forEach((d,i) => {
+    const x=(i/nnLossHistory.length)*W;
+    const y=H-(d.acc/100)*(H-10)-5;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Loss line (scaled)
+  ctx.strokeStyle='#ff3355'; ctx.lineWidth=1;
+  ctx.beginPath();
+  nnLossHistory.forEach((d,i) => {
+    const x=(i/nnLossHistory.length)*W;
+    const y=H-(1-d.loss)*(H-10)-5;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle='rgba(0,255,136,0.5)'; ctx.font='8px Courier New';
+  ctx.fillText('ACCURACY', 4, 12);
+  ctx.fillStyle='rgba(255,51,85,0.5)';
+  ctx.fillText('LOSS', 4, 22);
+}
+
+function drawAnomalyDetection() {
+  const canvas = document.getElementById('anomalyCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  // Anomaly score over time
+  const score = 0.1 + Math.random()*0.05 + (threatActive?0.6:0) + (interceptRunning?0.3:0);
+  anomalyHistory.push(score);
+  if (anomalyHistory.length > W) anomalyHistory.shift();
+
+  // Threshold line
+  ctx.strokeStyle='rgba(255,170,0,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,5]);
+  const threshY = H*(1-0.5);
+  ctx.beginPath(); ctx.moveTo(0,threshY); ctx.lineTo(W,threshY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,170,0,0.4)'; ctx.font='8px Courier New';
+  ctx.fillText('THRESHOLD', 4, threshY-3);
+
+  // Score line
+  ctx.strokeStyle='#00d4ff'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  anomalyHistory.forEach((s,i) => {
+    const x=(i/anomalyHistory.length)*W;
+    const y=H-s*(H-10)-5;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Anomaly markers
+  anomalyHistory.forEach((s,i) => {
+    if (s>0.5) {
+      const x=(i/anomalyHistory.length)*W;
+      const y=H-s*(H-10)-5;
+      ctx.fillStyle='#ff3355'; ctx.shadowColor='#ff3355'; ctx.shadowBlur=8;
+      ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+    }
+  });
+
+  const anomCount = anomalyHistory.filter(s=>s>0.5).length;
+  setText('anomalyCount', anomCount);
+}
+
+function drawBeamSteering() {
+  const canvas = document.getElementById('beamCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx=W/2, cy=H/2;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  // Beam pattern
+  const az = (247.3 + simTime*1.8) % 360;
+  const el = 42.7 + Math.sin(simTime*0.25)*12;
+  const azRad = (az-90)*Math.PI/180;
+  const R = Math.min(W,H)*0.38;
+  const r = R*(1-el/90);
+  const bx = cx+Math.cos(azRad)*r;
+  const by = cy+Math.sin(azRad)*r;
+
+  // Rings
+  [0.33,0.66,1].forEach(f => {
+    ctx.strokeStyle=`rgba(0,212,255,${0.1+f*0.1})`; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(cx,cy,R*f,0,Math.PI*2); ctx.stroke();
+  });
+
+  // Beam cone
+  const beamWidth = 0.15;
+  ctx.fillStyle='rgba(0,255,136,0.12)';
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,R,azRad-beamWidth,azRad+beamWidth);
+  ctx.closePath(); ctx.fill();
+
+  // Target
+  ctx.fillStyle='#00ff88'; ctx.shadowColor='#00ff88'; ctx.shadowBlur=12;
+  ctx.beginPath(); ctx.arc(bx,by,5,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+
+  // RL action arrow
+  beamHistory.push({x:bx,y:by});
+  if (beamHistory.length>20) beamHistory.shift();
+  ctx.strokeStyle='rgba(0,212,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath();
+  beamHistory.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  ctx.fillStyle='rgba(0,212,255,0.4)'; ctx.font='8px Courier New';
+  ctx.fillText('RL BEAM STEERING', 4, H-4);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// THREAT SIMULATION
+// ═══════════════════════════════════════════════════════════════
+const threatProfiles = {
+  apt28: {
+    name: 'APT28 (Fancy Bear)',
+    ttp: 'RF Jamming + Uplink Saturation',
+    mitre: 'T1498.001, T1071.001',
+    conf: '94%',
+    attr: 'GRU Unit 26165 (Russia)',
+    scenario: `<div style="color:var(--red);font-weight:700">⚠ APT28 RF JAMMING ATTACK DETECTED</div>
+<br>
+<b style="color:var(--cyan)">Attack Vector:</b> Terrestrial EW asset transmitting CW signal into terminal sidelobes<br>
+<b style="color:var(--cyan)">Target:</b> Ku-Band downlink (10.95–11.70 GHz)<br>
+<b style="color:var(--cyan)">Method:</b> LNB saturation via high-power CW sweep<br>
+<b style="color:var(--cyan)">Effect:</b> Gain compression + intermodulation distortion<br>
+<br>
+<b style="color:var(--amber)">Jammer Power:</b> -75 dBm at LNB<br>
+<b style="color:var(--amber)">J/S Ratio:</b> +15 dB (link disrupted)<br>
+<b style="color:var(--amber)">Unmitigated SNR:</b> -8.4 dB (LINK OPEN)<br>
+<br>
+<b style="color:var(--green)">DSSS Mitigation:</b> Processing Gain +28.1 dB → SNR +19.7 dB (LINK CLOSED)`,
+    jamPow: -75, sigPow: -90, noiseFl: -110, chipRate: 10.24e6, dataRate: 16e3
+  },
+  apt40: {
+    name: 'APT40 (Bronze Mohawk)',
+    ttp: 'Uplink Transponder Saturation',
+    mitre: 'T1498.002, T1565.002',
+    conf: '87%',
+    attr: 'MSS/PLAN (China)',
+    scenario: `<div style="color:var(--red);font-weight:700">⚠ APT40 UPLINK SATURATION ATTACK</div>
+<br>
+<b style="color:var(--cyan)">Attack Vector:</b> Hostile uplink station injecting broadband noise into transponder<br>
+<b style="color:var(--cyan)">Target:</b> Ku-Band uplink passband (13.75–14.50 GHz)<br>
+<b style="color:var(--cyan)">Method:</b> AGC triggering via transponder power theft<br>
+<b style="color:var(--cyan)">Effect:</b> Legitimate carrier suppression<br>
+<br>
+<b style="color:var(--amber)">Noise Injection:</b> +20 dBW EIRP broadband<br>
+<b style="color:var(--amber)">AGC Compression:</b> -12 dB carrier suppression<br>
+<b style="color:var(--amber)">Transponder Availability:</b> 23% (DEGRADED)<br>
+<br>
+<b style="color:var(--green)">Mitigation:</b> Spectral shift to adjacent transponder + AUPC`,
+    jamPow: -70, sigPow: -88, noiseFl: -108, chipRate: 5.12e6, dataRate: 8e3
+  },
+  lazarus: {
+    name: 'Lazarus Group',
+    ttp: 'Signal Intercept + Replay Attack',
+    mitre: 'T1040, T1557.002',
+    conf: '78%',
+    attr: 'RGB (North Korea)',
+    scenario: `<div style="color:var(--red);font-weight:700">⚠ LAZARUS GROUP SIGNAL INTERCEPT</div>
+<br>
+<b style="color:var(--cyan)">Attack Vector:</b> Passive signal collection + active replay injection<br>
+<b style="color:var(--cyan)">Target:</b> Unencrypted telemetry downlink<br>
+<b style="color:var(--cyan)">Method:</b> SDR-based wideband collection + frame replay<br>
+<b style="color:var(--cyan)">Effect:</b> Command injection via replay of authenticated frames<br>
+<br>
+<b style="color:var(--amber)">Collection BW:</b> 500 MHz wideband<br>
+<b style="color:var(--amber)">Replay Delay:</b> 47ms (within auth window)<br>
+<b style="color:var(--amber)">Frames Captured:</b> 2,847<br>
+<br>
+<b style="color:var(--green)">Mitigation:</b> 313-BIND temporal authentication + SLH-DSA signatures`,
+    jamPow: -95, sigPow: -87, noiseFl: -110, chipRate: 1e6, dataRate: 1e3
+  },
+  sandworm: {
+    name: 'Sandworm',
+    ttp: 'GPS Denial + Navigation Spoofing',
+    mitre: 'T1498.001, T1565.001',
+    conf: '91%',
+    attr: 'GRU Unit 74455 (Russia)',
+    scenario: `<div style="color:var(--red);font-weight:700">⚠ SANDWORM GPS DENIAL ATTACK</div>
+<br>
+<b style="color:var(--cyan)">Attack Vector:</b> GPS L1/L2 jamming + coordinated spoofing<br>
+<b style="color:var(--cyan)">Target:</b> Ground station timing + satellite TLE updates<br>
+<b style="color:var(--cyan)">Method:</b> Meaconing + false ephemeris injection<br>
+<b style="color:var(--cyan)">Effect:</b> Pointing error + orbital prediction failure<br>
+<br>
+<b style="color:var(--amber)">GPS J/S:</b> +35 dB (complete denial)<br>
+<b style="color:var(--amber)">Timing Error:</b> ±847 μs (link budget failure)<br>
+<b style="color:var(--amber)">Pointing Error:</b> ±2.3° (signal loss)<br>
+<br>
+<b style="color:var(--green)">Mitigation:</b> Inertial navigation + quantum clock + EP-canary timing`,
+    jamPow: -65, sigPow: -85, noiseFl: -110, chipRate: 20e6, dataRate: 50e3
+  },
+  custom: {
+    name: 'Custom EW Scenario',
+    ttp: 'User-Defined Electronic Warfare',
+    mitre: 'T1498, T1071',
+    conf: 'N/A',
+    attr: 'Unknown',
+    scenario: `<div style="color:var(--amber);font-weight:700">⚡ CUSTOM EW SCENARIO ACTIVE</div>
+<br>
+Configure parameters using the Link Budget calculator.<br>
+Adjust jammer power, frequency, and DSSS parameters to model your threat scenario.<br>
+<br>
+<b style="color:var(--cyan)">Default Parameters:</b><br>
+Signal Power: -90 dBm<br>
+Noise Floor: -110 dBm<br>
+Jammer Power: -75 dBm<br>
+DSSS Chip Rate: 10.24 Mcps<br>
+Data Rate: 16 kbps`,
+    jamPow: -75, sigPow: -90, noiseFl: -110, chipRate: 10.24e6, dataRate: 16e3
+  }
+};
+
+function launchThreat() {
+  const actor = document.getElementById('threatActor').value;
+  const profile = threatProfiles[actor];
+  if (!profile) return;
+
+  threatActive = true;
+  document.getElementById('ew-status').textContent = 'EW: ATTACK';
+  document.getElementById('ew-dot').className = 'dot dot-r';
+
+  // Scenario text
+  document.getElementById('threatScenario').innerHTML = profile.scenario;
+
+  // RF jamming simulation (from satexpert_intel_report)
+  const pSig = Math.pow(10,(profile.sigPow-30)/10);
+  const pNoise = Math.pow(10,(profile.noiseFl-30)/10);
+  const pJam = Math.pow(10,(profile.jamPow-30)/10);
+  const js_dB = profile.jamPow - profile.sigPow;
+  const snrJammed = 10*Math.log10(pSig/(pNoise+pJam));
+  const procGain = 10*Math.log10(profile.chipRate/profile.dataRate);
+  const snrMitigated = snrJammed + procGain;
+
+  setText('jsRatio', js_dB.toFixed(1)+' dB');
+  setText('jammedSNR', snrJammed.toFixed(1)+' dB');
+  setText('procGain', '+'+procGain.toFixed(1)+' dB');
+  setText('mitigatedSNR', snrMitigated.toFixed(1)+' dB');
+
+  // Jam bar
+  const jamPct = Math.min(100, Math.max(0, (js_dB+20)/40*100));
+  document.getElementById('jamBar').style.width = jamPct+'%';
+
+  // Threat intelligence
+  setText('ti-ttp', profile.ttp);
+  setText('ti-mitre', profile.mitre);
+  setText('ti-conf', profile.conf);
+  setText('ti-attr', profile.attr);
+
+  // Log
+  addThreatLog('crit', `ATTACK LAUNCHED: ${profile.name}`);
+  addThreatLog('warn', `TTP: ${profile.ttp}`);
+  addThreatLog('warn', `J/S Ratio: ${js_dB.toFixed(1)} dB — Jammed SNR: ${snrJammed.toFixed(1)} dB`);
+  addThreatLog('info', `DSSS Processing Gain: +${procGain.toFixed(1)} dB`);
+  addThreatLog(snrMitigated>3?'ok':'crit', `Mitigated SNR: ${snrMitigated.toFixed(1)} dB — Link ${snrMitigated>3?'CLOSED':'OPEN'}`);
+
+  drawThreatCanvas(js_dB, snrJammed, procGain, snrMitigated);
+}
+
+function mitigateThreat() {
+  if (!threatActive) return;
+  // Activate countermeasures
+  ['cm-dsss','cm-fhop','cm-pol','cm-null'].forEach((id,i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent='ACTIVE'; el.className='badge badge-green'; }
+      addThreatLog('ok', `Countermeasure activated: ${['DSSS','FREQ HOP','POL SWITCH','BEAM NULL'][i]}`);
+    }, i*400);
+  });
+  setTimeout(() => {
+    addThreatLog('ok', 'All countermeasures active — link recovered');
+    document.getElementById('ew-status').textContent = 'EW: MITIGATED';
+    document.getElementById('ew-dot').className = 'dot dot-g';
+  }, 1800);
+}
+
+function clearThreat() {
+  threatActive = false;
+  document.getElementById('threatScenario').innerHTML = 'Select a threat actor and click LAUNCH ATTACK to begin simulation.';
+  ['jsRatio','jammedSNR','procGain','mitigatedSNR'].forEach(id=>setText(id,'N/A'));
+  document.getElementById('jamBar').style.width='0%';
+  ['ti-ttp','ti-mitre','ti-conf','ti-attr'].forEach(id=>setText(id,'—'));
+  ['cm-dsss','cm-fhop','cm-pol','cm-null'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent='STANDBY';el.className='badge badge-amber';}
+  });
+  document.getElementById('ew-status').textContent='EW: STANDBY';
+  document.getElementById('ew-dot').className='dot dot-a';
+  addThreatLog('info','Threat scenario cleared');
+}
+
+function drawThreatCanvas(js, snrJ, gp, snrM) {
+  const canvas = document.getElementById('threatCanvas');
+  if (!canvas) return;
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+  const bars = [
+    {label:'J/S', val:Math.abs(js), max:40, color:'#ff3355'},
+    {label:'Jammed SNR', val:Math.max(0,snrJ+20), max:40, color:'#ffaa00'},
+    {label:'Proc Gain', val:gp, max:40, color:'#00ff88'},
+    {label:'Mitigated', val:Math.max(0,snrM+20), max:40, color:'#00d4ff'},
+  ];
+
+  const bw = W/bars.length - 10;
+  bars.forEach((b,i) => {
+    const x = i*(W/bars.length)+5;
+    const bh = (b.val/b.max)*(H-30);
+    const y = H-bh-20;
+    ctx.fillStyle=b.color+'55';
+    ctx.fillRect(x,y,bw,bh);
+    ctx.strokeStyle=b.color; ctx.lineWidth=1.5;
+    ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle=b.color; ctx.font='8px Courier New';
+    ctx.fillText(b.label,x+2,H-5);
+    ctx.fillText(b.val.toFixed(1),x+2,y-2);
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function addInterceptLog(type, msg) {
+  const log = document.getElementById('interceptLog');
+  if (!log) return;
+  const div = document.createElement('div');
+  div.className = `log-${type}`;
+  div.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  if (log.children.length > 50) log.removeChild(log.firstChild);
+}
+
+function addThreatLog(type, msg) {
+  const log = document.getElementById('threatLog');
+  if (!log) return;
+  const div = document.createElement('div');
+  div.className = `log-${type}`;
+  div.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  if (log.children.length > 60) log.removeChild(log.firstChild);
+}
+
+function addAILog(msg, type='info') {
+  const log = document.getElementById('aiLog');
+  if (!log) return;
+  const div = document.createElement('div');
+  div.className = `log-${type}`;
+  div.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
+  log.insertBefore(div, log.firstChild);
+  if (log.children.length > 30) log.removeChild(log.lastChild);
+}
+
+function toggleRL() { rlRunning = !rlRunning; }
+function resetRL() {
+  rlEpisodeCount=0; rlRewardVal=0; nnAccuracyVal=50;
+  rlRewardHistory=[]; nnLossHistory=[]; anomalyHistory=[];
+  addAILog('RL agent reset — training from scratch','warn');
+}
+function updateDopplerSat() {}
+function updateGS() {}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════
+function mainLoop() {
+  const active = document.querySelector('.section.active');
+  if (!active) { requestAnimationFrame(mainLoop); return; }
+  const id = active.id;
+
+  if (id==='sec-orbital')  { drawOrbital(); }
+  if (id==='sec-doppler')  { drawDoppler(); }
+  if (id==='sec-lookangle'){ drawLookAngle(); }
+  if (id==='sec-signal')   { drawSpecAnalyzer(); drawWaterfall(); drawConstellation(); }
+  if (id==='sec-ai')       { drawRLReward(); drawNNAccuracy(); drawAnomalyDetection(); drawBeamSteering(); }
+
+  // Capture counter
+  if (captureRunning) {
+    captureFrames++;
+    captureBytes += Math.floor(Math.random()*1500+500);
+    setText('captureFrames', captureFrames.toLocaleString());
+    setText('captureBytes', (captureBytes/1024).toFixed(1)+' KB');
+    if (captureStartTime) {
+      const dur = Math.floor((Date.now()-captureStartTime)/1000);
+      const h=Math.floor(dur/3600), m=Math.floor((dur%3600)/60), s=dur%60;
+      setText('captureDur', `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    }
+    if (Math.random()<0.02) addInterceptLog('info', `Frame ${captureFrames}: SNR=${(-87+Math.random()*2).toFixed(1)} dBm`);
+    if (interceptRunning && Math.random()<0.01) addInterceptLog('warn', 'Anomalous signal pattern detected — possible jamming');
+  }
+
+  // AI log updates
+  if (rlRunning && Math.random()<0.005) {
+    addAILog(`Episode ${rlEpisodeCount}: reward=${rlRewardVal.toFixed(1)} — policy gradient updated`,'ok');
+  }
+
+  requestAnimationFrame(mainLoop);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  populateSatTable();
+  resizeAllCanvases();
+  calcLinkBudget();
+  mainLoop();
+});
+</script>
+</body>
+</html>

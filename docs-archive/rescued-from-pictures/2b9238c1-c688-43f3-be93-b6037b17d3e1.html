@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)blob:https://copilot.fun/2b9238c1-c688-43f3-be93-b6037b17d3e1 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
+._nav-link-tooltip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  max-width: min(80%, 600px);
+  padding: 4px 8px;
+  background: rgba(32, 33, 36, 0.88);
+  color: #e8eaed;
+  font: 12px/16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top-right-radius: 4px;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+._nav-link-tooltip._visible {
+  opacity: 1;
+}
+@media (prefers-color-scheme: light) {
+  ._nav-link-tooltip {
+    background: rgba(241, 243, 244, 0.92);
+    color: #202124;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+  }
+}
+</style>
+<script nonce="">
+(function() {
+  // Helper: check if a raw href is an external URL (http/https)
+  // Hash links (#section), relative paths (/page), mailto:, tel:, etc. are NOT external
+  function _isExternalHref(rawHref) {
+    if (!rawHref) return false;
+    var h = rawHref.trim().toLowerCase();
+    return h.startsWith('http://') || h.startsWith('https://') || h.startsWith('//');
+  }
+
+  // --- Link hover URL preview tooltip ---
+  var _tooltip = document.createElement('div');
+  _tooltip.className = '_nav-link-tooltip';
+  function _ensureTooltipMounted() {
+    if (!_tooltip.parentNode) {
+      (document.body || document.documentElement).appendChild(_tooltip);
+    }
+  }
+
+  document.addEventListener('mouseover', function(event) {
+    var el = event.target;
+    while (el && el.tagName !== 'A') {
+      el = el.parentElement;
+    }
+    if (!el) return;
+    var rawHref = el.getAttribute('href');
+    if (!rawHref || rawHref.startsWith('javascript:')) return;
+    _ensureTooltipMounted();
+    // Show raw href for clean display (avoids blob: URL noise)
+    _tooltip.textContent = rawHref;
+    _tooltip.classList.add('_visible');
+  }, true);
+
+  document.addEventListener('mouseout', function(event) {
+    var el = event.target;
+    while (el && el.tagName !== 'A') {
+      el = el.parentElement;
+    }
+    if (!el) return;
+    _tooltip.classList.remove('_visible');
+  }, true);
+
+  // --- Intercept anchor tag clicks ---
+  document.addEventListener('click', function(event) {
+    var target = event.target;
+    while (target && target.tagName !== 'A') {
+      target = target.parentElement;
+    }
+    if (!target) return;
+
+    var rawHref = target.getAttribute('href');
+    if (!rawHref || rawHref.startsWith('javascript:')) return;
+
+    // Hash links: Ctrl/Cmd+click to scroll to target, plain click places cursor
+    if (rawHref.startsWith('#')) {
+      if (event.ctrlKey || event.metaKey) {
+        var targetId = rawHref.substring(1);
+        if (targetId) {
+          var targetEl = document.getElementById(targetId) || document.getElementsByName(targetId)[0];
+          if (targetEl) {
+            event.preventDefault();
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+      return;
+    }
+
+    // Only intercept external links (http/https)
+    if (!_isExternalHref(rawHref)) return;
+
+    // Allow download links to proceed natively instead of intercepting them.
+    // The 'download' attribute signals the browser to save the file rather than navigate.
+    if (target.hasAttribute('download')) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.parent.postMessage({
+      type: 'navigate-link',
+      payload: {
+        url: target.href || rawHref,
+        target: target.target || undefined
+      },
+      timestamp: Date.now()
+    }, '*');
+  }, true);
+
+  // --- Intercept window.open calls ---
+  var _origOpen = window.open;
+  window.open = function(url, target, features) {
+    if (!url) return null;
+    var urlStr = String(url);
+
+    // Only intercept external URLs (http/https)
+    if (!_isExternalHref(urlStr)) {
+      return _origOpen.call(window, url, target, features);
+    }
+
+    var resolvedUrl;
+    try {
+      resolvedUrl = new URL(urlStr, window.location.href).href;
+    } catch (e) {
+      resolvedUrl = urlStr;
+    }
+
+    window.parent.postMessage({
+      type: 'navigate-link',
+      payload: {
+        url: resolvedUrl,
+        target: target || '_blank'
+      },
+      timestamp: Date.now()
+    }, '*');
+    return null;
+  };
+})();
+</script>
+      <script nonce="">
+        (function() {
+          if (typeof window !== 'undefined' && window.trustedTypes && window.trustedTypes.createPolicy) {
+            try {
+              window.trustedTypes.createPolicy('default', {
+                createHTML: function(input) { return input; },
+                createScript: function(input) { return input; },
+                createScriptURL: function(input) { return input; }
+              });
+            } catch (e) {
+              // Policy may already exist — ignore
+            }
+          }
+        })();
+      </script>
+      <script nonce="">
+        (function() {
+          const _0x1a2b = {
+            log: console.log,
+            info: console.info,
+            warn: console.warn,
+            error: console.error,
+            debug: console.debug
+          };
+
+          function _0x3c4d(e, t, n) {
+            try {
+              const o = {
+                type: 'iframe-console-log',
+                payload: {
+                  level: e,
+                  message: String(t),
+                  args: n.map(e => {
+                    try {
+                      return typeof e === 'object' ? JSON.stringify(e, null, 2) : String(e);
+                    } catch (e) {
+                      return '[Circular or Non-serializable]';
+                    }
+                  }),
+                  timestamp: Date.now(),
+                  stackTrace: e === 'error' ? new Error().stack : undefined
+                }
+              };
+
+              window.parent.postMessage(o, '*');
+            } catch (e) {
+              _0x1a2b[e].apply(console, [t, ...n]);
+            }
+          }
+
+          console.log = function(...args) {
+            _0x1a2b.log.apply(console, args);
+            _0x3c4d('log', args[0] || '', args.slice(1));
+          };
+
+          console.info = function(...args) {
+            _0x1a2b.info.apply(console, args);
+            _0x3c4d('info', args[0] || '', args.slice(1));
+          };
+
+          console.warn = function(...args) {
+            _0x1a2b.warn.apply(console, args);
+            _0x3c4d('warn', args[0] || '', args.slice(1));
+          };
+
+          console.error = function(...args) {
+            _0x1a2b.error.apply(console, args);
+            _0x3c4d('error', args[0] || '', args.slice(1));
+          };
+
+          console.debug = function(...args) {
+            _0x1a2b.debug.apply(console, args);
+            _0x3c4d('debug', args[0] || '', args.slice(1));
+          };
+
+          window.addEventListener('error', function(event) {
+            _0x3c4d('error', event.message, [
+              'Error in ' + event.filename + ':' + event.lineno + ':' + event.colno,
+              event.error ? event.error.stack : ''
+            ]);
+          });
+
+          window.addEventListener('unhandledrejection', function(event) {
+            _0x3c4d('error', 'Unhandled Promise Rejection', [
+              event.reason ? String(event.reason) : 'Unknown reason'
+            ]);
+          });
+
+          window.addEventListener('securitypolicyviolation', function(event) {
+            _0x3c4d('error', 'CSP Violation: ' + event.effectiveDirective, [
+              'blockedURI: ' + event.blockedURI,
+              'violatedDirective: ' + event.violatedDirective,
+              'originalPolicy: ' + event.originalPolicy,
+              'disposition: ' + event.disposition,
+              'documentURI: ' + event.documentURI
+            ]);
+          });
+
+          var _llmRequestHandlers = {};
+
+          window._useLLM = function(name, params) {
+            const requestId = Math.random().toString(36).slice(2);
+            const p = new Promise((resolve) => {
+              _llmRequestHandlers[requestId] = resolve;
+            });
+
+            const llmMsg = {
+              type: "use-llm",
+              requestId: requestId,
+              timestamp: Date.now(),
+              payload: {
+                name: name,
+                params: params,
+              },
+            };
+            window.parent.postMessage(llmMsg, '*');
+
+            return p;
+          };
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'update-theme') {
+              const theme = event.data.payload?.theme;
+              if (theme === 'dark' || theme === 'light') {
+                const html = document.documentElement || document.querySelector('html');
+                if (html) {
+                  html.setAttribute('data-theme', theme);
+                }
+              }
+            }
+
+            if (event.source === window.parent && event.data.type === 'llmReply') {
+              const requestId = event.data.requestId;
+              const handler = _llmRequestHandlers[requestId];
+              if (handler !== undefined) {
+                handler(event.data.payload);
+                delete _llmRequestHandlers[requestId];
+              }
+            }
+          });
+
+          
+        })();
+      </script>
+    
+      <script nonce="">
+        (function() {
+          var _appDataCfg = null;
+
+          var _reqCounter = 0;
+          var _pendingRequests = {};
+
+          function _appDataRequest(method, path, body) {
+            if (!_appDataCfg) {
+              return Promise.reject(new Error('AppSDK: not configured for this artifact type.'));
+            }
+            var requestId = 'adr-' + (++_reqCounter);
+            var fullPath = _appDataCfg.appId + '/' + path;
+
+            return new Promise(function(resolve, reject) {
+              var timeoutId = setTimeout(function() {
+                delete _pendingRequests[requestId];
+                reject(new Error('AppSDK: request timed out'));
+              }, 30000);
+
+              _pendingRequests[requestId] = { resolve: resolve, reject: reject, timeoutId: timeoutId };
+
+              var requestMsg = {
+                type: 'app-data:request',
+                timestamp: Date.now(),
+                payload: { method: method, path: fullPath, body: body, requestId: requestId }
+              };
+              window.parent.postMessage(requestMsg, '*');
+            });
+          }
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'app-data:response') {
+              var payload = event.data.payload;
+              var pending = _pendingRequests[payload.requestId];
+              if (pending) {
+                clearTimeout(pending.timeoutId);
+                delete _pendingRequests[payload.requestId];
+                if (payload.ok) {
+                  pending.resolve(payload.data !== undefined ? payload.data : null);
+                } else {
+                  pending.reject(new Error(payload.error || 'Request failed'));
+                }
+              }
+            }
+          });
+
+          window.AppSDK = {
+            upsert: function(entityId, entityType, data) {
+              return _appDataRequest('PUT', entityId + '/' + entityType, { data: data });
+            },
+            get: function(entityId, entityType) {
+              return _appDataRequest('GET', entityId + '/' + entityType);
+            },
+            list: function(entityId) {
+              return _appDataRequest('GET', entityId);
+            },
+            delete: function(entityId, entityType) {
+              return _appDataRequest('DELETE', entityId + '/' + entityType);
+            },
+            deleteAll: function() {
+              return _appDataRequest('DELETE', '');
+            }
+          };
+        })();
+      </script>
+      
+      <script nonce="">
+        (function() {
+          var _aiReqCounter = 0;
+          var _aiPendingRequests = {};
+
+          // Per-method timeouts (ms). Image generation can take longer than chat/TTS.
+          var _aiTimeouts = { chat: 30000, generateImage: 60000, speak: 30000 };
+
+          function _appAiRequest(method, fields) {
+            var requestId = 'aai-' + (++_aiReqCounter);
+            var timeoutMs = _aiTimeouts[method] || 30000;
+
+            return new Promise(function(resolve, reject) {
+              var timeoutId = setTimeout(function() {
+                delete _aiPendingRequests[requestId];
+                reject(new Error('AppSDK.ai: request timed out'));
+              }, timeoutMs);
+
+              _aiPendingRequests[requestId] = { method: method, resolve: resolve, reject: reject, timeoutId: timeoutId };
+
+              var payload = { requestId: requestId, method: method };
+              for (var key in fields) {
+                if (Object.prototype.hasOwnProperty.call(fields, key)) {
+                  payload[key] = fields[key];
+                }
+              }
+
+              var requestMsg = {
+                type: 'app-ai:request',
+                timestamp: Date.now(),
+                payload: payload
+              };
+              window.parent.postMessage(requestMsg, '*');
+            });
+          }
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'app-ai:response') {
+              var payload = event.data.payload;
+              var pending = _aiPendingRequests[payload.requestId];
+              if (pending) {
+                clearTimeout(pending.timeoutId);
+                delete _aiPendingRequests[payload.requestId];
+                if (payload.ok) {
+                  if (pending.method === 'generateImage') {
+                    pending.resolve({ image: payload.image, format: payload.format });
+                  } else if (pending.method === 'speak') {
+                    pending.resolve({ audio: payload.audio, format: payload.format });
+                  } else {
+                    pending.resolve({ content: payload.content });
+                  }
+                } else {
+                  pending.reject(new Error(payload.error || 'AI request failed'));
+                }
+              }
+            }
+          });
+
+          // Attach to existing AppSDK or create it
+          window.AppSDK = window.AppSDK || {};
+          window.AppSDK.ai = {
+            chat: function(request) {
+              if (!request || !Array.isArray(request.messages) || request.messages.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: messages array is required'));
+              }
+              return _appAiRequest('chat', { messages: request.messages });
+            },
+            generateImage: function(request) {
+              if (!request || typeof request.prompt !== 'string' || request.prompt.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: prompt is required'));
+              }
+              var fields = { prompt: request.prompt };
+              if (request.aspectRatio) fields.aspectRatio = request.aspectRatio;
+              if (request.quality) fields.quality = request.quality;
+              return _appAiRequest('generateImage', fields);
+            },
+            speak: function(request) {
+              if (!request || typeof request.text !== 'string' || request.text.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: text is required'));
+              }
+              var fields = { text: request.text };
+              if (request.voice) fields.voice = request.voice;
+              if (request.audioFormat) fields.audioFormat = request.audioFormat;
+              return _appAiRequest('speak', fields);
+            }
+          };
+        })();
+      </script>
+      <style>html { overflow: hidden !important; }</style>
+  
+  <meta content="width=1280, height=720, initial-scale=1.0" name="viewport">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050810;
+      --bg-card: #0f0a1e;
+      --text: #e8e4f0;
+      --text-muted: #9d87c6;
+      --accent: #7c3aed;
+    }
+    body {
+      margin: 0; padding: 0;
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      font-family: 'Consolas', monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--text);
+      font-family: 'Candara', sans-serif;
+    }
+
+    .bg-nebula {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124,58,237,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 50% at 10% 60%, rgba(99,40,200,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 50% at 90% 60%, rgba(139,92,246,0.12) 0%, transparent 60%),
+        #050810;
+    }
+
+    .title-badge {
+      font-family: 'Candara', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      text-transform: uppercase;
+      background: rgba(124,58,237,0.13);
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 4px;
+      padding: 2px 10px;
+    }
+
+    .main-title {
+      font-family: 'Candara', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #e8e4f0 30%, #a78bfa 80%, #7c3aed 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+
+    .col-card {
+      border-radius: 14px;
+      border: 1.5px solid;
+      padding: 20px 22px 16px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .col-card.v2 {
+      background: linear-gradient(160deg, #100c1e 0%, #0a0814 100%);
+      border-color: rgba(120,100,180,0.22);
+    }
+    .col-card.v3 {
+      background: linear-gradient(160deg, #1a0d3a 0%, #0f0a1e 100%);
+      border-color: rgba(124,58,237,0.55);
+      box-shadow: 0 0 40px rgba(124,58,237,0.18), 0 0 0 1px rgba(139,92,246,0.12) inset;
+    }
+    .col-card.v3::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #7c3aed, #a78bfa, #7c3aed, transparent);
+    }
+
+    .col-label {
+      font-family: 'Candara', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .col-label.v2 { color: #6b5e9a; }
+    .col-label.v3 {
+      color: #a78bfa;
+      text-shadow: 0 0 12px rgba(167,139,250,0.6);
+    }
+    .col-label-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .col-label-dot.v2 { background: #6b5e9a; }
+    .col-label-dot.v3 {
+      background: #7c3aed;
+      box-shadow: 0 0 8px rgba(124,58,237,0.9);
+    }
+
+    .stack-row {
+      display: flex;
+      align-items: center;
+      padding: 9px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      position: relative;
+      gap: 10px;
+    }
+    .stack-row.v2 {
+      background: rgba(80,60,140,0.10);
+      border: 1px solid rgba(100,80,160,0.14);
+    }
+    .stack-row.v3 {
+      background: rgba(124,58,237,0.10);
+      border: 1px solid rgba(124,58,237,0.22);
+    }
+    .stack-row.v3:hover {
+      background: rgba(124,58,237,0.16);
+    }
+
+    .stack-icon-wrap {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .stack-icon-wrap.v2 {
+      background: rgba(80,60,140,0.22);
+    }
+    .stack-icon-wrap.v3 {
+      background: rgba(124,58,237,0.22);
+      box-shadow: 0 0 8px rgba(124,58,237,0.3);
+    }
+
+    .stack-text { flex: 1; }
+    .stack-name {
+      font-family: 'Candara', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .stack-name.v2 { color: #7a6aaa; }
+    .stack-name.v3 {
+      color: #c4b0ff;
+      text-shadow: 0 0 8px rgba(167,139,250,0.35);
+    }
+    .stack-desc {
+      font-size: 10.5px;
+      line-height: 1.3;
+      margin-top: 1px;
+    }
+    .stack-desc.v2 { color: #4a3f70; }
+    .stack-desc.v3 { color: #8b7ab8; }
+
+    .arrow-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      gap: 0;
+    }
+    .upgrade-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 72px;
+    }
+    .arrow-line {
+      width: 2px;
+      flex: 1;
+      background: linear-gradient(180deg, rgba(124,58,237,0.15) 0%, rgba(124,58,237,0.7) 100%);
+    }
+    .arrow-head {
+      width: 0; height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 10px solid #7c3aed;
+      filter: drop-shadow(0 0 4px rgba(124,58,237,0.8));
+      margin-top: 1px;
+    }
+    .arrow-label {
+      font-family: 'Candara', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      color: #7c3aed;
+      letter-spacing: 0.06em;
+      text-align: center;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .bottom-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #7c3aed 20%, #a78bfa 50%, #7c3aed 80%, transparent);
+      opacity: 0.5;
+    }
+
+    .divider-line {
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(124,58,237,0.3) 30%, rgba(124,58,237,0.3) 70%, transparent);
+    }
+  </style>
+</head>
+<body data-id="0">
+  <!-- Background -->
+  <div data-id="1" class="bg-nebula"></div>
+
+  <!-- Content -->
+  <div data-id="2" style="position:relative; z-index:1; width:1280px; height:720px; display:flex; flex-direction:column; padding: 26px 40px 20px 40px; box-sizing:border-box;">
+
+    <!-- Header -->
+    <div data-id="3" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+      <div data-id="4">
+        <div data-id="5" style="display:flex; align-items:center; gap:10px; margin-bottom:7px;">
+          <span data-id="6" class="title-badge">Technology Stack</span>
+          <span data-id="7" style="color:rgba(124,58,237,0.4); font-size:11px;">·</span>
+          <span data-id="8" class="title-badge" style="color:#9d87c6; background:rgba(157,135,198,0.08); border-color:rgba(157,135,198,0.2);">v2 → v3</span>
+        </div>
+        <h1 data-id="9" class="main-title" id="slide-title-a3f9">Every Layer Upgraded</h1>
+      </div>
+      <div data-id="10" style="text-align:right;">
+        <div data-id="11" style="font-size:10px; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; font-family:&#39;Candara&#39;,sans-serif;">6 Components · Full Stack Replacement</div>
+        <div data-id="12" style="font-size:10px; color:rgba(124,58,237,0.6); margin-top:3px; font-family:&#39;Consolas&#39;,monospace;">shadow313 v3.0.0</div>
+      </div>
+    </div>
+
+    <!-- Main comparison grid -->
+    <div data-id="13" style="flex:1; display:flex; gap:0; align-items:stretch; min-height:0;">
+
+      <!-- v2 Column -->
+      <div data-id="14" style="flex:1; display:flex; flex-direction:column;">
+        <div data-id="15" class="col-card v2" style="flex:1; display:flex; flex-direction:column;" id="v2-col-bx7k">
+          <div data-id="16" class="col-label v2">
+            <span data-id="17" class="col-label-dot v2"></span>
+            v2 Stack
+            <span data-id="18" style="margin-left:auto; font-size:10px; opacity:0.6; letter-spacing:0.05em; text-transform:none; font-weight:400;">(replaced)</span>
+          </div>
+
+          <!-- ChromaDB -->
+          <div data-id="19" class="stack-row v2" id="v2-chroma-9p2q">
+            <div data-id="20" class="stack-icon-wrap v2">
+              <svg data-id="21" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <ellipse data-id="22" cx="12" cy="5" rx="9" ry="3"></ellipse><path data-id="23" d="M3 5v5c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path><path data-id="24" d="M3 10v5c0 1.66 4.03 3 9 3s9-1.34 9-3v-5"></path>
+              </svg>
+            </div>
+            <div data-id="25" class="stack-text">
+              <div data-id="26" class="stack-name v2">ChromaDB Vectors</div>
+              <div data-id="27" class="stack-desc v2">Pure vector similarity · limited retrieval accuracy</div>
+            </div>
+          </div>
+
+          <!-- NetworkX -->
+          <div data-id="28" class="stack-row v2" id="v2-networkx-c1m3">
+            <div data-id="29" class="stack-icon-wrap v2">
+              <svg data-id="30" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <circle data-id="31" cx="12" cy="12" r="3"></circle><circle data-id="32" cx="4" cy="6" r="2"></circle><circle data-id="33" cx="20" cy="6" r="2"></circle><circle data-id="34" cx="4" cy="18" r="2"></circle><circle data-id="35" cx="20" cy="18" r="2"></circle>
+                <path data-id="36" d="M6 6.5L10 10M14 10l4-3.5M6 17.5l4-4M14 14l4 3.5"></path>
+              </svg>
+            </div>
+            <div data-id="37" class="stack-text">
+              <div data-id="38" class="stack-name v2">NetworkX Graph</div>
+              <div data-id="39" class="stack-desc v2">In-memory only · &lt;100k nodes max · no persistence</div>
+            </div>
+          </div>
+
+          <!-- Command Bus -->
+          <div data-id="40" class="stack-row v2" id="v2-cmdbus-f4h8">
+            <div data-id="41" class="stack-icon-wrap v2">
+              <svg data-id="42" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <path data-id="43" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path>
+              </svg>
+            </div>
+            <div data-id="44" class="stack-text">
+              <div data-id="45" class="stack-name v2">Synchronous Command Bus</div>
+              <div data-id="46" class="stack-desc v2">Blocking · 1k events/sec · no backpressure</div>
+            </div>
+          </div>
+
+          <!-- FastAPI Dashboard -->
+          <div data-id="47" class="stack-row v2" id="v2-fastapi-w9r2">
+            <div data-id="48" class="stack-icon-wrap v2">
+              <svg data-id="49" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <rect data-id="50" x="2" y="3" width="20" height="14" rx="2"></rect><path data-id="51" d="M8 21h8M12 17v4"></path>
+              </svg>
+            </div>
+            <div data-id="52" class="stack-text">
+              <div data-id="53" class="stack-name v2">FastAPI Web Dashboard</div>
+              <div data-id="54" class="stack-desc v2">Browser-only · no offline · heavy Electron overhead</div>
+            </div>
+          </div>
+
+          <!-- WeasyPrint -->
+          <div data-id="55" class="stack-row v2" id="v2-weasy-t5j1">
+            <div data-id="56" class="stack-icon-wrap v2">
+              <svg data-id="57" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <path data-id="58" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline data-id="59" points="14 2 14 8 20 8"></polyline><line data-id="60" x1="16" y1="13" x2="8" y2="13"></line><line data-id="61" x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
+            <div data-id="62" class="stack-text">
+              <div data-id="63" class="stack-name v2">WeasyPrint Reports</div>
+              <div data-id="64" class="stack-desc v2">Sequential · 8s generation · HTML-to-PDF only</div>
+            </div>
+          </div>
+
+          <!-- Ollama/OpenAI -->
+          <div data-id="65" class="stack-row v2" id="v2-llm-k6n0">
+            <div data-id="66" class="stack-icon-wrap v2">
+              <svg data-id="67" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b5e9a" stroke-width="2">
+                <path data-id="68" d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path>
+                <path data-id="69" d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path>
+              </svg>
+            </div>
+            <div data-id="70" class="stack-text">
+              <div data-id="71" class="stack-name v2">Ollama / OpenAI LLM</div>
+              <div data-id="72" class="stack-desc v2">External API · cloud dependency · data leaves device</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Arrow column -->
+      <div data-id="73" class="arrow-col" style="width:72px; padding: 44px 0 10px 0;" id="arrows-col-zp4d">
+        <div data-id="74" class="upgrade-arrow" id="arr-1-qa2x">
+          <div data-id="75" class="arrow-head"></div>
+          <div data-id="76" class="arrow-line"></div>
+          <div data-id="77" class="arrow-label">10x</div>
+        </div>
+        <div data-id="78" class="upgrade-arrow" id="arr-2-mb5y">
+          <div data-id="79" class="arrow-head"></div>
+          <div data-id="80" class="arrow-line"></div>
+          <div data-id="81" class="arrow-label">150x</div>
+        </div>
+        <div data-id="82" class="upgrade-arrow" id="arr-3-vc8r">
+          <div data-id="83" class="arrow-head"></div>
+          <div data-id="84" class="arrow-line"></div>
+          <div data-id="85" class="arrow-label">50x</div>
+        </div>
+        <div data-id="86" class="upgrade-arrow" id="arr-4-kd1s">
+          <div data-id="87" class="arrow-head"></div>
+          <div data-id="88" class="arrow-line"></div>
+          <div data-id="89" class="arrow-label">native</div>
+        </div>
+        <div data-id="90" class="upgrade-arrow" id="arr-5-ej9w">
+          <div data-id="91" class="arrow-head"></div>
+          <div data-id="92" class="arrow-line"></div>
+          <div data-id="93" class="arrow-label">7x</div>
+        </div>
+        <div data-id="94" class="upgrade-arrow" id="arr-6-fo3t">
+          <div data-id="95" class="arrow-head"></div>
+          <div data-id="96" class="arrow-line"></div>
+          <div data-id="97" class="arrow-label">private</div>
+        </div>
+      </div>
+
+      <!-- v3 Column -->
+      <div data-id="98" style="flex:1; display:flex; flex-direction:column;">
+        <div data-id="99" class="col-card v3" style="flex:1; display:flex; flex-direction:column;" id="v3-col-hn6u">
+          <div data-id="100" class="col-label v3">
+            <span data-id="101" class="col-label-dot v3"></span>
+            v3 Stack
+            <span data-id="102" style="margin-left:auto; font-size:10px; color:#7c3aed; letter-spacing:0.05em; text-transform:none; font-weight:400; text-shadow: 0 0 8px rgba(124,58,237,0.6);">● active</span>
+          </div>
+
+          <!-- Weaviate -->
+          <div data-id="103" class="stack-row v3" id="v3-weaviate-2a8b">
+            <div data-id="104" class="stack-icon-wrap v3">
+              <svg data-id="105" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <ellipse data-id="106" cx="12" cy="5" rx="9" ry="3"></ellipse><path data-id="107" d="M3 5v5c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path><path data-id="108" d="M3 10v5c0 1.66 4.03 3 9 3s9-1.34 9-3v-5"></path>
+                <circle data-id="109" cx="18" cy="18" r="4" fill="rgba(124,58,237,0.3)" stroke="#7c3aed"></circle>
+                <path data-id="110" d="M16 18h4M18 16v4" stroke="#a78bfa" stroke-width="1.5"></path>
+              </svg>
+            </div>
+            <div data-id="111" class="stack-text">
+              <div data-id="112" class="stack-name v3">Weaviate Hybrid Vector + Graph DB</div>
+              <div data-id="113" class="stack-desc v3">BM25 + ANN hybrid · 100M+ objects · 18ms queries</div>
+            </div>
+            <div data-id="114" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); border-radius:4px; padding:1px 6px; font-size:9px; color:#a78bfa; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700;">NEW</div>
+          </div>
+
+          <!-- Neo4j -->
+          <div data-id="115" class="stack-row v3" id="v3-neo4j-5c1d">
+            <div data-id="116" class="stack-icon-wrap v3">
+              <svg data-id="117" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <circle data-id="118" cx="12" cy="12" r="3"></circle><circle data-id="119" cx="4" cy="6" r="2" fill="rgba(124,58,237,0.3)" stroke="#7c3aed"></circle><circle data-id="120" cx="20" cy="6" r="2" fill="rgba(124,58,237,0.3)" stroke="#7c3aed"></circle><circle data-id="121" cx="4" cy="18" r="2" fill="rgba(124,58,237,0.3)" stroke="#7c3aed"></circle><circle data-id="122" cx="20" cy="18" r="2" fill="rgba(124,58,237,0.3)" stroke="#7c3aed"></circle>
+                <path data-id="123" d="M6 6.5L10 10M14 10l4-3.5M6 17.5l4-4M14 14l4 3.5" stroke="#7c3aed"></path>
+              </svg>
+            </div>
+            <div data-id="124" class="stack-text">
+              <div data-id="125" class="stack-name v3">Neo4j Enterprise Graph</div>
+              <div data-id="126" class="stack-desc v3">1M+ nodes · Cypher queries · real-time streaming · persistent</div>
+            </div>
+            <div data-id="127" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); border-radius:4px; padding:1px 6px; font-size:9px; color:#a78bfa; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700;">NEW</div>
+          </div>
+
+          <!-- Async Event Bus -->
+          <div data-id="128" class="stack-row v3" id="v3-asyncbus-7e2f">
+            <div data-id="129" class="stack-icon-wrap v3">
+              <svg data-id="130" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <path data-id="131" d="M8 6h13M8 12h13M8 18h13"></path><circle data-id="132" cx="3" cy="6" r="1" fill="#7c3aed"></circle><circle data-id="133" cx="3" cy="12" r="1" fill="#7c3aed"></circle><circle data-id="134" cx="3" cy="18" r="1" fill="#7c3aed"></circle>
+                <path data-id="135" d="M20 9l3-3-3-3" stroke="#7c3aed" stroke-width="1.5"></path>
+              </svg>
+            </div>
+            <div data-id="136" class="stack-text">
+              <div data-id="137" class="stack-name v3">Async Event Bus (asyncio)</div>
+              <div data-id="138" class="stack-desc v3">50k events/sec · pub/sub · priority queuing · replay</div>
+            </div>
+            <div data-id="139" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); border-radius:4px; padding:1px 6px; font-size:9px; color:#a78bfa; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700;">NEW</div>
+          </div>
+
+          <!-- Tauri Desktop -->
+          <div data-id="140" class="stack-row v3" id="v3-tauri-3g9h">
+            <div data-id="141" class="stack-icon-wrap v3">
+              <svg data-id="142" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <rect data-id="143" x="2" y="3" width="20" height="14" rx="2" fill="rgba(124,58,237,0.15)"></rect><path data-id="144" d="M8 21h8M12 17v4"></path>
+                <path data-id="145" d="M7 8h10M7 11h7" stroke="#7c3aed" stroke-width="1.5"></path>
+              </svg>
+            </div>
+            <div data-id="146" class="stack-text">
+              <div data-id="147" class="stack-name v3">Tauri + React Desktop App</div>
+              <div data-id="148" class="stack-desc v3">Rust core · 15MB installer · 40MB RAM · native GPU</div>
+            </div>
+            <div data-id="149" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); border-radius:4px; padding:1px 6px; font-size:9px; color:#a78bfa; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700;">NEW</div>
+          </div>
+
+          <!-- Flutter PDF -->
+          <div data-id="150" class="stack-row v3" id="v3-flutter-8i4j">
+            <div data-id="151" class="stack-icon-wrap v3">
+              <svg data-id="152" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <path data-id="153" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="rgba(124,58,237,0.15)"></path><polyline data-id="154" points="14 2 14 8 20 8"></polyline>
+                <path data-id="155" d="M10 14l2-2 2 2M12 12v5" stroke="#7c3aed" stroke-width="1.5"></path>
+              </svg>
+            </div>
+            <div data-id="156" class="stack-text">
+              <div data-id="157" class="stack-name v3">Flutter PDF Engine</div>
+              <div data-id="158" class="stack-desc v3">Parallel generation · 1.2s · mobile + desktop parity</div>
+            </div>
+            <div data-id="159" style="background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); border-radius:4px; padding:1px 6px; font-size:9px; color:#a78bfa; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700;">NEW</div>
+          </div>
+
+          <!-- Shadow313-7B -->
+          <div data-id="160" class="stack-row v3" id="v3-7b-6k5l">
+            <div data-id="161" class="stack-icon-wrap v3">
+              <svg data-id="162" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2">
+                <path data-id="163" d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" fill="rgba(124,58,237,0.2)" stroke="#7c3aed"></path>
+                <path data-id="164" d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" fill="rgba(124,58,237,0.2)" stroke="#7c3aed"></path>
+              </svg>
+            </div>
+            <div data-id="165" class="stack-text">
+              <div data-id="166" class="stack-name v3">Shadow313-7B GGUF + LangGraph</div>
+              <div data-id="167" class="stack-desc v3">Local inference · 0.9s · private · multi-agent orchestration</div>
+            </div>
+            <div data-id="168" style="background:rgba(167,139,250,0.25); border:1px solid rgba(167,139,250,0.5); border-radius:4px; padding:1px 6px; font-size:9px; color:#c4b0ff; white-space:nowrap; font-family:&#39;Candara&#39;,sans-serif; font-weight:700; box-shadow:0 0 6px rgba(167,139,250,0.3);">7B</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer bar -->
+    <div data-id="169" style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding: 0 4px;">
+      <div data-id="170" style="display:flex; gap:20px; align-items:center;">
+        <div data-id="171" style="display:flex; align-items:center; gap:6px;">
+          <div data-id="172" style="width:6px; height:6px; border-radius:50%; background:#6b5e9a; opacity:0.5;"></div>
+          <span data-id="173" style="font-size:10px; color:#4a3f70; font-family:&#39;Candara&#39;,sans-serif;">v2 — deprecated</span>
+        </div>
+        <div data-id="174" style="display:flex; align-items:center; gap:6px;">
+          <div data-id="175" style="width:6px; height:6px; border-radius:50%; background:#7c3aed; box-shadow:0 0 6px rgba(124,58,237,0.8);"></div>
+          <span data-id="176" style="font-size:10px; color:#9d87c6; font-family:&#39;Candara&#39;,sans-serif;">v3 — production</span>
+        </div>
+      </div>
+      <div data-id="177" style="font-size:10px; color:rgba(124,58,237,0.5); font-family:&#39;Consolas&#39;,monospace; letter-spacing:0.08em;">pip install shadow313[full] --upgrade</div>
+      <div data-id="178" style="font-size:10px; color:#4a3f70; font-family:&#39;Candara&#39;,sans-serif;">All v2 APIs backward-compatible</div>
+    </div>
+
+  </div>
+
+  <div data-id="179" class="bottom-bar"></div>
+
+</body></html>

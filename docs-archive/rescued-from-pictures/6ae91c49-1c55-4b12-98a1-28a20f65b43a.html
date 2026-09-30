@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)blob:https://copilot.fun/6ae91c49-1c55-4b12-98a1-28a20f65b43a -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
+._nav-link-tooltip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  max-width: min(80%, 600px);
+  padding: 4px 8px;
+  background: rgba(32, 33, 36, 0.88);
+  color: #e8eaed;
+  font: 12px/16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top-right-radius: 4px;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+._nav-link-tooltip._visible {
+  opacity: 1;
+}
+@media (prefers-color-scheme: light) {
+  ._nav-link-tooltip {
+    background: rgba(241, 243, 244, 0.92);
+    color: #202124;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+  }
+}
+</style>
+<script nonce="">
+(function() {
+  // Helper: check if a raw href is an external URL (http/https)
+  // Hash links (#section), relative paths (/page), mailto:, tel:, etc. are NOT external
+  function _isExternalHref(rawHref) {
+    if (!rawHref) return false;
+    var h = rawHref.trim().toLowerCase();
+    return h.startsWith('http://') || h.startsWith('https://') || h.startsWith('//');
+  }
+
+  // --- Link hover URL preview tooltip ---
+  var _tooltip = document.createElement('div');
+  _tooltip.className = '_nav-link-tooltip';
+  function _ensureTooltipMounted() {
+    if (!_tooltip.parentNode) {
+      (document.body || document.documentElement).appendChild(_tooltip);
+    }
+  }
+
+  document.addEventListener('mouseover', function(event) {
+    var el = event.target;
+    while (el && el.tagName !== 'A') {
+      el = el.parentElement;
+    }
+    if (!el) return;
+    var rawHref = el.getAttribute('href');
+    if (!rawHref || rawHref.startsWith('javascript:')) return;
+    _ensureTooltipMounted();
+    // Show raw href for clean display (avoids blob: URL noise)
+    _tooltip.textContent = rawHref;
+    _tooltip.classList.add('_visible');
+  }, true);
+
+  document.addEventListener('mouseout', function(event) {
+    var el = event.target;
+    while (el && el.tagName !== 'A') {
+      el = el.parentElement;
+    }
+    if (!el) return;
+    _tooltip.classList.remove('_visible');
+  }, true);
+
+  // --- Intercept anchor tag clicks ---
+  document.addEventListener('click', function(event) {
+    var target = event.target;
+    while (target && target.tagName !== 'A') {
+      target = target.parentElement;
+    }
+    if (!target) return;
+
+    var rawHref = target.getAttribute('href');
+    if (!rawHref || rawHref.startsWith('javascript:')) return;
+
+    // Hash links: Ctrl/Cmd+click to scroll to target, plain click places cursor
+    if (rawHref.startsWith('#')) {
+      if (event.ctrlKey || event.metaKey) {
+        var targetId = rawHref.substring(1);
+        if (targetId) {
+          var targetEl = document.getElementById(targetId) || document.getElementsByName(targetId)[0];
+          if (targetEl) {
+            event.preventDefault();
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+      return;
+    }
+
+    // Only intercept external links (http/https)
+    if (!_isExternalHref(rawHref)) return;
+
+    // Allow download links to proceed natively instead of intercepting them.
+    // The 'download' attribute signals the browser to save the file rather than navigate.
+    if (target.hasAttribute('download')) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.parent.postMessage({
+      type: 'navigate-link',
+      payload: {
+        url: target.href || rawHref,
+        target: target.target || undefined
+      },
+      timestamp: Date.now()
+    }, '*');
+  }, true);
+
+  // --- Intercept window.open calls ---
+  var _origOpen = window.open;
+  window.open = function(url, target, features) {
+    if (!url) return null;
+    var urlStr = String(url);
+
+    // Only intercept external URLs (http/https)
+    if (!_isExternalHref(urlStr)) {
+      return _origOpen.call(window, url, target, features);
+    }
+
+    var resolvedUrl;
+    try {
+      resolvedUrl = new URL(urlStr, window.location.href).href;
+    } catch (e) {
+      resolvedUrl = urlStr;
+    }
+
+    window.parent.postMessage({
+      type: 'navigate-link',
+      payload: {
+        url: resolvedUrl,
+        target: target || '_blank'
+      },
+      timestamp: Date.now()
+    }, '*');
+    return null;
+  };
+})();
+</script>
+      <script nonce="">
+        (function() {
+          if (typeof window !== 'undefined' && window.trustedTypes && window.trustedTypes.createPolicy) {
+            try {
+              window.trustedTypes.createPolicy('default', {
+                createHTML: function(input) { return input; },
+                createScript: function(input) { return input; },
+                createScriptURL: function(input) { return input; }
+              });
+            } catch (e) {
+              // Policy may already exist — ignore
+            }
+          }
+        })();
+      </script>
+      <script nonce="">
+        (function() {
+          const _0x1a2b = {
+            log: console.log,
+            info: console.info,
+            warn: console.warn,
+            error: console.error,
+            debug: console.debug
+          };
+
+          function _0x3c4d(e, t, n) {
+            try {
+              const o = {
+                type: 'iframe-console-log',
+                payload: {
+                  level: e,
+                  message: String(t),
+                  args: n.map(e => {
+                    try {
+                      return typeof e === 'object' ? JSON.stringify(e, null, 2) : String(e);
+                    } catch (e) {
+                      return '[Circular or Non-serializable]';
+                    }
+                  }),
+                  timestamp: Date.now(),
+                  stackTrace: e === 'error' ? new Error().stack : undefined
+                }
+              };
+
+              window.parent.postMessage(o, '*');
+            } catch (e) {
+              _0x1a2b[e].apply(console, [t, ...n]);
+            }
+          }
+
+          console.log = function(...args) {
+            _0x1a2b.log.apply(console, args);
+            _0x3c4d('log', args[0] || '', args.slice(1));
+          };
+
+          console.info = function(...args) {
+            _0x1a2b.info.apply(console, args);
+            _0x3c4d('info', args[0] || '', args.slice(1));
+          };
+
+          console.warn = function(...args) {
+            _0x1a2b.warn.apply(console, args);
+            _0x3c4d('warn', args[0] || '', args.slice(1));
+          };
+
+          console.error = function(...args) {
+            _0x1a2b.error.apply(console, args);
+            _0x3c4d('error', args[0] || '', args.slice(1));
+          };
+
+          console.debug = function(...args) {
+            _0x1a2b.debug.apply(console, args);
+            _0x3c4d('debug', args[0] || '', args.slice(1));
+          };
+
+          window.addEventListener('error', function(event) {
+            _0x3c4d('error', event.message, [
+              'Error in ' + event.filename + ':' + event.lineno + ':' + event.colno,
+              event.error ? event.error.stack : ''
+            ]);
+          });
+
+          window.addEventListener('unhandledrejection', function(event) {
+            _0x3c4d('error', 'Unhandled Promise Rejection', [
+              event.reason ? String(event.reason) : 'Unknown reason'
+            ]);
+          });
+
+          window.addEventListener('securitypolicyviolation', function(event) {
+            _0x3c4d('error', 'CSP Violation: ' + event.effectiveDirective, [
+              'blockedURI: ' + event.blockedURI,
+              'violatedDirective: ' + event.violatedDirective,
+              'originalPolicy: ' + event.originalPolicy,
+              'disposition: ' + event.disposition,
+              'documentURI: ' + event.documentURI
+            ]);
+          });
+
+          var _llmRequestHandlers = {};
+
+          window._useLLM = function(name, params) {
+            const requestId = Math.random().toString(36).slice(2);
+            const p = new Promise((resolve) => {
+              _llmRequestHandlers[requestId] = resolve;
+            });
+
+            const llmMsg = {
+              type: "use-llm",
+              requestId: requestId,
+              timestamp: Date.now(),
+              payload: {
+                name: name,
+                params: params,
+              },
+            };
+            window.parent.postMessage(llmMsg, '*');
+
+            return p;
+          };
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'update-theme') {
+              const theme = event.data.payload?.theme;
+              if (theme === 'dark' || theme === 'light') {
+                const html = document.documentElement || document.querySelector('html');
+                if (html) {
+                  html.setAttribute('data-theme', theme);
+                }
+              }
+            }
+
+            if (event.source === window.parent && event.data.type === 'llmReply') {
+              const requestId = event.data.requestId;
+              const handler = _llmRequestHandlers[requestId];
+              if (handler !== undefined) {
+                handler(event.data.payload);
+                delete _llmRequestHandlers[requestId];
+              }
+            }
+          });
+
+          
+        })();
+      </script>
+    
+      <script nonce="">
+        (function() {
+          var _appDataCfg = null;
+
+          var _reqCounter = 0;
+          var _pendingRequests = {};
+
+          function _appDataRequest(method, path, body) {
+            if (!_appDataCfg) {
+              return Promise.reject(new Error('AppSDK: not configured for this artifact type.'));
+            }
+            var requestId = 'adr-' + (++_reqCounter);
+            var fullPath = _appDataCfg.appId + '/' + path;
+
+            return new Promise(function(resolve, reject) {
+              var timeoutId = setTimeout(function() {
+                delete _pendingRequests[requestId];
+                reject(new Error('AppSDK: request timed out'));
+              }, 30000);
+
+              _pendingRequests[requestId] = { resolve: resolve, reject: reject, timeoutId: timeoutId };
+
+              var requestMsg = {
+                type: 'app-data:request',
+                timestamp: Date.now(),
+                payload: { method: method, path: fullPath, body: body, requestId: requestId }
+              };
+              window.parent.postMessage(requestMsg, '*');
+            });
+          }
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'app-data:response') {
+              var payload = event.data.payload;
+              var pending = _pendingRequests[payload.requestId];
+              if (pending) {
+                clearTimeout(pending.timeoutId);
+                delete _pendingRequests[payload.requestId];
+                if (payload.ok) {
+                  pending.resolve(payload.data !== undefined ? payload.data : null);
+                } else {
+                  pending.reject(new Error(payload.error || 'Request failed'));
+                }
+              }
+            }
+          });
+
+          window.AppSDK = {
+            upsert: function(entityId, entityType, data) {
+              return _appDataRequest('PUT', entityId + '/' + entityType, { data: data });
+            },
+            get: function(entityId, entityType) {
+              return _appDataRequest('GET', entityId + '/' + entityType);
+            },
+            list: function(entityId) {
+              return _appDataRequest('GET', entityId);
+            },
+            delete: function(entityId, entityType) {
+              return _appDataRequest('DELETE', entityId + '/' + entityType);
+            },
+            deleteAll: function() {
+              return _appDataRequest('DELETE', '');
+            }
+          };
+        })();
+      </script>
+      
+      <script nonce="">
+        (function() {
+          var _aiReqCounter = 0;
+          var _aiPendingRequests = {};
+
+          // Per-method timeouts (ms). Image generation can take longer than chat/TTS.
+          var _aiTimeouts = { chat: 30000, generateImage: 60000, speak: 30000 };
+
+          function _appAiRequest(method, fields) {
+            var requestId = 'aai-' + (++_aiReqCounter);
+            var timeoutMs = _aiTimeouts[method] || 30000;
+
+            return new Promise(function(resolve, reject) {
+              var timeoutId = setTimeout(function() {
+                delete _aiPendingRequests[requestId];
+                reject(new Error('AppSDK.ai: request timed out'));
+              }, timeoutMs);
+
+              _aiPendingRequests[requestId] = { method: method, resolve: resolve, reject: reject, timeoutId: timeoutId };
+
+              var payload = { requestId: requestId, method: method };
+              for (var key in fields) {
+                if (Object.prototype.hasOwnProperty.call(fields, key)) {
+                  payload[key] = fields[key];
+                }
+              }
+
+              var requestMsg = {
+                type: 'app-ai:request',
+                timestamp: Date.now(),
+                payload: payload
+              };
+              window.parent.postMessage(requestMsg, '*');
+            });
+          }
+
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'app-ai:response') {
+              var payload = event.data.payload;
+              var pending = _aiPendingRequests[payload.requestId];
+              if (pending) {
+                clearTimeout(pending.timeoutId);
+                delete _aiPendingRequests[payload.requestId];
+                if (payload.ok) {
+                  if (pending.method === 'generateImage') {
+                    pending.resolve({ image: payload.image, format: payload.format });
+                  } else if (pending.method === 'speak') {
+                    pending.resolve({ audio: payload.audio, format: payload.format });
+                  } else {
+                    pending.resolve({ content: payload.content });
+                  }
+                } else {
+                  pending.reject(new Error(payload.error || 'AI request failed'));
+                }
+              }
+            }
+          });
+
+          // Attach to existing AppSDK or create it
+          window.AppSDK = window.AppSDK || {};
+          window.AppSDK.ai = {
+            chat: function(request) {
+              if (!request || !Array.isArray(request.messages) || request.messages.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: messages array is required'));
+              }
+              return _appAiRequest('chat', { messages: request.messages });
+            },
+            generateImage: function(request) {
+              if (!request || typeof request.prompt !== 'string' || request.prompt.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: prompt is required'));
+              }
+              var fields = { prompt: request.prompt };
+              if (request.aspectRatio) fields.aspectRatio = request.aspectRatio;
+              if (request.quality) fields.quality = request.quality;
+              return _appAiRequest('generateImage', fields);
+            },
+            speak: function(request) {
+              if (!request || typeof request.text !== 'string' || request.text.length === 0) {
+                return Promise.reject(new Error('AppSDK.ai: text is required'));
+              }
+              var fields = { text: request.text };
+              if (request.voice) fields.voice = request.voice;
+              if (request.audioFormat) fields.audioFormat = request.audioFormat;
+              return _appAiRequest('speak', fields);
+            }
+          };
+        })();
+      </script>
+      <style>html { overflow: hidden !important; }</style>
+  
+  <meta content="width=1280, height=720, initial-scale=1.0" name="viewport">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050810;
+      --bg-card: #0f0a1e;
+      --text: #e8e4f0;
+      --text-muted: #9d87c6;
+      --accent: #7c3aed;
+      --accent-bright: #a855f7;
+      --accent-dim: #4c1d95;
+      --accent-glow: rgba(124, 58, 237, 0.35);
+    }
+    body {
+      margin: 0; padding: 0;
+      width: 1280px; height: 720px;
+      overflow: hidden;
+      font-family: 'Consolas', monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--text) !important;
+      font-family: 'Candara', sans-serif;
+    }
+
+    /* Background nebula */
+    .nebula-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 700px 400px at 15% 80%, rgba(76,29,149,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 300px at 85% 20%, rgba(124,58,237,0.12) 0%, transparent 65%),
+        radial-gradient(ellipse 900px 500px at 50% 50%, rgba(15,10,30,0.95) 0%, transparent 100%),
+        #050810;
+    }
+
+    /* Header bar */
+    .header-bar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 52px 0 52px;
+    }
+    .slide-title {
+      font-family: 'Candara', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text) !important;
+      letter-spacing: 0.01em;
+    }
+    .slide-title span {
+      color: var(--accent-bright);
+    }
+    .title-underline {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, var(--accent), rgba(124,58,237,0.1));
+      margin-top: 6px;
+    }
+
+    /* Badge */
+    .top-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.45);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--accent-bright);
+      font-family: 'Consolas', monospace;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* Grid layout */
+    .grid-area {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      padding: 14px 52px 0 52px;
+      height: 510px;
+    }
+
+    /* Quadrant card */
+    .quad-card {
+      background: linear-gradient(135deg, rgba(15,10,30,0.98) 0%, rgba(20,12,40,0.95) 100%);
+      border: 1px solid rgba(124,58,237,0.28);
+      border-radius: 10px;
+      padding: 18px 20px 16px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .quad-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--accent), transparent);
+      border-radius: 10px 10px 0 0;
+    }
+    .quad-card.top-right::before {
+      background: linear-gradient(to left, #6d28d9, transparent);
+    }
+    .quad-card.bottom-left::before {
+      background: linear-gradient(to right, #8b5cf6, transparent);
+    }
+    .quad-card.bottom-right::before {
+      background: linear-gradient(to left, #a855f7, transparent);
+    }
+
+    .quad-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .quad-icon {
+      width: 32px; height: 32px;
+      background: rgba(124,58,237,0.18);
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .quad-icon svg { color: var(--accent-bright); }
+
+    .quad-title {
+      font-family: 'Candara', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-bright) !important;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .quad-subtitle {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: 'Candara', sans-serif;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .quad-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      font-family: 'Consolas', monospace;
+    }
+    .quad-body strong {
+      color: var(--accent-bright);
+      font-weight: 600;
+    }
+    .quad-body em {
+      color: #c084fc;
+      font-style: normal;
+    }
+
+    /* Merkle tree SVG area */
+    .merkle-wrap {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Use case pills */
+    .use-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 5px;
+      padding: 3px 9px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 2px 2px 0 0;
+      font-family: 'Consolas', monospace;
+    }
+    .use-pill .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent-bright);
+      flex-shrink: 0;
+    }
+
+    /* Verify items */
+    .verify-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .verify-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-bright);
+      margin-top: 5px;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px var(--accent-bright);
+    }
+
+    /* Footer CLI */
+    .footer-cli {
+      position: relative;
+      z-index: 10;
+      margin: 10px 52px 0 52px;
+      background: rgba(10,6,22,0.95);
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 8px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cli-prompt {
+      color: var(--accent-bright);
+      font-size: 12.5px;
+      font-family: 'Consolas', monospace;
+      white-space: nowrap;
+    }
+    .cli-cmd {
+      color: #e879f9;
+      font-size: 12.5px;
+      font-family: 'Consolas', monospace;
+    }
+    .cli-flag {
+      color: #6ee7b7;
+      font-size: 12.5px;
+      font-family: 'Consolas', monospace;
+    }
+    .cli-val {
+      color: #fde68a;
+      font-size: 12.5px;
+      font-family: 'Consolas', monospace;
+    }
+
+    /* Glow dot decoration */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* ZK proof chain visualization */
+    .proof-chain {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .proof-block {
+      background: rgba(124,58,237,0.2);
+      border: 1px solid rgba(124,58,237,0.5);
+      border-radius: 4px;
+      padding: 3px 7px;
+      font-size: 10px;
+      color: var(--accent-bright);
+      font-family: 'Consolas', monospace;
+    }
+    .proof-arrow {
+      color: var(--accent-bright);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body data-id="0" style="">
+
+  <!-- Background -->
+  <div data-id="1" class="nebula-bg"></div>
+  <div data-id="2" class="glow-orb" style="width:600px;height:600px;top:-200px;left:-150px;background:radial-gradient(circle,rgba(76,29,149,0.08) 0%,transparent 70%);"></div>
+  <div data-id="3" class="glow-orb" style="width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(124,58,237,0.09) 0%,transparent 70%);"></div>
+
+  <!-- Header -->
+  <div data-id="4" class="header-bar" id="header-xk9p">
+    <div data-id="5" style="flex:1;">
+      <div data-id="6" class="slide-title" id="slide-title-mn3q" data-selection-initialized="true" style="cursor: text;">
+        <span data-id="7" data-selection-initialized="true" style="cursor: text;">Zero-Knowledge</span> Proof Audit Logs
+      </div>
+      <div data-id="8" class="title-underline" id="underline-qw7r"></div>
+    </div>
+    <div data-id="9" style="margin-left:24px;">
+      <div data-id="10" class="top-badge" id="badge-circom-vb8s" data-selection-initialized="true" style="cursor: pointer;">
+        <!-- Circuit icon -->
+        <svg data-id="11" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-selection-initialized="true" style="cursor: pointer;">
+          <circle data-id="12" cx="12" cy="12" r="3"></circle><path data-id="13" d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+        </svg>
+        Powered by circom + snarkjs
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-Quadrant Grid -->
+  <div data-id="14" class="grid-area" id="grid-main-rt4z">
+
+    <!-- Q1: ZK Proofs (top-left) -->
+    <div data-id="15" class="quad-card" id="quad-zkproofs-lp2v">
+      <div data-id="16" class="quad-header">
+        <div data-id="17" class="quad-icon" data-selection-initialized="true" style="cursor: pointer;">
+          <!-- Shield + lock icon -->
+          <svg data-id="18" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-selection-initialized="true" style="cursor: pointer;">
+            <path data-id="19" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <rect data-id="20" x="9" y="11" width="6" height="5" rx="1"></rect>
+            <path data-id="21" d="M12 11v-2a2 2 0 0 0-2-2H10"></path>
+          </svg>
+        </div>
+        <span data-id="22" class="quad-title" data-selection-initialized="true" style="cursor: text;">ZK Proofs</span>
+        <span data-id="23" class="quad-subtitle" data-selection-initialized="true" style="cursor: text;">Groth16 / PLONK</span>
+      </div>
+      <div data-id="24" class="quad-body" id="zkbody-yw6c" data-selection-initialized="true" style="cursor: text;">
+        <strong data-id="25" data-selection-initialized="true" style="cursor: text;">ZK-SNARKs</strong> prove a log entry <em data-id="26" data-selection-initialized="true" style="cursor: text;">exists and is valid</em> — <strong data-id="27" data-selection-initialized="true" style="cursor: text;">without revealing content</strong>.
+        <div data-id="28" class="proof-chain" id="chain-xm5d">
+          <div data-id="29" class="proof-block" data-selection-initialized="true" style="cursor: text;">Event</div>
+          <span data-id="30" class="proof-arrow" data-selection-initialized="true" style="cursor: text;">→</span>
+          <div data-id="31" class="proof-block" data-selection-initialized="true" style="cursor: text;">Hash</div>
+          <span data-id="32" class="proof-arrow" data-selection-initialized="true" style="cursor: text;">→</span>
+          <div data-id="33" class="proof-block" data-selection-initialized="true" style="cursor: text;">Groth16</div>
+          <span data-id="34" class="proof-arrow" data-selection-initialized="true" style="cursor: text;">→</span>
+          <div data-id="35" class="proof-block" data-selection-initialized="true" style="cursor: text;">π Proof</div>
+          <span data-id="36" class="proof-arrow" data-selection-initialized="true" style="cursor: text;">→</span>
+          <div data-id="37" class="proof-block" data-selection-initialized="true" style="cursor: text;">✓ Verify</div>
+        </div>
+        <div data-id="38" style="margin-top: 9px; font-size: 12px; color: var(--text-muted); cursor: text;" data-selection-initialized="true">
+          <strong data-id="39" style="color: rgb(192, 132, 252); cursor: text;" data-selection-initialized="true">Soundness:</strong> Cryptographically impossible to forge a valid proof for a false statement.
+        </div>
+        <div data-id="40" style="margin-top: 5px; font-size: 12px; color: var(--text-muted); cursor: text;" data-selection-initialized="true">
+          <strong data-id="41" style="color: rgb(192, 132, 252); cursor: text;" data-selection-initialized="true">Zero-Knowledge:</strong> Verifier learns nothing beyond validity of the claim.
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2: Architecture (top-right) -->
+    <div data-id="42" class="quad-card top-right" id="quad-arch-fw9k">
+      <div data-id="43" class="quad-header">
+        <div data-id="44" class="quad-icon" data-selection-initialized="true" style="cursor: pointer;">
+          <!-- Tree/graph icon -->
+          <svg data-id="45" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-selection-initialized="true" style="cursor: pointer;">
+            <path data-id="46" d="M21 3H3v7h18V3z"></path><path data-id="47" d="M3 14h6v7H3z"></path><path data-id="48" d="M15 14h6v7h-6z"></path><path data-id="49" d="M9 17.5h6"></path><path data-id="50" d="M12 10v4.5"></path>
+          </svg>
+        </div>
+        <span data-id="51" class="quad-title" data-selection-initialized="true" style="cursor: text;">Architecture</span>
+        <span data-id="52" class="quad-subtitle" data-selection-initialized="true" style="cursor: text;">Merkle + IPFS</span>
+      </div>
+      <!-- Merkle tree SVG -->
+      <div data-id="53" class="merkle-wrap" id="merkle-tree-sg3n" data-selection-initialized="true" style="cursor: pointer;">
+        <svg data-id="54" width="470" height="148" viewBox="0 0 470 148" xmlns="http://www.w3.org/2000/svg" data-selection-initialized="true" style="cursor: pointer;">
+          <!-- Level 0: Root -->
+          <circle data-id="55" cx="235" cy="18" r="13" fill="rgba(124,58,237,0.9)" stroke="#a855f7" stroke-width="1.5"></circle>
+          <text data-id="56" x="235" y="22" text-anchor="middle" fill="#fff" font-size="8" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">Root</text>
+          <!-- Root glow -->
+          <circle data-id="57" cx="235" cy="18" r="13" fill="none" stroke="rgba(168,85,247,0.4)" stroke-width="4"></circle>
+
+          <!-- Lines L0→L1 -->
+          <line data-id="58" x1="235" y1="31" x2="140" y2="64" stroke="rgba(124,58,237,0.55)" stroke-width="1.5"></line>
+          <line data-id="59" x1="235" y1="31" x2="330" y2="64" stroke="rgba(124,58,237,0.55)" stroke-width="1.5"></line>
+
+          <!-- Level 1: two nodes -->
+          <circle data-id="60" cx="140" cy="76" r="11" fill="rgba(109,40,217,0.8)" stroke="#8b5cf6" stroke-width="1.5"></circle>
+          <text data-id="61" x="140" y="80" text-anchor="middle" fill="#e9d5ff" font-size="7.5" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">H(A+B)</text>
+          <circle data-id="62" cx="330" cy="76" r="11" fill="rgba(109,40,217,0.8)" stroke="#8b5cf6" stroke-width="1.5"></circle>
+          <text data-id="63" x="330" y="80" text-anchor="middle" fill="#e9d5ff" font-size="7.5" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">H(C+D)</text>
+
+          <!-- Lines L1→L2 -->
+          <line data-id="64" x1="140" y1="87" x2="82" y2="115" stroke="rgba(124,58,237,0.4)" stroke-width="1.2"></line>
+          <line data-id="65" x1="140" y1="87" x2="198" y2="115" stroke="rgba(124,58,237,0.4)" stroke-width="1.2"></line>
+          <line data-id="66" x1="330" y1="87" x2="272" y2="115" stroke="rgba(124,58,237,0.4)" stroke-width="1.2"></line>
+          <line data-id="67" x1="330" y1="87" x2="388" y2="115" stroke="rgba(124,58,237,0.4)" stroke-width="1.2"></line>
+
+          <!-- Level 2: leaf nodes -->
+          <rect data-id="68" x="64" y="108" width="36" height="19" rx="4" fill="rgba(76,29,149,0.7)" stroke="rgba(139,92,246,0.6)" stroke-width="1"></rect>
+          <text data-id="69" x="82" y="120" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">Event A</text>
+
+          <rect data-id="70" x="180" y="108" width="36" height="19" rx="4" fill="rgba(76,29,149,0.7)" stroke="rgba(139,92,246,0.6)" stroke-width="1"></rect>
+          <text data-id="71" x="198" y="120" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">Event B</text>
+
+          <rect data-id="72" x="254" y="108" width="36" height="19" rx="4" fill="rgba(76,29,149,0.7)" stroke="rgba(139,92,246,0.6)" stroke-width="1"></rect>
+          <text data-id="73" x="272" y="120" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">Event C</text>
+
+          <rect data-id="74" x="370" y="108" width="36" height="19" rx="4" fill="rgba(76,29,149,0.7)" stroke="rgba(139,92,246,0.6)" stroke-width="1"></rect>
+          <text data-id="75" x="388" y="120" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">Event D</text>
+
+          <!-- IPFS label -->
+          <rect data-id="76" x="170" y="138" width="130" height="13" rx="3" fill="rgba(124,58,237,0.15)" stroke="rgba(124,58,237,0.35)" stroke-width="0.8"></rect>
+          <text data-id="77" x="235" y="148" text-anchor="middle" fill="#a855f7" font-size="7.5" font-family="Consolas" data-selection-initialized="true" style="cursor: text;">ZK Proof batch → IPFS commit</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Q3: Use Cases (bottom-left) -->
+    <div data-id="78" class="quad-card bottom-left" id="quad-usecases-hp7m">
+      <div data-id="79" class="quad-header">
+        <div data-id="80" class="quad-icon" data-selection-initialized="true" style="cursor: pointer;">
+          <!-- Briefcase/compliance icon -->
+          <svg data-id="81" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-selection-initialized="true" style="cursor: pointer;">
+            <rect data-id="82" x="2" y="7" width="20" height="14" rx="2"></rect><path data-id="83" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path><line data-id="84" x1="12" y1="12" x2="12" y2="16"></line><line data-id="85" x1="10" y1="14" x2="14" y2="14"></line>
+          </svg>
+        </div>
+        <span data-id="86" class="quad-title" data-selection-initialized="true" style="cursor: text;">Use Cases</span>
+      </div>
+      <div data-id="87" class="quad-body" id="usecases-body-nr3t">
+        <div data-id="88" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
+          <span data-id="89" class="use-pill" data-selection-initialized="true" style="cursor: text;"><span data-id="90" class="dot"></span>Compliance</span>
+          <span data-id="91" class="use-pill" data-selection-initialized="true" style="cursor: text;"><span data-id="92" class="dot"></span>Client Reports</span>
+          <span data-id="93" class="use-pill" data-selection-initialized="true" style="cursor: text;"><span data-id="94" class="dot"></span>Whistleblowing</span>
+          <span data-id="95" class="use-pill" data-selection-initialized="true" style="cursor: text;"><span data-id="96" class="dot"></span>Regulatory Audit</span>
+        </div>
+        <div data-id="97" class="verify-row">
+          <div data-id="98" class="verify-dot"></div>
+          <div data-id="99" style="font-size: 12.5px; cursor: text;" data-selection-initialized="true"><strong data-id="100" data-selection-initialized="true" style="cursor: text;">Compliance</strong> — prove <em data-id="101" data-selection-initialized="true" style="cursor: text;">"we checked X"</em> without exposing scan data</div>
+        </div>
+        <div data-id="102" class="verify-row">
+          <div data-id="103" class="verify-dot"></div>
+          <div data-id="104" style="font-size: 12.5px; cursor: text;" data-selection-initialized="true"><strong data-id="105" data-selection-initialized="true" style="cursor: text;">Client Reports</strong> — prove scan occurred on agreed date/scope</div>
+        </div>
+        <div data-id="106" class="verify-row">
+          <div data-id="107" class="verify-dot"></div>
+          <div data-id="108" style="font-size: 12.5px; cursor: text;" data-selection-initialized="true"><strong data-id="109" data-selection-initialized="true" style="cursor: text;">Whistleblowing</strong> — prove access without revealing operation details</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: Verification (bottom-right) -->
+    <div data-id="110" class="quad-card bottom-right" id="quad-verify-ck5x">
+      <div data-id="111" class="quad-header">
+        <div data-id="112" class="quad-icon" data-selection-initialized="true" style="cursor: pointer;">
+          <!-- Check/verified icon -->
+          <svg data-id="113" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-selection-initialized="true" style="cursor: pointer;">
+            <path data-id="114" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline data-id="115" points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <span data-id="116" class="quad-title" data-selection-initialized="true" style="cursor: text;">Verification</span>
+        <span data-id="117" class="quad-subtitle" data-selection-initialized="true" style="cursor: text;">Public · Trustless</span>
+      </div>
+      <div data-id="118" class="quad-body" id="verifybody-jq8w">
+        <div data-id="119" style="font-size: 12.5px; margin-bottom: 8px; cursor: text; outline: none;" data-selection-initialized="true">
+          Any <strong data-id="120" data-selection-initialized="true" style="cursor: text;">third party</strong> verifies proof validity using only the <em data-id="121" data-selection-initialized="true" style="cursor: text;">public verifier key</em>. Zero knowledge of actual operations required.
+        </div>
+        <!-- Verification flow -->
+        <div data-id="122" style="display:flex;align-items:center;gap:5px;margin-bottom:8px;flex-wrap:wrap;">
+          <div data-id="123" style="background: rgba(76, 29, 149, 0.5); border: 1px solid rgba(139, 92, 246, 0.5); padding: 4px 8px; font-size: 10.5px; color: rgb(221, 216, 254); cursor: text; outline: none;" data-selection-initialized="true">
+            π Proof
+          </div>
+          <span data-id="124" style="color: var(--accent-bright); font-size: 13px; cursor: text; outline: none;" data-selection-initialized="true">+</span>
+          <div data-id="125" style="background: rgba(76, 29, 149, 0.5); border: 1px solid rgba(139, 92, 246, 0.5); padding: 4px 8px; font-size: 10.5px; color: rgb(221, 216, 254); cursor: text; outline: none;" data-selection-initialized="true">
+            vk (public)
+          </div>
+          <span data-id="126" style="color: var(--accent-bright); font-size: 13px; cursor: text;" data-selection-initialized="true">→</span>
+          <div data-id="127" style="background: rgba(124, 58, 237, 0.3); border: 1px solid rgba(168, 85, 247, 0.7); border-radius: 5px; padding: 4px 8px; font-size: 10.5px; color: rgb(168, 85, 247); font-weight: 700; cursor: text;" data-selection-initialized="true">
+            ✓ VALID
+          </div>
+        </div>
+        <div data-id="128" style="font-size: 11.5px; color: var(--text-muted); border-top: 1px solid rgba(124, 58, 237, 0.2); padding-top: 7px; cursor: text; outline: none;" data-selection-initialized="true">
+          <strong data-id="129" style="color: rgb(192, 132, 252); cursor: text;" data-selection-initialized="true">snarkjs verify</strong> — open-source, offline, no trust in Shadow313 infrastructure needed
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer CLI -->
+  <div data-id="130" class="footer-cli" id="footer-cli-bz2n" data-selection-initialized="true" style="cursor: pointer; outline: none;">
+    <!-- Terminal icon -->
+    <svg data-id="131" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; cursor: pointer;" data-selection-initialized="true">
+      <polyline data-id="132" points="4 17 10 11 4 5"></polyline><line data-id="133" x1="12" y1="19" x2="20" y2="19"></line>
+    </svg>
+    <span data-id="134" class="cli-prompt" data-selection-initialized="true" style="cursor: text;">$</span>
+    <span data-id="135" class="cli-cmd" data-selection-initialized="true" style="cursor: text;">shadow313 audit verify</span>
+    <span data-id="136" class="cli-flag" data-selection-initialized="true" style="cursor: text;">&nbsp;--proof</span>
+    <span data-id="137" class="cli-val" data-selection-initialized="true" style="cursor: text;">&nbsp;0xabcd...</span>
+    <span data-id="138" class="cli-flag" data-selection-initialized="true" style="cursor: text;">&nbsp;--witness</span>
+    <span data-id="139" class="cli-val" data-selection-initialized="true" style="cursor: text;">&nbsp;session_2026_07.zk</span>
+    <span data-id="140" style="margin-left: auto; font-size: 11px; color: rgb(110, 231, 183); font-family: Consolas, monospace; cursor: text;" data-selection-initialized="true">✓ Proof valid · 0 ops revealed · IPFS anchor confirmed</span>
+  </div>
+
+<script nonce="">
+(function() {
+
+  var activeElement = null;
+  var originalContentMap = {};
+  var SELECTABLE_SELECTOR = '[data-id]';
+  var INNER_THRESHOLD = 3;
+  var OUTER_THRESHOLD = 8;
+  var SKIP_TAGS = {'HTML':1,'HEAD':1,'BODY':1,'SCRIPT':1,'STYLE':1,'LINK':1,'META':1,'PATH':1,'CIRCLE':1,'RECT':1,'POLYGON':1,'POLYLINE':1,'LINE':1,'ELLIPSE':1,'G':1,'DEFS':1,'CLIPPATH':1,'USE':1,'SYMBOL':1,'IFRAME':1};
+
+
+  function selectNode(node) {
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    var range = document.createRange();
+    range.selectNodeContents(node);
+    selection.addRange(range);
+  }
+
+  function hasStyleValue(el, styleProp) {
+    var computed = window.getComputedStyle(el);
+    if (styleProp === 'fontWeight') {
+      return computed.fontWeight === 'bold' || parseInt(computed.fontWeight, 10) >= 700;
+    } else if (styleProp === 'fontStyle') {
+      return computed.fontStyle === 'italic';
+    } else if (styleProp === 'textDecoration') {
+      return (computed.textDecorationLine || computed.textDecoration).includes('underline');
+    }
+    return false;
+  }
+
+  function getElementStyles(el) {
+    var computed = window.getComputedStyle(el);
+    return {
+      fontSize: computed.fontSize,
+      fontColor: computed.color,
+      fontWeight: hasStyleValue(el, 'fontWeight') ? 'bold' : 'normal',
+      fontStyle: hasStyleValue(el, 'fontStyle') ? 'italic' : 'normal',
+      textDecoration: hasStyleValue(el, 'textDecoration') ? 'underline' : 'none'
+    };
+  }
+
+  function getSelectionStyles() {
+    var selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    var range = selection.getRangeAt(0);
+    var container = range.commonAncestorContainer;
+    var element = container.nodeType === 3 ? container.parentNode : container;
+    if (element && element.tagName === 'SPAN' && activeElement && activeElement.contains(element)) {
+      return getElementStyles(element);
+    }
+    if (activeElement) return getElementStyles(activeElement);
+    return null;
+  }
+
+  function getBodyHtml() {
+    // Temporarily clear overflow overrides so they aren't persisted in the snapshot
+    var hadActiveElement = activeElement;
+    clearOverflowOverrides();
+
+    // Reconstruct a clean HTML document without injected scripts
+    var headClone = document.head.cloneNode(true);
+
+    // Clone head and remove any scripts we injected
+    var headScripts = headClone.querySelectorAll('script');
+    headScripts.forEach(function(s) { s.remove(); });
+
+    // Also remove any style tags with id starting with 'text-streaming'
+    var hideStyles = headClone.querySelectorAll('style[id^="text-streaming"]');
+    hideStyles.forEach(function(s) { s.remove(); });
+
+    // Clone body and remove any scripts we injected
+    var bodyClone = document.body.cloneNode(true);
+    var bodyScripts = bodyClone.querySelectorAll('script');
+    bodyScripts.forEach(function(s) { s.remove(); });
+
+    // Remove runtime state that shouldn't be persisted
+    var initializedElements = bodyClone.querySelectorAll('[data-selection-initialized]');
+    initializedElements.forEach(function(el) { 
+      el.removeAttribute('data-selection-initialized');
+      el.removeAttribute('contenteditable');
+
+      // Clear selection-related inline styles
+      el.style.outline = '';
+      el.style.outlineOffset = '';
+      el.style.borderRadius = '';
+      el.style.cursor = '';
+    });
+
+    // Build clean HTML
+    var html = '<!DOCTYPE html><html>' + headClone.outerHTML + bodyClone.outerHTML + '</html>';
+
+    // Re-apply overflow overrides if an element is still active
+    if (hadActiveElement) overrideAncestorOverflow(hadActiveElement);
+
+    return html;
+  }
+
+  function getContainingSpan(range) {
+    var container = range.commonAncestorContainer;
+    if (container.nodeType === 3) container = container.parentNode;
+    if (container.tagName === 'SPAN' && activeElement && container.parentNode === activeElement) {
+      var spanRange = document.createRange();
+      spanRange.selectNodeContents(container);
+      if (range.toString() === spanRange.toString()) return container;
+    }
+    return null;
+  }
+
+  function cleanupSpan(span, styleProp) {
+    span.style[styleProp] = '';
+    if (!span.getAttribute('style') || span.getAttribute('style').trim() === '') {
+      var parent = span.parentNode;
+      while (span.firstChild) parent.insertBefore(span.firstChild, span);
+      parent.removeChild(span);
+    }
+  }
+
+  function getStyledAncestor(range, styleProp) {
+    var container = range.commonAncestorContainer;
+    var el = container.nodeType === 3 ? container.parentNode : container;
+    while (el && el !== activeElement) {
+      if (el.tagName === 'SPAN' && hasStyleValue(el, styleProp)) return el;
+      el = el.parentNode;
+    }
+    return null;
+  }
+
+  function placeCaretAtPoint(x, y) {
+    var range;
+    if (document.caretPositionFromPoint) {
+      var pos = document.caretPositionFromPoint(x, y);
+      if (pos) {
+        range = document.createRange();
+        range.setStart(pos.offsetNode, pos.offset);
+        range.collapse(true);
+      }
+    } else if (document.caretRangeFromPoint) {
+      range = document.caretRangeFromPoint(x, y);
+    }
+    if (range) {
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
+
+
+  // Track ancestors whose overflow was temporarily overridden
+  var overriddenAncestors = [];
+
+  function clearOverflowOverrides() {
+    for (var i = 0; i < overriddenAncestors.length; i++) {
+      var entry = overriddenAncestors[i];
+      entry.el.style.overflow = entry.overflow;
+      entry.el.style.overflowX = entry.overflowX;
+      entry.el.style.overflowY = entry.overflowY;
+    }
+    overriddenAncestors = [];
+  }
+
+  function overrideAncestorOverflow(el) {
+    clearOverflowOverrides();
+    var node = el.parentElement;
+    while (node && node !== document.body && node !== document.documentElement) {
+      var computed = window.getComputedStyle(node);
+      if (computed.overflow === 'hidden' || computed.overflowX === 'hidden' || computed.overflowY === 'hidden') {
+        overriddenAncestors.push({
+          el: node,
+          overflow: node.style.overflow,
+          overflowX: node.style.overflowX,
+          overflowY: node.style.overflowY
+        });
+        node.style.overflow = 'visible';
+      }
+      node = node.parentElement;
+    }
+  }
+
+  function deactivateElement() {
+    if (activeElement) {
+      if (!isImageElement(activeElement)) {
+        activeElement.removeAttribute('contenteditable');
+      }
+      activeElement.style.outline = 'none';
+      activeElement.style.outlineOffset = '';
+      activeElement.style.borderRadius = '';
+      clearOverflowOverrides();
+    }
+  }
+
+  function isImageElement(el) {
+    var tag = el.tagName.toUpperCase();
+    if (tag === 'IMG' || tag === 'SVG') return true;
+
+    // Check direct children only to avoid matching deep container divs
+    var children = el.children;
+    for (var i = 0; i < children.length; i++) {
+      var childTag = children[i].tagName.toUpperCase();
+      if (childTag === 'IMG' || childTag === 'SVG') return true;
+    }
+    return false;
+  }
+
+  // Returns the data-id value for an element
+  function getSlotId(el) {
+    return el.getAttribute('data-id') || '';
+  }
+
+  // Find an element by its data-id value
+  function findByDataId(dataId) {
+    return document.querySelector('[data-id="' + dataId.replace(/"/g, '\"') + '"]');
+  }
+
+  // Determines if a [data-id] element should be selectable:
+  // - Has direct text content (editable element) OR
+  // - Has mixed content (child elements AND direct text nodes) OR
+  // - Is an img/svg tag OR
+  // - Contains a direct child img/svg
+  function isSelectableElement(el) {
+    var tag = el.tagName.toUpperCase();
+    if (SKIP_TAGS[tag]) return false;
+    if (tag === 'IMG' || tag === 'SVG') return true;
+
+    // Check if element has meaningful text content (not just whitespace).
+    // Ignore <br> tags when counting children so line-broken text is still selectable.
+    var children = el.children;
+    var nonBrChildren = 0;
+    for (var j = 0; j < children.length; j++) {
+      if (children[j].tagName.toUpperCase() !== 'BR') nonBrChildren++;
+    }
+    if (el.textContent && el.textContent.trim().length > 0 && nonBrChildren === 0) return true;
+
+    // Mixed content: element has both child elements AND direct text nodes.
+    // e.g. <li><span>Nvidia</span> retreat on reports...</li>
+    // The bare text is not inside any child element and needs the parent to be selectable.
+    if (nonBrChildren > 0) {
+      var childNodes = el.childNodes;
+      for (var k = 0; k < childNodes.length; k++) {
+        if (childNodes[k].nodeType === 3 && childNodes[k].textContent.trim().length > 0) return true;
+      }
+    }
+
+    for (var i = 0; i < children.length; i++) {
+      var childTag = children[i].tagName.toUpperCase();
+      if (childTag === 'IMG' || childTag === 'SVG') return true;
+    }
+    return false;
+  }
+
+  function activateElement(el) {
+    activeElement = el;
+    originalContentMap[getSlotId(el)] = el.innerHTML;
+    el.style.outline = '2.5px solid #987AEE';
+    el.style.outlineOffset = '2px';
+    el.style.borderRadius = '6px';
+    overrideAncestorOverflow(el);
+    if (!isImageElement(el)) {
+      el.contentEditable = 'true';
+      el.focus({ preventScroll: true });
+    }
+  }
+
+  function notifyElementSelected(el) {
+    var rect = el.getBoundingClientRect();
+    var isImage = isImageElement(el);
+    var elementType = isImage ? 'image' : (el.dataset?.elementType || 'text');
+    var value = isImage ? el.outerHTML : el.textContent;
+    window.parent.postMessage({
+      type: 'element_selected',
+      slotId: getSlotId(el),
+      elementType: elementType,
+      value: value,
+      styles: isImage ? undefined : getElementStyles(el),
+      bounds: { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
+    }, '*');
+  }
+
+  function isInBorderZone(rect, clientX, clientY, innerThreshold, outerThreshold) {
+    var expandedLeft = rect.left - outerThreshold;
+    var expandedRight = rect.right + outerThreshold;
+    var expandedTop = rect.top - outerThreshold;
+    var expandedBottom = rect.bottom + outerThreshold;
+    if (clientX < expandedLeft || clientX > expandedRight || clientY < expandedTop || clientY > expandedBottom) {
+      return false;
+    }
+    var contentLeft = rect.left + innerThreshold;
+    var contentRight = rect.right - innerThreshold;
+    var contentTop = rect.top + innerThreshold;
+    var contentBottom = rect.bottom - innerThreshold;
+    var inContentArea = clientX >= contentLeft && clientX <= contentRight && clientY >= contentTop && clientY <= contentBottom;
+    return !inContentArea;
+  }
+
+
+  function setupElement(el) {
+    if (el.dataset.selectionInitialized) return;
+    el.dataset.selectionInitialized = 'true';
+    
+    var elIsImage = isImageElement(el);
+    el.style.cursor = elIsImage ? 'pointer' : 'text';
+    
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isNewSelection = activeElement !== el;
+      var needsReactivation = !isNewSelection && el.contentEditable !== 'true';
+      var rect = el.getBoundingClientRect();
+      var clickedOnBorder = isInBorderZone(rect, e.clientX, e.clientY, INNER_THRESHOLD, OUTER_THRESHOLD);
+      
+      if (isNewSelection) {
+        deactivateElement();
+        activateElement(el);
+      } else if (needsReactivation && !elIsImage) {
+        activateElement(el);
+      }
+      
+      if (!elIsImage) {
+        if (clickedOnBorder) {
+          selectNode(el);
+        } else {
+          var currentSelection = window.getSelection();
+          var hasTextSelected = currentSelection && currentSelection.toString().length > 0;
+          if (e.detail === 1 && !hasTextSelected) {
+            placeCaretAtPoint(e.clientX, e.clientY);
+          }
+        }
+      }
+      notifyElementSelected(el);
+    });
+    
+    var blurTimeout = null;
+    
+    el.addEventListener('blur', function() {
+      var wasActiveAtBlur = el === activeElement;
+      blurTimeout = setTimeout(function() {
+        var elKey = getSlotId(el);
+        var currentHtml = el.innerHTML;
+        var originalContent = originalContentMap[elKey];
+        var contentChanged = wasActiveAtBlur && originalContent !== undefined && currentHtml !== originalContent;
+        if (!elIsImage) {
+          el.removeAttribute('contenteditable');
+        }
+        var message = { type: 'element_blur', slotId: elKey };
+        if (contentChanged) message.html = getBodyHtml();
+        window.parent.postMessage(message, '*');
+        delete originalContentMap[elKey];
+      }, 150);
+    });
+    
+    el.addEventListener('focus', function() {
+      if (blurTimeout) { clearTimeout(blurTimeout); blurTimeout = null; }
+    });
+    
+    el.addEventListener('keydown', function(e) {
+      if (elIsImage) return;
+      if (e.key === 'Backspace' && el.textContent.trim() === '') {
+        e.preventDefault();
+        var elKey = getSlotId(el);
+        el.remove();
+        activeElement = null;
+        delete originalContentMap[elKey];
+        window.parent.postMessage({ type: 'element_deleted', slotId: elKey, html: getBodyHtml() }, '*');
+      }
+    });
+    
+    el.addEventListener('mouseenter', function() {
+      if (el !== activeElement) {
+        el.style.outline = '1.5px solid rgba(59, 130, 246, 0.5)';
+        el.style.outlineOffset = '2px';
+        el.style.borderRadius = '6px';
+      }
+    });
+    
+    el.addEventListener('mouseleave', function() {
+      if (el !== activeElement) {
+        el.style.outline = 'none';
+        el.style.outlineOffset = '';
+        el.style.borderRadius = '';
+      }
+      el.style.cursor = elIsImage ? 'pointer' : 'text';
+    });
+    
+    el.addEventListener('mousemove', function(e) {
+      if (elIsImage) return;
+      var rect = el.getBoundingClientRect();
+      el.style.cursor = isInBorderZone(rect, e.clientX, e.clientY, INNER_THRESHOLD, OUTER_THRESHOLD) ? 'pointer' : 'text';
+    });
+  }
+
+  // Initialize only elements that are meaningful editable content
+  function initializeElements() {
+    var allElements = document.querySelectorAll(SELECTABLE_SELECTOR);
+    for (var i = 0; i < allElements.length; i++) {
+      if (isSelectableElement(allElements[i])) {
+        setupElement(allElements[i]);
+      }
+    }
+  }
+
+
+  // Collect all initialized selectable elements for hit-testing
+  function getSelectableElements() {
+    return document.querySelectorAll('[data-selection-initialized]');
+  }
+
+  function setupBodyListeners() {
+    if (!document.body) return;
+    
+    document.body.addEventListener('click', function(e) {
+      window.parent.postMessage({ type: 'iframe_clicked' }, '*');
+      
+      // Check if click target is inside an initialized element
+      var closestInitialized = e.target.closest('[data-selection-initialized]');
+      if (closestInitialized) return; // Element's own click handler will fire
+      
+      // Click was not directly on an initialized element — check via bounding rects
+      // (handles CSS overlays, pseudo-elements blocking the actual element)
+      var elements = getSelectableElements();
+      for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+        var rect = el.getBoundingClientRect();
+
+        // For image elements, check if click is anywhere inside bounding rect
+        if (isImageElement(el)) {
+          if (e.clientX >= rect.left && e.clientX <= rect.right &&
+              e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            e.stopPropagation();
+            deactivateElement();
+            activateElement(el);
+            notifyElementSelected(el);
+            return;
+          }
+        }
+        if (isInBorderZone(rect, e.clientX, e.clientY, INNER_THRESHOLD, OUTER_THRESHOLD)) {
+          e.stopPropagation();
+          deactivateElement();
+          activateElement(el);
+          if (!isImageElement(el)) {
+            selectNode(el);
+          }
+          notifyElementSelected(el);
+          return;
+        }
+      }
+      window.parent.postMessage({ type: 'element_deselected' }, '*');
+    });
+    
+    document.body.addEventListener('mousemove', function(e) {
+      if (e.target.closest('[data-selection-initialized]')) return;
+      var elements = getSelectableElements();
+      for (var i = 0; i < elements.length; i++) {
+        var rect = elements[i].getBoundingClientRect();
+        if (isImageElement(elements[i])) {
+          if (e.clientX >= rect.left && e.clientX <= rect.right &&
+              e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            document.body.style.cursor = 'pointer';
+            return;
+          }
+        }
+        if (isInBorderZone(rect, e.clientX, e.clientY, INNER_THRESHOLD, OUTER_THRESHOLD)) {
+          document.body.style.cursor = 'pointer';
+          return;
+        }
+      }
+      document.body.style.cursor = '';
+    });
+    
+    document.body.addEventListener('mouseup', function(e) {
+      var selection = window.getSelection();
+      var hasSelection = selection && selection.toString().length > 0;
+      if (!hasSelection) return;
+      
+      var range = selection.rangeCount > 0 ? selection.getRangeAt(0).cloneRange() : null;
+      if (!range) return;
+      
+      var container = range.commonAncestorContainer;
+      if (container.nodeType === 3) container = container.parentNode;
+      var slotElement = container.closest ? container.closest('[data-selection-initialized]') : null;
+      if (!slotElement) return;
+      
+      if (slotElement !== activeElement) {
+        deactivateElement();
+        activateElement(slotElement);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        notifyElementSelected(slotElement);
+      }
+    });
+  }
+
+
+  document.addEventListener('selectionchange', function() {
+    var selection = window.getSelection();
+    var selectedText = selection ? selection.toString() : '';
+    var hasSelection = selectedText.length > 0;
+    var message = { type: 'selection_changed', hasSelection: hasSelection, selectedText: selectedText };
+    
+    if (hasSelection) {
+      var styles = getSelectionStyles();
+      if (styles) message.styles = styles;
+      if (selection.rangeCount > 0) {
+        var rect = selection.getRangeAt(0).getBoundingClientRect();
+        message.bounds = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+      } else if (activeElement) {
+        var rect = activeElement.getBoundingClientRect();
+        message.bounds = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+      }
+    }
+    window.parent.postMessage(message, '*');
+  });
+
+
+  function applyToSelection(selection, range, command, styleProp, styleValue, styleMap) {
+    if (range.collapsed) return;
+    
+    var existingSpan = getContainingSpan(range);
+    if (existingSpan) {
+      var isTurningOffSpan = styleValue === styleMap[command].offValue;
+      var spanHasStyleExplicitly = existingSpan.style[styleProp] && existingSpan.style[styleProp] !== '';
+      if (isTurningOffSpan && spanHasStyleExplicitly) {
+        cleanupSpan(existingSpan, styleProp);
+        if (existingSpan.parentNode) selectNode(existingSpan);
+      } else {
+        existingSpan.style[styleProp] = styleValue;
+        selectNode(existingSpan);
+      }
+      return;
+    }
+    
+    var isTurningOff = styleValue === styleMap[command].offValue;
+    var styledAncestor = isTurningOff ? getStyledAncestor(range, styleProp) : null;
+    
+    if (styledAncestor) {
+      var selectedText = range.toString();
+      var beforeRange = document.createRange();
+      beforeRange.setStart(styledAncestor, 0);
+      beforeRange.setEnd(range.startContainer, range.startOffset);
+      var beforeText = beforeRange.toString();
+      
+      var afterRange = document.createRange();
+      afterRange.setStart(range.endContainer, range.endOffset);
+      afterRange.setEnd(styledAncestor, styledAncestor.childNodes.length);
+      var afterText = afterRange.toString();
+      
+      var parent = styledAncestor.parentNode;
+      var styleCSS = styledAncestor.style.cssText;
+      var unstyledCSS = styleCSS.replace(new RegExp(styleProp.replace(/([A-Z])/g, '-$1').toLowerCase() + '\\s*:\\s*[^;]+;?', 'gi'), '').trim();
+      
+      var newNodes = [];
+      if (beforeText) {
+        var beforeSpan = document.createElement('span');
+        beforeSpan.style.cssText = styleCSS;
+        beforeSpan.textContent = beforeText;
+        newNodes.push(beforeSpan);
+      }
+      
+      var middleNode;
+      if (unstyledCSS) {
+        middleNode = document.createElement('span');
+        middleNode.style.cssText = unstyledCSS;
+        middleNode.textContent = selectedText;
+      } else {
+        middleNode = document.createTextNode(selectedText);
+      }
+      newNodes.push(middleNode);
+      
+      if (afterText) {
+        var afterSpan = document.createElement('span');
+        afterSpan.style.cssText = styleCSS;
+        afterSpan.textContent = afterText;
+        newNodes.push(afterSpan);
+      }
+      
+      newNodes.forEach(function(node) { parent.insertBefore(node, styledAncestor); });
+      parent.removeChild(styledAncestor);
+      activeElement.normalize();
+      selectNode(middleNode);
+      return;
+    }
+    
+    if (isTurningOff && styleProp === 'textDecoration' && hasStyleValue(activeElement, styleProp)) {
+      var selText = range.toString();
+      var fullText = activeElement.textContent;
+      var selStart = fullText.indexOf(selText);
+      if (selStart === -1) selStart = 0;
+      var beforeText = fullText.substring(0, selStart);
+      var afterText = fullText.substring(selStart + selText.length);
+      
+      activeElement.style[styleProp] = '';
+      activeElement.innerHTML = '';
+      
+      if (beforeText) {
+        var beforeSpan = document.createElement('span');
+        beforeSpan.style[styleProp] = 'underline';
+        beforeSpan.textContent = beforeText;
+        activeElement.appendChild(beforeSpan);
+      }
+      var middleNode = document.createTextNode(selText);
+      activeElement.appendChild(middleNode);
+      if (afterText) {
+        var afterSpan = document.createElement('span');
+        afterSpan.style[styleProp] = 'underline';
+        afterSpan.textContent = afterText;
+        activeElement.appendChild(afterSpan);
+      }
+      selectNode(middleNode);
+      return;
+    }
+    
+    var fragment = range.extractContents();
+    
+    if (isTurningOff) {
+      fragment.querySelectorAll('span').forEach(function(span) { cleanupSpan(span, styleProp); });
+      if (hasStyleValue(activeElement, styleProp)) {
+        var overrideSpan = document.createElement('span');
+        overrideSpan.style[styleProp] = styleValue;
+        overrideSpan.appendChild(fragment);
+        range.insertNode(overrideSpan);
+        selectNode(overrideSpan);
+      } else {
+        range.insertNode(fragment);
+      }
+    } else {
+      var span = document.createElement('span');
+      span.style[styleProp] = styleValue;
+      span.appendChild(fragment);
+      span.querySelectorAll('span').forEach(function(nested) {
+        if (nested.style[styleProp]) cleanupSpan(nested, styleProp);
+      });
+      range.insertNode(span);
+      selectNode(span);
+    }
+  }
+
+
+  window.addEventListener('message', function(e) {
+    var data = e.data;
+    if (data && data.type === 'slideCommand' && data.payload) {
+      data = { type: data.payload.command, ...data.payload.data };
+    }
+    
+    if (data.type === 'clear_selection') {
+      deactivateElement();
+      activeElement = null;
+      window.parent.postMessage({ type: 'element_deselected' }, '*');
+      return;
+    }
+    
+    if (data.type === 'focus_active_element') {
+      if (activeElement) {
+        if (!isImageElement(activeElement)) {
+          activeElement.contentEditable = 'true';
+          originalContentMap[getSlotId(activeElement)] = activeElement.innerHTML;
+        }
+        activeElement.focus({ preventScroll: true });
+      }
+      return;
+    }
+    
+    if (data.type === 'reload_content') {
+      deactivateElement();
+      activeElement = null;
+      originalContentMap = {};
+      
+      if (!data.fullHtml || data.fullHtml.length === 0) {
+        return;
+      }
+      
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(data.fullHtml, 'text/html');
+      
+      var scripts = Array.from(document.head.querySelectorAll('script'));
+      document.head.innerHTML = doc.head.innerHTML;
+      scripts.forEach(function(s) { document.head.appendChild(s); });
+      
+      document.body.innerHTML = doc.body.innerHTML;
+      
+      // Re-initialize selectable elements after content reload
+      var allElements = document.querySelectorAll(SELECTABLE_SELECTOR);
+      for (var i = 0; i < allElements.length; i++) {
+        if (isSelectableElement(allElements[i])) {
+          setupElement(allElements[i]);
+        }
+      }
+      window.parent.postMessage({ type: 'content_reloaded' }, '*');
+      return;
+    }
+    
+    if (data.type === 'replace_text' && data.id) {
+      // Look up by data-id
+      var element = findByDataId(data.id);
+      if (element) element.textContent = data.newText || '';
+      return;
+    }
+    
+    if (data.type === 'replace_text' && activeElement) {
+      var selection = window.getSelection();
+      var selectedText = selection ? selection.toString() : '';
+      
+      if (selection && selection.rangeCount > 0 && selectedText.length > 0) {
+        var range = selection.getRangeAt(0);
+        var container = range.commonAncestorContainer;
+        var parentSpan = container.nodeType === 3 ? container.parentNode : container;
+        var styleSource = activeElement;
+        var isInsideStyledSpan = parentSpan && parentSpan.tagName === 'SPAN' && parentSpan !== activeElement && activeElement.contains(parentSpan);
+        if (isInsideStyledSpan) styleSource = parentSpan;
+        
+        var computedStyles = window.getComputedStyle(styleSource);
+        var hasBold = computedStyles.fontWeight === 'bold' || parseInt(computedStyles.fontWeight, 10) >= 700;
+        var hasItalic = computedStyles.fontStyle === 'italic';
+        var hasUnderline = (computedStyles.textDecorationLine || computedStyles.textDecoration).includes('underline');
+        var hasCustomColor = computedStyles.color && computedStyles.color !== 'rgb(0, 0, 0)';
+        var hasCustomFontSize = computedStyles.fontSize && computedStyles.fontSize !== '16px';
+        var hasAnyStyle = hasBold || hasItalic || hasUnderline || hasCustomColor || hasCustomFontSize;
+        
+        if (hasAnyStyle || isInsideStyledSpan) {
+          var newSpan = document.createElement('span');
+          if (hasBold) newSpan.style.fontWeight = 'bold';
+          if (hasItalic) newSpan.style.fontStyle = 'italic';
+          if (hasUnderline) newSpan.style.textDecoration = 'underline';
+          if (computedStyles.color) newSpan.style.color = computedStyles.color;
+          if (computedStyles.fontSize) newSpan.style.fontSize = computedStyles.fontSize;
+          newSpan.textContent = data.newText;
+          range.deleteContents();
+          range.insertNode(newSpan);
+          activeElement.normalize();
+          selectNode(newSpan);
+        } else {
+          range.deleteContents();
+          var textNode = document.createTextNode(data.newText);
+          range.insertNode(textNode);
+          activeElement.normalize();
+          var newRange = document.createRange();
+          newRange.selectNodeContents(textNode);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        }
+      } else {
+        activeElement.textContent = data.newText;
+      }
+      
+      window.parent.postMessage({ type: 'text_replaced', slotId: getSlotId(activeElement), html: getBodyHtml() }, '*');
+      return;
+    }
+    
+    if (data.type !== 'format_command' || !activeElement) return;
+    
+    var command = data.command;
+    var value = data.value;
+    var isOn = value === 'true' || value === true;
+    
+    var selection = window.getSelection();
+    var selectedText = selection ? selection.toString() : '';
+    var fullText = activeElement.textContent || '';
+    var isFullSelection = selectedText.length > 0 && selectedText === fullText;
+    
+    var styleMap = {
+      'bold': { prop: 'fontWeight', onValue: 'bold', offValue: 'normal' },
+      'italic': { prop: 'fontStyle', onValue: 'italic', offValue: 'normal' },
+      'underline': { prop: 'textDecoration', onValue: 'underline', offValue: 'none' },
+      'fontSize': { prop: 'fontSize', onValue: value + 'px', offValue: null },
+      'fontColor': { prop: 'color', onValue: value, offValue: null }
+    };
+    
+    var styleInfo = styleMap[command];
+    if (!styleInfo) return;
+    
+    var styleValue = (command === 'fontSize' || command === 'fontColor') 
+      ? styleInfo.onValue 
+      : (isOn ? styleInfo.onValue : styleInfo.offValue);
+    
+    if (isFullSelection) {
+      activeElement.style[styleInfo.prop] = styleValue;
+      activeElement.querySelectorAll('span').forEach(function(span) { cleanupSpan(span, styleInfo.prop); });
+      activeElement.querySelectorAll('*').forEach(function(child) {
+        if (child.style && child.style[styleInfo.prop]) {
+          child.style[styleInfo.prop] = '';
+        }
+        if (styleInfo.prop === 'color') {
+          child.style.color = 'inherit';
+        }
+      });
+    } else if (selection && selection.rangeCount > 0) {
+      applyToSelection(selection, selection.getRangeAt(0), command, styleInfo.prop, styleValue, styleMap);
+    }
+    
+    activeElement.normalize();
+    
+    window.parent.postMessage({
+      type: 'element_style_updated',
+      slotId: getSlotId(activeElement),
+      styles: getElementStyles(activeElement),
+      html: getBodyHtml()
+    }, '*');
+    
+    var updatedSelStyles = getSelectionStyles();
+    var currentSelection = window.getSelection();
+    var currentSelectedText = currentSelection ? currentSelection.toString() : '';
+    window.parent.postMessage({
+      type: 'selection_changed',
+      hasSelection: currentSelectedText.length > 0,
+      selectedText: currentSelectedText,
+      styles: updatedSelStyles
+    }, '*');
+  });
+
+
+  var isMouseDown = false;
+  document.addEventListener('mousedown', function() { isMouseDown = true; });
+  document.addEventListener('mouseup', function() { isMouseDown = false; });
+
+  // Auto-activate the first selectable element when iframe gains keyboard focus.
+  window.addEventListener('focus', function() {
+    if (isMouseDown) return;
+    if (!activeElement) {
+      var elements = Array.from(getSelectableElements());
+      if (elements.length > 0) {
+        activateElement(elements[0]);
+        notifyElementSelected(elements[0]);
+      }
+    }
+  });
+
+  // Prevent focus-induced scrolling inside the slide.
+  function resetScroll() {
+    if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
+  }
+  window.addEventListener('scroll', resetScroll, { passive: false });
+
+  // Tab navigation between selectable elements
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Tab') return;
+
+    var tabDirection = e.shiftKey ? 'backward' : 'forward';
+
+    var elements = Array.from(getSelectableElements());
+    if (elements.length === 0) return;
+
+    // If text is selected and an element is active, let Tab flow
+    // naturally to the formatting toolbar in the parent frame.
+    if (activeElement && !e.shiftKey) {
+      var selection = window.getSelection();
+      var hasSelection = selection && selection.toString().length > 0;
+      if (hasSelection) {
+        e.preventDefault();
+        // Don't null activeElement — focus_active_element needs it
+        // when Shift+Tab returns from the toolbar.
+        deactivateElement();
+        // Tell the parent to focus the formatting toolbar
+        window.parent.postMessage({ type: 'tab_to_toolbar' }, '*');
+        return;
+      }
+    }
+
+    // Navigate to next/previous selectable element
+    var currentIndex = activeElement ? elements.indexOf(activeElement) : -1;
+    var nextIndex;
+    var atBoundary = false;
+
+    if (e.shiftKey) {
+      if (currentIndex <= 0) {
+        atBoundary = true;
+      } else {
+        nextIndex = currentIndex - 1;
+      }
+    } else {
+      if (currentIndex >= elements.length - 1) {
+        atBoundary = true;
+      } else {
+        nextIndex = currentIndex + 1;
+      }
+    }
+
+    // At boundary: tell parent to move focus to prev/next slide.
+    // Browsers cannot reliably Tab out of nested sandboxed iframes,
+    // so we always preventDefault and let the parent handle it.
+    if (atBoundary) {
+      e.preventDefault();
+      deactivateElement();
+      activeElement = null;
+      window.parent.postMessage({ type: 'tab_exit', direction: tabDirection }, '*');
+      return;
+    }
+
+    e.preventDefault();
+    deactivateElement();
+    activateElement(elements[nextIndex]);
+    notifyElementSelected(elements[nextIndex]);
+  });
+
+
+  function initialize() {
+    initializeElements();
+    setupBodyListeners();
+  }
+
+  if (document.body) {
+    initialize();
+  } else {
+    document.addEventListener('DOMContentLoaded', initialize);
+  }
+
+})();
+</script>
+</body></html>

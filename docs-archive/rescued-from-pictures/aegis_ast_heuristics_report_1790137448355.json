@@ -1,0 +1,19 @@
+{
+  "module_name": "AST Static Analysis Analyzer",
+  "source_code_length": 378,
+  "vulnerabilities_found_count": 2,
+  "findings": [
+    {
+      "line": 7,
+      "type": "Insecure Command Execution (os.system)",
+      "desc": "Direct invocation of 'os.system()' processes commands via the default shell. This is extremely prone to command injection exploits. Use 'subprocess.run' with an explicit argument list instead.",
+      "codeSnippet": "os.system(\"tar -czf site_bak.tar \" + user_supplied_dir)"
+    },
+    {
+      "line": 11,
+      "type": "Subprocess Shell Execution Enabled (shell=True)",
+      "desc": "Setting shell=True bypasses argument isolation by creating a shell intermediary. This executes raw strings directly and invites shell metacharacter expansion attacks.",
+      "codeSnippet": "proc = subprocess.Popen(\"ping -c 1 \" + addr, shell=True, stdout=subprocess.PIPE)"
+    }
+  ]
+}

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shadow313 NEXUS — Cyber Operations Dashboard v3</title>
+<style>
+:root{
+  --bg:#020805;--surface:#060f06;--surface2:#0a160a;--border:#0f2010;
+  --green:#00ff88;--green2:#22c55e;--green3:#16a34a;
+  --red:#ff2d55;--amber:#f59e0b;--cyan:#00d4ff;--purple:#a78bfa;
+  --text:#c8e6c9;--muted:#4a7a4a;--dim:#1a3a1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
+     min-height:100vh;overflow-x:hidden}
+
+/* Scanline overlay */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);
+  pointer-events:none;z-index:1000}
+
+/* Header */
+.header{background:linear-gradient(135deg,#020805,#060f06);
+  border-bottom:1px solid var(--green);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-hex{width:32px;height:32px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:#000;font-weight:900}
+.logo-text{font-size:14px;color:var(--green);letter-spacing:.15em;font-weight:700}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:.2em}
+.header-right{display:flex;align-items:center;gap:16px;font-size:10px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.defcon{background:rgba(0,255,136,.1);border:1px solid var(--green);
+  color:var(--green);padding:3px 10px;border-radius:3px;font-size:10px;letter-spacing:.1em}
+.time-display{color:var(--muted);font-size:10px;font-family:monospace}
+
+/* Nav */
+.nav{display:flex;gap:1px;padding:0 20px;background:var(--surface);
+  border-bottom:1px solid var(--border);overflow-x:auto}
+.nav-btn{background:none;border:none;color:var(--muted);font-size:10px;
+  padding:8px 14px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;
+  border-bottom:2px solid transparent;transition:.2s;font-family:monospace;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* Grid layout */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;padding:12px 16px;
+  max-width:1600px;margin:0 auto}
+.col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}
+.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+@media(max-width:1200px){.col-3,.col-4{grid-column:span 6}.col-8{grid-column:span 12}}
+@media(max-width:768px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12}}
+
+/* Panels */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:10px;position:relative;overflow:hidden}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.panel-title{font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.panel-title::before{content:'▸';color:var(--green)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.kpi{background:var(--surface2);border:1px solid var(--dim);border-radius:3px;
+  padding:10px;text-align:center}
+.kpi-num{font-size:24px;font-weight:700;line-height:1;font-family:monospace}
+.kpi-lbl{font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.1em;text-transform:uppercase}
+.kpi-sub{font-size:8px;color:var(--muted);margin-top:1px}
+.green{color:var(--green)} .red{color:var(--red)} .amber{color:var(--amber)}
+.cyan{color:var(--cyan)} .purple{color:var(--purple)}
+
+/* Threat feed */
+.threat-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;
+  border-bottom:1px solid var(--dim);font-size:10px}
+.threat-item:last-child{border-bottom:none}
+.threat-sev{font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;
+  min-width:52px;text-align:center;letter-spacing:.05em}
+.sev-crit{background:rgba(255,45,85,.15);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+.sev-high{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.sev-med{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.25)}
+.sev-low{background:rgba(74,122,74,.2);color:var(--muted);border:1px solid var(--dim)}
+.threat-text{flex:1;color:var(--text);line-height:1.4}
+.threat-time{color:var(--muted);font-size:9px;white-space:nowrap}
+
+/* CADL tiers */
+.cadl-tier{display:flex;align-items:center;gap:8px;padding:5px 8px;
+  border-radius:3px;margin-bottom:4px;font-size:10px;cursor:pointer;transition:.2s}
+.cadl-tier:hover{background:var(--dim)}
+.cadl-num{font-size:11px;font-weight:700;min-width:20px;font-family:monospace}
+.cadl-bar{flex:1;height:4px;background:var(--dim);border-radius:2px;overflow:hidden}
+.cadl-fill{height:100%;border-radius:2px;transition:.3s}
+.cadl-label{font-size:9px;color:var(--muted);min-width:80px;text-align:right}
+
+/* PQC stack */
+.pqc-item{display:flex;align-items:center;gap:8px;padding:6px 0;
+  border-bottom:1px solid var(--dim);font-size:10px}
+.pqc-item:last-child{border-bottom:none}
+.pqc-badge{font-size:8px;padding:1px 6px;border-radius:2px;font-weight:700;
+  background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.25);
+  min-width:60px;text-align:center}
+.pqc-algo{font-weight:700;min-width:100px;color:var(--green)}
+.pqc-desc{color:var(--muted);flex:1}
+.pqc-status{font-size:8px;color:var(--green)}
+
+/* Terminal */
+.terminal{background:#000;border:1px solid var(--dim);border-radius:3px;
+  padding:10px;font-size:10px;font-family:'Courier New',monospace;
+  height:180px;overflow-y:auto;line-height:1.6}
+.terminal::-webkit-scrollbar{width:4px}
+.terminal::-webkit-scrollbar-track{background:#000}
+.terminal::-webkit-scrollbar-thumb{background:var(--green3)}
+.t-green{color:var(--green)} .t-red{color:var(--red)} .t-amber{color:var(--amber)}
+.t-cyan{color:var(--cyan)} .t-muted{color:var(--muted)} .t-white{color:#fff}
+
+/* Progress bars */
+.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:10px}
+.prog-label{min-width:100px;color:var(--muted)}
+.prog-wrap{flex:1;background:var(--dim);border-radius:2px;height:6px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:.5s}
+.prog-val{min-width:36px;text-align:right;font-family:monospace}
+
+/* Interconnect map */
+.ic-node{display:flex;align-items:center;gap:8px;padding:5px 8px;
+  background:var(--surface2);border:1px solid var(--dim);border-radius:3px;
+  margin-bottom:4px;font-size:10px}
+.ic-dot{width:6px;height:6px;border-radius:50%}
+.ic-name{font-weight:700;min-width:120px}
+.ic-flow{color:var(--muted);flex:1}
+.ic-status{font-size:8px}
+
+/* Sections */
+.section{display:none}.section.active{display:block}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green3);border-radius:2px}
+
+/* Blink */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.blink{animation:blink 1s infinite}
+
+/* Ghost-Watch */
+.gw-tier{display:grid;grid-template-columns:auto 1fr auto;gap:8px;
+  align-items:center;padding:6px 8px;border-radius:3px;margin-bottom:3px;
+  font-size:10px;border:1px solid var(--dim)}
+.gw-level{font-size:11px;font-weight:700;font-family:monospace;
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;border:1px solid}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">
+<div class="logo-hex">⬡</div>
+<div>
+<div class="logo-text">SHADOW313 NEXUS</div>
+<div class="logo-sub">CYBER OPERATIONS DASHBOARD v3 · VANGUARD-313</div>
+</div>
+</div>
+<div class="header-right">
+<div style="display:flex;align-items:center;gap:6px">
+<div class="status-dot"></div>
+<span style="color:var(--green);font-size:10px">OPERATIONAL</span>
+</div>
+<div class="defcon">DEFCON 4 · GREEN</div>
+<div class="time-display" id="clock">--:--:-- UTC</div>
+<div style="font-size:9px;color:var(--muted)">HB-9982-AX-2026</div>
+</div>
+</div>
+<div class="nav">
+<button class="nav-btn active" onclick="show('ops',this)">⬡ Operations</button>
+<button class="nav-btn" onclick="show('threats',this)">⚠ Threats</button>
+<button class="nav-btn" onclick="show('pqc',this)">🔐 PQC Stack</button>
+<button class="nav-btn" onclick="show('ghostwatch',this)">👻 Ghost-Watch</button>
+<button class="nav-btn" onclick="show('vsat',this)">📡 VSAT/Aegis</button>
+<button class="nav-btn" onclick="show('audit',this)">⬡ 313-BIND</button>
+<button class="nav-btn" onclick="show('terminal',this)">▸ Terminal</button>
+</div>
+<!-- OPERATIONS -->
+<div class="section active" id="ops">
+<div class="grid">
+<div class="col-12">
+<div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
+<div class="kpi"><div class="kpi-num green">2,071</div><div class="kpi-lbl">Tests</div><div class="kpi-sub">All passing</div></div>
+<div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
+<div class="kpi"><div class="kpi-num green">12/14</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
+<div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
+<div class="kpi"><div class="kpi-num amber">~40%</div><div class="kpi-lbl">CMMC L2</div><div class="kpi-sub">~44/110 practices</div></div>
+<div class="kpi"><div class="kpi-num green">✅</div><div class="kpi-lbl">PIPEDA</div><div class="kpi-sub">Zero PII</div></div>
+<div class="kpi"><div class="kpi-num purple">103</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">v1→v4 complete</div></div>
+<div class="kpi"><div class="kpi-num green">4</div><div class="kpi-lbl">DW Windows</div><div class="kpi-sub">Q4'26–Q2'27</div></div>
+</div>
+</div>
+<div class="col-4">
+<div class="panel">
+<div class="panel-title">Active Threat Feed</div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">CVE-2026-3392 TR-069 CWMP unsigned provisioning — 192.168.100.1</span><span class="threat-time">01:18</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">UART/JTAG unauthenticated — device registers readable</span><span class="threat-time">01:19</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Unsigned firmware accepted — arbitrary partition overwrite</span><span class="threat-time">01:23</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Carrier SNR 5.9 dB — below 8.0 dB minimum threshold</span><span class="threat-time">02:07</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Clock skew +55.1 Hz — exceeds ±10 Hz limit (OSCILLATOR_DRIFT)</span><span class="threat-time">02:07</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">QKD BB84 QBER 40% — eavesdropper detected, key dropped</span><span class="threat-time">03:08</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">MEDIUM</span><span class="threat-text">CRQC-012 HMAC fallback — pyspx SLH-DSA now active</span><span class="threat-time">06:58</span></div>
+</div>
+</div>
+<div class="col-4">
+<div class="panel">
+<div class="panel-title">CRQC Migration Status</div>
+<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-002 SHA-256</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-003 Ledger</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-004-008</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-007 PBKDF2</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-012 HMAC</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">DW-1 liboqs</div><div class="prog-wrap"><div class="prog-fill" style="width:15%;background:var(--amber)"></div></div><div class="prog-val amber">Q4'26</div></div>
+<div class="prog-row"><div class="prog-label">DW-2 HSM</div><div class="prog-wrap"><div class="prog-fill" style="width:5%;background:var(--amber)"></div></div><div class="prog-val amber">Q1'27</div></div>
+</div>
+</div>
+<div class="col-4">
+<div class="panel">
+<div class="panel-title">Interconnections</div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">Secrets FIPS HSM</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static assets TLS 1.3</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--amber)"></div><div class="ic-name">IPFS Network</div><div class="ic-flow">Receipt anchors SHA3-256</div><div class="ic-status amber">NO-IPFS</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--cyan)"></div><div class="ic-name">OpenAI API</div><div class="ic-flow">Chat only — no sec data</div><div class="ic-status cyan">OPTIONAL</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">relay.js port 3133</div><div class="ic-status green">LOCAL</div></div>
+</div>
+</div>
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">CMMC Level 2 Domain Coverage</div>
+<div class="prog-row"><div class="prog-label">IR Incident</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">3/3</div></div>
+<div class="prog-row"><div class="prog-label">AU Audit</div><div class="prog-wrap"><div class="prog-fill" style="width:56%;background:var(--cyan)"></div></div><div class="prog-val cyan">5/9</div></div>
+<div class="prog-row"><div class="prog-label">RA Risk</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--cyan)"></div></div><div class="prog-val cyan">2/3</div></div>
+<div class="prog-row"><div class="prog-label">SI Integrity</div><div class="prog-wrap"><div class="prog-fill" style="width:43%;background:var(--amber)"></div></div><div class="prog-val amber">3/7</div></div>
+<div class="prog-row"><div class="prog-label">CM Config</div><div class="prog-wrap"><div class="prog-fill" style="width:44%;background:var(--amber)"></div></div><div class="prog-val amber">4/9</div></div>
+<div class="prog-row"><div class="prog-label">AC Access</div><div class="prog-wrap"><div class="prog-fill" style="width:23%;background:var(--amber)"></div></div><div class="prog-val amber">5/22</div></div>
+<div class="prog-row"><div class="prog-label">AT Training</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
+<div class="prog-row"><div class="prog-label">PS Personnel</div><div class="prog-wrap"><div class="prog-fill" style="width:75%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
+</div>
+</div>
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">Wave 1 Documentation Status (Q4 2026)</div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Policy-S313.md — Security Awareness Training Policy</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Training-Records-S313.md — 16hr training documented</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-Policy-S313.md — Personnel Security Policy</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-AUA-S313.md — Acceptable Use Agreement</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">IR-Plan-S313.md — Incident Response Plan</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">CA-Readiness-S313.md — 3PAO Engagement Package</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">NEXT</span><span class="threat-text">Engage C3PAO — CMMC Level 2 assessment</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- THREATS -->
+<div class="section" id="threats">
+<div class="grid">
+<div class="col-8">
+<div class="panel">
+<div class="panel-title">ATT&amp;CK Kill Chain — Aegis Telemetry (2026-08-29)</div>
+<table style="width:100%;font-size:10px;border-collapse:collapse">
+<thead><tr style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">
+<th style="padding:5px;text-align:left">Stage</th><th>Technique</th><th>Tool</th><th>Status</th><th>Coverage</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--amber)">Initial Access</td><td>T1190 Exploit Public App</td><td>diagnostics.py RCE</td><td style="color:var(--red)">NOT STOPPED</td><td style="color:var(--red)">PARTIAL</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--amber)">Execution</td><td>T1059.004 Unix Shell</td><td>curl execve</td><td style="color:var(--red)">NOT STOPPED</td><td style="color:var(--amber)">PARTIAL</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--green)">Priv Escalation</td><td>T1548.001 setuid(0)</td><td>backdoor_payload</td><td style="color:var(--green)">STOPPED ✓</td><td style="color:var(--green)">FULL</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--red)">C2</td><td>T1095 Non-Std Port</td><td>nc PID 14209 :4444</td><td style="color:var(--red)">DETECTED NOT KILLED</td><td style="color:var(--amber)">PARTIAL</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--amber)">Defense Evasion</td><td>T1014 DKOM Rootkit</td><td>EPT violation</td><td style="color:var(--amber)">DETECTED</td><td style="color:var(--amber)">PARTIAL</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;color:var(--red)">Execution</td><td>T1620 Fileless memfd</td><td>curl memfd:x64</td><td style="color:var(--red)">NOT STOPPED</td><td style="color:var(--red)">NONE</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="col-4">
+<div class="panel">
+<div class="panel-title">D3FEND Gap Closure</div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">FULL</span><span class="threat-text">D3-DO Decoy Object (Ghost-Watch)</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">FULL</span><span class="threat-text">D3-DUC Decoy User Credential</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">P1</span><span class="threat-text">D3-PT Process Termination — nc C2 kill</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">P2</span><span class="threat-text">D3-SCA Syscall Analysis — memfd_create</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">P3</span><span class="threat-text">D3-HBPI Hypervisor DKOM detection</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- PQC STACK -->
+<div class="section" id="pqc">
+<div class="grid">
+<div class="col-12">
+<div class="panel">
+<div class="panel-title">Post-Quantum Cryptographic Stack — NIST FIPS 203/204/205</div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">313-BIND temporal receipts — pyspx pure-Python, 17,088B signatures</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 204</span><span class="pqc-algo">ML-DSA-65 (proxy)</span><span class="pqc-desc">Plugin trust registry + ledger signing — HMAC-SHA3-256 proxy → liboqs DW-1</span><span class="pqc-status" style="color:var(--amber)">🔄 DW-1</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">Key encapsulation — @noble/post-quantum JS, 1184B pubkey, 1088B ciphertext</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Session encryption — cryptography library, quantum-safe symmetric</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">RFC 9106</span><span class="pqc-algo">Argon2id</span><span class="pqc-desc">Session key derivation — 64MB memory, t=3, p=4 — replaces PBKDF2-SHA256</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 202</span><span class="pqc-algo">SHA3-256/512</span><span class="pqc-desc">All security-critical hashing — Merkle chains, IPFS CIDs, payload hashes</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge" style="color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1)">DEPRECATED</span><span class="pqc-algo" style="color:var(--amber)">ECDSA P-256</span><span class="pqc-desc">cosign legacy path — ML-DSA-65 is now primary, ECDSA is fallback only</span><span class="pqc-status" style="color:var(--amber)">⚠ LEGACY</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GHOST-WATCH -->
+<div class="section" id="ghostwatch">
+<div class="grid">
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">CADL Escalation Hierarchy</div>
+<div class="gw-tier" style="border-color:rgba(255,45,85,.3)">
+<div class="gw-level" style="color:var(--red);border-color:var(--red)">L5</div>
+<div><div style="font-weight:700;color:var(--red)">NEUTRALIZE</div><div style="font-size:9px;color:var(--muted)">Automated session termination + AEGIS Kill-Switch execution</div></div>
+<div style="font-size:9px;color:var(--red)">SPEED-OF-LIGHT</div>
+</div>
+<div class="gw-tier" style="border-color:rgba(245,158,11,.3)">
+<div class="gw-level" style="color:var(--amber);border-color:var(--amber)">L4</div>
+<div><div style="font-weight:700;color:var(--amber)">DEGRADE</div><div style="font-size:9px;color:var(--muted)">Returning PQC-encrypted poisoned data to exhaust adversary compute</div></div>
+<div style="font-size:9px;color:var(--amber)">ACTIVE</div>
+</div>
+<div class="gw-tier" style="border-color:rgba(0,212,255,.3)">
+<div class="gw-level" style="color:var(--cyan);border-color:var(--cyan)">L3</div>
+<div><div style="font-weight:700;color:var(--cyan)">REROUTE</div><div style="font-size:9px;color:var(--muted)">Transparently moving adversary session to AETHER AI honeypot</div></div>
+<div style="font-size:9px;color:var(--cyan)">READY</div>
+</div>
+<div class="gw-tier" style="border-color:rgba(167,139,250,.3)">
+<div class="gw-level" style="color:var(--purple);border-color:var(--purple)">L2</div>
+<div><div style="font-weight:700;color:var(--purple)">DELAY</div><div style="font-size:9px;color:var(--muted)">Introduction of synthetic latencies to deter automated scanning</div></div>
+<div style="font-size:9px;color:var(--purple)">ACTIVE</div>
+</div>
+<div class="gw-tier" style="border-color:var(--dim)">
+<div class="gw-level" style="color:var(--green);border-color:var(--green)">L1</div>
+<div><div style="font-weight:700;color:var(--green)">MONITOR</div><div style="font-size:9px;color:var(--muted)">Passive collection of 'Digital Dust' — logging all lure interactions</div></div>
+<div style="font-size:9px;color:var(--green)">CONTINUOUS</div>
+</div>
+</div>
+</div>
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">WE-FORGE Watermark Status</div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Linguistic watermarking — SHA3-256 recipient hash</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Zero-width character embedding — binary watermark</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Document hash chain — SHA3-256 (HNDL-safe)</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">AETHER</span><span class="threat-text">AI honeypot decoys — VSAT, SSH, web shell lures</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">DECOY</span><span class="threat-text">Fake file shares with watermarked documents</span></div>
+</div>
+<div class="panel" style="margin-top:8px">
+<div class="panel-title">Israeli Aegis Cyber Equivalent</div>
+<table style="width:100%;font-size:10px;border-collapse:collapse">
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:4px;color:var(--muted)">Arrow 3</td><td>PQC-Hardened Master Vault</td><td style="color:var(--green)">Exo-atmospheric</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:4px;color:var(--muted)">David's Sling</td><td>Palantir Ontological Fusion</td><td style="color:var(--cyan)">High-altitude</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:4px;color:var(--muted)">Iron Dome</td><td>CADL Deception Layer</td><td style="color:var(--amber)">Short-range</td></tr>
+<tr><td style="padding:4px;color:var(--muted)">Iron Beam</td><td>Automated Kill-Switch</td><td style="color:var(--red)">Terminal</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- VSAT/AEGIS -->
+<div class="section" id="vsat">
+<div class="grid">
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">Ground Segment Sweep — 192.168.100.1/24</div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Telnet (Port 23) OPEN — cleartext credentials</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">FTP Anonymous Write (Port 21) — Both hosts</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">HTTP Admin Panel (Port 80) — Both hosts</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">CVE-2026-3392 TR-069 CWMP unsigned provisioning</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Unsigned firmware accepted — partition overwrite</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">UART/JTAG unauthenticated — registers readable</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">SNR 5.9 dB / Skew +55.1 Hz — RF Link</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">QKD BB84 QBER 40% — eavesdropper detected</span></div>
+</div>
+</div>
+<div class="col-6">
+<div class="panel">
+<div class="panel-title">CWMP Hardening Status (CVE-2026-3392)</div>
+<div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">ACS IP Allowlist — not configured</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">Mutual TLS — not enforced</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">Firmware signature verification — disabled</span></div>
+<div class="threat-item"><span class="threat-sev sev-high">OPEN</span><span class="threat-text">Connection request auth — not set</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">OPEN</span><span class="threat-text">TR-369 USP migration — not capable</span></div>
+<div style="margin-top:8px;padding:8px;background:var(--surface2);border-radius:3px;font-size:10px">
+<div style="color:var(--green);margin-bottom:4px">▸ Sigma Rules Generated:</div>
+<div style="color:var(--muted)">• cwmp_rogue_acs.yml — T1190</div>
+<div style="color:var(--muted)">• cwmp_firmware_download.yml — T1542.001</div>
+<div style="color:var(--muted)">• telnet_cleartext.yml — T1040</div>
+<div style="color:var(--muted)">• ftp_anonymous.yml — T1190</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 313-BIND -->
+<div class="section" id="audit">
+<div class="grid">
+<div class="col-12">
+<div class="panel">
+<div class="panel-title">313 Temporal Binding Protocol — Receipt Chain Status</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+<div class="kpi"><div class="kpi-num green">SLH-DSA</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">FIPS 205 pyspx</div></div>
+<div class="kpi"><div class="kpi-num green">SHA3-512</div><div class="kpi-lbl">Chain Hash</div><div class="kpi-sub">Quantum-safe</div></div>
+<div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Timestamp</div><div class="kpi-sub">Nanosecond entropy</div></div>
+<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">HybridAnchor active</div></div>
+</div>
+<div class="panel-title">Anchor Strategy Comparison</div>
+<table style="width:100%;font-size:10px;border-collapse:collapse">
+<thead><tr style="color:var(--muted);font-size:9px;text-transform:uppercase">
+<th style="padding:5px;text-align:left">Strategy</th><th>Always Available</th><th>Offline</th><th>Quantum-Safe</th><th>Self-Contained</th><th>CMMC</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;font-weight:700">HybridAnchor ⭐</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">Partial</td><td style="color:var(--green)">BEST</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">MultiHashAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅ Full</td><td style="color:var(--cyan)">STRONG</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">LedgerAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--cyan)">STRONG</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">IPFS (current)</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--amber)">MEDIUM</td></tr>
+<tr><td style="padding:5px">RFC3161Anchor</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--amber)">No</td><td style="color:var(--cyan)">LEGAL</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- TERMINAL -->
+<div class="section" id="terminal">
+<div class="grid">
+<div class="col-12">
+<div class="panel">
+<div class="panel-title">Shadow313 NEXUS Terminal</div>
+<div class="terminal" id="term-output">
+<div class="t-green">Shadow313 NEXUS v4 — Cyber Operations Terminal</div>
+<div class="t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+<div class="t-green">[BOOT] Shadow313 NEXUS v4.0.0 initialized</div>
+<div class="t-green">[AUTH] Operator: mohamad — Ottawa, ON, Canada</div>
+<div class="t-green">[LINK] Establishing mesh connection to Orbital Stack...</div>
+<div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
+<div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
+<div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
+<div class="t-green">[TEST] 2,071/2,071 tests passing — zero regressions</div>
+<div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
+<div class="t-green">[CRQC] 12/14 items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
+<div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
+<div class="t-amber">[VSAT] CVE-2026-3392 TR-069 CWMP — VULNERABLE</div>
+<div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — ACTIVE</div>
+<div class="t-green">[313]  Temporal binding chain — INTACT</div>
+<div class="t-green">[CMMC] Wave 1 documentation — COMPLETE</div>
+<div class="t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+<div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<input id="term-input" onkeydown="if(event.key==='Enter')runCmd()" placeholder="Enter command..." style="flex:1;background:#000;border:1px solid var(--dim);color:var(--green);
+                 padding:6px 10px;font-family:monospace;font-size:11px;border-radius:3px;outline:none" type="text"/>
+<button onclick="runCmd()" style="background:rgba(0,255,136,.1);border:1px solid var(--green);color:var(--green);
+                 padding:6px 14px;font-family:monospace;font-size:11px;cursor:pointer;border-radius:3px">
+          EXEC
+        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+// Clock
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=
+    now.toUTCString().split(' ')[4]+' UTC';
+}
+setInterval(updateClock,1000);updateClock();
+
+// Navigation
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Terminal
+const COMMANDS={
+  'help':'Available: status, tests, crqc, pqc, vsat, cmmc, clear',
+  'status':'[GREEN] Posture: CRIT=0 HIGH=0 | Tests: 2071/2071 | CRQC: 12/14 closed',
+  'tests':'[PASS] 2,071/2,071 tests passing — zero regressions — posture GREEN',
+  'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
+  'pqc':'SLH-DSA-SHAKE-128f (FIPS 205) | ML-DSA-65 proxy | ML-KEM-768 | AES-256-GCM | Argon2id | SHA3-256/512',
+  'vsat':'7 CRITICAL findings: Telnet/FTP/HTTP/CVE-2026-3392/Firmware/UART/QKD-QBER-40%',
+  'cmmc':'Wave 1 DONE: AT-Policy ✅ AT-Records ✅ PS-Policy ✅ PS-AUA ✅ IR-Plan ✅ CA-Readiness ✅',
+  'clear':'__CLEAR__',
+};
+
+function runCmd(){
+  const input=document.getElementById('term-input');
+  const cmd=input.value.trim().toLowerCase();
+  const term=document.getElementById('term-output');
+  if(!cmd)return;
+  
+  const prompt=`<div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="t-white">${cmd}</span></div>`;
+  
+  if(COMMANDS[cmd]==='__CLEAR__'){
+    term.innerHTML='<div class="t-green">Terminal cleared.</div><div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>';
+  } else {
+    const response=COMMANDS[cmd]||`Command not found: ${cmd}. Type 'help' for available commands.`;
+    const color=response.includes('[GREEN]')||response.includes('✅')?'t-green':
+                response.includes('CRITICAL')||response.includes('FAIL')?'t-red':'t-cyan';
+    const lastLine=term.lastElementChild;
+    if(lastLine)lastLine.remove();
+    term.innerHTML+=prompt+`<div class="${color}">${response}</div>`+
+      '<div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>';
+  }
+  term.scrollTop=term.scrollHeight;
+  input.value='';
+}
+</script>
+</body>
+</html>

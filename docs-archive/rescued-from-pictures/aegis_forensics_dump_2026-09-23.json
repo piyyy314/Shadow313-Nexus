@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "suite": "Aegis Unified Security Suite",
+    "version": "v2.5.0-Enterprise",
+    "exported_by": "baalbek.313@gmail.com",
+    "compiled_timestamp_utc": "2026-06-07T11:01:47Z",
+    "system_time": "2026-09-23T04:19:36.795Z",
+    "threat_posture_configured": "HIGH",
+    "uncompromising_defense_active": true
+  },
+  "current_tool_viewing": "ai-coprocessor",
+  "real_time_statistics": {
+    "active_mitigations_count": 0,
+    "shannon_entropy_bytes_scanned": 0,
+    "shannon_entropy_peak_score": 0,
+    "active_binary_selection": "svchost.exe",
+    "diffie_hellman_handshake_prime": "997",
+    "diffie_hellman_handshake_generator": "5",
+    "derived_ephemeral_key": "NO_ACTIVE_NEGOTIATION"
+  },
+  "ast_static_scan": {
+    "checked_source_module_length": 565,
+    "ast_heuristics_vulnerability_matches": []
+  },
+  "signature_matching_ledger": {
+    "raw_hex_input_length_bytes": 21,
+    "untrusted_hex_dump": "1a 2c 3d 4f a5 b8 55 50 58 30 7e 8a // Header starts...\n90 00 03 00 00 00 00 00 e3 c1\nc8 00 f2 ff a1 // UPX signature pattern triggers!\n55 50 58 31 22 a0 b4 f3 a8 // Embedded unpack signature block",
+    "malicious_signature_detections": []
+  },
+  "ebpf_kernel_execution_logs": []
+}

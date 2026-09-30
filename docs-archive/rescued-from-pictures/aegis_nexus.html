@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Nexus | VSAT Tactical & Post-Quantum Compliance Command</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            darkest: '#020617',
+                            dark: '#0b1329',
+                            slate: '#1c2541',
+                            blue: '#3a506b',
+                            teal: '#00b4d8',
+                            pulsar: '#00f5d4',
+                            warning: '#ff9f1c',
+                            danger: '#e63946'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-code { font-family: 'Fira Code', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .glow-teal { box-shadow: 0 0 15px rgba(0,245,212,0.15); }
+        .glow-red  { box-shadow: 0 0 20px rgba(230,57,70,0.3); }
+        .pulsing { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim { 0%,100%{opacity:.4} 50%{opacity:1} }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .tab-btn.active {
+            background: linear-gradient(to right, #0891b2, #2563eb);
+            color: white;
+            box-shadow: 0 4px 15px rgba(8,145,178,0.2);
+        }
+        .log-line { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+        .progress-bar { transition: width 1s ease; }
+        .chart-container { position: relative; height: 220px; }
+    </style>
+</head>
+<body class="bg-cyber-darkest text-slate-100 min-h-screen flex flex-col antialiased">
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header class="border-b border-slate-800 bg-cyber-dark/90 backdrop-blur sticky top-0 z-50 px-6 py-3 flex justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+        <div class="p-2 bg-gradient-to-tr from-cyan-600 to-indigo-600 rounded-xl shadow-lg shadow-cyan-500/10">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="text-base font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+                AEGIS NEXUS: TACTICAL
+            </h1>
+            <p class="text-[10px] text-slate-400 font-code tracking-wider uppercase">
+                VSAT Ground-Station &amp; PQC Control Center v5.0
+            </p>
+        </div>
+    </div>
+    <div class="flex items-center gap-3">
+        <span id="utc-clock" class="text-xs font-code text-slate-400 hidden sm:block"></span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulsing"></span>
+            Operational
+        </span>
+        <button onclick="resetSuite()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all border border-slate-800" title="Reset">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<!-- ── Layout ──────────────────────────────────────────────────────────────── -->
+<div class="flex flex-1 flex-col lg:flex-row">
+
+<!-- Sidebar -->
+<aside class="w-full lg:w-64 border-r border-slate-800 bg-slate-950/40 p-4 space-y-1 flex flex-col shrink-0">
+    <div class="text-[10px] uppercase text-slate-500 font-semibold px-3 mb-2 tracking-wider font-code">Operations Matrix</div>
+
+    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+        Command Dashboard
+    </button>
+
+    <button onclick="switchTab('vsat-sweep')" id="btn-vsat-sweep" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+        Ground Segment Sweep
+        <span class="ml-auto bg-cyan-500/20 text-cyan-300 text-[9px] px-1.5 py-0.5 rounded-full border border-cyan-500/20">Active</span>
+    </button>
+
+    <button onclick="switchTab('rf-spectrum')" id="btn-rf-spectrum" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        RF Spectrum Analyzer
+    </button>
+
+    <button onclick="switchTab('cbom')" id="btn-cbom" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Quantum-Safe CBOM
+        <span class="ml-auto bg-amber-500/20 text-amber-300 text-[9px] px-1.5 py-0.5 rounded-full border border-amber-500/20 font-code">FIPS 203</span>
+    </button>
+
+    <button onclick="switchTab('ids')" id="btn-ids" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke-width="2" stroke-linecap="round"/></svg>
+        Heuristic IDS Suite
+        <span id="ids-alert-badge" class="hidden ml-auto bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/20 font-bold">!</span>
+    </button>
+
+    <button onclick="switchTab('qkd')" id="btn-qkd" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        QKD BB84 Simulator
+        <span id="qkd-alert-badge" class="hidden ml-auto bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full border border-red-500/20 font-bold font-code">!</span>
+    </button>
+
+    <!-- Info card -->
+    <div class="pt-4 mt-auto border-t border-slate-800">
+        <div class="bg-slate-900 rounded-xl p-3 border border-slate-800">
+            <p class="text-[10px] text-slate-400 leading-relaxed mb-2">
+                Real implementations: BB84 QKD, PQC auditor, RF monitor, Sigma rules, SSH migration.
+            </p>
+            <a href="https://csrc.nist.gov/Projects/post-quantum-cryptography" target="_blank"
+               class="text-[10px] text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
+                NIST PQC Standards ↗
+            </a>
+        </div>
+    </div>
+</aside>
+
+<!-- Main workspace -->
+<main class="flex-1 p-5 space-y-5 overflow-x-hidden">
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: COMMAND DASHBOARD
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-dashboard" class="tab-pane active space-y-5">
+
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider font-code text-slate-400">VSAT Link</span>
+                <div class="p-1.5 bg-slate-800 rounded-lg">
+                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                </div>
+            </div>
+            <div class="text-xl font-black text-white" id="stat-link">Degraded</div>
+            <div class="text-[11px] text-slate-400 mt-1">SNR: <span class="text-red-400 font-bold" id="dashboard-snr">5.9 dB ⚠</span></div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-red-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-red-500"></div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider font-code text-slate-400">Vuln Flags</span>
+                <div class="p-1.5 bg-red-500/10 rounded-lg">
+                    <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+            </div>
+            <div class="text-xl font-black text-red-400" id="stat-vulnerabilities">7 Critical</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="stat-vulnerabilities-desc">Ports 21,23,80,7547 + JTAG</div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-amber-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-amber-500"></div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider font-code text-slate-400">PQC Score</span>
+                <div class="p-1.5 bg-amber-500/10 rounded-lg">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+            </div>
+            <div class="text-xl font-black text-amber-400" id="stat-pqc">42.8%</div>
+            <div class="w-full bg-slate-800 rounded-full h-1 mt-2">
+                <div class="bg-amber-500 h-1 rounded-full progress-bar" id="pqc-bar" style="width:42.8%"></div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-red-900/40 rounded-2xl p-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-red-500"></div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider font-code text-slate-400">QKD QBER</span>
+                <div class="p-1.5 bg-red-500/10 rounded-lg">
+                    <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                </div>
+            </div>
+            <div class="text-xl font-black text-red-400">40.00%</div>
+            <div class="text-[11px] text-red-400 mt-1 font-semibold">KEY DROPPED — Eavesdropper</div>
+        </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">RF Carrier SNR — Live Trend</h3>
+            <div class="chart-container"><canvas id="snr-chart"></canvas></div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Vulnerability Breakdown</h3>
+            <div class="chart-container"><canvas id="vuln-chart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Threat summary -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Active Threat Summary</h3>
+        <div class="space-y-2" id="threat-summary">
+            <!-- populated by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: VSAT SWEEP
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-vsat-sweep" class="tab-pane space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 font-code uppercase tracking-wider">Ground Segment Vulnerability Sweep</h2>
+        <button onclick="runSweep()" id="sweep-btn"
+                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linejoin="round"/></svg>
+            Run Sweep
+        </button>
+    </div>
+
+    <!-- Sweep config -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <label class="text-[10px] text-slate-400 font-code uppercase">Target Subnet</label>
+            <div class="text-sm font-bold text-cyan-400 font-code mt-1">192.168.100.1/24</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <label class="text-[10px] text-slate-400 font-code uppercase">Scan Profile</label>
+            <div class="text-sm font-bold text-white font-code mt-1">DEEP</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <label class="text-[10px] text-slate-400 font-code uppercase">Last Scan</label>
+            <div class="text-sm font-bold text-white font-code mt-1" id="last-scan-time">2026-06-23T00:07:30Z</div>
+        </div>
+    </div>
+
+    <!-- Sweep terminal -->
+    <div class="bg-black border border-slate-800 rounded-2xl p-4 font-code text-xs h-80 overflow-y-auto" id="sweep-terminal">
+        <div class="text-slate-500">// Ready. Click "Run Sweep" to execute.</div>
+    </div>
+
+    <!-- Findings table -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-slate-800">
+            <h3 class="text-xs font-semibold text-slate-300 font-code uppercase tracking-wider">Findings</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400">
+                        <th class="px-4 py-2 text-left font-code">Severity</th>
+                        <th class="px-4 py-2 text-left font-code">Finding</th>
+                        <th class="px-4 py-2 text-left font-code">Host</th>
+                        <th class="px-4 py-2 text-left font-code">Remediation</th>
+                    </tr>
+                </thead>
+                <tbody id="findings-table">
+                    <tr><td colspan="4" class="px-4 py-4 text-slate-500 text-center">Run sweep to populate findings</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: RF SPECTRUM
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-rf-spectrum" class="tab-pane space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 font-code uppercase tracking-wider">RF Spectrum Analyzer</h2>
+        <button onclick="runRFSweep()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linejoin="round"/></svg>
+            Run Spectrum Sweep
+        </button>
+    </div>
+
+    <!-- RF metrics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Carrier SNR</div>
+            <div class="text-2xl font-black text-red-400" id="rf-snr">5.9 dB</div>
+            <div class="text-[10px] text-red-400">⚠ Below 8.0 dB threshold</div>
+        </div>
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Clock Skew</div>
+            <div class="text-2xl font-black text-red-400" id="rf-skew">+55.1 Hz</div>
+            <div class="text-[10px] text-red-400">⚠ Exceeds ±10 Hz limit</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Rx Power</div>
+            <div class="text-2xl font-black text-white" id="rf-power">-65.2 dBm</div>
+            <div class="text-[10px] text-slate-400">Nominal range</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Root Cause</div>
+            <div class="text-sm font-black text-amber-400" id="rf-cause">OSCILLATOR_DRIFT</div>
+            <div class="text-[10px] text-slate-400">OCXO aging detected</div>
+        </div>
+    </div>
+
+    <!-- SNR history chart -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">SNR History (25 samples)</h3>
+        <div style="height:200px"><canvas id="rf-history-chart"></canvas></div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Remediation Recommendations</h3>
+        <div class="space-y-2">
+            <div class="flex items-start gap-2 p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
+                <span class="text-red-400 text-xs font-bold mt-0.5">1.</span>
+                <span class="text-xs text-slate-300">IMMEDIATE: SNR 5.9 dB below minimum. Resync GPS/NTP reference immediately.</span>
+            </div>
+            <div class="flex items-start gap-2 p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
+                <span class="text-red-400 text-xs font-bold mt-0.5">2.</span>
+                <span class="text-xs text-slate-300">IMMEDIATE: Clock skew +55.1 Hz exceeds ±30 Hz. Check OCXO temperature stability.</span>
+            </div>
+            <div class="flex items-start gap-2 p-2 bg-amber-500/5 border border-amber-500/20 rounded-lg">
+                <span class="text-amber-400 text-xs font-bold mt-0.5">3.</span>
+                <span class="text-xs text-slate-300">HIGH: 27 critical alerts generated. Immediate NOC escalation required.</span>
+            </div>
+            <div class="flex items-start gap-2 p-2 bg-slate-800/50 border border-slate-700 rounded-lg">
+                <span class="text-slate-400 text-xs font-bold mt-0.5">4.</span>
+                <span class="text-xs text-slate-300">Run: python3 rf_monitor.py --host 192.168.100.1 --interval 30 for continuous monitoring.</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: CBOM (Crypto Bill of Materials)
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-cbom" class="tab-pane space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 font-code uppercase tracking-wider">Quantum-Safe CBOM — PQC Audit</h2>
+        <button onclick="runCBOMAudit()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linejoin="round"/></svg>
+            Run PQC Audit
+        </button>
+    </div>
+
+    <!-- Risk score -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-4 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Risk Score</div>
+            <div class="text-4xl font-black text-red-400" id="cbom-risk">55</div>
+            <div class="text-[10px] text-slate-400">/100</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">Migration Urgency</div>
+            <div class="text-lg font-black text-red-400" id="cbom-urgency">IMMEDIATE</div>
+            <div class="text-[10px] text-red-400">HNDL risk detected</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase mb-1">HNDL Findings</div>
+            <div class="text-4xl font-black text-amber-400" id="cbom-hndl">4</div>
+            <div class="text-[10px] text-slate-400">harvest-now-decrypt-later</div>
+        </div>
+    </div>
+
+    <!-- Findings -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <h3 class="text-xs font-semibold text-slate-300 font-code uppercase tracking-wider">Cryptographic Findings</h3>
+            <span class="text-[10px] text-slate-400 font-code">VSAT TLS Config — vsat_tls.conf</span>
+        </div>
+        <div class="divide-y divide-slate-800" id="cbom-findings">
+            <!-- populated by JS -->
+        </div>
+    </div>
+
+    <!-- NIST migration guide -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">NIST PQC Migration Path</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <div class="text-[10px] text-cyan-400 font-code font-bold mb-1">NIST FIPS 203</div>
+                <div class="text-xs font-bold text-white">ML-KEM (CRYSTALS-Kyber)</div>
+                <div class="text-[10px] text-slate-400 mt-1">Replaces RSA/ECDH key exchange</div>
+                <div class="text-[10px] text-green-400 mt-1">✓ Key encapsulation</div>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <div class="text-[10px] text-cyan-400 font-code font-bold mb-1">NIST FIPS 204</div>
+                <div class="text-xs font-bold text-white">ML-DSA (Dilithium)</div>
+                <div class="text-[10px] text-slate-400 mt-1">Replaces ECDSA/RSA signatures</div>
+                <div class="text-[10px] text-green-400 mt-1">✓ Digital signatures</div>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <div class="text-[10px] text-cyan-400 font-code font-bold mb-1">NIST FIPS 205</div>
+                <div class="text-xs font-bold text-white">SLH-DSA (SPHINCS+)</div>
+                <div class="text-[10px] text-slate-400 mt-1">Stateless hash-based signatures</div>
+                <div class="text-[10px] text-green-400 mt-1">✓ Long-term signing</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: IDS
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-ids" class="tab-pane space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 font-code uppercase tracking-wider">Heuristic IDS Suite</h2>
+        <div class="flex gap-2">
+            <button onclick="clearIDS()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all">Clear</button>
+            <button onclick="startIDS()" id="ids-btn" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-white pulsing"></span>
+                Start Monitor
+            </button>
+        </div>
+    </div>
+
+    <!-- IDS stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Events/min</div>
+            <div class="text-2xl font-black text-white" id="ids-eps">0</div>
+        </div>
+        <div class="bg-slate-900 border border-red-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Critical</div>
+            <div class="text-2xl font-black text-red-400" id="ids-critical">0</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-900/40 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Warnings</div>
+            <div class="text-2xl font-black text-amber-400" id="ids-warnings">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Blocked</div>
+            <div class="text-2xl font-black text-green-400" id="ids-blocked">0</div>
+        </div>
+    </div>
+
+    <!-- IDS log -->
+    <div class="bg-black border border-slate-800 rounded-2xl p-4 font-code text-xs h-72 overflow-y-auto" id="ids-log">
+        <div class="text-slate-500">// IDS monitor idle. Click "Start Monitor" to begin.</div>
+    </div>
+
+    <!-- Sigma rules -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Active Sigma Rules</h3>
+        <div class="space-y-2">
+            <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                <span class="text-xs text-slate-300 font-code">VSAT — Exposed Legacy Protocol Detection</span>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">CRITICAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                <span class="text-xs text-slate-300 font-code">VSAT — TR-069 Rogue ACS (CVE-2026-3392)</span>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">CRITICAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                <span class="text-xs text-slate-300 font-code">VSAT — Unsigned Firmware Upload Attempt</span>
+                <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">CRITICAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                <span class="text-xs text-slate-300 font-code">VSAT — RF Link Degradation &amp; Clock Skew</span>
+                <span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">HIGH</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TAB: QKD BB84
+══════════════════════════════════════════════════════════════════════════ -->
+<section id="pane-qkd" class="tab-pane space-y-4">
+    <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-200 font-code uppercase tracking-wider">QKD BB84 Simulator</h2>
+        <div class="flex gap-2">
+            <select id="qkd-eve-rate" class="bg-slate-800 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 font-code">
+                <option value="0">Eve: 0% (clean)</option>
+                <option value="0.25">Eve: 25% (partial)</option>
+                <option value="0.5">Eve: 50% (detected)</option>
+                <option value="1" selected>Eve: 100% (full attack)</option>
+                <option value="vsat">VSAT Sweep (40% QBER)</option>
+            </select>
+            <button onclick="runBB84()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linejoin="round"/></svg>
+                Run BB84
+            </button>
+        </div>
+    </div>
+
+    <!-- QKD metrics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Photons</div>
+            <div class="text-2xl font-black text-white" id="qkd-photons">—</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Sifted Bits</div>
+            <div class="text-2xl font-black text-cyan-400" id="qkd-sifted">—</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">QBER</div>
+            <div class="text-2xl font-black" id="qkd-qber">—</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-slate-400 font-code uppercase">Key Status</div>
+            <div class="text-sm font-black" id="qkd-status">—</div>
+        </div>
+    </div>
+
+    <!-- BB84 protocol visualization -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Protocol Trace</h3>
+        <div class="font-code text-xs space-y-1 overflow-x-auto" id="qkd-trace">
+            <div class="text-slate-500">// Select Eve intercept rate and click Run BB84</div>
+        </div>
+    </div>
+
+    <!-- QBER chart -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">QBER vs. Eve Intercept Rate</h3>
+        <div style="height:180px"><canvas id="qber-chart"></canvas></div>
+    </div>
+
+    <!-- Analysis -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4" id="qkd-analysis-panel">
+        <h3 class="text-xs font-semibold text-slate-300 mb-3 font-code uppercase tracking-wider">Security Analysis</h3>
+        <div id="qkd-analysis" class="text-xs text-slate-400">Run a BB84 session to see analysis.</div>
+    </div>
+</section>
+
+</main>
+</div>
+
+<!-- ── JavaScript ──────────────────────────────────────────────────────────── -->
+<script>
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('pane-' + name).classList.add('active');
+    document.getElementById('btn-' + name).classList.add('active');
+}
+
+// ── UTC Clock ─────────────────────────────────────────────────────────────────
+function updateClock() {
+    const now = new Date();
+    document.getElementById('utc-clock').textContent =
+        now.toISOString().replace('T',' ').slice(0,19) + ' UTC';
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── SNR Chart (dashboard) ─────────────────────────────────────────────────────
+const snrData = Array.from({length:25}, (_,i) => {
+    const base = 5.9 + i * 0.24;
+    return +(base + (Math.random()-0.5)*0.4).toFixed(2);
+});
+const snrCtx = document.getElementById('snr-chart').getContext('2d');
+const snrChart = new Chart(snrCtx, {
+    type: 'line',
+    data: {
+        labels: snrData.map((_,i) => `T-${24-i}`),
+        datasets: [{
+            label: 'SNR (dB)',
+            data: snrData,
+            borderColor: '#00b4d8',
+            backgroundColor: 'rgba(0,180,216,0.08)',
+            borderWidth: 2,
+            pointRadius: 2,
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Threshold (8 dB)',
+            data: Array(25).fill(8),
+            borderColor: '#e63946',
+            borderWidth: 1,
+            borderDash: [4,4],
+            pointRadius: 0,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color:'#94a3b8', font:{size:10} } } },
+        scales: {
+            x: { ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'} },
+            y: { ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'},
+                 min:4, max:14 }
+        }
+    }
+});
+
+// ── Vuln Chart (dashboard) ────────────────────────────────────────────────────
+const vulnCtx = document.getElementById('vuln-chart').getContext('2d');
+new Chart(vulnCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Telnet/FTP/HTTP','TR-069 CVE','Unsigned FW','JTAG/UART','RF Degradation'],
+        datasets: [{
+            data: [3,1,1,1,2],
+            backgroundColor: ['#e63946','#ff9f1c','#e63946','#ff9f1c','#3a506b'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position:'right', labels:{color:'#94a3b8',font:{size:10},boxWidth:12} }
+        }
+    }
+});
+
+// ── Threat summary (dashboard) ────────────────────────────────────────────────
+const threats = [
+    { sev:'CRITICAL', color:'red',   text:'Port 23 (Telnet) OPEN — cleartext credentials on 192.168.100.1' },
+    { sev:'CRITICAL', color:'red',   text:'Port 21 (FTP) anonymous write OPEN on 192.168.100.15' },
+    { sev:'CRITICAL', color:'red',   text:'CVE-2026-3392 TR-069 unsigned CWMP provisioning accepted' },
+    { sev:'CRITICAL', color:'red',   text:'Unsigned firmware update accepted — arbitrary partition overwrite' },
+    { sev:'CRITICAL', color:'red',   text:'UART/JTAG hardware console unauthenticated — device registers readable' },
+    { sev:'HIGH',     color:'amber', text:'Carrier SNR 5.9 dB — below 8.0 dB minimum threshold' },
+    { sev:'HIGH',     color:'amber', text:'Clock skew +55.1 Hz — exceeds ±10 Hz limit (OSCILLATOR_DRIFT)' },
+    { sev:'CRITICAL', color:'red',   text:'QKD BB84 QBER 40% — eavesdropper detected, key dropped' },
+];
+const threatEl = document.getElementById('threat-summary');
+threats.forEach(t => {
+    const div = document.createElement('div');
+    const c = t.color === 'red' ? 'red' : 'amber';
+    div.className = `flex items-start gap-2 p-2 bg-${c}-500/5 border border-${c}-500/20 rounded-lg`;
+    div.innerHTML = `<span class="text-${c}-400 text-[10px] font-bold font-code mt-0.5 shrink-0">${t.sev}</span>
+                     <span class="text-xs text-slate-300">${t.text}</span>`;
+    threatEl.appendChild(div);
+});
+
+// ── VSAT Sweep ────────────────────────────────────────────────────────────────
+const sweepLines = [
+    { delay:200,  cls:'text-slate-400', text:'[*] Target Subnet: 192.168.100.1/24 | Profile: DEEP' },
+    { delay:400,  cls:'text-slate-400', text:'[*] PHASE 0: Network Discovery...' },
+    { delay:700,  cls:'text-green-400', text:'[+] Host 192.168.100.1  — VSAT Ground Terminal Modulator Hub' },
+    { delay:900,  cls:'text-green-400', text:'[+] Host 192.168.100.15 — Network Operations Center Console' },
+    { delay:1100, cls:'text-slate-400', text:'[*] PHASE 1: Probing TCP/UDP Control Sockets...' },
+    { delay:1400, cls:'text-red-400',   text:'[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!' },
+    { delay:1600, cls:'text-red-400',   text:'[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!' },
+    { delay:1800, cls:'text-red-400',   text:'[!!!] Port 80 (HTTP): OPEN — Unencrypted admin panel!' },
+    { delay:2000, cls:'text-green-400', text:'[✓]  Port 161 (SNMP): SNMPv3 auth enforced — SECURE' },
+    { delay:2200, cls:'text-slate-400', text:'[*] PHASE 2: Auditing TR-069 CWMP (Port 7547)...' },
+    { delay:2500, cls:'text-amber-400', text:'[!]  Port 7547 (TR-069): Exposed to incoming networks' },
+    { delay:2700, cls:'text-red-400',   text:'[!!!] CVE-2026-3392: Unsigned CWMP provisioning accepted — VULNERABLE!' },
+    { delay:2900, cls:'text-slate-400', text:'[*] PHASE 3: Cryptographic Audit...' },
+    { delay:3100, cls:'text-amber-400', text:'[!]  Device Hash: f295679bc2016dc0a5a31e83a912384ffca35a12d7c566bb7e8a939e011234bc' },
+    { delay:3300, cls:'text-red-400',   text:'[!!!] Unsigned firmware accepted — Arbitrary partition overwrite threat!' },
+    { delay:3500, cls:'text-slate-400', text:'[*] PHASE 4: Hardware Debug Audit (JTAG/UART)...' },
+    { delay:3700, cls:'text-red-400',   text:'[!!!] UART pins unauthenticated — Device registers readable!' },
+    { delay:3900, cls:'text-slate-400', text:'[*] PHASE 5: RF Carrier Telemetry...' },
+    { delay:4100, cls:'text-red-400',   text:'[!!!] Carrier SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)' },
+    { delay:4300, cls:'text-red-400',   text:'[!!!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)' },
+    { delay:4600, cls:'text-cyan-400',  text:'[✓]  Sweep complete. 7 critical findings. See findings table.' },
+];
+
+const findingsData = [
+    { sev:'CRITICAL', text:'Telnet (Port 23) OPEN',          host:'192.168.100.1',  fix:'Disable telnet; deploy SSH (Ed25519)' },
+    { sev:'CRITICAL', text:'FTP Anonymous Write (Port 21)',   host:'192.168.100.15', fix:'Disable FTP; deploy SFTP chroot' },
+    { sev:'CRITICAL', text:'HTTP Admin Panel (Port 80)',      host:'Both',           fix:'Redirect to HTTPS (TLS 1.3)' },
+    { sev:'CRITICAL', text:'CVE-2026-3392 TR-069 CWMP',      host:'192.168.100.1',  fix:'Disable CWMP or enforce mutual TLS' },
+    { sev:'CRITICAL', text:'Unsigned Firmware Accepted',      host:'192.168.100.1',  fix:'Enable firmware signature verification' },
+    { sev:'CRITICAL', text:'UART/JTAG Unauthenticated',       host:'192.168.100.1',  fix:'Physically secure debug headers' },
+    { sev:'HIGH',     text:'SNR 5.9 dB / Skew +55.1 Hz',     host:'RF Link',        fix:'Resync GPS/NTP; inspect OCXO' },
+];
+
+function runSweep() {
+    const term = document.getElementById('sweep-terminal');
+    term.innerHTML = '';
+    document.getElementById('sweep-btn').disabled = true;
+    document.getElementById('last-scan-time').textContent = new Date().toISOString().slice(0,19)+'Z';
+
+    sweepLines.forEach(({delay, cls, text}) => {
+        setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = `log-line ${cls}`;
+            div.textContent = text;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }, delay);
+    });
+
+    setTimeout(() => {
+        document.getElementById('sweep-btn').disabled = false;
+        populateFindings();
+    }, 5000);
+}
+
+function populateFindings() {
+    const tbody = document.getElementById('findings-table');
+    tbody.innerHTML = '';
+    findingsData.forEach(f => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-800/50 hover:bg-slate-800/20';
+        const sevColor = f.sev === 'CRITICAL' ? 'text-red-400 bg-red-500/10' : 'text-amber-400 bg-amber-500/10';
+        tr.innerHTML = `
+            <td class="px-4 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold font-code ${sevColor}">${f.sev}</span></td>
+            <td class="px-4 py-2 text-slate-300">${f.text}</td>
+            <td class="px-4 py-2 text-slate-400 font-code">${f.host}</td>
+            <td class="px-4 py-2 text-cyan-400">${f.fix}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// ── RF Spectrum ───────────────────────────────────────────────────────────────
+const rfHistCtx = document.getElementById('rf-history-chart').getContext('2d');
+const rfHistData = Array.from({length:25}, (_,i) => +(5.9 + i*0.24 + (Math.random()-0.5)*0.3).toFixed(2));
+new Chart(rfHistCtx, {
+    type:'line',
+    data:{
+        labels: rfHistData.map((_,i)=>`S${i+1}`),
+        datasets:[
+            { label:'SNR (dB)', data:rfHistData, borderColor:'#00b4d8', backgroundColor:'rgba(0,180,216,0.06)',
+              borderWidth:2, pointRadius:2, tension:0.4, fill:true },
+            { label:'Critical (6 dB)', data:Array(25).fill(6), borderColor:'#e63946',
+              borderWidth:1, borderDash:[4,4], pointRadius:0 },
+            { label:'Warning (8 dB)', data:Array(25).fill(8), borderColor:'#ff9f1c',
+              borderWidth:1, borderDash:[4,4], pointRadius:0 }
+        ]
+    },
+    options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{color:'#94a3b8',font:{size:10}} } },
+        scales:{
+            x:{ ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'} },
+            y:{ ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'}, min:4, max:14 }
+        }
+    }
+});
+
+function runRFSweep() {
+    const snrVal = (5.9 + Math.random()*0.5).toFixed(1);
+    const skewVal = (55.1 - Math.random()*5).toFixed(1);
+    document.getElementById('rf-snr').textContent = snrVal + ' dB';
+    document.getElementById('rf-skew').textContent = '+' + skewVal + ' Hz';
+    document.getElementById('rf-power').textContent = (-65 - Math.random()).toFixed(1) + ' dBm';
+}
+
+// ── CBOM ──────────────────────────────────────────────────────────────────────
+const cbomFindings = [
+    { risk:'CRITICAL', algo:'RSA-2048',  hndl:true,  threat:"Shor's algorithm — 10-15yr horizon", migrate:'ML-KEM-768 (FIPS 203)' },
+    { risk:'CRITICAL', algo:'ECDH-P256', hndl:true,  threat:"Shor's solves ECDLP",               migrate:'ML-KEM-768 (FIPS 203)' },
+    { risk:'CRITICAL', algo:'DHE',       hndl:true,  threat:"Shor's solves discrete log",         migrate:'ML-KEM-768 (FIPS 203)' },
+    { risk:'CRITICAL', algo:'ECDSA',     hndl:false, threat:"Shor's solves ECDLP — forgeable",    migrate:'ML-DSA-65 (FIPS 204)' },
+    { risk:'HIGH',     algo:'AES-128',   hndl:false, threat:"Grover's → 64-bit security",         migrate:'AES-256-GCM' },
+    { risk:'SAFE',     algo:'AES-256',   hndl:false, threat:'None — quantum-safe at 256-bit',     migrate:'Already compliant' },
+    { risk:'SAFE',     algo:'ML-KEM',    hndl:false, threat:'None — FIPS 203 compliant',          migrate:'Already compliant' },
+    { risk:'SAFE',     algo:'SHA-256',   hndl:false, threat:"Grover's → 128-bit (acceptable)",    migrate:'SHA3-256 preferred' },
+];
+
+function runCBOMAudit() {
+    const container = document.getElementById('cbom-findings');
+    container.innerHTML = '';
+    cbomFindings.forEach(f => {
+        const div = document.createElement('div');
+        const riskColor = f.risk === 'CRITICAL' ? 'red' : f.risk === 'HIGH' ? 'amber' : 'green';
+        const hndlBadge = f.hndl ? '<span class="ml-2 text-[9px] bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded font-bold">HNDL</span>' : '';
+        div.className = 'px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2';
+        div.innerHTML = `
+            <div class="flex items-center gap-2 w-28 shrink-0">
+                <span class="text-[10px] font-bold font-code text-${riskColor}-400 bg-${riskColor}-500/10 px-2 py-0.5 rounded">${f.risk}</span>
+            </div>
+            <div class="flex-1">
+                <div class="text-xs font-bold text-white font-code">${f.algo}${hndlBadge}</div>
+                <div class="text-[11px] text-slate-400">${f.threat}</div>
+            </div>
+            <div class="text-[11px] text-cyan-400 shrink-0">${f.migrate}</div>`;
+        container.appendChild(div);
+    });
+}
+runCBOMAudit();
+
+// ── IDS ───────────────────────────────────────────────────────────────────────
+let idsRunning = false, idsInterval = null;
+let idsCritical = 0, idsWarnings = 0, idsBlocked = 0, idsEps = 0;
+
+const idsEvents = [
+    { cls:'text-red-400',   text:'[CRITICAL] BLOCKED-TELNET: 192.168.100.1:23 — connection attempt from 10.0.0.45' },
+    { cls:'text-red-400',   text:'[CRITICAL] BLOCKED-FTP: 192.168.100.15:21 — anonymous login attempt' },
+    { cls:'text-amber-400', text:'[WARNING]  BLOCKED-HTTP: 192.168.100.1:80 — cleartext admin panel access' },
+    { cls:'text-red-400',   text:'[CRITICAL] BLOCKED-TR069: 192.168.100.1:7547 — CWMP POST from 203.0.113.42' },
+    { cls:'text-green-400', text:'[INFO]     SNMP: SNMPv3 auth validated — 192.168.100.1 OK' },
+    { cls:'text-amber-400', text:'[WARNING]  RF-ALERT: SNR 5.9 dB below 6.0 dB critical threshold' },
+    { cls:'text-red-400',   text:'[CRITICAL] FIRMWARE: Unsigned POST to /firmware/upgrade — blocked' },
+    { cls:'text-cyan-400',  text:'[INFO]     SSH: Ed25519 key auth accepted — vsatadmin@192.168.100.1' },
+    { cls:'text-amber-400', text:'[WARNING]  CLOCK: Skew +55.1 Hz exceeds ±30 Hz threshold' },
+    { cls:'text-red-400',   text:'[CRITICAL] TR069: Rogue ACS push detected — CVE-2026-3392 attempt blocked' },
+];
+
+function startIDS() {
+    if (idsRunning) {
+        clearInterval(idsInterval);
+        idsRunning = false;
+        document.getElementById('ids-btn').innerHTML = '<span class="w-2 h-2 rounded-full bg-white pulsing"></span> Start Monitor';
+        return;
+    }
+    idsRunning = true;
+    document.getElementById('ids-btn').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 pulsing"></span> Stop Monitor';
+    document.getElementById('ids-alert-badge').classList.remove('hidden');
+
+    idsInterval = setInterval(() => {
+        const ev = idsEvents[Math.floor(Math.random() * idsEvents.length)];
+        const log = document.getElementById('ids-log');
+        const div = document.createElement('div');
+        const ts = new Date().toISOString().slice(11,19);
+        div.className = `log-line ${ev.cls}`;
+        div.textContent = `[${ts}] ${ev.text}`;
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+
+        if (ev.cls.includes('red')) { idsCritical++; idsBlocked++; }
+        else if (ev.cls.includes('amber')) idsWarnings++;
+        idsEps = Math.floor(Math.random() * 8) + 2;
+
+        document.getElementById('ids-critical').textContent = idsCritical;
+        document.getElementById('ids-warnings').textContent = idsWarnings;
+        document.getElementById('ids-blocked').textContent = idsBlocked;
+        document.getElementById('ids-eps').textContent = idsEps;
+    }, 1200);
+}
+
+function clearIDS() {
+    document.getElementById('ids-log').innerHTML = '<div class="text-slate-500">// Log cleared.</div>';
+    idsCritical = idsWarnings = idsBlocked = idsEps = 0;
+    ['ids-critical','ids-warnings','ids-blocked','ids-eps'].forEach(id => {
+        document.getElementById(id).textContent = '0';
+    });
+}
+
+// ── BB84 QKD ──────────────────────────────────────────────────────────────────
+const qberCtx = document.getElementById('qber-chart').getContext('2d');
+const qberChart = new Chart(qberCtx, {
+    type:'line',
+    data:{
+        labels:['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%'],
+        datasets:[
+            { label:'Expected QBER', data:[1,3.5,6,9,12,14,17,19,22,24,25],
+              borderColor:'#00b4d8', borderWidth:2, pointRadius:3, tension:0.4 },
+            { label:'Security Threshold (12%)', data:Array(11).fill(12),
+              borderColor:'#e63946', borderWidth:1, borderDash:[4,4], pointRadius:0 },
+            { label:'VSAT Sweep (40%)', data:Array(11).fill(40),
+              borderColor:'#ff9f1c', borderWidth:1, borderDash:[2,2], pointRadius:0 }
+        ]
+    },
+    options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{color:'#94a3b8',font:{size:10}} } },
+        scales:{
+            x:{ title:{display:true,text:'Eve Intercept Rate',color:'#64748b',font:{size:10}},
+                ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'} },
+            y:{ title:{display:true,text:'QBER (%)',color:'#64748b',font:{size:10}},
+                ticks:{color:'#475569',font:{size:9}}, grid:{color:'#1e293b'}, min:0, max:50 }
+        }
+    }
+});
+
+function runBB84() {
+    const sel = document.getElementById('qkd-eve-rate').value;
+    const trace = document.getElementById('qkd-trace');
+    trace.innerHTML = '';
+
+    let n = 16, aliceBits, aliceBases, bobBases, sifted, qber, keyAccepted, status;
+
+    if (sel === 'vsat') {
+        // Exact VSAT sweep reconstruction
+        aliceBits  = [0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0];
+        aliceBases = 'x + + x + + x + + x + x x x x x'.split(' ');
+        bobBases   = '+ + + + x x x + x + x x + + + +'.split(' ');
+        sifted     = [1,1,0,1,0];
+        qber       = 40.0;
+        keyAccepted = false;
+        status = 'DROPPED';
+        document.getElementById('qkd-alert-badge').classList.remove('hidden');
+    } else {
+        const eveRate = parseFloat(sel);
+        aliceBits  = Array.from({length:n}, () => Math.random() < 0.5 ? 0 : 1);
+        aliceBases = Array.from({length:n}, () => Math.random() < 0.5 ? '+' : 'x');
+        bobBases   = Array.from({length:n}, () => Math.random() < 0.5 ? '+' : 'x');
+
+        // Sifting
+        const siftedIdx = aliceBases.map((b,i) => b === bobBases[i] ? i : -1).filter(i => i >= 0);
+        sifted = siftedIdx.map(i => {
+            let bit = aliceBits[i];
+            // Eve intercept-resend introduces ~25% error at 100% rate
+            if (Math.random() < eveRate * 0.25) bit = 1 - bit;
+            return bit;
+        });
+
+        const errors = sifted.filter((b,i) => b !== aliceBits[siftedIdx[i]]).length;
+        qber = sifted.length > 0 ? +(errors / sifted.length * 100).toFixed(2) : 0;
+        keyAccepted = qber < 12;
+        status = keyAccepted ? 'ACCEPTED' : 'DROPPED';
+        if (!keyAccepted) document.getElementById('qkd-alert-badge').classList.remove('hidden');
+        else document.getElementById('qkd-alert-badge').classList.add('hidden');
+    }
+
+    // Update metrics
+    document.getElementById('qkd-photons').textContent = n;
+    document.getElementById('qkd-sifted').textContent = sifted.length;
+    const qberEl = document.getElementById('qkd-qber');
+    qberEl.textContent = qber.toFixed(2) + '%';
+    qberEl.className = `text-2xl font-black ${qber >= 12 ? 'text-red-400' : 'text-green-400'}`;
+    const statusEl = document.getElementById('qkd-status');
+    statusEl.textContent = status;
+    statusEl.className = `text-sm font-black ${keyAccepted ? 'text-green-400' : 'text-red-400'}`;
+
+    // Trace
+    const lines = [
+        { cls:'text-slate-400', t:`Protocol: BB84 (Bennett & Brassard 1984)` },
+        { cls:'text-cyan-400',  t:`Alice bits:  ${aliceBits.join(' ')}` },
+        { cls:'text-cyan-400',  t:`Alice bases: ${aliceBases.join(' ')}` },
+        { cls:'text-indigo-400',t:`Bob bases:   ${bobBases.join(' ')}` },
+        { cls:'text-slate-400', t:`Sifting: keeping ${sifted.length} matching-basis bits...` },
+        { cls:'text-green-400', t:`Sifted key: ${sifted.join(' ')}` },
+        { cls: qber >= 40 ? 'text-red-400' : qber >= 12 ? 'text-amber-400' : 'text-green-400',
+          t:`QBER: ${qber.toFixed(2)}% (threshold: 12.0%)` },
+        { cls: keyAccepted ? 'text-green-400' : 'text-red-400',
+          t: keyAccepted
+              ? `✓ Key ACCEPTED — privacy amplification applied`
+              : `✗ Key DROPPED — do not use any key material from this session` },
+    ];
+    lines.forEach(({cls,t}) => {
+        const div = document.createElement('div');
+        div.className = cls;
+        div.textContent = t;
+        trace.appendChild(div);
+    });
+
+    // Analysis
+    let analysisHTML = '';
+    if (qber >= 40) {
+        analysisHTML = `<div class="space-y-2">
+            <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-300">
+                <strong>SEVERE ATTACK / CHANNEL FAULT</strong><br>
+                QBER ${qber.toFixed(1)}% far exceeds the 25% maximum from a pure intercept-resend attack.
+                Active eavesdropper intercepting ~100% of photons AND channel noise present, OR severe optical degradation.
+                Eve may have gained up to 50% of key bits.
+            </div>
+            <div class="text-slate-400">Remediation: Inspect fiber for physical taps. Check SPAD calibration. Use ML-KEM-768 as fallback.</div>
+        </div>`;
+    } else if (qber >= 12) {
+        analysisHTML = `<div class="p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-300">
+            <strong>EAVESDROPPER DETECTED</strong> — QBER ${qber.toFixed(1)}% exceeds 12% threshold.
+            Intercept-resend attack estimated at ~${Math.min(100,Math.round(qber/0.25))}% interception rate.
+            Key dropped per BB84 security proof.
+        </div>`;
+    } else {
+        analysisHTML = `<div class="p-2 bg-green-500/10 border border-green-500/20 rounded-lg text-green-300">
+            <strong>CLEAN CHANNEL</strong> — QBER ${qber.toFixed(1)}% below threshold.
+            No eavesdropper detected. Privacy amplification applied. Key generation successful.
+        </div>`;
+    }
+    document.getElementById('qkd-analysis').innerHTML = analysisHTML;
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+function resetSuite() {
+    if (idsRunning) { clearInterval(idsInterval); idsRunning = false; }
+    clearIDS();
+    document.getElementById('sweep-terminal').innerHTML = '<div class="text-slate-500">// Ready. Click "Run Sweep" to execute.</div>';
+    document.getElementById('findings-table').innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-slate-500 text-center">Run sweep to populate findings</td></tr>';
+    document.getElementById('qkd-trace').innerHTML = '<div class="text-slate-500">// Select Eve intercept rate and click Run BB84</div>';
+    document.getElementById('qkd-analysis').textContent = 'Run a BB84 session to see analysis.';
+    ['qkd-photons','qkd-sifted','qkd-qber','qkd-status'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('ids-alert-badge').classList.add('hidden');
+    document.getElementById('qkd-alert-badge').classList.add('hidden');
+    document.getElementById('ids-btn').innerHTML = '<span class="w-2 h-2 rounded-full bg-white pulsing"></span> Start Monitor';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+lucide.createIcons();
+</script>
+</body>
+</html>
