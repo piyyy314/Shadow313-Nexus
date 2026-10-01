@@ -1,76 +1,33 @@
-# Python
+# SHADOW313 NEXUS .gitignore
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-.eggs/
-*.egg
-
-# Virtual environments
+*.py[cod]
+*.so
 .venv/
 venv/
-env/
-ENV/
-
-# Testing
-.pytest_cache/
-.coverage
-coverage.xml
-htmlcov/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-*.log.*
-
-# Sensitive / local only
 .env
 .env.local
-*.backup
-*.v4backup
-uploaded_files/
-tmp/
-lost+found/
-shadow313_manifest.json
-nextgen_threat_report.json
-global_threat_simulation_report.json
-shadow313_attack_layer.json
-
-# Large files
-*.zip
-*.tar.gz
-*.gz
-
-# OS
+.env.production
+secrets.kdbx
+*.pem
+*.key
+id_rsa
+id_ed25519
+*harvester*
+*polymorphic*
+*offensive*
+ghost_c2*
+ghost_shell*
+*ignite_system*
+*phantom_dns*
+*stealth_pivot*
+*infinite_payload*
+*shroud_code*
+system_core_service*
+crypto_transfer*
+node_modules/
 .DS_Store
 Thumbs.db
-
-docs-archive/copilot-files/
-*.itdb*
-*.itl
-*.wal
-
-
-# Sensitive files - never commit
-docs-archive/rescued-from-pictures/crypto_*
-docs-archive/rescued-from-pictures/*harvester*
-docs-archive/rescued-from-pictures/*polymorphic*
-docs-archive/rescued-from-pictures/*offensive*
-docs-archive/rescued-from-pictures/ghost_c2*
-docs-archive/rescued-from-pictures/ghost_network*
-docs-archive/rescued-from-pictures/ghost_shell*
-docs-archive/rescued-from-pictures/*ignite*
-docs-archive/rescued-from-pictures/*phantom*
-docs-archive/rescued-from-pictures/*stealth_pivot*
-docs-archive/rescued-from-pictures/*infinite_payload*
-docs-archive/rescued-from-pictures/*shroud*
-docs-archive/rescued-from-pictures/system_core_service*
+*.log
+*.tmp
+docs-archive/rescued-from-pictures/
+local_bundle/
