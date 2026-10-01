@@ -1,186 +1,147 @@
 {
-  "name": "shadow313-nexus",
-  "version": 2,
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/docs/index.html"
-    },
-    {
-      "source": "/dashboard",
-      "destination": "/docs/shadow313-nexus-dashboard.html"
-    },
-    {
-      "source": "/dashboard-v3",
-      "destination": "/docs/S313-Nexus-Dashboard-v3.html"
-    },
-    {
-      "source": "/ssp",
-      "destination": "/docs/S313-SSP-Dashboard.html"
-    },
-    {
-      "source": "/architecture",
-      "destination": "/docs/shadow313-nexus-architecture.html"
-    },
-    {
-      "source": "/ai-stack",
-      "destination": "/docs/shadow313-ai-stack-map.html"
-    },
-    {
-      "source": "/threat-board",
-      "destination": "/docs/s313-threat-board.html"
-    },
-    {
-      "source": "/command-center",
-      "destination": "/docs/s313-command-center-v6.html"
-    },
-    {
-      "source": "/apt-simulation",
-      "destination": "/docs/s313-apt-simulation.html"
-    },
-    {
-      "source": "/aegis-nexus",
-      "destination": "/docs/aegis_nexus.html"
-    },
-    {
-      "source": "/vsat",
-      "destination": "/docs/vsat-tactical-suite.html"
-    },
-    {
-      "source": "/chronos",
-      "destination": "/docs/chronos-sentinel.html"
-    },
-    {
-      "source": "/tools",
-      "destination": "/tools/index.html"
-    },
-    {
-      "source": "/tools/aegis",
-      "destination": "/tools/aegis-nexus.html"
-    },
-    {
-      "source": "/tools/sovereign-shield",
-      "destination": "/tools/sovereign-shield.html"
-    },
-    {
-      "source": "/tools/vsat",
-      "destination": "/tools/vsat-tactical-suite.html"
-    },
-    {
-      "source": "/marketplace",
-      "destination": "/marketplace/index.html"
-    },
-    {
-      "source": "/analytics",
-      "destination": "/marketplace/analytics.html"
-    },
-    {
-      "source": "/analytics/live",
-      "destination": "/marketplace/analytics-live.html"
-    },
-    {
-      "source": "/marketplace/live",
-      "destination": "/marketplace/analytics-live.html"
-    },
-    {
-      "source": "/about",
-      "destination": "/about/index.html"
-    },
-    {
-      "source": "/coverage",
-      "destination": "/docs/coverage_matrix.html"
-    },
-    {
-      "source": "/pricing",
-      "destination": "/pricing/index.html"
-    },
-    {
-      "source": "/blog",
-      "destination": "/blog/index.html"
-    },
-    {
-      "source": "/blog/sha3-bypass",
-      "destination": "/blog/sha3-bypass.html"
-    },
-    {
-      "source": "/docs/install",
-      "destination": "/docs/install.html"
-    },
-    {
-      "source": "/docs/quickstart",
-      "destination": "/docs/quickstart.html"
-    },
-    {
-      "source": "/docs/api",
-      "destination": "/docs/api.html"
-    },
-    {
-      "source": "/docs/modules",
-      "destination": "/docs/modules.html"
-    },
-    {
-      "source": "/docs/pqc",
-      "destination": "/docs/pqc.html"
-    },
-    {
-      "source": "/docs/attck",
-      "destination": "/docs/attck.html"
-    },
-    {
-      "source": "/roi-calculator",
-      "destination": "/docs/roi-calculator.html"
-    },
-    {
-      "source": "/vendor-scorecard",
-      "destination": "/docs/vendor-scorecard.html"
-    },
-    {
-      "source": "/platform",
-      "destination": "/platform/index.html"
-    },
-    {
-      "source": "/platform/recon",
-      "destination": "/platform/recon.html"
-    },
-    {
-      "source": "/platform/vuln",
-      "destination": "/platform/vuln.html"
-    },
-    {
-      "source": "/platform/quantum",
-      "destination": "/platform/quantum.html"
-    },
-    {
-      "source": "/platform/network",
-      "destination": "/platform/network.html"
-    },
-    {
-      "source": "/platform/defense",
-      "destination": "/platform/defense.html"
-    },
-    {
-      "source": "/platform/cicd",
-      "destination": "/platform/cicd.html"
-    },
-    {
-      "source": "/platform/plugins",
-      "destination": "/platform/plugins.html"
-    },
-    {
-      "source": "/platform/exploit",
-      "destination": "/platform/exploit.html"
-    },
-    {
-      "source": "/platform/docs",
-      "destination": "/platform/docs.html"
-    },
-    {
-      "source": "/federated-mesh",
-      "destination": "/docs/federated-mesh.html"
-    },
-    {
-      "source": "/mesh",
-      "destination": "/docs/federated-mesh.html"
-    }
+    {"source":"/","destination":"/docs/index.html"},
+    {"source":"/dashboard","destination":"/docs/shadow313-nexus-dashboard.html"},
+    {"source":"/dashboard-v3","destination":"/docs/S313-Nexus-Dashboard-v3.html"},
+    {"source":"/ssp","destination":"/docs/S313-SSP-Dashboard.html"},
+    {"source":"/architecture","destination":"/docs/shadow313-nexus-architecture.html"},
+    {"source":"/ai-stack","destination":"/docs/shadow313-ai-stack-map.html"},
+    {"source":"/threat-board","destination":"/docs/s313-threat-board.html"},
+    {"source":"/command-center","destination":"/docs/s313-command-center-v6.html"},
+    {"source":"/apt-simulation","destination":"/docs/s313-apt-simulation.html"},
+    {"source":"/aegis-nexus","destination":"/docs/aegis_nexus.html"},
+    {"source":"/vsat","destination":"/docs/vsat-tactical-suite.html"},
+    {"source":"/chronos","destination":"/docs/chronos-sentinel.html"},
+    {"source":"/tools","destination":"/tools/index.html"},
+    {"source":"/tools/aegis","destination":"/tools/aegis-nexus.html"},
+    {"source":"/tools/sovereign-shield","destination":"/tools/sovereign-shield.html"},
+    {"source":"/tools/vsat","destination":"/tools/vsat-tactical-suite.html"},
+    {"source":"/marketplace","destination":"/marketplace/index.html"},
+    {"source":"/analytics","destination":"/marketplace/analytics.html"},
+    {"source":"/analytics/live","destination":"/marketplace/analytics-live.html"},
+    {"source":"/marketplace/live","destination":"/marketplace/analytics-live.html"},
+    {"source":"/platform","destination":"/platform/index.html"},
+    {"source":"/platform/recon","destination":"/platform/recon.html"},
+    {"source":"/platform/vuln","destination":"/platform/vuln.html"},
+    {"source":"/platform/exploit","destination":"/platform/exploit.html"},
+    {"source":"/platform/network","destination":"/platform/network.html"},
+    {"source":"/platform/defense","destination":"/platform/defense.html"},
+    {"source":"/platform/quantum","destination":"/platform/quantum.html"},
+    {"source":"/platform/plugins","destination":"/platform/plugins.html"},
+    {"source":"/platform/cicd","destination":"/platform/cicd.html"},
+    {"source":"/platform/docs","destination":"/platform/docs.html"},
+    {"source":"/about","destination":"/about/index.html"},
+    {"source":"/blog","destination":"/blog/index.html"},
+    {"source":"/blog/sha3-bypass","destination":"/blog/sha3-bypass.html"},
+    {"source":"/docs","destination":"/docs/index.html"},
+    {"source":"/docs/install","destination":"/docs/install.html"},
+    {"source":"/docs/quickstart","destination":"/docs/quickstart.html"},
+    {"source":"/docs/api","destination":"/docs/api.html"},
+    {"source":"/docs/modules","destination":"/docs/modules.html"},
+    {"source":"/docs/pqc","destination":"/docs/pqc.html"},
+    {"source":"/docs/attck","destination":"/docs/attck.html"},
+    {"source":"/pricing","destination":"/pricing/index.html"},
+    {"source":"/ghost-watch","destination":"/docs/ghost-watch.html"},
+    {"source":"/ghost-watch/c2","destination":"/docs/ghost-watch-c2.html"},
+    {"source":"/ghost-watch/threatmap","destination":"/docs/ghost-watch-threatmap.html"},
+    {"source":"/honeypot","destination":"/docs/honeypot-network.html"},
+    {"source":"/federated-mesh","destination":"/docs/federated-mesh.html"},
+    {"source":"/dark-web","destination":"/docs/dark-web-monitor.html"},
+    {"source":"/dark-web/demystifier","destination":"/docs/dark-web-demystifier.html"},
+    {"source":"/threat-intel","destination":"/docs/threat-intel-feed.html"},
+    {"source":"/threat-actor-map","destination":"/docs/threat-actor-map.html"},
+    {"source":"/identity","destination":"/docs/identity-platform.html"},
+    {"source":"/red-team","destination":"/docs/red-team-ops.html"},
+    {"source":"/blue-team","destination":"/docs/blue-team-soc.html"},
+    {"source":"/purple-team","destination":"/docs/purple-team.html"},
+    {"source":"/quantum-lab","destination":"/docs/quantum-lab.html"},
+    {"source":"/soar","destination":"/docs/soar-playbook-builder.html"},
+    {"source":"/plugin-studio","destination":"/docs/plugin-studio.html"},
+    {"source":"/roi","destination":"/docs/roi-calculator.html"},
+    {"source":"/vendor-scorecard","destination":"/docs/vendor-scorecard.html"},
+    {"source":"/competitive","destination":"/docs/competitive-analysis.html"},
+    {"source":"/coverage","destination":"/docs/coverage_matrix.html"},
+    {"source":"/cve-intel","destination":"/docs/cve-intelligence.html"},
+    {"source":"/cve-report","destination":"/docs/cve-submission-report.html"},
+    {"source":"/nvsm","destination":"/docs/nvsm-chain-score.html"},
+    {"source":"/nvsm/decay","destination":"/docs/nvsm-temporal-decay.html"},
+    {"source":"/nvsm/comparison","destination":"/docs/nvsm-chain-comparison.html"},
+    {"source":"/nvsm/4cve","destination":"/docs/nvsm-4cve-chain.html"},
+    {"source":"/nvsm/asymptotic","destination":"/docs/nvsm-asymptotic-model.html"},
+    {"source":"/fep","destination":"/docs/fep-dwell-time-analysis.html"},
+    {"source":"/soc/response","destination":"/docs/soc-response-byovd.html"},
+    {"source":"/soc/cognitive","destination":"/docs/soc-analyst-cognitive-load.html"},
+    {"source":"/soc/staffing","destination":"/docs/soc-staffing-roi.html"},
+    {"source":"/byovd","destination":"/docs/byovd-ebpf-machtrap.html"},
+    {"source":"/kernel","destination":"/docs/kernel-detection-comparison.html"},
+    {"source":"/lotl","destination":"/docs/lotl-killchain-hardening.html"},
+    {"source":"/detection-gametheory","destination":"/docs/detection-engineering-gametheory.html"},
+    {"source":"/adversarial","destination":"/docs/adversarial-adaptation.html"},
+    {"source":"/asymmetric","destination":"/docs/asymmetric-cost-gametheory.html"},
+    {"source":"/deception","destination":"/docs/deception-vs-architectural.html"},
+    {"source":"/archetype","destination":"/docs/archetype-deception-erosion.html"},
+    {"source":"/temporal-roi","destination":"/docs/temporal-attack-roi.html"},
+    {"source":"/post-exploit","destination":"/docs/post-exploitation-60min.html"},
+    {"source":"/zeroday","destination":"/docs/zeroday-halflife-forensics.html"},
+    {"source":"/lateral","destination":"/docs/lateral-movement-analysis.html"},
+    {"source":"/attack-chain","destination":"/docs/attack-chain-cvss-epss.html"},
+    {"source":"/blackcat","destination":"/docs/blackcat-lateral-mitigation.html"},
+    {"source":"/race-condition","destination":"/docs/race-condition-ids-comparison.html"},
+    {"source":"/braid","destination":"/docs/braid-ep-countermeasures.html"},
+    {"source":"/tor","destination":"/docs/tor-vpn-proxy-comparison.html"},
+    {"source":"/tor/i2p","destination":"/docs/tor-i2p-vpn-analysis.html"},
+    {"source":"/i2p","destination":"/docs/i2p-browser-deepdive.html"},
+    {"source":"/nsa","destination":"/docs/nsa-tor-deanon-simulation.html"},
+    {"source":"/xkeyscore","destination":"/docs/xkeyscore-nh-analysis.html"},
+    {"source":"/ir-playbook","destination":"/docs/ir-playbook-attck-map.html"},
+    {"source":"/live-ops","destination":"/docs/live-operations.html"},
+    {"source":"/apt-sim","destination":"/docs/apt-simulation-69167.html"},
+    {"source":"/ml-predictor","destination":"/docs/ml-threat-predictor.html"},
+    {"source":"/cvss-nvsm","destination":"/docs/cvss-deprecation-nvsm.html"},
+    {"source":"/security-gap","destination":"/docs/security-gap-analysis.html"},
+    {"source":"/vsat-intel","destination":"/docs/vsat-intelligence.html"},
+    {"source":"/module-design","destination":"/docs/module-design-doc.html"},
+    {"source":"/technical","destination":"/docs/technical-deep-dive.html"},
+    {"source":"/contact","destination":"/docs/contact.html"},
+    {"source":"/privacy","destination":"/docs/privacy.html"},
+    {"source":"/terms","destination":"/docs/terms.html"},
+    {"source":"/security-policy","destination":"/docs/security-policy.html"},
+    {"source":"/changelog","destination":"/docs/changelog.html"},
+    {"source":"/careers","destination":"/docs/careers.html"},
+    {"source":"/partners","destination":"/docs/partners.html"},
+    {"source":"/case-studies","destination":"/docs/case-studies.html"},
+    {"source":"/compliance","destination":"/docs/compliance.html"},
+    {"source":"/recon","destination":"/docs/recon.html"},
+    {"source":"/vsat-toolkit","destination":"/docs/vsat-toolkit-v5.html"},
+    {"source":"/vsat-toolkit/v6","destination":"/docs/vsat-toolkit-v6.html"},
+    {"source":"/satexpert","destination":"/docs/satexpert_tsi_v7.html"},
+    {"source":"/cybershield","destination":"/docs/CyberShield-Suite.html"},
+    {"source":"/web3","destination":"/docs/web3_security_explorer.html"},
+    {"source":"/ssp-dashboard","destination":"/docs/S313-SSP-Dashboard.html"},
+    {"source":"/nexus-v3","destination":"/docs/S313-Nexus-Dashboard-v3.html"},
+    {"source":"/install","destination":"/docs/install.html"},
+    {"source":"/quickstart","destination":"/docs/quickstart.html"},
+    {"source":"/api","destination":"/docs/api.html"},
+    {"source":"/modules","destination":"/docs/modules.html"},
+    {"source":"/pqc","destination":"/docs/pqc.html"},
+    {"source":"/attck","destination":"/docs/attck.html"},
+    {"source":"/coverage","destination":"/docs/coverage_matrix.html"},
+    {"source":"/roi-calculator","destination":"/docs/roi-calculator.html"},
+    {"source":"/vendor","destination":"/docs/vendor-scorecard.html"},
+    {"source":"/federated","destination":"/docs/federated-mesh.html"},
+    {"source":"/chronos-sentinel","destination":"/docs/chronos-sentinel.html"},
+    {"source":"/sovereign-shield","destination":"/tools/sovereign-shield.html"},
+    {"source":"/aegis","destination":"/tools/aegis-nexus.html"},
+    {"source":"/marketplace/analytics","destination":"/marketplace/analytics.html"},
+    {"source":"/marketplace/analytics/live","destination":"/marketplace/analytics-live.html"},
+    {"source":"/platform/cicd","destination":"/platform/cicd.html"},
+    {"source":"/platform/defense","destination":"/platform/defense.html"},
+    {"source":"/platform/docs","destination":"/platform/docs.html"},
+    {"source":"/platform/exploit","destination":"/platform/exploit.html"},
+    {"source":"/platform/network","destination":"/platform/network.html"},
+    {"source":"/platform/plugins","destination":"/platform/plugins.html"},
+    {"source":"/platform/quantum","destination":"/platform/quantum.html"},
+    {"source":"/platform/recon","destination":"/platform/recon.html"},
+    {"source":"/platform/vuln","destination":"/platform/vuln.html"}
   ]
 }
