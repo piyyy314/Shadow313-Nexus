@@ -89,7 +89,7 @@ jobs:
         run: Rename-Item dist\shadow313.exe dist\${{ matrix.artifact_name }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: dist/${{ matrix.artifact_name }}
@@ -167,7 +167,7 @@ jobs:
           twine check dist/*
 
       - name: Upload Python packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: python-packages
           path: dist/
