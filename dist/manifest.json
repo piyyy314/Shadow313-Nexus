@@ -2,12 +2,12 @@
   "manifest_version": "1.0",
   "schema": "shadow313-delivery-manifest",
   "platform_version": "4.0.0",
-  "git_sha": "affaf27",
+  "git_sha": "1cd5f19",
   "git_branch": "master",
-  "generated_at": "2026-10-08T14:13:20.658658+00:00",
-  "timestamp_313": 1791468800658665313,
-  "total_files": 52,
-  "total_size_kb": 1350.1,
+  "generated_at": "2026-10-08T15:16:47.411018+00:00",
+  "timestamp_313": 1791472607411047313,
+  "total_files": 118,
+  "total_size_kb": 1410.0,
   "files": [
     {
       "name": "s313-command-center-v6.html",
@@ -15,7 +15,7 @@
       "size": 47312,
       "size_kb": 46.2,
       "sha3_256": "0a7a7fb8316b0ede1a5698dd9dbcd4dc6473f27881cf5d4798d051f69117a8f6",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
       "priority": true,
       "type": "html"
     },
@@ -25,7 +25,7 @@
       "size": 85651,
       "size_kb": 83.6,
       "sha3_256": "63c60a3e56c4c5748076cf5643cde560741895c80c6a88d052711f462dd83426",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
       "priority": true,
       "type": "html"
     },
@@ -35,7 +35,7 @@
       "size": 44729,
       "size_kb": 43.7,
       "sha3_256": "883c087db32b303bf76822461e73b65230c71107ca3575615a48c479141dd156",
-      "modified": "2026-10-08T14:13:15.712282+00:00",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
       "priority": true,
       "type": "html"
     },
@@ -45,7 +45,7 @@
       "size": 94961,
       "size_kb": 92.7,
       "sha3_256": "1e94412a8027b7612fcff43fa3c8edfd40c4696a73667b7636303fdc5adbcba7",
-      "modified": "2026-10-08T14:13:15.705670+00:00",
+      "modified": "2026-10-08T15:16:41.449295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -55,7 +55,7 @@
       "size": 6530,
       "size_kb": 6.4,
       "sha3_256": "accd56e16dac644c2205474427bf2a4f0eadcc3fa9d3aaaf4ebfb34d60c9bb41",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -65,7 +65,7 @@
       "size": 31080,
       "size_kb": 30.4,
       "sha3_256": "18122885885424078df45448b4a7cf2e8811da83b88f79dee71bfd832ab3b47d",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -75,7 +75,7 @@
       "size": 7065,
       "size_kb": 6.9,
       "sha3_256": "027025144fa701cc2423eb70b2570421b7cbcc408910744ff5fb534b0d63a2c6",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -85,7 +85,7 @@
       "size": 5703,
       "size_kb": 5.6,
       "sha3_256": "ef7e88fbf032054ac1d1b163d67c5408bdddd3647fd5734f09de40e3ed2dc505",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -95,7 +95,7 @@
       "size": 11420,
       "size_kb": 11.2,
       "sha3_256": "0edaec43a16ee2776cfe739ff6cfcf2e22112ca008bb66c87919fd6a2c6c71a8",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -105,7 +105,7 @@
       "size": 41285,
       "size_kb": 40.3,
       "sha3_256": "b3acc2387ddc35cb809a98c9b880d66168325dcacb896629add9373bac9dd423",
-      "modified": "2026-10-08T14:13:15.706520+00:00",
+      "modified": "2026-10-08T15:16:41.449973+00:00",
       "priority": false,
       "type": "md"
     },
@@ -115,7 +115,7 @@
       "size": 38550,
       "size_kb": 37.6,
       "sha3_256": "ba7c6e16cb76b697fe6c4a7d6f3e3cd8a6146fe2f88d7ad3dfc732b93bf370ae",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -125,7 +125,7 @@
       "size": 18101,
       "size_kb": 17.7,
       "sha3_256": "9b56ca152eef42f8444366b8b57d2a5ddf3e3d04db71108926026ea7fc7d34c2",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -135,7 +135,7 @@
       "size": 29660,
       "size_kb": 29.0,
       "sha3_256": "23a294950c6d4fe92fa25843e7480547393b4e4eeab54351c6f81ebd42e35aa0",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -145,7 +145,7 @@
       "size": 11138,
       "size_kb": 10.9,
       "sha3_256": "15107adbc46f68d27e4233ca1312093e2b108b45f33b94b7cc43a9e7949991e2",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -155,7 +155,7 @@
       "size": 11641,
       "size_kb": 11.4,
       "sha3_256": "abd50391be2670d5005b08e536eb8f04d900a0b81e0cfb6b41e9fbac358ed042",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -165,7 +165,7 @@
       "size": 40086,
       "size_kb": 39.1,
       "sha3_256": "f892105351a6141a446a06be0e20550d0b47fbe6db001968548fcac135438f45",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -175,7 +175,7 @@
       "size": 35751,
       "size_kb": 34.9,
       "sha3_256": "7d473b9597580ab6ec1e0542f29c8e2a06504cbd476ad63dd90d3241e3de8055",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -185,7 +185,7 @@
       "size": 3105,
       "size_kb": 3.0,
       "sha3_256": "395f6a2de9b3f340fb6e901f9da956e2aa21bcb6e5ccbfd8caf0b721fc222845",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -195,9 +195,19 @@
       "size": 1276,
       "size_kb": 1.2,
       "sha3_256": "62d9377a3d35f9ec9e31b2248b1185ff343c009902ff15dabf366dd487489882",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "adversarial-adaptation.html",
+      "path": "docs/adversarial-adaptation.html",
+      "size": 936,
+      "size_kb": 0.9,
+      "sha3_256": "6468fe97d86df5cb455279d145c8d6bd6e3db5ea5d0c16e3c3525f6c60596c6c",
+      "modified": "2026-10-08T15:16:41.450295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "aegis_nexus.html",
@@ -205,7 +215,7 @@
       "size": 21203,
       "size_kb": 20.7,
       "sha3_256": "c1555535d07f36d42a63f037c6b24895f97c6420b79d945223359ac74cea6940",
-      "modified": "2026-10-08T14:13:15.706670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -215,7 +225,47 @@
       "size": 10640,
       "size_kb": 10.4,
       "sha3_256": "aead0841f0c4b9ec607313ee04c786267caac39209282289ae6092590ac2a81e",
-      "modified": "2026-10-08T14:13:15.707670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "apt-simulation-69167.html",
+      "path": "docs/apt-simulation-69167.html",
+      "size": 932,
+      "size_kb": 0.9,
+      "sha3_256": "9f43d3c442542b354226a0aee28eeb0bc214343458ce61cc93b8645cc6015bd2",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "archetype-deception-erosion.html",
+      "path": "docs/archetype-deception-erosion.html",
+      "size": 946,
+      "size_kb": 0.9,
+      "sha3_256": "f4d47b1a83bfa983177154a2ed9c5dd5176e3f1792a7a9fd8b581abaadead7bf",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "asymmetric-cost-gametheory.html",
+      "path": "docs/asymmetric-cost-gametheory.html",
+      "size": 944,
+      "size_kb": 0.9,
+      "sha3_256": "d18139b4fe0f6dc55741baa6cd3e621ec78322d44c635924d3ec1eb71d6e39e4",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "attack-chain-cvss-epss.html",
+      "path": "docs/attack-chain-cvss-epss.html",
+      "size": 936,
+      "size_kb": 0.9,
+      "sha3_256": "bc742621a24f0b68aec535f5f3dbd18ffe13e74223ff42cd765e23625c656540",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -225,7 +275,7 @@
       "size": 29027,
       "size_kb": 28.3,
       "sha3_256": "c993f1b374da118e4a31afd975e0282c065923818781e6d03c73075468c385f3",
-      "modified": "2026-10-08T14:13:15.707670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -235,7 +285,67 @@
       "size": 13709,
       "size_kb": 13.4,
       "sha3_256": "582d616fee64cc5345385f5d347b4905c8043ebc51b11cfaba065806309e408b",
-      "modified": "2026-10-08T14:13:15.707670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "blackcat-lateral-mitigation.html",
+      "path": "docs/blackcat-lateral-mitigation.html",
+      "size": 946,
+      "size_kb": 0.9,
+      "sha3_256": "e533dc08377e0979d17463ca4ad2f94185fd8248a53818679f85ba03b820fb7f",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "blue-team-soc.html",
+      "path": "docs/blue-team-soc.html",
+      "size": 918,
+      "size_kb": 0.9,
+      "sha3_256": "14ed810306d8b026fe03309a574788a935c2152fbf5cec2b4e17673df2980f85",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "braid-ep-countermeasures.html",
+      "path": "docs/braid-ep-countermeasures.html",
+      "size": 940,
+      "size_kb": 0.9,
+      "sha3_256": "54da809625afcfd9e1f7e21ce2ff88182c0b1efc6a87e015bdb4b0a8cd2e91d1",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "byovd-ebpf-machtrap.html",
+      "path": "docs/byovd-ebpf-machtrap.html",
+      "size": 930,
+      "size_kb": 0.9,
+      "sha3_256": "930a4650d5a47f69b04b3188603a6c8079d854a4f51cc33cdc0992109e2030c6",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "careers.html",
+      "path": "docs/careers.html",
+      "size": 906,
+      "size_kb": 0.9,
+      "sha3_256": "5d48fc8e895840bd77b4c424373024d259dc38d6155adeb1148d45cf6d959efe",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "case-studies.html",
+      "path": "docs/case-studies.html",
+      "size": 916,
+      "size_kb": 0.9,
+      "sha3_256": "3fd91dd11f077407594542d928897504ce734fe9df1b4d026f823f328547d4a8",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -245,7 +355,7 @@
       "size": 10977,
       "size_kb": 10.7,
       "sha3_256": "64ceb37b8947f9b73c9fd7f9685deaaf8455e5e8d889d97482c976eefb566071",
-      "modified": "2026-10-08T14:13:15.707670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -255,7 +365,37 @@
       "size": 23505,
       "size_kb": 23.0,
       "sha3_256": "405631e8b69adb380610e4d930e20a86c30acdde38b910826a819161702287a1",
-      "modified": "2026-10-08T14:13:15.707670+00:00",
+      "modified": "2026-10-08T15:16:41.451295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "competitive-analysis.html",
+      "path": "docs/competitive-analysis.html",
+      "size": 932,
+      "size_kb": 0.9,
+      "sha3_256": "d4a3799f285c369f56412f755e9a777028d8022f05b4ff18fcb81b3f92b5fa63",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "compliance.html",
+      "path": "docs/compliance.html",
+      "size": 912,
+      "size_kb": 0.9,
+      "sha3_256": "8526f794058436ce9e41a8eab1d56256ca05ef9f2e17503fa662ddd42c1eee16",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "contact.html",
+      "path": "docs/contact.html",
+      "size": 906,
+      "size_kb": 0.9,
+      "sha3_256": "f7dc712b4ea9471f780e147e8b4cd0868ec370a8ed198398ac4caa4210d60084",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -265,7 +405,7 @@
       "size": 13843,
       "size_kb": 13.5,
       "sha3_256": "d3008a504c878baf94555619273783b9f2fcd395dc5f9163c691558e80430491",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -275,7 +415,7 @@
       "size": 23380,
       "size_kb": 22.8,
       "sha3_256": "be5ea24dcd0d219959f7abc92dc8c8a056251efdb30d177bf1a2d310ec45c808",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -285,9 +425,39 @@
       "size": 21705,
       "size_kb": 21.2,
       "sha3_256": "cc9054d81a240d29ec4d863ae14b4b37b6eac51eb60c3ad617eb67c1e0ccf86f",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "cve-intelligence.html",
+      "path": "docs/cve-intelligence.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "0f1ac46e656dd567fabdb3786075ce280a8f6951e4f1bc3917d44252c6cb0a76",
+      "modified": "2026-10-08T15:16:41.452295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "cve-submission-report.html",
+      "path": "docs/cve-submission-report.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "bff03a9c20f25911f6aee937eef17e31b7fb6d4a09c79ff20f01f04515959199",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "cvss-deprecation-nvsm.html",
+      "path": "docs/cvss-deprecation-nvsm.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "836ee06cad924df4d8b7cda182c9ddedfeadb8cef56734eeb5c213f73ca6fd9f",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "d3fend_gap_closure_plan.md",
@@ -295,7 +465,7 @@
       "size": 32650,
       "size_kb": 31.9,
       "sha3_256": "1543702a46ac788cbfe76eedaf9f17a7312a410ec9746f88f3fe9d5e5571e7d0",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -305,9 +475,49 @@
       "size": 42310,
       "size_kb": 41.3,
       "sha3_256": "2f36a600d3dcd8e1ca16fb5a9fa6488f2202a2c4b540cd0bda909cd01326f713",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "dark-web-demystifier.html",
+      "path": "docs/dark-web-demystifier.html",
+      "size": 932,
+      "size_kb": 0.9,
+      "sha3_256": "6b467b85e9b8e2b1dcec286fc716adcd27163f48bc891fea44bafe7e0f8f7f3a",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "dark-web-monitor.html",
+      "path": "docs/dark-web-monitor.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "6aff127e86e44c87d95cbbf3936153e78a981804cc1138a5cb77c2707b9dec57",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "deception-vs-architectural.html",
+      "path": "docs/deception-vs-architectural.html",
+      "size": 944,
+      "size_kb": 0.9,
+      "sha3_256": "a1e361e8b5f51895233a3cf5c22d526313cfb2ca0dbeab02f78f4977e926fe5d",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "detection-engineering-gametheory.html",
+      "path": "docs/detection-engineering-gametheory.html",
+      "size": 956,
+      "size_kb": 0.9,
+      "sha3_256": "18aab7981938b835744310ea3eba970b76c9bc976ed37dcfb5a6c50ad8ffca9c",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "evasion_technique_analysis.md",
@@ -315,7 +525,7 @@
       "size": 44417,
       "size_kb": 43.4,
       "sha3_256": "fb6efa253f07742c290487f65647c20ab706c7f581113b85033a62648b4de18a",
-      "modified": "2026-10-08T14:13:15.708736+00:00",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -325,7 +535,17 @@
       "size": 25066,
       "size_kb": 24.5,
       "sha3_256": "cac80f40860ab2bd1cd921ffd2960a437252e30f450b0815b15f3809756c792e",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "fep-dwell-time-analysis.html",
+      "path": "docs/fep-dwell-time-analysis.html",
+      "size": 938,
+      "size_kb": 0.9,
+      "sha3_256": "f0414a4e294b178ee2687b2904b3c021bd938f9b1321183c6f4d648f4a9cd2c5",
+      "modified": "2026-10-08T15:16:41.453295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -335,9 +555,69 @@
       "size": 35735,
       "size_kb": 34.9,
       "sha3_256": "acf86770181e3a34bb9e5a8924922828669aa393f2d12076a4c2d4c01a44726c",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "ghost-watch-c2.html",
+      "path": "docs/ghost-watch-c2.html",
+      "size": 920,
+      "size_kb": 0.9,
+      "sha3_256": "458f1e311793842f967d9bc7c63796ca210a2744850673f6095bea7c642b798a",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ghost-watch-threatmap.html",
+      "path": "docs/ghost-watch-threatmap.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "7d6846afeb84c4b86e1a0ab9424e63bce585e9383183c45877e91982dd836382",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ghost-watch.html",
+      "path": "docs/ghost-watch.html",
+      "size": 914,
+      "size_kb": 0.9,
+      "sha3_256": "2b0074f31d6c07acaf20394fb7f9b3b91fb15591ae352e5c5877dd6584d94562",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "honeypot-network.html",
+      "path": "docs/honeypot-network.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "65f28baeb7cb9fef0e2ec2d1ea9744e4d840ba1b5deb6a580a05d75140bc5075",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "i2p-browser-deepdive.html",
+      "path": "docs/i2p-browser-deepdive.html",
+      "size": 932,
+      "size_kb": 0.9,
+      "sha3_256": "f43c25b1936514dfa610b7ef94c2ff65fec459c4c7408ab0181f83e2463586cc",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "identity-platform.html",
+      "path": "docs/identity-platform.html",
+      "size": 926,
+      "size_kb": 0.9,
+      "sha3_256": "dc512dd77ba6dc728cd71411f1650b70a6d6479bde72c14a9fb42a8b9999e131",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "index.html",
@@ -345,7 +625,7 @@
       "size": 7462,
       "size_kb": 7.3,
       "sha3_256": "f6df6eebdc6b04fd8dffc2cde5c3bb8130865126b7140b8f08a75986ca5c0563",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -355,7 +635,77 @@
       "size": 8703,
       "size_kb": 8.5,
       "sha3_256": "fe5cf36155f4c17d094fabba45f9315c53fae8562ef1dda30c5a8232bb7b1173",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ir-playbook-attck-map.html",
+      "path": "docs/ir-playbook-attck-map.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "bd4b148af47a83c1d37e7c6f1cda2ad301da9abc9d6ada78587b4f56f0874614",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "kernel-detection-comparison.html",
+      "path": "docs/kernel-detection-comparison.html",
+      "size": 946,
+      "size_kb": 0.9,
+      "sha3_256": "c1edfcbbf7458f18ab5fb8370a09a763a560b585f9b029bf084800fd6bac9fdb",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "lateral-movement-analysis.html",
+      "path": "docs/lateral-movement-analysis.html",
+      "size": 942,
+      "size_kb": 0.9,
+      "sha3_256": "687cdabd89b76aea6f1f5c525212e34897f08a8f89a07dab17a39e3c90a6f4f3",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "live-operations.html",
+      "path": "docs/live-operations.html",
+      "size": 922,
+      "size_kb": 0.9,
+      "sha3_256": "12b839387113e04a16c8f1d6237fb52867ff2d9a316c6b6512ec01f61eaa08be",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "lotl-killchain-hardening.html",
+      "path": "docs/lotl-killchain-hardening.html",
+      "size": 940,
+      "size_kb": 0.9,
+      "sha3_256": "7531a15cacf3b8705372da2030ee3351e04dc9d1019659551e581b2abad6959a",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ml-threat-predictor.html",
+      "path": "docs/ml-threat-predictor.html",
+      "size": 930,
+      "size_kb": 0.9,
+      "sha3_256": "f99fed8e21b6f943368029fe5feb3972aa093c6076a68acdb1823ce9292754b4",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "module-design-doc.html",
+      "path": "docs/module-design-doc.html",
+      "size": 926,
+      "size_kb": 0.9,
+      "sha3_256": "f78cedb14a96447b14ba3142b699e4fc2e0af0a961c19295143567ebb9df7cb8",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -365,7 +715,77 @@
       "size": 13370,
       "size_kb": 13.1,
       "sha3_256": "5b3dadbe466251d7562d045e9afab4015689c710511e37f50bbc510d7e780eac",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nsa-tor-deanon-simulation.html",
+      "path": "docs/nsa-tor-deanon-simulation.html",
+      "size": 942,
+      "size_kb": 0.9,
+      "sha3_256": "a060af63bb3c7b53a5004735de10adb6c6e2609a847921a7b9a640bcf2e4cb91",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-4cve-chain.html",
+      "path": "docs/nvsm-4cve-chain.html",
+      "size": 922,
+      "size_kb": 0.9,
+      "sha3_256": "e2932147864224f290b5838790594cc60e2c7daf4a7d060b19d1a5153617fa0b",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-4cve-model.html",
+      "path": "docs/nvsm-4cve-model.html",
+      "size": 922,
+      "size_kb": 0.9,
+      "sha3_256": "aecc9b3f0a467c2ac62539f293a494ee7bb725d37ee35080358b635b5e468d5c",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-asymptotic-model.html",
+      "path": "docs/nvsm-asymptotic-model.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "1aeafb6fd166fef73e9954f3eea52a8727c3095e68062bd41e11de377c5836fc",
+      "modified": "2026-10-08T15:16:41.454295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-chain-comparison.html",
+      "path": "docs/nvsm-chain-comparison.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "274f6ac03fb1f727244e6c7811a4c338796ac00299944df00a502af44ea4164c",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-chain-score.html",
+      "path": "docs/nvsm-chain-score.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "abca44330af7908231f0add959800aadc34e0c8166541c4e45693abc53a63431",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-temporal-decay.html",
+      "path": "docs/nvsm-temporal-decay.html",
+      "size": 930,
+      "size_kb": 0.9,
+      "sha3_256": "5ec1d118b7d273ca8524189945d759095a6ec1140833051328fa87173b63b0ae",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -375,9 +795,19 @@
       "size": 7176,
       "size_kb": 7.0,
       "sha3_256": "834a002d3a3e45ee087ad2e5ef283b68af7b38cd219cf000415b1f483957165f",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "partners.html",
+      "path": "docs/partners.html",
+      "size": 908,
+      "size_kb": 0.9,
+      "sha3_256": "925b08878c1dd6294b16a6563567409e04e126851df8b047098598d020b39cc5",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "pipeline-security-analysis.md",
@@ -385,9 +815,29 @@
       "size": 13802,
       "size_kb": 13.5,
       "sha3_256": "cfe66ccf5ceb254e83ac0cf47e33e77e9127d17da2d6773d62d93980e32fe289",
-      "modified": "2026-10-08T14:13:15.709670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "md"
+    },
+    {
+      "name": "plugin-studio.html",
+      "path": "docs/plugin-studio.html",
+      "size": 918,
+      "size_kb": 0.9,
+      "sha3_256": "1fe68fba08b5575ca91aa6ff8c0e8fdf0789eaf577f8f123214e971071f99167",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "post-exploitation-60min.html",
+      "path": "docs/post-exploitation-60min.html",
+      "size": 938,
+      "size_kb": 0.9,
+      "sha3_256": "1def97588f1ab88ffbff8b2da36dde63460afe2120ed501b2cb1069e3bcc409d",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
     },
     {
       "name": "pq_threat_landscape_slhdsa_evolution.md",
@@ -395,7 +845,7 @@
       "size": 49964,
       "size_kb": 48.8,
       "sha3_256": "35a13124461ac8a5271b0d977f28e2a1a4d388886fa80d6a654775266caf75ba",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "md"
     },
@@ -405,7 +855,37 @@
       "size": 9150,
       "size_kb": 8.9,
       "sha3_256": "a3cf89aa5c0f5d8beb8c9409a25c5b99c3dba6fe399db783532aa183c36c0a68",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "privacy.html",
+      "path": "docs/privacy.html",
+      "size": 906,
+      "size_kb": 0.9,
+      "sha3_256": "7f923c79995b4198efde0e2552132824298f36be59ed45a6da450db379b36708",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "purple-team.html",
+      "path": "docs/purple-team.html",
+      "size": 914,
+      "size_kb": 0.9,
+      "sha3_256": "4441c1a42516c9f447257ab148e78b0b3d93001309b958740d4ee96eb2a998f2",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "quantum-lab.html",
+      "path": "docs/quantum-lab.html",
+      "size": 914,
+      "size_kb": 0.9,
+      "sha3_256": "c4b8b0df8c093aa4c17432c8ce89f7740117dad3261ea7245e9b0108dcb8f56e",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -415,7 +895,17 @@
       "size": 8677,
       "size_kb": 8.5,
       "sha3_256": "7a214582499603068c9cd1f244c06fabed4471dfbad536cce3541ca5b42e09c9",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "race-condition-ids-comparison.html",
+      "path": "docs/race-condition-ids-comparison.html",
+      "size": 950,
+      "size_kb": 0.9,
+      "sha3_256": "f0ecd62a04a8793ca53fe12ba58e9cf33da35c33b485d916d651607ce65a2df7",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -425,7 +915,17 @@
       "size": 13327,
       "size_kb": 13.0,
       "sha3_256": "06241d2a0e4976805e6500eb862f8d8a58b316db7619efab9a1f03b5aad97aa2",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "red-team-ops.html",
+      "path": "docs/red-team-ops.html",
+      "size": 916,
+      "size_kb": 0.9,
+      "sha3_256": "ce1ca10abca8468fa2032c8c63d34e64a9fbd011eb2cab17d13dd51497610ced",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -435,7 +935,7 @@
       "size": 8972,
       "size_kb": 8.8,
       "sha3_256": "9797fd96281f8025094474b7feff6d2aead968991aa13c6a9a8026eb2d7c682b",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.455295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -445,7 +945,7 @@
       "size": 29952,
       "size_kb": 29.2,
       "sha3_256": "aab10a26a1391889eb8d458d5e377f8254bd8299606ac5612a71ff4f436007fc",
-      "modified": "2026-10-08T14:13:15.710670+00:00",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -455,7 +955,27 @@
       "size": 83567,
       "size_kb": 81.6,
       "sha3_256": "58f9d175642602d127f61e531f4b0da4a309170d522dac467d3146b14a66e9b9",
-      "modified": "2026-10-08T14:13:15.711670+00:00",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "security-gap-analysis.html",
+      "path": "docs/security-gap-analysis.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "09917e4e513804362cf14d29b5a65aa2e2d47f51b8240433a8bb56293b683495",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "security-policy.html",
+      "path": "docs/security-policy.html",
+      "size": 922,
+      "size_kb": 0.9,
+      "sha3_256": "70b0fa3cd7037b392a41804b6f9aa8e6f501ff852d22595cdbd43a6600c4f8f9",
+      "modified": "2026-10-08T15:16:41.456295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -465,7 +985,7 @@
       "size": 30000,
       "size_kb": 29.3,
       "sha3_256": "e0fbd1f33db743d41aa631955f74dce5025f8eb0de5285384156c11ab883b813",
-      "modified": "2026-10-08T14:13:15.712282+00:00",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -475,7 +995,117 @@
       "size": 39397,
       "size_kb": 38.5,
       "sha3_256": "8046a3afc12be783bd805d74688a5476d1014c7d04d14bc66d43c18cb4455f4b",
-      "modified": "2026-10-08T14:13:15.712282+00:00",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soar-playbook-builder.html",
+      "path": "docs/soar-playbook-builder.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "0faf973c535b1d1a3954dfa7ea2ad56b33a3fe84c5417d28350784b0d10314cd",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-analyst-cognitive-load.html",
+      "path": "docs/soc-analyst-cognitive-load.html",
+      "size": 944,
+      "size_kb": 0.9,
+      "sha3_256": "d7e47b55bc40ea6267338a9342e4676448cca851a0c831a74b7db4b12801a5a5",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-response-byovd.html",
+      "path": "docs/soc-response-byovd.html",
+      "size": 928,
+      "size_kb": 0.9,
+      "sha3_256": "0b3b46ff8a0773084d8092f3d421d6f5e3a64358854f96b48bcb99c41ddc38c6",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-staffing-roi.html",
+      "path": "docs/soc-staffing-roi.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "e9d2a99a3fbfddcf79df8bf8a977e1d8cf45a4f5e7063736ed687096adb8ff15",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "technical-deep-dive.html",
+      "path": "docs/technical-deep-dive.html",
+      "size": 930,
+      "size_kb": 0.9,
+      "sha3_256": "a0f49fab56c25244db97f1c40d7c19868592e81f40222b6c41f16f7490d3e78a",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "temporal-attack-roi.html",
+      "path": "docs/temporal-attack-roi.html",
+      "size": 930,
+      "size_kb": 0.9,
+      "sha3_256": "66ac77931cfa8aa9b4476c0447233a35ae0877d0e96aa64a06453ea77cb49460",
+      "modified": "2026-10-08T15:16:41.457295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "terms.html",
+      "path": "docs/terms.html",
+      "size": 902,
+      "size_kb": 0.9,
+      "sha3_256": "e03ba1e171795b4b5a58db97b9f31eef18a8484403c7c5c61ff43cf9ca64995f",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "threat-actor-map.html",
+      "path": "docs/threat-actor-map.html",
+      "size": 924,
+      "size_kb": 0.9,
+      "sha3_256": "240a4ffd8d9120f27a96e83248d7a1187fbb14ece2c705c3b4f6c0f45ebce4f7",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "threat-intel-feed.html",
+      "path": "docs/threat-intel-feed.html",
+      "size": 926,
+      "size_kb": 0.9,
+      "sha3_256": "7e0452d332b5898a6177a9394056ebe5e2533326337345f2ca5a65295c6ae0ee",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "tor-i2p-vpn-analysis.html",
+      "path": "docs/tor-i2p-vpn-analysis.html",
+      "size": 932,
+      "size_kb": 0.9,
+      "sha3_256": "aa3b84ea1c669b28d37a42c8ce8dfda0761616fa8af08deebff56894e2342167",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "tor-vpn-proxy-comparison.html",
+      "path": "docs/tor-vpn-proxy-comparison.html",
+      "size": 940,
+      "size_kb": 0.9,
+      "sha3_256": "da8541a20b6c1e5261eb53d9eacaadfa31a69f672438b3c4a9cc26019aef8116",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -485,7 +1115,17 @@
       "size": 12972,
       "size_kb": 12.7,
       "sha3_256": "fab4656a092b4fbd9e48eaae8884467c1703bd6b1c4f67f9dee46cdd312e156d",
-      "modified": "2026-10-08T14:13:15.712282+00:00",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "vsat-intelligence.html",
+      "path": "docs/vsat-intelligence.html",
+      "size": 926,
+      "size_kb": 0.9,
+      "sha3_256": "496a3c53cb4832848a230ad1e2d3d2a16b678c0682e150693f2f5c2ba4eb2afe",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -495,7 +1135,7 @@
       "size": 28281,
       "size_kb": 27.6,
       "sha3_256": "11021c21be7a3ea14d5e1b576c465a7e40eabe777cfc657e92cf1c1368486759",
-      "modified": "2026-10-08T14:13:15.712670+00:00",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -505,7 +1145,7 @@
       "size": 49650,
       "size_kb": 48.5,
       "sha3_256": "baf77f5b44333d1a108f96f3505876998a95d2a60b5aa967f4441d82fea43f07",
-      "modified": "2026-10-08T14:13:15.712670+00:00",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -515,7 +1155,7 @@
       "size": 30834,
       "size_kb": 30.1,
       "sha3_256": "862ebd53c1896af154d83be105e11fc4b70a179e79bfeb575810bb1a910ed85c",
-      "modified": "2026-10-08T14:13:15.712670+00:00",
+      "modified": "2026-10-08T15:16:41.458295+00:00",
       "priority": false,
       "type": "html"
     },
@@ -525,12 +1165,32 @@
       "size": 24023,
       "size_kb": 23.5,
       "sha3_256": "678427140e7e714d41212bf05a62856bc204b20d2a2cdf935a63858f84d06c1e",
-      "modified": "2026-10-08T14:13:15.713580+00:00",
+      "modified": "2026-10-08T15:16:41.459352+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "xkeyscore-nh-analysis.html",
+      "path": "docs/xkeyscore-nh-analysis.html",
+      "size": 934,
+      "size_kb": 0.9,
+      "sha3_256": "bb2358f9c30a3a768cf99cdad3c205f7d33e1a2fcbe0e1c4ff767c176dd076d7",
+      "modified": "2026-10-08T15:16:41.460295+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "zeroday-halflife-forensics.html",
+      "path": "docs/zeroday-halflife-forensics.html",
+      "size": 944,
+      "size_kb": 0.9,
+      "sha3_256": "ddd1d41e0fb407f868e833019bf4ac5991723b086e9087e07c0c5318e64dd27f",
+      "modified": "2026-10-08T15:16:41.460295+00:00",
       "priority": false,
       "type": "html"
     }
   ],
   "provenance_class": "REAL_OBSERVATION",
-  "delivery_id": "DEL-4165F487",
-  "manifest_hash": "sha3_256:a220b924325606aa84187ead5f24a7aae184de9cf2151f828cd7b5d80187b5b2"
+  "delivery_id": "DEL-28C8AA3E",
+  "manifest_hash": "sha3_256:7f07c0b3de727d1364a1fe8ea993c8bfb0bb9a075853c4ffbbebe283f1b408df"
 }
