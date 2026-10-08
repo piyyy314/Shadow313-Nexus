@@ -9,7 +9,7 @@
   ╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║ ▄██╔╝
   ███████║██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ██████╗
   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝╚═════╝
-  v4.0.0-NEXUS  |  Verifiable Security Intelligence
+  v4.0.0-NEXUS  |  Post-Quantum Security Intelligence
 ```
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
@@ -27,7 +27,7 @@ Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligenc
 | Feature | Description |
 |---------|-------------|
 | **313 Temporal Binding** | Every computation produces a cryptographic receipt signed with SLH-DSA (FIPS 205), anchored to IPFS |
-| **NEXUS Platform** | Verifiable security intelligence — every finding is a cryptographic fact |
+| **NEXUS Platform** | Post-Quantum Security Intelligence — every finding is a cryptographic fact |
 | **Insider Attack Immunity** | Documented SHA-3 chain bypass attack + SLH-DSA countermeasure |
 | **STIX 2.1 Handler** | Import/export threat intelligence bundles |
 | **Mobile API** | REST API for iOS/Android companion app |
