@@ -19,19 +19,18 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow the static web server (any localhost port) to call this API
+# Restrict browser access to a small allowlist and avoid credentialed cross-site requests.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         origin.strip()
         for origin in os.getenv(
             "CORS_ORIGINS",
-            "http://localhost:8081,http://127.0.0.1:8081,"
             "http://localhost:3000,http://127.0.0.1:3000",
         ).split(",")
         if origin.strip()
     ],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
