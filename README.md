@@ -56,6 +56,12 @@ The standalone FastAPI backend in `/backend` uses `OLLAMA_URL` and `OLLAMA_MODEL
 
 When running the standalone FastAPI backend from `/backend`, you can also override the local browser allowlist with `CORS_ORIGINS` as a comma-separated list of origins.
 
+### Security notes
+
+- Keep `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, and `VERCEL_WEBHOOK_SECRET` in the deployment environment only.
+- `CORS_ORIGINS` is intentionally a strict localhost allowlist for local development and should not be expanded beyond trusted origins.
+- The SentinelOS demo data includes synthetic `DEMO-TOK-*` values only; do not copy them into production secrets or real canary systems.
+
 ### API endpoints
 
 - `GET /api/health` returns a lightweight JSON status payload for deployed functions.

@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Standard preset bait templates for the text area configuration
     const baits = {
-        scada: JSON.stringify({ "controller": "Modbus_PLC_v3", "ports": [502], "canary_token": "TOK-PLC-881" }, null, 2),
-        mysql: JSON.stringify({ "decoy_db": "cust_records_fin", "bait_rows": 1250, "canary_token": "TOK-SQL-558" }, null, 2),
-        ssh: JSON.stringify({ "host": "sentinel-core-ssh", "banner": "Ubuntu 22.04 LTS", "canary_token": "TOK-SSH-901" }, null, 2)
+        scada: JSON.stringify({ "controller": "Modbus_PLC_v3", "ports": [502], "canary_token": "DEMO-TOK-PLC-881" }, null, 2),
+        mysql: JSON.stringify({ "decoy_db": "cust_records_fin", "bait_rows": 1250, "canary_token": "DEMO-TOK-SQL-558" }, null, 2),
+        ssh: JSON.stringify({ "host": "sentinel-core-ssh", "banner": "Ubuntu 22.04 LTS", "canary_token": "DEMO-TOK-SSH-901" }, null, 2)
     };
 
     // Update bait text area dynamically when selection changes
