@@ -74,7 +74,7 @@ class Session:
             raise ValueError(f"Invalid filename: {filename!r}")
         path = self.session_dir / safe_filename
         if self._store and mode == "json":
-            self._store.write_encrypted(filename, json.dumps(data, indent=2, default=str))
+            self._store.write_encrypted(safe_filename, json.dumps(data, indent=2, default=str))
             return path
         with open(path, "w", encoding='utf-8') as fh:
             if mode == "json":
@@ -90,20 +90,36 @@ class Session:
         if not path.exists():
             return None
         if self._store:
-            raw = self._store.read_encrypted(filename)
+            raw = self._store.read_encrypted(safe_filename)
             if raw:
                 try:
                     return json.loads(raw)
                 except json.JSONDecodeError:
                     return raw
-        with open(path, encoding='utf-8') as fh:
-            try:
-                return json.load(fh)
-            except json.JSONDecodeError:
-                return fh.read()
+        # Read as binary first to handle both text and encrypted/binary files
+        try:
+            raw_bytes = path.read_bytes()
+        except OSError:
+            return None
+        try:
+            text = raw_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            # Binary content — not a valid plaintext session file
+            return None
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return text
 
     def path(self, filename: str) -> Path:
-        return self.session_dir / filename
+        """Return safe path within session directory. Raises ValueError on traversal."""
+        safe = Path(filename).name
+        if not safe or safe.startswith('.'):
+            raise ValueError(f"Invalid filename: {filename!r}")
+        resolved = (self.session_dir / safe).resolve()
+        if not str(resolved).startswith(str(self.session_dir.resolve())):
+            raise ValueError(f"Path traversal detected: {filename!r}")
+        return resolved
 
     # ── Audit log ─────────────────────────────────────────────────────────────
     def audit(self, module: str, action: str, detail: str = "") -> None:

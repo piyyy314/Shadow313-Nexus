@@ -1,17 +1,43 @@
+# Shadow313 NEXUS — Python Dependencies
+# Core
 requests>=2.31.0
 dnspython>=2.4.0
+python-whois>=0.8.0
 scapy>=2.5.0
 cryptography>=41.0.0
+pycryptodome>=3.19.0
+
+# Post-Quantum Cryptography
 pyspx>=0.5.0
+
+# AI / ML
 numpy>=1.24.0
 scikit-learn>=1.3.0
+
+# API
 fastapi>=0.104.0
 uvicorn>=0.24.0
-pydantic>=2.13.5
-rich>=13.0.0
-click>=8.1.0
-python-dotenv>=1.2.4
-pyyaml>=6.0.0
+pydantic>=2.0.0
+
+# Database
+sqlalchemy>=2.0.0
+
+# Reporting
+jinja2>=3.1.0
+markdown>=3.5.0
+
+# Security
+bandit>=1.7.0
+safety>=2.3.0
+
+# Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
-pytest-cov>=7.1.0
+pytest-cov>=4.1.0
+
+# Utilities
+rich>=13.0.0
+click>=8.1.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.0
+toml>=0.10.0

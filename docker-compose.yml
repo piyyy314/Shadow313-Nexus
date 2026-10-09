@@ -50,7 +50,36 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_NUM_PARALLEL=2
       - OLLAMA_HOST=0.0.0.0
+    
+  # ── Telegram Alert Bot ──────────────────────────────────────────────────────
+  telegram-bot:
+    build:
+      context: .
+      target: nexus
+    container_name: shadow313-telegram-bot
+    restart: unless-stopped
+    depends_on:
+      shadow313-api:
+        condition: service_healthy
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - SHADOW313_API_URL=http://shadow313-api:8000
+      - TELEGRAM_MIN_SEVERITY=${TELEGRAM_MIN_SEVERITY:-HIGH}
+      - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-10}
+      - SHADOW313_AI_BACKEND=disabled
+    command: ["python", "-m", "shadow313.integrations.telegram.bot"]
     networks:
+      - shadow313_net
+    profiles:
+      - telegram
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
       - shadow313_internal  # Internal only — not on external network
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]

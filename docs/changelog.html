@@ -1,89 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Changelog — Shadow313 NEXUS</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
-:root{--g:#22c55e;--a:#f59e0b;--c:#06b6d4;--p:#a78bfa;--r:#ef4444;--bg:#000;--bg2:#0a0a0a;--bd:rgba(34,197,94,.15);--bd2:rgba(30,41,59,.5);--tx:#e2e8f0;--mu:#64748b;}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{--green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--red:#ef4444;--bg:#000;--bg2:#080808;--border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.5);--text:#e2e8f0;--muted:#64748b;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
-.top{background:rgba(0,0,0,.97);border-bottom:2px solid var(--g);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;}
-.brand{font-size:14px;font-weight:800;}.brand span{color:var(--g);}
-.hero{padding:52px 24px 36px;text-align:center;border-bottom:1px solid var(--bd);}
-.hero h1{font-size:clamp(24px,5vw,42px);font-weight:800;margin-bottom:10px;}.hero h1 span{color:var(--g);}
-.hero p{font-size:14px;color:var(--mu);max-width:560px;margin:0 auto;}
-.main{max-width:900px;margin:0 auto;padding:36px 24px;}
-.version{background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;padding:24px;margin-bottom:24px;position:relative;overflow:hidden;}
-.version::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.v4::before{background:var(--g);}.v3::before{background:var(--c);}.v2::before{background:var(--p);}.v1::before{background:var(--a);}
-.version-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd2);}
-.version-tag{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-.version-date{font-size:12px;color:var(--mu);font-family:'JetBrains Mono',monospace;}
-.badge{font-size:9px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;font-weight:700;}
-.bg{background:rgba(34,197,94,.12);color:var(--g);border:1px solid rgba(34,197,94,.25);}
-.bc{background:rgba(6,182,212,.12);color:var(--c);border:1px solid rgba(6,182,212,.25);}
-.bp{background:rgba(167,139,250,.12);color:var(--p);border:1px solid rgba(167,139,250,.25);}
-.ba{background:rgba(245,158,11,.12);color:var(--a);border:1px solid rgba(245,158,11,.25);}
-.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin:18px 0 10px;font-family:'JetBrains Mono',monospace;}
-.item{padding:8px 0;border-bottom:1px solid rgba(30,41,59,.3);font-size:13px;}
-.item:last-child{border-bottom:none;}
-.item-title{font-weight:700;color:var(--tx);margin-bottom:3px;}
-.item-desc{color:var(--mu);line-height:1.6;font-size:12px;}
-.cmd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c);background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);border-radius:4px;padding:2px 8px;display:inline-block;margin-bottom:4px;}
-.fix{color:var(--r);font-size:11px;font-family:'JetBrains Mono',monospace;}
-.footer{text-align:center;padding:24px;font-size:10px;color:var(--mu);border-top:1px solid var(--bd);font-family:'JetBrains Mono',monospace;margin-top:32px;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.dl-banner{background:rgba(34,197,94,0.12);border-bottom:1px solid rgba(34,197,94,0.3);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.dl-banner-text{font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.nav{background:rgba(0,0,0,0.97);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.nav-brand{font-size:14px;font-weight:800;}.nav-brand span{color:var(--green);}
+.nav-cta{margin-left:auto;background:var(--green);color:#000;font-weight:700;padding:6px 16px;border-radius:6px;font-size:12px;text-decoration:none;}
+.hero{padding:60px 24px 40px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:20px;padding:4px 14px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;margin-bottom:12px;}.hero h1 span{color:var(--green);}
+.hero p{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto;}
+.main{max-width:960px;margin:0 auto;padding:48px 24px;}
+.section{margin-bottom:40px;}
+.section h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15);}
+.section h3{font-size:14px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+.section p,.section li{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:6px;}
+.section ul{padding-left:18px;}
+.panel{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:14px;}
+.panel p,.panel li{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:6px;}
+.panel ul{padding-left:18px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.badge{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;font-weight:700;}
+.badge-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.badge-cyan{background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+.badge-amber{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-red{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.25);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border2);}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,41,59,0.3);color:var(--muted);}
+td:first-child{color:var(--text);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;margin-top:48px;}
+code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);color:var(--green);padding:2px 6px;border-radius:4px;font-size:12px;}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div class="top"><div class="brand">SHADOW313 <span>NEXUS</span> — Changelog</div><a href="/" style="color:var(--g);text-decoration:none;font-size:12px;font-weight:700;">← Home</a></div>
-<div class="hero"><h1>Release <span>Changelog</span></h1><p>Complete version history from initial CLI proof-of-concept to full NEXUS platform with post-quantum cryptography and 313-BIND.</p></div>
+<div class="dl-banner">
+  <span class="dl-banner-text">⬡ Shadow313 NEXUS · changelog.html · Self-contained page</span>
+  <button class="dl-btn" onclick="downloadPage()">⬇ Download This Page</button>
+</div>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW313 <span>NEXUS</span></div>
+  <a class="nav-cta" href="/pricing">View Pricing</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">⬡ v1.0.0 → v4.0.0 · Full Release History</div>
+  <h1>Release <span>Changelog</span></h1>
+  <p>Complete version history for Shadow313 NEXUS — from the initial 9-module CLI to the full V4 NEXUS platform.</p>
+</div>
 <div class="main">
-<div class="version v4">
-  <div class="version-header"><div class="version-tag" style="color:var(--g)">[4.0.0-NEXUS]</div><div class="version-date">2026-08-12</div><span class="badge bg">CURRENT</span><span class="badge bg">Post-Quantum</span><span class="badge bg">313-BIND</span></div>
-  <div class="section-title">New V4 NEXUS Modules</div>
-  <div class="item"><div class="item-title">313 Temporal Binding Protocol <span class="cmd">shadow313 temporal</span></div><div class="item-desc">Nanosecond-precise cryptographic receipts signed with SLH-DSA (FIPS 205), anchored to IPFS. Every computation produces a verifiable 313-BIND receipt.</div></div>
-  <div class="item"><div class="item-title">NEXUS Platform <span class="cmd">shadow313 nexus</span></div><div class="item-desc">Platform orchestration, insider attack demonstration, security posture reports, bind-all session outputs.</div></div>
-  <div class="item"><div class="item-title">STIX 2.1 Handler <span class="cmd">shadow313 stix</span></div><div class="item-desc">Import/export STIX 2.1 bundles, IOC extraction, ATT&CK STIX integration, threat intel ingestion.</div></div>
-  <div class="item"><div class="item-title">Mobile API <span class="cmd">shadow313 mobile-api</span></div><div class="item-desc">FastAPI REST server for iOS/Android companion app with JWT auth support.</div></div>
-  <div class="item"><div class="item-title">LoRA Fine-Tune UI <span class="cmd">shadow313 finetune</span></div><div class="item-desc">Unsloth + QLoRA training config generator, dataset builder from session findings, GGUF export for Ollama.</div></div>
-  <div class="section-title">New V3 Modules</div>
-  <div class="item"><div class="item-title">Browser Recon <span class="cmd">shadow313 browser-recon</span></div><div class="item-desc">Playwright-powered SPA fingerprinting, CSP analysis, API endpoint discovery, security header audit.</div></div>
-  <div class="item"><div class="item-title">Container Scanning <span class="cmd">shadow313 container-scan</span></div><div class="item-desc">Dockerfile linting (12 rules), Trivy/Grype CVE scanning, base image risk scoring.</div></div>
-  <div class="item"><div class="item-title">Active Directory Auditor <span class="cmd">shadow313 ad-audit</span></div><div class="item-desc">Kerberoastable accounts, AS-REP roasting, unconstrained delegation, password policy, RBAC analysis.</div></div>
-  <div class="item"><div class="item-title">SIEM Integration <span class="cmd">shadow313 siem</span></div><div class="item-desc">Forward findings to Splunk HEC, Elasticsearch bulk API, Wazuh REST API.</div></div>
-  <div class="item"><div class="item-title">Malware Sandbox <span class="cmd">shadow313 malware</span></div><div class="item-desc">YARA-like pattern matching (10 rules), static binary analysis, Docker behavioral execution (lab mode).</div></div>
-  <div class="section-title">Key Bug Fixes (v1 to v4)</div>
-  <div class="item"><div class="fix">Config.set()</div><div class="item-desc">Key-path order was reversed — fixed to (*keys, value)</div></div>
-  <div class="item"><div class="fix">AIEngine._ollama_stream()</div><div class="item-desc">Infinite loop risk if done key never arrived — added 10,000 packet counter guard</div></div>
-  <div class="item"><div class="fix">AIEngine.chat()</div><div class="item-desc">No context truncation — added _truncate_context() with 12,000 char limit</div></div>
-  <div class="item"><div class="fix">CVEDatabase</div><div class="item-desc">references is a reserved SQLite keyword — renamed column to refs</div></div>
-  <div class="item"><div class="fix">TemporalBindingEngine._wait_for_313()</div><div class="item-desc">Busy-loop with no sleep — added 0.1ms sleep</div></div>
-  <div class="item"><div class="fix">DNSCovertDetector</div><div class="item-desc">Shannon entropy used math.log() without base — fixed to math.log2()</div></div>
-  <div class="item"><div class="fix">JA3Scanner</div><div class="item-desc">GREASE value set was incomplete (missing 0x8A8A) — completed RFC 8701 set</div></div>
+
+<div class="section">
+  <h2>v4.0.0-NEXUS — August 2026 <span class="badge badge-green" style="margin-left:8px;vertical-align:middle">CURRENT</span></h2>
+  <div class="panel">
+    <h3>New: V4 NEXUS Modules (28 total)</h3>
+    <ul>
+      <li><strong>313 Temporal Binding Protocol</strong> — Nanosecond-precise SLH-DSA (FIPS 205) receipts anchored to IPFS</li>
+      <li><strong>Ghost-Watch CADL</strong> — 5-tier cognitive-adaptive deception layer (Monitor → Neutralize)</li>
+      <li><strong>WE-FORGE</strong> — NLP linguistic watermarking for lure documents</li>
+      <li><strong>AETHER</strong> — Synthetic traffic generator (50,000+ decoy endpoints)</li>
+      <li><strong>CHRONOS</strong> — Temporal snapshot reversion engine</li>
+      <li><strong>VALKYRIE</strong> — BGP null-route strike capability</li>
+      <li><strong>TARTARUS</strong> — Exfiltration trap with PQC-encrypted noise injection</li>
+      <li><strong>HEPHAESTUS</strong> — Supply chain binary auditor (XZ-style injection detection)</li>
+      <li><strong>AEGIS-LLM</strong> — Prompt sentinel for AI jailbreak prevention</li>
+      <li><strong>VSAT Suite</strong> — Satellite ground segment security (9-element ethical hacking)</li>
+      <li><strong>CEQS Engine</strong> — Quantum error correction simulator</li>
+      <li><strong>QE-BIM</strong> — Quantum entanglement-based integrity monitor</li>
+      <li><strong>AEON</strong> — Unified quantum framework</li>
+      <li><strong>NVL72 Telemetry</strong> — 30TB VRAM monitoring for GB200 architectures</li>
+      <li><strong>C-SBOM Auditor</strong> — CycloneDX 1.5 cryptographic SBOM</li>
+      <li><strong>Identity Controls</strong> — IDENTITY-1 through IDENTITY-8 (zero-trust, MFA, biometric)</li>
+    </ul>
+    <h3 style="margin-top:16px">Security Fixes</h3>
+    <ul>
+      <li>CRQC-001 through CRQC-013: Post-quantum migration patches (12/14 complete)</li>
+      <li>Session path traversal fix — safe_filename passed to encrypted storage</li>
+      <li>Crypto fail-closed — no plaintext downgrade on import failure</li>
+      <li>Plugin HMAC-SHA256 signing with cosign verification</li>
+    </ul>
+    <h3 style="margin-top:16px">Test Suite</h3>
+    <p>2,858 tests passing · 0 failed · 36 skipped · POSTURE GREEN</p>
+  </div>
 </div>
-<div class="version v2">
-  <div class="version-header"><div class="version-tag" style="color:var(--p)">[2.0.0]</div><div class="version-date">2026-06-01</div><span class="badge bp">Intelligence Layer</span></div>
-  <div class="section-title">New V2 Modules</div>
-  <div class="item"><div class="item-title">RAG Knowledge Base <span class="cmd">shadow313 rag</span></div><div class="item-desc">ChromaDB-backed vector store with TF-IDF fallback, 5 namespaces (CVE/MITRE/OWASP/session/general).</div></div>
-  <div class="item"><div class="item-title">Agentic Auto-Chain <span class="cmd">shadow313 agent</span></div><div class="item-desc">4 built-in plans (full_pentest, quick_vuln, defense_audit, crypto_audit), approval gates, plan persistence.</div></div>
-  <div class="item"><div class="item-title">EPSS + CISA KEV <span class="cmd">shadow313 vuln --epss --kev</span></div><div class="item-desc">FIRST.org EPSS v3 API, Known Exploited Vulnerabilities catalog, auto-CRITICAL promotion.</div></div>
-  <div class="item"><div class="item-title">ML Anomaly Detection <span class="cmd">shadow313 network --ml-anomaly</span></div><div class="item-desc">IsolationForest → ONNX → z-score fallback, 14-feature vector.</div></div>
-  <div class="item"><div class="item-title">JA3/JA3S Fingerprinting <span class="cmd">shadow313 network --ja3</span></div><div class="item-desc">Pure-Python TLS fingerprinting, 9 known-malicious signatures.</div></div>
-  <div class="item"><div class="item-title">Intelligence Graph <span class="cmd">shadow313 graph</span></div><div class="item-desc">NetworkX MultiDiGraph, 9 node types, risk ranking, GraphML/GEXF export.</div></div>
-  <div class="item"><div class="item-title">AES-256-GCM encrypted session store</div><div class="item-desc">PBKDF2, 480,000 iterations. Full config.yaml reference with all v2 settings.</div></div>
+<div class="section">
+  <h2>v3.0.0 — July 2026</h2>
+  <div class="panel">
+    <h3>New: V3 Modules (10 modules)</h3>
+    <ul>
+      <li><strong>Browser Recon</strong> — Playwright SPA fingerprinting, CSP analysis, API discovery</li>
+      <li><strong>Container Scanning</strong> — Dockerfile linting (12 rules), Trivy/Grype CVE scanning</li>
+      <li><strong>Active Directory Auditor</strong> — Kerberoasting, AS-REP roasting, delegation analysis</li>
+      <li><strong>SIEM Integration</strong> — Splunk HEC, Elasticsearch, Wazuh REST API</li>
+      <li><strong>Collaborative Sessions</strong> — Multi-user session sharing and event timeline</li>
+      <li><strong>Malware Sandbox</strong> — YARA pattern matching, static binary analysis</li>
+      <li><strong>LSTM Trainer</strong> — Behavioral sequence modeling for APT detection</li>
+      <li><strong>Threat Predictor</strong> — Markov-chain lateral movement prediction</li>
+      <li><strong>eBPF Self-Protection</strong> — Kernel-level syscall interception</li>
+      <li><strong>Bridge V3</strong> — Beacon detector, C2 attribution, event rate tracking</li>
+    </ul>
+    <h3 style="margin-top:16px">Detection Improvements</h3>
+    <p>WebShell Detector: 45 signatures, F1=1.000, 0% false positive rate across 39-sample corpus</p>
+    <p>LOLBin Detector: 15 Windows LOLBins (mshta, regsvr32, certutil, rundll32, wmic...)</p>
+    <p>ATT&amp;CK Coverage: 51.4% (136/265 techniques)</p>
+  </div>
 </div>
-<div class="version v1">
-  <div class="version-header"><div class="version-tag" style="color:var(--a)">[1.0.0]</div><div class="version-date">2026-06-18</div><span class="badge ba">Initial Release</span></div>
-  <div class="section-title">Initial Release</div>
-  <div class="item"><div class="item-title">9 Core Modules</div><div class="item-desc">Recon, Vuln, Exploit, Network, Defense, Quantum, Plugins, CI/CD, Docs</div></div>
-  <div class="item"><div class="item-title">AI Backends</div><div class="item-desc">Ollama/OpenAI-compatible AI backends with local inference support</div></div>
-  <div class="item"><div class="item-title">Session Management</div><div class="item-desc">UUID-scoped session management with audit trail</div></div>
-  <div class="item"><div class="item-title">Security Scanning</div><div class="item-desc">SARIF 2.1.0 output, 13-pattern secret scanning, CIS Level 1/2 benchmark checks (18 checks)</div></div>
-  <div class="item"><div class="item-title">Post-Quantum Foundation</div><div class="item-desc">Post-quantum crypto audit with NIST PQC migration roadmap</div></div>
-  <div class="item"><div class="item-title">Plugin System</div><div class="item-desc">Plugin system with 10 lifecycle hooks, GitHub Actions / GitLab CI template generation</div></div>
+<div class="section">
+  <h2>v2.0.0 — June 2026</h2>
+  <div class="panel">
+    <h3>New: V2 Modules (13 modules)</h3>
+    <ul>
+      <li><strong>RAG Knowledge Base</strong> — ChromaDB vector store, 5 namespaces</li>
+      <li><strong>Agentic Auto-Chain</strong> — 4 built-in plans with approval gates</li>
+      <li><strong>EPSS + KEV Scoring</strong> — FIRST.org EPSS v3, CISA KEV catalog</li>
+      <li><strong>ATT&amp;CK Mapping</strong> — 70+ technique mappings, Navigator v4 JSON export</li>
+      <li><strong>ML Anomaly Detection</strong> — IsolationForest → ONNX → z-score fallback</li>
+      <li><strong>JA3/JA3S Fingerprinting</strong> — Pure-Python TLS fingerprinting</li>
+      <li><strong>DNS Covert Channel Detection</strong> — 6 heuristic rules, DoH detection</li>
+      <li><strong>Campaign Manager</strong> — Asyncio-parallel multi-target scanning</li>
+      <li><strong>Intelligence Graph</strong> — NetworkX MultiDiGraph, 9 node types</li>
+      <li><strong>Plugin Code Signing</strong> — HMAC-SHA256 + cosign/sigstore</li>
+      <li><strong>Threat Intelligence</strong> — FeodoTracker, URLhaus, MalwareBazaar, OTX</li>
+      <li><strong>Crypto Agility</strong> — 7 PQC migration snippets, 11 NIST algorithms</li>
+      <li><strong>Docker CVE Sandbox</strong> — 8 pre-mapped CVEs, 6 security constraints</li>
+    </ul>
+  </div>
 </div>
+<div class="section">
+  <h2>v1.0.0 — June 2026</h2>
+  <div class="panel">
+    <h3>Initial Release: 9 Core Modules</h3>
+    <ul>
+      <li><strong>Recon</strong> — DNS enum (7 record types), subdomain discovery, port scan, WHOIS, GeoIP, AI profiling</li>
+      <li><strong>Vuln</strong> — CVE/NVD, CVSS v3.1, OSV audit, AI triage</li>
+      <li><strong>Exploit</strong> — Advisory-only, scope-guarded, lab-mode required</li>
+      <li><strong>Network</strong> — Scapy PCAP, ONNX anomaly, JA3/JARM, topology mapping</li>
+      <li><strong>Defense</strong> — 24 CIS checks, iptables analysis, SSH hardening</li>
+      <li><strong>Quantum</strong> — TLS scan, NIST FIPS 203/204/205, SLH-DSA, 313-BIND</li>
+      <li><strong>Plugins</strong> — Sandboxed IPC, 6 hook points, HMAC-SHA256 signing</li>
+      <li><strong>CI/CD</strong> — 18 secret patterns, SARIF 2.1.0, GitHub Actions integration</li>
+      <li><strong>Docs</strong> — AI help, interactive tutorials, man page generation</li>
+    </ul>
+    <p style="margin-top:12px">Initial test suite: 404 tests passing · POSTURE GREEN</p>
+  </div>
 </div>
-<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
+<script>function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=location.pathname.split('/').pop()||'page.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}</script>
 </body>
 </html>

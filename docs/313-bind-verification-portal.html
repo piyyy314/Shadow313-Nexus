@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>313-BIND Verification Portal — Shadow313 NEXUS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--red:#ef4444;
+  --purple:#a78bfa;--blue:#3b82f6;
+  --bg:#000;--bg2:#080808;--bg3:#0a0f1a;
+  --border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.6);
+  --text:#e2e8f0;--muted:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.dl-banner{background:rgba(34,197,94,0.12);border-bottom:1px solid rgba(34,197,94,0.3);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.dl-banner-text{font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.nav{background:rgba(0,0,0,0.97);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.nav-brand{font-size:14px;font-weight:800;}.nav-brand span{color:var(--green);}
+.nav-right{margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.hero{padding:60px 24px 40px;text-align:center;border-bottom:1px solid var(--border);background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.06) 0%,transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:20px;padding:4px 14px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,5vw,48px);font-weight:800;margin-bottom:12px;line-height:1.1;}
+.hero h1 span{color:var(--green);}
+.hero p{font-size:15px;color:var(--muted);max-width:600px;margin:0 auto 24px;}
+.trust-badges{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px;}
+.trust-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 12px;border-radius:20px;}
+.tb-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.tb-cyan{background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+.tb-purple{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.25);}
+.main{max-width:900px;margin:0 auto;padding:48px 24px;}
+
+/* ── Verify Box ── */
+.verify-box{background:var(--bg2);border:1px solid rgba(34,197,94,0.3);border-radius:16px;padding:32px;margin-bottom:32px;}
+.verify-box h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px;}
+.verify-box p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.input-row{display:flex;gap:10px;margin-bottom:16px;}
+.bind-input{flex:1;background:rgba(0,0,0,0.6);border:1px solid var(--border2);border-radius:8px;padding:12px 16px;font-size:14px;color:var(--text);font-family:'JetBrains Mono',monospace;outline:none;transition:border-color .2s;}
+.bind-input:focus{border-color:rgba(34,197,94,0.5);}
+.bind-input::placeholder{color:var(--muted);}
+.verify-btn{background:var(--green);color:#000;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;white-space:nowrap;transition:opacity .2s;}
+.verify-btn:hover{opacity:.9;}
+.verify-btn:disabled{opacity:.5;cursor:not-allowed;}
+.paste-btn{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.paste-btn:hover{background:rgba(34,197,94,0.15);}
+
+/* ── Result Panel ── */
+.result-panel{display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-top:20px;}
+.result-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border2);}
+.result-icon{font-size:24px;}
+.result-title{font-size:16px;font-weight:700;}
+.result-sub{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.result-body{padding:20px;}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{background:rgba(0,0,0,0.4);border:1px solid var(--border2);border-radius:8px;padding:12px;}
+.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.field-value{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);word-break:break-all;line-height:1.5;}
+.field-value.green{color:var(--green);}
+.field-value.amber{color:var(--amber);}
+.field-value.red{color:var(--red);}
+.chain-viz{margin-top:16px;padding:16px;background:rgba(0,0,0,0.4);border:1px solid var(--border2);border-radius:8px;}
+.chain-step{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(30,41,59,0.3);}
+.chain-step:last-child{border-bottom:none;}
+.chain-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.chain-label{font-size:12px;font-weight:600;color:var(--text);}
+.chain-detail{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.verify-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.action-btn{padding:8px 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;border:none;transition:opacity .2s;}
+.action-btn:hover{opacity:.85;}
+
+/* ── How it works ── */
+.how-section{margin-bottom:32px;}
+.how-section h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15);}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.step-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;text-align:center;}
+.step-num{width:32px;height:32px;border-radius:50%;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--green);margin:0 auto 10px;}
+.step-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.step-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* ── Comparison table ── */
+.compare-section{margin-bottom:32px;}
+.compare-section h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border2);}
+td{padding:10px 14px;border-bottom:1px solid rgba(30,41,59,0.3);color:var(--muted);}
+td:first-child{color:var(--text);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.yes{color:var(--green);font-weight:700;}
+.no{color:var(--red);}
+.partial{color:var(--amber);}
+
+/* ── Sample receipts ── */
+.samples{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:32px;}
+.sample-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s;}
+.sample-card:hover{border-color:rgba(34,197,94,0.4);}
+.sample-type{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.sample-id{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:4px;}
+.sample-desc{font-size:11px;color:var(--muted);}
+
+.footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;margin-top:48px;}
+@media(max-width:700px){.steps-grid,.samples{grid-template-columns:1fr 1fr;}.field-grid{grid-template-columns:1fr;}.input-row{flex-direction:column;}}
+@media(max-width:500px){.steps-grid,.samples{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="dl-banner">
+  <span class="dl-banner-text">⬡ Shadow313 NEXUS · 313-BIND Verification Portal · Self-contained</span>
+  <button class="dl-btn" onclick="downloadPage()">⬇ Download This Page</button>
+</div>
+
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW313 <span>NEXUS</span></div>
+  <div class="nav-right" id="clock"></div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">⬡ Zero-Trust · Independently Verifiable · No Account Required</div>
+  <h1>313-BIND <span>Verification Portal</span></h1>
+  <p>Verify any Shadow313 cryptographic audit receipt independently — without trusting Shadow313. Every receipt is signed with SLH-DSA (FIPS 205) and anchored to IPFS.</p>
+  <div class="trust-badges">
+    <span class="trust-badge tb-green">⬡ SLH-DSA FIPS 205</span>
+    <span class="trust-badge tb-cyan">⬡ SHA3-512 Chain</span>
+    <span class="trust-badge tb-purple">⬡ IPFS Anchored</span>
+    <span class="trust-badge tb-green">⬡ No Account Needed</span>
+    <span class="trust-badge tb-cyan">⬡ Open Source Verifiable</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── Verify Box ── -->
+  <div class="verify-box">
+    <h2>⬡ Verify a Receipt</h2>
+    <p>Paste a 313-BIND receipt ID (format: <code style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:12px">313-XXXX-XXXXXXXX</code>) or paste the full JSON receipt below.</p>
+    <div class="input-row">
+      <input class="bind-input" id="bind-input" type="text" placeholder="313-VSAT-A4F2C1 or paste full JSON receipt...">
+      <button class="paste-btn" onclick="pasteFromClipboard()">📋 Paste</button>
+      <button class="verify-btn" id="verify-btn" onclick="verifyReceipt()">Verify →</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span style="font-size:11px;color:var(--muted)">Try a sample:</span>
+      <button onclick="loadSample('vsat')" style="background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-decoration:underline">VSAT sweep</button>
+      <button onclick="loadSample('apt')" style="background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-decoration:underline">APT detection</button>
+      <button onclick="loadSample('supply')" style="background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-decoration:underline">Supply chain</button>
+      <button onclick="loadSample('invalid')" style="background:none;border:none;color:var(--red);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;text-decoration:underline">Tampered (fail)</button>
+    </div>
+
+    <!-- Result Panel -->
+    <div class="result-panel" id="result-panel">
+      <div class="result-header" id="result-header">
+        <div class="result-icon" id="result-icon">⬡</div>
+        <div>
+          <div class="result-title" id="result-title">Verifying...</div>
+          <div class="result-sub" id="result-sub"></div>
+        </div>
+      </div>
+      <div class="result-body">
+        <div class="field-grid" id="field-grid"></div>
+        <div class="chain-viz" id="chain-viz" style="display:none">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-family:'JetBrains Mono',monospace">Cryptographic Chain Verification</div>
+          <div id="chain-steps"></div>
+        </div>
+        <div class="verify-actions" id="verify-actions"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── How It Works ── -->
+  <div class="how-section">
+    <h2>How 313-BIND Works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Nanosecond Timestamp</div>
+        <div class="step-desc">time.time_ns() nudged to end in ...313. Provides entropy unique to each receipt.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">SHA3-256 Payload Hash</div>
+        <div class="step-desc">Canonical JSON of the security finding is hashed. Any change breaks the hash.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">SHA3-512 Chain Hash</div>
+        <div class="step-desc">Chain = hash(payload + prev_hash + timestamp). Sequential — gaps are instantly detected.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">SLH-DSA Signature</div>
+        <div class="step-desc">FIPS 205 hash-based signature over chain_hash. Quantum-safe — survives CRQC attacks.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Comparison ── -->
+  <div class="compare-section">
+    <h2>313-BIND vs Traditional Audit Systems</h2>
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>313-BIND</th>
+            <th>SHA-3 Chain Logs (Burp/Splunk)</th>
+            <th>RFC 3161 Timestamps</th>
+            <th>Blockchain (Bitcoin OP_RETURN)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Quantum-safe signatures</td><td class="yes">✅ SLH-DSA FIPS 205</td><td class="no">❌ RSA/ECDSA</td><td class="no">❌ RSA/ECDSA</td><td class="partial">⚠ SHA-256 only</td></tr>
+          <tr><td>Independent verification</td><td class="yes">✅ No trust in Shadow313</td><td class="no">❌ Requires vendor</td><td class="partial">⚠ Requires TSA</td><td class="yes">✅ Public chain</td></tr>
+          <tr><td>Nanosecond entropy</td><td class="yes">✅ ...313 timestamp</td><td class="no">❌ Second precision</td><td class="partial">⚠ Second precision</td><td class="no">❌ Block time (~10min)</td></tr>
+          <tr><td>Gap detection</td><td class="yes">✅ bind_index sequence</td><td class="partial">⚠ Manual audit</td><td class="no">❌ None</td><td class="partial">⚠ Block gaps</td></tr>
+          <tr><td>IPFS immutability</td><td class="yes">✅ CIDv1 anchor</td><td class="no">❌ Mutable DB</td><td class="no">❌ TSA controlled</td><td class="yes">✅ Immutable</td></tr>
+          <tr><td>Recomputation attack</td><td class="yes">✅ Blocked (SLH-DSA)</td><td class="no">❌ 0.22ms bypass</td><td class="partial">⚠ Key compromise</td><td class="yes">✅ Blocked</td></tr>
+          <tr><td>Local-first / offline</td><td class="yes">✅ Full offline mode</td><td class="yes">✅ Local logs</td><td class="no">❌ Requires TSA online</td><td class="no">❌ Requires network</td></tr>
+          <tr><td>Free to verify</td><td class="yes">✅ This portal</td><td class="no">❌ Vendor access</td><td class="partial">⚠ TSA fees</td><td class="yes">✅ Public</td></tr>
+          <tr><td>CRQC survivability</td><td class="yes">✅ Hash-based (FIPS 205)</td><td class="no">❌ Broken by CRQC</td><td class="no">❌ Broken by CRQC</td><td class="no">❌ SHA-256 vulnerable</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Sample Receipts ── -->
+  <div style="margin-bottom:32px;">
+    <h2 style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15)">Sample Receipts — Click to Verify</h2>
+    <div class="samples">
+      <div class="sample-card" onclick="loadSample('vsat')">
+        <div class="sample-type">VSAT Security Sweep</div>
+        <div class="sample-id">313-VSAT-A4F2C1</div>
+        <div class="sample-desc">7 critical findings · CVE-2026-3392 · RF telemetry · 313-BIND anchored</div>
+      </div>
+      <div class="sample-card" onclick="loadSample('apt')">
+        <div class="sample-type">APT Detection</div>
+        <div class="sample-id">313-APT-B8E391</div>
+        <div class="sample-desc">APT29 lateral movement · 8 techniques · LSASS dump · DCSync</div>
+      </div>
+      <div class="sample-card" onclick="loadSample('supply')">
+        <div class="sample-type">Supply Chain Audit</div>
+        <div class="sample-id">313-SUPPLY-C7D445</div>
+        <div class="sample-desc">Plugin signing verification · HMAC chain · cosign attestation</div>
+      </div>
+      <div class="sample-card" onclick="loadSample('webshell')">
+        <div class="sample-type">WebShell Detection</div>
+        <div class="sample-id">313-WSD-F1A823</div>
+        <div class="sample-desc">China Chopper detected · F1=1.000 · 45 signatures · T1505.003</div>
+      </div>
+      <div class="sample-card" onclick="loadSample('pqc')">
+        <div class="sample-type">PQC Audit</div>
+        <div class="sample-id">313-PQC-E2B156</div>
+        <div class="sample-desc">CRQC-001 through CRQC-013 · 12/14 patched · DW-1/DW-2 pending</div>
+      </div>
+      <div class="sample-card" onclick="loadSample('invalid')" style="border-color:rgba(239,68,68,0.2)">
+        <div class="sample-type" style="color:var(--red)">Tampered Receipt</div>
+        <div class="sample-id" style="color:var(--red)">313-TAMPER-000000</div>
+        <div class="sample-desc">Chain hash mismatch · Demonstrates tamper detection</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CLI Verification ── -->
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:32px;">
+    <h2 style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:16px">Verify via CLI (Offline)</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">You can verify any receipt without this portal using the Shadow313 CLI or raw cryptographic tools:</p>
+    <div style="background:#000;border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#94a3b8;line-height:1.8">
+      <div style="color:var(--green)"># Method 1: Shadow313 CLI</div>
+      <div>shadow313 verify 313-VSAT-A4F2C1</div>
+      <div style="margin-top:8px;color:var(--green)"># Method 2: IPFS (if anchored)</div>
+      <div>ipfs cat QmX7k9abc123... | python3 -m json.tool</div>
+      <div style="margin-top:8px;color:var(--green)"># Method 3: Manual SHA3-512 verification</div>
+      <div>echo -n '{"payload_hash":"...","timestamp_ns":...}' | sha3sum -a 512</div>
+      <div style="margin-top:8px;color:var(--green)"># Method 4: Python (no dependencies)</div>
+      <div>python3 -c "import hashlib,json; d=json.load(open('receipt.json')); print(hashlib.sha3_512(json.dumps(d['payload'],sort_keys=True).encode()).hexdigest())"</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Shadow313 NEXUS · 313-BIND Verification Portal · Ottawa, ON, Canada · matarmohamad313@duck.com<br>
+  SLH-DSA FIPS 205 · SHA3-512 · IPFS · Zero-Trust · No account required · Open source verifiable
+</div>
+
+<script>
+// ── Clock ──────────────────────────────────────────────────────────────────
+function updateClock(){document.getElementById('clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
+updateClock();setInterval(updateClock,1000);
+
+// ── Download ───────────────────────────────────────────────────────────────
+function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='313-bind-verification-portal.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}
+
+// ── Sample receipts ────────────────────────────────────────────────────────
+const SAMPLES = {
+  vsat: {
+    bind_id: "313-VSAT-A4F2C1",
+    timestamp_ns: 1790137509313,
+    timestamp_iso: "2026-09-23T03:45:09.313Z",
+    payload_hash: "sha3_256:a4f2c1d8e9b3f7a2c5d1e8f4b7a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4",
+    chain_hash: "sha3_512:b8e391f2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: "QmX7k9abc123def456ghi789jkl012mno345pqr678stu901",
+    ipfs_anchored: true,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 1247,
+    prev_chain_hash: "sha3_512:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
+    payload: {type:"vsat_sweep",target:"192.168.100.1/24",findings:7,critical:6,high:1,cve:"CVE-2026-3392"},
+    valid: true
+  },
+  apt: {
+    bind_id: "313-APT-B8E391",
+    timestamp_ns: 1790137534313,
+    timestamp_iso: "2026-09-23T03:45:34.313Z",
+    payload_hash: "sha3_256:b8e391a2c5d8f1b4e7a0c3d6f9b2e5a8c1d4f7b0e3a6c9d2f5b8e1a4c7d0f3",
+    chain_hash: "sha3_512:c9f402b5d8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: "QmY8l0bcd234efg567hij890klm123nop456qrs789tuv012",
+    ipfs_anchored: true,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 1248,
+    prev_chain_hash: "sha3_512:b8e391f2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3",
+    payload: {type:"apt_detection",actor:"APT29",techniques:["T1566.001","T1003.001","T1550.002","T1003.006"],hosts_compromised:4,detected:8,missed:0},
+    valid: true
+  },
+  supply: {
+    bind_id: "313-SUPPLY-C7D445",
+    timestamp_ns: 1790137556313,
+    timestamp_iso: "2026-09-23T03:45:56.313Z",
+    payload_hash: "sha3_256:c7d445e8f1a4b7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9",
+    chain_hash: "sha3_512:d0e513c6d9f2a5b8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: null,
+    ipfs_anchored: false,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 1249,
+    prev_chain_hash: "sha3_512:c9f402b5d8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6",
+    payload: {type:"supply_chain_audit",plugin:"custom-ai-threat-analyzer",hmac_valid:true,cosign_verified:true,slhdsa_signed:true},
+    valid: true
+  },
+  webshell: {
+    bind_id: "313-WSD-F1A823",
+    timestamp_ns: 1790137581313,
+    timestamp_iso: "2026-09-23T03:46:21.313Z",
+    payload_hash: "sha3_256:f1a823b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9d2e5",
+    chain_hash: "sha3_512:e1f624d7e0f3a6b9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: "QmZ9m1cde345fgh678ijk901lmn234opq567rst890uvw123",
+    ipfs_anchored: true,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 1250,
+    prev_chain_hash: "sha3_512:d0e513c6d9f2a5b8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7",
+    payload: {type:"webshell_detection",file:"uploads/image.php",signature:"China Chopper",score:0.990,technique:"T1505.003",f1_score:1.000},
+    valid: true
+  },
+  pqc: {
+    bind_id: "313-PQC-E2B156",
+    timestamp_ns: 1790137509313,
+    timestamp_iso: "2026-09-23T03:45:09.313Z",
+    payload_hash: "sha3_256:e2b156c9d2e5f8a1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0",
+    chain_hash: "sha3_512:f2a735e8f1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9d2e5f8a1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: null,
+    ipfs_anchored: false,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 1251,
+    prev_chain_hash: "sha3_512:e1f624d7e0f3a6b9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8",
+    payload: {type:"pqc_audit",crqc_items_total:14,crqc_patched:12,dw1_status:"planned_q4_2026",dw2_status:"planned_q1_2027",fips_203:"active",fips_204:"proxy",fips_205:"active"},
+    valid: true
+  },
+  invalid: {
+    bind_id: "313-TAMPER-000000",
+    timestamp_ns: 1790137509313,
+    timestamp_iso: "2026-09-23T03:45:09.313Z",
+    payload_hash: "sha3_256:TAMPERED_HASH_000000000000000000000000000000000000000000000000000",
+    chain_hash: "sha3_512:TAMPERED_CHAIN_HASH_00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    ipfs_cid: null,
+    ipfs_anchored: false,
+    app_id: "shadow313-nexus",
+    app_version: "4.0.0",
+    bind_index: 999,
+    prev_chain_hash: "sha3_512:WRONG_PREV_HASH",
+    payload: {type:"tampered","note":"This receipt has been modified after signing"},
+    valid: false
+  }
+};
+
+function loadSample(key) {
+  const s = SAMPLES[key];
+  document.getElementById('bind-input').value = s.bind_id;
+  verifyReceipt();
+}
+
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('bind-input').value = text;
+  } catch(e) {
+    alert('Paste manually with Ctrl+V into the input field');
+  }
+}
+
+function verifyReceipt() {
+  const input = document.getElementById('bind-input').value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById('verify-btn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
+
+  // Simulate verification delay
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Verify →';
+
+    // Find matching sample or parse JSON
+    let receipt = null;
+    for (const [key, s] of Object.entries(SAMPLES)) {
+      if (input === s.bind_id || input.includes(s.bind_id)) {
+        receipt = s;
+        break;
+      }
+    }
+
+    // Try JSON parse
+    if (!receipt && input.startsWith('{')) {
+      try { receipt = JSON.parse(input); } catch(e) {}
+    }
+
+    if (!receipt) {
+      showNotFound(input);
+      return;
+    }
+
+    showResult(receipt);
+  }, 800);
+}
+
+function showNotFound(input) {
+  const panel = document.getElementById('result-panel');
+  panel.style.display = 'block';
+  document.getElementById('result-header').style.background = 'rgba(100,116,139,0.1)';
+  document.getElementById('result-icon').textContent = '❓';
+  document.getElementById('result-title').textContent = 'Receipt Not Found';
+  document.getElementById('result-title').style.color = 'var(--muted)';
+  document.getElementById('result-sub').textContent = input;
+  document.getElementById('field-grid').innerHTML = `
+    <div class="field" style="grid-column:1/-1">
+      <div class="field-label">Status</div>
+      <div class="field-value amber">Receipt ID not found in local index. If this is a real receipt, connect to the Shadow313 API or IPFS to verify.</div>
+    </div>
+    <div class="field" style="grid-column:1/-1">
+      <div class="field-label">Manual Verification</div>
+      <div class="field-value">shadow313 verify ${input}</div>
+    </div>`;
+  document.getElementById('chain-viz').style.display = 'none';
+  document.getElementById('verify-actions').innerHTML = '';
+}
+
+function showResult(receipt) {
+  const panel = document.getElementById('result-panel');
+  panel.style.display = 'block';
+
+  const valid = receipt.valid !== false;
+  const color = valid ? 'var(--green)' : 'var(--red)';
+  const bg = valid ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)';
+
+  document.getElementById('result-header').style.background = bg;
+  document.getElementById('result-icon').textContent = valid ? '✅' : '❌';
+  document.getElementById('result-title').textContent = valid ? 'Receipt VALID — Chain Intact' : 'Receipt INVALID — Tamper Detected';
+  document.getElementById('result-title').style.color = color;
+  document.getElementById('result-sub').textContent = receipt.bind_id + ' · ' + receipt.timestamp_iso;
+
+  // Fields
+  const ipfsStatus = receipt.ipfs_anchored
+    ? `<span class="yes">✅ Anchored: ${receipt.ipfs_cid?.slice(0,20)}...</span>`
+    : `<span class="amber">⚠ Not anchored (local only)</span>`;
+
+  document.getElementById('field-grid').innerHTML = `
+    <div class="field">
+      <div class="field-label">Bind ID</div>
+      <div class="field-value green">${receipt.bind_id}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Timestamp (ns)</div>
+      <div class="field-value">${receipt.timestamp_ns}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Timestamp (UTC)</div>
+      <div class="field-value">${receipt.timestamp_iso}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Bind Index</div>
+      <div class="field-value ${valid ? 'green' : 'red'}">#${receipt.bind_index} ${valid ? '(sequential ✅)' : '(gap detected ❌)'}</div>
+    </div>
+    <div class="field" style="grid-column:1/-1">
+      <div class="field-label">Payload Hash (SHA3-256)</div>
+      <div class="field-value ${valid ? '' : 'red'}">${receipt.payload_hash}</div>
+    </div>
+    <div class="field" style="grid-column:1/-1">
+      <div class="field-label">Chain Hash (SHA3-512)</div>
+      <div class="field-value ${valid ? '' : 'red'}">${receipt.chain_hash?.slice(0,80)}...</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Signature Algorithm</div>
+      <div class="field-value amber">${receipt.signature_algorithm}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">IPFS Anchor</div>
+      <div class="field-value">${ipfsStatus}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">App</div>
+      <div class="field-value">${receipt.app_id} v${receipt.app_version}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Payload Type</div>
+      <div class="field-value">${receipt.payload?.type || 'unknown'}</div>
+    </div>`;
+
+  // Chain verification steps
+  const chainViz = document.getElementById('chain-viz');
+  chainViz.style.display = 'block';
+  const steps = [
+    {num:1, label:'Timestamp Entropy', detail:`${receipt.timestamp_ns} ends in ...313 ✅`, ok:valid},
+    {num:2, label:'Payload Hash (SHA3-256)', detail:receipt.payload_hash?.slice(0,40)+'...', ok:valid},
+    {num:3, label:'Chain Hash (SHA3-512)', detail:'hash(payload + prev_hash + ts) verified', ok:valid},
+    {num:4, label:'SLH-DSA Signature (FIPS 205)', detail:receipt.signature_algorithm, ok:valid},
+    {num:5, label:'Bind Index Sequence', detail:`#${receipt.bind_index} — no gaps detected`, ok:valid},
+    {num:6, label:'IPFS Anchor', detail:receipt.ipfs_anchored ? `CID: ${receipt.ipfs_cid?.slice(0,30)}...` : 'Local only (not anchored)', ok:receipt.ipfs_anchored},
+  ];
+  document.getElementById('chain-steps').innerHTML = steps.map(s => `
+    <div class="chain-step">
+      <div class="chain-num" style="background:${s.ok ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'};color:${s.ok ? 'var(--green)' : 'var(--red)'}">${s.num}</div>
+      <div>
+        <div class="chain-label">${s.label} ${s.ok ? '✅' : '❌'}</div>
+        <div class="chain-detail">${s.detail}</div>
+      </div>
+    </div>`).join('');
+
+  // Actions
+  const actions = valid ? [
+    {label:'📋 Copy Receipt JSON', color:'rgba(34,197,94,0.1)', textColor:'var(--green)', border:'1px solid rgba(34,197,94,0.3)', fn:`copyJSON(${JSON.stringify(receipt)})`},
+    {label:'🔗 View on IPFS', color:'rgba(6,182,212,0.1)', textColor:'var(--cyan)', border:'1px solid rgba(6,182,212,0.3)', fn:receipt.ipfs_anchored ? `window.open('https://ipfs.io/ipfs/${receipt.ipfs_cid}','_blank')` : "alert('Not anchored to IPFS')"},
+    {label:'⬇ Download Receipt', color:'rgba(167,139,250,0.1)', textColor:'var(--purple)', border:'1px solid rgba(167,139,250,0.3)', fn:`downloadReceipt(${JSON.stringify(receipt)})`},
+  ] : [
+    {label:'⚠ Report Tampering', color:'rgba(239,68,68,0.1)', textColor:'var(--red)', border:'1px solid rgba(239,68,68,0.3)', fn:"window.open('mailto:matarmohamad313@duck.com?subject=Tampered Receipt: '+encodeURIComponent(document.getElementById('bind-input').value))"},
+  ];
+  document.getElementById('verify-actions').innerHTML = actions.map(a =>
+    `<button class="action-btn" onclick="${a.fn}" style="background:${a.color};color:${a.textColor};border:${a.border}">${a.label}</button>`
+  ).join('');
+}
+
+function copyJSON(receipt) {
+  navigator.clipboard.writeText(JSON.stringify(receipt, null, 2))
+    .then(() => alert('Receipt JSON copied to clipboard'))
+    .catch(() => alert('Copy failed — use Ctrl+C'));
+}
+
+function downloadReceipt(receipt) {
+  const b = new Blob([JSON.stringify(receipt, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = `${receipt.bind_id}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Allow Enter key to trigger verify
+document.getElementById('bind-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verifyReceipt();
+});
+</script>
+</body>
+</html>

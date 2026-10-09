@@ -1,2 +1,1 @@
-# Shadow313 SDK v2 - Examples
-
+"""Shadow313 SDK v2 — Example plugins."""

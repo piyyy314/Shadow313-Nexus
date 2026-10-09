@@ -1,33 +1,72 @@
-# SHADOW313 NEXUS .gitignore
+# Python
 __pycache__/
-*.py[cod]
-*.so
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
 .venv/
 venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+*.log.*
+
+# Sensitive / local only
 .env
 .env.local
-.env.production
-secrets.kdbx
-*.pem
-*.key
-id_rsa
-id_ed25519
-*harvester*
-*polymorphic*
-*offensive*
-ghost_c2*
-ghost_shell*
-*ignite_system*
-*phantom_dns*
-*stealth_pivot*
-*infinite_payload*
-*shroud_code*
-system_core_service*
-crypto_transfer*
-node_modules/
+*.backup
+*.v4backup
+uploaded_files/
+tmp/
+lost+found/
+shadow313_manifest.json
+nextgen_threat_report.json
+global_threat_simulation_report.json
+shadow313_attack_layer.json
+
+# Large files
+*.zip
+*.tar.gz
+*.gz
+
+# OS
 .DS_Store
 Thumbs.db
-*.log
-*.tmp
-docs-archive/rescued-from-pictures/
+
+# Internal planning — do not expose publicly
+todo.md
+notes/
+dist/receipts/
+dist/p1_*/
+dist/manifest.json
+*.swp
+*.swo
+
+# Local scripts with tokens
+scripts/apply-fixes-v2.ps1
+scripts/push-missing-html.ps1
+
+# Sandbox artifacts
+uploaded_files/
 local_bundle/

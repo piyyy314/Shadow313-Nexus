@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — Launch Checklist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{--green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--red:#ef4444;--purple:#a78bfa;--blue:#3b82f6;--bg:#000;--bg2:#080808;--border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.6);--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.dl-banner{background:rgba(34,197,94,0.12);border-bottom:1px solid rgba(34,197,94,0.3);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.dl-banner-text{font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;}
+.nav{background:rgba(0,0,0,0.97);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.nav-brand{font-size:14px;font-weight:800;}.nav-brand span{color:var(--green);}
+.hero{padding:48px 24px 32px;text-align:center;border-bottom:1px solid var(--border);}
+.hero h1{font-size:clamp(24px,4vw,40px);font-weight:800;margin-bottom:8px;}
+.hero h1 span{color:var(--green);}
+.hero p{font-size:14px;color:var(--muted);max-width:600px;margin:0 auto;}
+.main{max-width:1000px;margin:0 auto;padding:32px 24px;}
+
+/* Progress bar */
+.progress-bar{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:32px;}
+.progress-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.progress-track{background:rgba(0,0,0,0.5);border-radius:6px;height:8px;margin-bottom:8px;overflow:hidden;}
+.progress-fill{height:8px;border-radius:6px;background:linear-gradient(to right,var(--green),var(--cyan));transition:width .5s;}
+.progress-stats{display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+
+/* Phase cards */
+.phase{margin-bottom:28px;border-radius:14px;overflow:hidden;border:1px solid var(--border2);}
+.phase-header{padding:16px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.phase-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.phase-title{font-size:15px;font-weight:700;flex:1;}
+.phase-meta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.phase-body{padding:0 20px 20px;background:var(--bg2);}
+
+/* Steps */
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(30,41,59,0.3);}
+.step:last-child{border-bottom:none;}
+.step-check{width:22px;height:22px;border-radius:4px;border:2px solid var(--border2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;margin-top:1px;}
+.step-check.done{background:var(--green);border-color:var(--green);color:#000;}
+.step-content{flex:1;}
+.step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.step-cmd{background:#000;border:1px solid rgba(30,41,59,0.5);border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);margin-top:6px;white-space:pre-wrap;word-break:break-all;}
+.step-badge{display:inline-block;font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:4px;font-weight:700;margin-left:6px;vertical-align:middle;}
+.badge-now{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+.badge-1hr{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);}
+.badge-today{background:rgba(6,182,212,0.15);color:var(--cyan);border:1px solid rgba(6,182,212,0.3);}
+.badge-week{background:rgba(167,139,250,0.15);color:var(--purple);border:1px solid rgba(167,139,250,0.3);}
+.badge-done{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+
+/* Hetzner config box */
+.config-box{background:#000;border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:16px;margin-top:10px;}
+.config-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:10px;}
+.config-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(30,41,59,0.3);font-size:12px;}
+.config-row:last-child{border-bottom:none;}
+.config-key{color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.config-val{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
+
+/* Connection diagram */
+.conn-diagram{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:28px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:var(--muted);}
+.conn-diagram .node{color:var(--green);font-weight:700;}
+.conn-diagram .arrow{color:var(--cyan);}
+.conn-diagram .label{color:var(--amber);}
+
+.footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;margin-top:40px;}
+@media(max-width:600px){.step-cmd{font-size:10px;}}
+</style>
+</head>
+<body>
+<div class="dl-banner">
+  <span class="dl-banner-text">⬡ Shadow313 NEXUS · Launch Checklist · Self-contained</span>
+  <button class="dl-btn" onclick="downloadPage()">⬇ Download This Page</button>
+</div>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW313 <span>NEXUS</span></div>
+  <span style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted)" id="clock"></span>
+</nav>
+<div class="hero">
+  <h1>Shadow313 NEXUS <span>Launch Checklist</span></h1>
+  <p>Every platform, every connection, every service — in the exact order to do them. Check off each step as you complete it.</p>
+</div>
+<div class="main">
+
+<!-- Progress -->
+<div class="progress-bar">
+  <div class="progress-title">Overall Launch Progress</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-stats"><span id="progress-text">0 / 0 steps complete</span><span id="progress-pct">0%</span></div>
+</div>
+
+<!-- Connection Diagram -->
+<div class="conn-diagram">
+  <div><span class="node">Users</span> <span class="arrow">──HTTPS──▶</span> <span class="node">Vercel</span> <span class="label">(shadow313.dev)</span> <span class="arrow">◀──git push──</span> <span class="node">GitHub</span></div>
+  <div><span class="node">Vercel</span> <span class="arrow">──serves──▶</span> <span class="label">HTML/JS/CSS (158 routes)</span></div>
+  <div><span class="node">Browser</span> <span class="arrow">──API calls──▶</span> <span class="node">Hetzner VPS</span> <span class="label">(:8000 Shadow313 API)</span></div>
+  <div><span class="node">Hetzner VPS</span> <span class="arrow">──WireGuard──▶</span> <span class="node">Your Laptop</span> <span class="label">(encrypted tunnel)</span></div>
+  <div><span class="node">Hetzner VPS</span> <span class="arrow">──runs──▶</span> <span class="label">Docker: API + Telegram Bot + PostgreSQL + Nginx</span></div>
+  <div><span class="node">Ollama</span> <span class="arrow">──localhost:11434──▶</span> <span class="node">Open WebUI</span> <span class="label">(:3000) + Shadow313 CLI</span></div>
+  <div><span class="node">Telegram Bot</span> <span class="arrow">──alerts──▶</span> <span class="node">Your Phone</span> <span class="label">(HIGH/CRITICAL events)</span></div>
+  <div><span class="node">Zoho/Google</span> <span class="arrow">──email──▶</span> <span class="label">mohamad@shadow313.dev · security@ · support@</span></div>
+  <div><span class="node">313-BIND</span> <span class="arrow">──anchors──▶</span> <span class="node">IPFS</span> <span class="label">(public tamper-evidence)</span></div>
+</div>
+
+<!-- PHASE 0: RIGHT NOW -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(239,68,68,0.08);border-bottom:1px solid rgba(239,68,68,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(239,68,68,0.15);color:var(--red)">0</div>
+    <div class="phase-title" style="color:var(--red)">RIGHT NOW — Before Anything Else</div>
+    <div class="phase-meta">5 steps · ~15 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Generate new GitHub token <span class="badge-now">DO NOW</span></div>
+      <div class="step-desc">github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → check: repo, workflow, write:packages → 90 days</div>
+      <div class="step-cmd">Name: shadow313-laptop-oct2026
+Scopes: ✅ repo  ✅ workflow  ✅ write:packages
+Expiry: 90 days</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Push new files to GitHub <span class="badge-now">DO NOW</span></div>
+      <div class="step-desc">Run apply-fixes-v2.ps1 from Downloads — paste new token when prompted</div>
+      <div class="step-cmd">cd C:\Users\shiatoali\Downloads
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\apply-fixes-v2.ps1</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Fix DNS to Quad9 (Admin PowerShell) <span class="badge-now">DO NOW</span></div>
+      <div class="step-desc">Open PowerShell as Administrator (right-click → Run as administrator)</div>
+      <div class="step-cmd">netsh interface ip set dns "Wi-Fi" static 9.9.9.9
+netsh interface ip add dns "Wi-Fi" 149.112.112.112 index=2
+# Verify:
+netsh interface ip show dns "Wi-Fi"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Start Docker stack <span class="badge-now">DO NOW</span></div>
+      <div class="step-desc">Start Shadow313 API + all services (Open WebUI already running)</div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+docker compose up -d
+docker ps  # verify all containers running</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Fix Ollama context window <span class="badge-now">DO NOW</span></div>
+      <div class="step-desc">System prompt is 9,918 tokens but num_ctx was 8,192 — causes HTTP 400 errors in Open WebUI</div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus\ollama
+# Edit Modelfile — change num_ctx 8192 to num_ctx 16384
+(Get-Content Modelfile) -replace 'num_ctx 8192','num_ctx 16384' | Set-Content Modelfile
+ollama create matarmohamad313/shadow313-nexus -f Modelfile
+ollama push matarmohamad313/shadow313-nexus</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 1: HETZNER -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(167,139,250,0.08);border-bottom:1px solid rgba(167,139,250,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(167,139,250,0.15);color:var(--purple)">1</div>
+    <div class="phase-title" style="color:var(--purple)">Hetzner VPS — Buy & Configure</div>
+    <div class="phase-meta">8 steps · ~45 min · BUYING IN 1 HOUR</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Buy the server <span class="badge-1hr">1 HOUR</span></div>
+      <div class="step-desc">hetzner.com/cloud → Add Server → exact config below</div>
+      <div class="config-box">
+        <div class="config-title">Exact Hetzner Configuration</div>
+        <div class="config-row"><span class="config-key">Plan</span><span class="config-val">CX22 — 2 vCPU, 4GB RAM, 40GB SSD</span></div>
+        <div class="config-row"><span class="config-key">Price</span><span class="config-val">€3.29/mo (~$4.80 CAD)</span></div>
+        <div class="config-row"><span class="config-key">Location</span><span class="config-val">Ashburn, VA (closest to Ottawa)</span></div>
+        <div class="config-row"><span class="config-key">Image</span><span class="config-val">Ubuntu 24.04 LTS</span></div>
+        <div class="config-row"><span class="config-key">SSH Key</span><span class="config-val">Add your public key (generate below)</span></div>
+        <div class="config-row"><span class="config-key">Firewall</span><span class="config-val">Create new: allow 22/tcp, 51820/udp, 80/tcp, 443/tcp</span></div>
+        <div class="config-row"><span class="config-key">Name</span><span class="config-val">shadow313-nexus-vps</span></div>
+        <div class="config-row"><span class="config-key">Backups</span><span class="config-val">Enable (€0.66/mo extra — worth it)</span></div>
+      </div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Generate SSH key on your laptop <span class="badge-1hr">BEFORE BUYING</span></div>
+      <div class="step-cmd">ssh-keygen -t ed25519 -C "shadow313-hetzner" -f "$env:USERPROFILE\.ssh\hetzner_ed25519"
+# Copy public key to paste into Hetzner:
+Get-Content "$env:USERPROFILE\.ssh\hetzner_ed25519.pub"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Connect to VPS and run setup script <span class="badge-1hr">AFTER BUYING</span></div>
+      <div class="step-desc">Replace 1.2.3.4 with your actual Hetzner IP</div>
+      <div class="step-cmd">ssh -i "$env:USERPROFILE\.ssh\hetzner_ed25519" root@1.2.3.4</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Install everything on VPS (paste all at once) <span class="badge-1hr">ON VPS</span></div>
+      <div class="step-cmd">#!/bin/bash
+# Shadow313 VPS Bootstrap — paste this entire block on Hetzner
+apt-get update && apt-get upgrade -y
+apt-get install -y ufw fail2ban wireguard docker.io docker-compose nginx certbot python3-certbot-nginx git curl wget
+
+# Docker setup
+systemctl enable docker && systemctl start docker
+usermod -aG docker root
+
+# Firewall
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 22/tcp      # SSH
+ufw allow 80/tcp      # HTTP
+ufw allow 443/tcp     # HTTPS
+ufw allow 51820/udp   # WireGuard VPN
+ufw --force enable
+
+# fail2ban
+systemctl enable fail2ban && systemctl start fail2ban
+
+# Clone Shadow313 repo
+git clone https://github.com/piyyy314/Shadow313-Nexus.git /opt/shadow313
+cd /opt/shadow313
+
+# WireGuard server keys
+wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key
+chmod 600 /etc/wireguard/server_private.key
+
+echo "✅ VPS bootstrap complete"
+echo "Server public key: $(cat /etc/wireguard/server_public.key)"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Configure WireGuard server <span class="badge-1hr">ON VPS</span></div>
+      <div class="step-cmd">SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
+cat > /etc/wireguard/wg0.conf << EOF
+[Interface]
+Address = 10.8.0.1/24
+ListenPort = 51820
+PrivateKey = $SERVER_PRIVATE
+PostUp = iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+PreDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+# Laptop peer (add after generating client keys)
+# [Peer]
+# PublicKey = YOUR_LAPTOP_PUBLIC_KEY
+# AllowedIPs = 10.8.0.2/32
+EOF
+
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sysctl -p
+systemctl enable wg-quick@wg0
+systemctl start wg-quick@wg0</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Start Shadow313 services on VPS <span class="badge-1hr">ON VPS</span></div>
+      <div class="step-desc">Services to run on Hetzner from day one</div>
+      <div class="step-cmd">cd /opt/shadow313
+
+# Create .env for VPS
+cat > .env << EOF
+SHADOW313_ENV=production
+SHADOW313_API_KEY=$(openssl rand -hex 32)
+SHADOW313_JWT_SECRET=$(openssl rand -hex 32)
+TELEGRAM_BOT_TOKEN=your_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
+SHADOW313_AI_BACKEND=disabled
+SHADOW313_CORS_ORIGINS=https://shadow313.dev,https://shadow313.com
+EOF
+
+# Start production stack
+docker compose -f docker-compose.yml up -d shadow313-api postgresql nginx
+docker ps</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Connect WireGuard on your laptop <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd"># On your laptop — generate client keys:
+wg genkey | Out-File -Encoding ASCII "$env:USERPROFILE\.ssh\wg-private.key"
+Get-Content "$env:USERPROFILE\.ssh\wg-private.key" | wg pubkey | Out-File -Encoding ASCII "$env:USERPROFILE\.ssh\wg-public.key"
+$pub = Get-Content "$env:USERPROFILE\.ssh\wg-public.key"
+Write-Host "Add this to Hetzner VPS wg0.conf: $pub"
+
+# Create tunnel config (replace placeholders):
+$conf = @"
+[Interface]
+PrivateKey = $(Get-Content "$env:USERPROFILE\.ssh\wg-private.key")
+Address = 10.8.0.2/32
+DNS = 9.9.9.9
+
+[Peer]
+PublicKey = HETZNER_SERVER_PUBLIC_KEY
+Endpoint = HETZNER_IP:51820
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
+"@
+$conf | Out-File "$env:USERPROFILE\shadow313-vpn.conf" -Encoding ASCII
+# Import in WireGuard app → "Import tunnel from file"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Test VPN connection <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd"># Activate VPN in WireGuard app, then:
+Invoke-WebRequest -Uri "https://api.ipify.org" -UseBasicParsing | Select-Object -ExpandProperty Content
+# Should show Hetzner IP, not your home IP ✅</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 2: EMAIL -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(6,182,212,0.08);border-bottom:1px solid rgba(6,182,212,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(6,182,212,0.15);color:var(--cyan)">2</div>
+    <div class="phase-title" style="color:var(--cyan)">Email — Zoho Business / Google Workspace</div>
+    <div class="phase-meta">5 steps · ~30 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Choose ONE email provider <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Use Google Workspace ($6/mo) — better spam filtering, Meet, Drive integration, more professional for enterprise. Keep Zoho as backup alias only.</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add shadow313.dev domain to Google Workspace <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">workspace.google.com → Admin Console → Domains → Add domain → shadow313.dev</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add DNS records in Vercel/Cloudflare <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd"># Add these MX records to shadow313.dev DNS:
+MX  @  ASPMX.L.GOOGLE.COM       priority: 1
+MX  @  ALT1.ASPMX.L.GOOGLE.COM  priority: 5
+MX  @  ALT2.ASPMX.L.GOOGLE.COM  priority: 5
+TXT @  "v=spf1 include:_spf.google.com ~all"
+# Also add DKIM record from Google Admin Console</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Create email addresses <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">mohamad@shadow313.dev      # Primary — you
+security@shadow313.dev     # CVE reports / bug bounty
+support@shadow313.dev      # Customer support
+billing@shadow313.dev      # License / payment
+noreply@shadow313.dev      # Automated emails</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Update contact info across all pages <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Update contact.html, security-policy.html, privacy.html, footer — replace matarmohamad313@duck.com with mohamad@shadow313.dev</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 3: GITHUB -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(34,197,94,0.08);border-bottom:1px solid rgba(34,197,94,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(34,197,94,0.15);color:var(--green)">3</div>
+    <div class="phase-title" style="color:var(--green)">GitHub — Repo Health & Pages</div>
+    <div class="phase-meta">6 steps · ~20 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Fix GitHub Pages <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">github.com/piyyy314/Shadow313-Nexus → Settings → Pages → Source: Deploy from branch → Branch: master → Folder: /docs</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Create v4.0.0 release tag <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+git tag -a v4.0.0 -m "Shadow313 NEXUS v4.0.0 — 3614 tests GREEN"
+git push origin v4.0.0</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Enable branch protection on master <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Settings → Branches → Add rule → Branch: master → ✅ Require status checks → ✅ Require branches to be up to date</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add repository topics/description <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">github.com/piyyy314/Shadow313-Nexus → About (gear icon) → Description + Topics for discoverability</div>
+      <div class="step-cmd">Description: "Local-first AI-powered security intelligence CLI with post-quantum cryptography, 313-BIND temporal binding, and Ghost-Watch deception"
+Topics: cybersecurity, post-quantum, cli, python, mitre-attack, threat-detection, fips-205, slh-dsa, vsat-security, ottawa</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add SECURITY.md to repo root <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">GitHub shows a "Security" tab when SECURITY.md exists — links to your security policy</div>
+      <div class="step-cmd">echo "# Security Policy\nSee https://shadow313.dev/security-policy for our responsible disclosure policy.\nReport vulnerabilities to: security@shadow313.dev" > SECURITY.md
+git add SECURITY.md && git commit -m "docs: add SECURITY.md" && git push</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Verify CI/CD is GREEN <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">github.com/piyyy314/Shadow313-Nexus/actions → all workflows should pass after push</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 4: VERCEL -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(34,197,94,0.08);border-bottom:1px solid rgba(34,197,94,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(34,197,94,0.15);color:var(--green)">4</div>
+    <div class="phase-title" style="color:var(--green)">Vercel — shadow313.dev Live</div>
+    <div class="phase-meta">5 steps · ~15 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Verify deployment is live <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">After GitHub push, Vercel auto-deploys in ~30 seconds</div>
+      <div class="step-cmd">Start-Process "https://shadow313.dev"
+Start-Process "https://shadow313.dev/pricing"
+Start-Process "https://shadow313.dev/313-bind-verification-portal"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add environment variables to Vercel <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">vercel.com → shadow313-nexus project → Settings → Environment Variables</div>
+      <div class="step-cmd">SHADOW313_ENV=production
+SHADOW313_API_URL=https://api.shadow313.dev  # Hetzner VPS URL
+SHADOW313_CORS_ORIGINS=https://shadow313.dev,https://shadow313.com</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add custom domain shadow313.com <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Vercel → Project → Settings → Domains → Add shadow313.com → follow DNS instructions</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Test all 158 routes <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\shadow313-html-auditor.ps1</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Enable Vercel Analytics <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Vercel → Project → Analytics → Enable — free tier shows page views, visitors, performance</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 5: TELEGRAM -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(6,182,212,0.08);border-bottom:1px solid rgba(6,182,212,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(6,182,212,0.15);color:var(--cyan)">5</div>
+    <div class="phase-title" style="color:var(--cyan)">Telegram Bot — Alert System</div>
+    <div class="phase-meta">4 steps · ~10 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Create Telegram bot <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Open Telegram → search @BotFather → /newbot → name: Shadow313 NEXUS → username: shadow313nexus_bot → copy token</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Get your chat ID <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Create a private channel → add your bot as admin → send a message → visit URL below</div>
+      <div class="step-cmd">https://api.telegram.org/bot YOUR_TOKEN/getUpdates
+# Look for "chat":{"id": -1001234567890} — that's your CHAT_ID</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add to .env and start bot <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+# Add to .env:
+Add-Content .env "TELEGRAM_BOT_TOKEN=your_token_here"
+Add-Content .env "TELEGRAM_CHAT_ID=-1001234567890"
+# Start:
+docker compose --profile telegram up -d telegram-bot
+docker logs telegram-bot</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Test alert delivery <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Bot should send startup message to your channel. Trigger a test alert via Shadow313 CLI.</div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/shiatoali/shadow313-nexus && python3 -c \"from shadow313.integrations.telegram.bot import send_message; send_message('✅ Shadow313 NEXUS test alert — system operational')\""</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 6: NETLIFY -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(6,182,212,0.08);border-bottom:1px solid rgba(6,182,212,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(6,182,212,0.15);color:var(--cyan)">6</div>
+    <div class="phase-title" style="color:var(--cyan)">Netlify — Backup Deployment</div>
+    <div class="phase-meta">3 steps · ~10 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Connect GitHub repo to Netlify <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">netlify.com → Add new site → Import from Git → GitHub → piyyy314/Shadow313-Nexus → Build: none → Publish: docs/</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Add shadow313.com as Netlify domain <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Netlify → Domain settings → Add custom domain → shadow313.com (failover if Vercel goes down)</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Enable Netlify Forms for contact page <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Add netlify attribute to contact form → free form submissions without backend</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 7: UBUNTU/DOCKER LOCAL -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(245,158,11,0.08);border-bottom:1px solid rgba(245,158,11,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(245,158,11,0.15);color:var(--amber)">7</div>
+    <div class="phase-title" style="color:var(--amber)">Local Stack — Ubuntu + Docker + Ollama</div>
+    <div class="phase-meta">5 steps · ~20 min</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Install Shadow313 CLI in Ubuntu <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "
+cd /mnt/c/Users/shiatoali/shadow313-nexus
+pip install -e '.[full]' --break-system-packages
+pip install pyspx --break-system-packages
+shadow313 --version"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Verify Open WebUI connects to Ollama <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Open http://localhost:3000 → Settings → Connections → Ollama URL: http://host.docker.internal:11434 → Save → should show your models</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Enable BitLocker on C: <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Open Windows PowerShell 5 as Admin → save recovery key to KeePassXC first</div>
+      <div class="step-cmd">powershell.exe -Command "manage-bde -protectors -get C:"
+# Save the 48-digit key to KeePassXC
+powershell.exe -Command "Resume-BitLocker -MountPoint C:"</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Set up KeePassXC database <span class="badge-today">TODAY</span></div>
+      <div class="step-desc">Open KeePassXC → New Database → save to OneDrive → add entries for: GitHub token, Hetzner SSH key, Telegram token, API keys, BitLocker key, Zoho/Google passwords</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">Run full system verification <span class="badge-today">TODAY</span></div>
+      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\full-system-check.ps1</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- PHASE 8: MISSING PAGES -->
+<div class="phase">
+  <div class="phase-header" style="background:rgba(59,130,246,0.08);border-bottom:1px solid rgba(59,130,246,0.2)" onclick="togglePhase(this)">
+    <div class="phase-num" style="background:rgba(59,130,246,0.15);color:var(--blue)">8</div>
+    <div class="phase-title" style="color:var(--blue)">Missing Pages — Build This Week</div>
+    <div class="phase-meta">27 pages needed · ~2 hours</div>
+    <span style="color:var(--muted);font-size:18px">▼</span>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/status.html — Live system status <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">Shows: test count (3614 GREEN), POSTURE, uptime, last deploy, API health</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/roadmap.html — Public roadmap <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">Q4 2026: liboqs ML-DSA, Stripe payments, 313-BIND portal live API. Q1 2027: HSM, mobile app, federated mesh beta</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/platform/ — 9 module pages <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">recon.html, vuln.html, defense.html, quantum.html, cicd.html, network.html, exploit.html, plugins.html, docs.html</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/blog/ — 4 technical posts <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">index.html, 313-bind-deep-dive.html, pqc-migration-guide.html, vsat-security-2026.html</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/marketplace/ — Plugin marketplace <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">index.html, analytics.html, analytics-live.html</div>
+    </div></div>
+    <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
+      <div class="step-title">docs/404.html + sitemap.xml + robots.txt <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">SEO essentials — custom 404 page, XML sitemap, robots.txt</div>
+    </div></div>
+  </div>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS · Launch Checklist · Ottawa, ON, Canada · shadow313.dev</div>
+
+<script>
+function updateClock(){document.getElementById('clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
+updateClock();setInterval(updateClock,1000);
+
+function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='shadow313-launch-checklist.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}
+
+function togglePhase(header){
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('span:last-child');
+  body.style.display = body.style.display === 'none' ? '' : 'none';
+  arrow.textContent = body.style.display === 'none' ? '▶' : '▼';
+}
+
+function toggleStep(checkbox){
+  checkbox.classList.toggle('done');
+  checkbox.textContent = checkbox.classList.contains('done') ? '✓' : '';
+  updateProgress();
+}
+
+function updateProgress(){
+  const all = document.querySelectorAll('.step-check');
+  const done = document.querySelectorAll('.step-check.done');
+  const pct = Math.round(done.length / all.length * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done.length + ' / ' + all.length + ' steps complete';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+updateProgress();
+</script>
+</body>
+</html>

@@ -3,22 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>careers — Shadow313 NEXUS</title>
+<title>Careers — Shadow313 NEXUS</title>
 <style>
-body{background:#000;color:#e2e8f0;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
-.box{text-align:center;padding:40px;}
-.logo{font-size:32px;font-weight:800;color:#22c55e;margin-bottom:16px;}
-.title{font-size:20px;font-weight:700;margin-bottom:12px;}
-.sub{color:#64748b;font-size:14px;margin-bottom:24px;}
-a{color:#22c55e;text-decoration:none;font-weight:700;}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{--green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--red:#ef4444;--bg:#000;--bg2:#080808;--border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.5);--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.dl-banner{background:rgba(34,197,94,0.12);border-bottom:1px solid rgba(34,197,94,0.3);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.dl-banner-text{font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+.nav{background:rgba(0,0,0,0.97);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.nav-brand{font-size:14px;font-weight:800;}.nav-brand span{color:var(--green);}
+.nav-cta{margin-left:auto;background:var(--green);color:#000;font-weight:700;padding:6px 16px;border-radius:6px;font-size:12px;text-decoration:none;}
+.hero{padding:60px 24px 40px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:20px;padding:4px 14px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;margin-bottom:12px;}.hero h1 span{color:var(--green);}
+.hero p{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto;}
+.main{max-width:960px;margin:0 auto;padding:48px 24px;}
+.section{margin-bottom:40px;}
+.section h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15);}
+.section h3{font-size:14px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+.section p,.section li{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:6px;}
+.section ul{padding-left:18px;}
+.panel{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:14px;}
+.panel p,.panel li{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:6px;}
+.panel ul{padding-left:18px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.badge{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:4px;font-weight:700;}
+.badge-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.badge-cyan{background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+.badge-amber{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-red{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.25);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border2);}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,41,59,0.3);color:var(--muted);}
+td:first-child{color:var(--text);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;margin-top:48px;}
+code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);color:var(--green);padding:2px 6px;border-radius:4px;font-size:12px;}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">⬡ SHADOW313 NEXUS</div>
-  <div class="title">careers</div>
-  <div class="sub">This dashboard is available on the live platform.</div>
-  <a href="https://shadow313.dev">← Back to shadow313.dev</a>
+<div class="dl-banner">
+  <span class="dl-banner-text">⬡ Shadow313 NEXUS · careers.html · Self-contained page</span>
+  <button class="dl-btn" onclick="downloadPage()">⬇ Download This Page</button>
 </div>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <div class="nav-brand">SHADOW313 <span>NEXUS</span></div>
+  <a class="nav-cta" href="/pricing">View Pricing</a>
+</nav>
+<div class="hero">
+  <div class="hero-badge">⬡ Ottawa, ON · Remote-Friendly · Security Research</div>
+  <h1>Join the <span>Team</span></h1>
+  <p>Shadow313 NEXUS is a bootstrapped security intelligence platform. We are looking for exceptional collaborators who share our obsession with post-quantum cryptography and adversarial AI.</p>
+</div>
+<div class="main">
+
+<div class="section">
+  <h2>Open Positions</h2>
+  <div class="panel">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div>
+        <h3 style="margin:0 0 6px">Senior Security Researcher — Post-Quantum Cryptography</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge badge-green">FULL-TIME</span>
+          <span class="badge badge-cyan">REMOTE</span>
+          <span class="badge badge-amber">SENIOR</span>
+        </div>
+      </div>
+    </div>
+    <p>Lead research into post-quantum cryptographic implementations, CRQC threat modeling, and the 313-BIND temporal binding protocol. You will own the SLH-DSA/ML-DSA migration roadmap and contribute to NIST FIPS 203/204/205 compliance.</p>
+    <h3 style="margin-top:14px">Requirements</h3>
+    <ul>
+      <li>Deep expertise in post-quantum cryptography (lattice-based, hash-based)</li>
+      <li>Experience with NIST PQC standards (FIPS 203/204/205)</li>
+      <li>Python proficiency — able to contribute to shadow313/core/</li>
+      <li>Understanding of CRQC threat timelines and HNDL attack vectors</li>
+      <li>Familiarity with IPFS, cryptographic audit chains, or blockchain anchoring</li>
+    </ul>
+    <a href="mailto:matarmohamad313@duck.com?subject=Application: Senior Security Researcher PQC" style="display:inline-block;margin-top:16px;background:var(--green);color:#000;border-radius:8px;padding:10px 20px;font-weight:700;text-decoration:none;font-size:13px;">Apply Now →</a>
+  </div>
+  <div class="panel">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div>
+        <h3 style="margin:0 0 6px">Detection Engineer — ATT&amp;CK Coverage</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge badge-green">CONTRACT</span>
+          <span class="badge badge-cyan">REMOTE</span>
+          <span class="badge badge-green">MID-SENIOR</span>
+        </div>
+      </div>
+    </div>
+    <p>Expand Shadow313's ATT&CK coverage from 51.4% toward 80%+. Build new detectors for the 70 currently undetected techniques, focusing on Defense Evasion, Collection, and Exfiltration gaps.</p>
+    <h3 style="margin-top:14px">Requirements</h3>
+    <ul>
+      <li>MITRE ATT&CK expertise — able to map TTPs to detection logic</li>
+      <li>Experience writing Sigma rules, YARA rules, or behavioral detectors</li>
+      <li>Python — able to implement detector classes in shadow313/v4/detection/</li>
+      <li>Understanding of EDR telemetry, eBPF, ETW, or Sysmon</li>
+      <li>Familiarity with BYOVD, direct syscall evasion, or LOTL techniques</li>
+    </ul>
+    <a href="mailto:matarmohamad313@duck.com?subject=Application: Detection Engineer ATT&CK" style="display:inline-block;margin-top:16px;background:var(--cyan);color:#000;border-radius:8px;padding:10px 20px;font-weight:700;text-decoration:none;font-size:13px;">Apply Now →</a>
+  </div>
+  <div class="panel">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div>
+        <h3 style="margin:0 0 6px">VSAT / Satellite Security Specialist</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge badge-amber">CONTRACT</span>
+          <span class="badge badge-cyan">REMOTE</span>
+          <span class="badge badge-amber">SPECIALIST</span>
+        </div>
+      </div>
+    </div>
+    <p>Expand the VSAT Tactical Security Suite with real-world satellite ground segment attack scenarios, RF analysis capabilities, and integration with the 313-BIND audit chain.</p>
+    <h3 style="margin-top:14px">Requirements</h3>
+    <ul>
+      <li>Experience with VSAT, satellite communications, or RF security</li>
+      <li>Knowledge of TR-069 CWMP, DVB-S2, or Ku-band link budgets</li>
+      <li>Familiarity with CVE-2026-3392 class vulnerabilities</li>
+      <li>Python — able to contribute to shadow313/v4/aegis/</li>
+    </ul>
+    <a href="mailto:matarmohamad313@duck.com?subject=Application: VSAT Security Specialist" style="display:inline-block;margin-top:16px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:10px 20px;font-weight:700;text-decoration:none;font-size:13px;">Apply Now →</a>
+  </div>
+</div>
+<div class="section">
+  <h2>Why Shadow313?</h2>
+  <div class="grid-2">
+    <div class="panel"><h3>🔬 Cutting-Edge Research</h3><p>Work on genuinely novel problems — 313-BIND temporal binding, post-quantum migration, satellite security, and adversarial AI deception. No legacy codebase, no bureaucracy.</p></div>
+    <div class="panel"><h3>🌍 Remote-First</h3><p>Work from anywhere. We are based in Ottawa, ON, Canada but collaborate globally. Async-first communication with flexible hours.</p></div>
+    <div class="panel"><h3>🔐 Real Impact</h3><p>Your work protects real systems. Shadow313 is used by security researchers, penetration testers, and defense contractors who need post-quantum audit trails.</p></div>
+    <div class="panel"><h3>📖 Open Source</h3><p>All core work is MIT-licensed and publicly visible. Build your reputation while contributing to the security community.</p></div>
+  </div>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
+<script>function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=location.pathname.split('/').pop()||'page.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}</script>
 </body>
 </html>
