@@ -40,6 +40,18 @@ This repository is optimized for Vercel.
 
 `POST /api/chat` uses Vercel AI Gateway with `openai/gpt-5.5` by default in deployed Vercel Functions. Vercel authenticates production requests with its OIDC token; no production API key is required.
 
+Both browser dashboards send chat requests to the same-origin `/api/chat` function. In the Vercel project settings, enable AI Gateway for the project and ensure its runtime OIDC credential is available to Functions. For an API-key configuration instead, set `AI_GATEWAY_API_KEY` as a server-side environment variable; optionally set `AI_GATEWAY_MODEL` to choose a model. Never put provider credentials in browser code.
+
+After configuring the Vercel project, deploy the site so the function and static dashboards are published together. Verify the deployed endpoint with:
+
+```bash
+curl -i -X POST https://<your-site>/api/chat \
+  -H 'Content-Type: application/json' \
+  --data '{"message":"Reply with OK"}'
+```
+
+Expect an HTTP `200` response with a JSON `reply`. Do not use `OLLAMA_BASE_URL` in production; it is intended for local development only.
+
 For local Ollama development, run Ollama on `http://127.0.0.1:11434` and configure the Vercel development server with the model you have installed:
 
 ```bash
