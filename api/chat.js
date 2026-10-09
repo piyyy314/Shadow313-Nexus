@@ -87,16 +87,19 @@ module.exports = async function handler(req, res) {
 
   const ollamaBaseUrl = process.env.OLLAMA_BASE_URL;
 
-  // In deployed Vercel Functions the OIDC token arrives on the request as the
-  // `x-vercel-oidc-token` header. The VERCEL_OIDC_TOKEN env var is only populated
-  // during builds and local development. An API key remains the explicit fallback.
-  const gatewayToken =
-    req.headers['x-vercel-oidc-token'] ||
-    process.env.VERCEL_OIDC_TOKEN ||
-    process.env.AI_GATEWAY_API_KEY;
+  // Only trust runtime credentials that are explicitly configured on the server.
+  // Client-supplied OIDC headers are not accepted as auth material here.
+  const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+  const gatewayAuth = gatewayToken
+    ? {
+        Authorization: gatewayToken.startsWith('Bearer ')
+          ? gatewayToken
+          : 'Bearer ' + gatewayToken,
+      }
+    : {};
   if (!ollamaBaseUrl && !gatewayToken) {
     return sendJson(res, 503, {
-      error: 'Configure AI Gateway or OLLAMA_BASE_URL.',
+      error: 'Configure AI_GATEWAY_API_KEY or OLLAMA_BASE_URL.',
       fallback: true,
     });
   }
@@ -174,7 +177,7 @@ module.exports = async function handler(req, res) {
     const gatewayResponse = await fetch(AI_GATEWAY_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${gatewayToken}`,
+        ...gatewayAuth,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

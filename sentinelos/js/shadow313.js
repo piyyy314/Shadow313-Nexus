@@ -579,10 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const fetchAiResponse = async (input) => {
-        const endpoints = [
-            'http://localhost:8000/api/chat',
-            '/api/chat'
-        ];
+        const endpoints = ['/api/chat'];
 
         let lastError = null;
         for (const url of endpoints) {

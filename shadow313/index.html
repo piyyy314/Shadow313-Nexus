@@ -1912,11 +1912,8 @@ function appendQteMsg(role, html) {
 }
 
 async function fetchQteResponse(msg) {
-    // Try local FastAPI backend first (connects to Ollama)
-    const endpoints = [
-        'http://localhost:8000/api/chat',   // Local FastAPI proxy → Ollama
-        '/api/chat'                          // Vercel serverless fallback
-    ];
+    // Use the same-origin Vercel function so visitors never call their own localhost.
+    const endpoints = ['/api/chat'];
     let lastError = null;
     for (const url of endpoints) {
         try {
