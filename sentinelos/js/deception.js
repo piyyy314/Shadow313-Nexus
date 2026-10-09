@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             parsedBait = JSON.parse(baitContent);
         } catch (e) {
             writeLogLine("Bait Configuration is not valid JSON. Utilizing fallback parameters.", "warn");
-            parsedBait = { "canary_token": "TOK-GENERIC" };
+            parsedBait = { "canary_token": "DEMO-TOK-GENERIC" };
         }
 
         // Find next empty index in grid

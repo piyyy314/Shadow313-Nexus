@@ -24,8 +24,8 @@ Risk:
 
 Remediation:
 - Auth is now derived only from server-side environment variables.
-- The gateway request uses a valid `Authorization: ****** value when a token exists.
-- The app now fails with a clear configuration error when neither `AI_GATEWAY_API_KEY` nor `OLLAMA_BASE_URL` is configured.
+- The gateway request sends the configured token in a valid `Authorization` header, adding the `Bearer` scheme only when it is missing.
+- The app now fails with a clear configuration error when none of `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, or `OLLAMA_BASE_URL` is configured.
 
 Files updated:
 - `api/chat.js`
