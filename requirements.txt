@@ -24,7 +24,7 @@ sqlalchemy>=2.0.0
 
 # Reporting
 jinja2>=3.1.0
-markdown>=3.5.0
+markdown>=3.11
 
 # Security
 bandit>=1.7.0
