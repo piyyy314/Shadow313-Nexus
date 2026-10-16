@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="x-dns-prefetch-control" content="on">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S313NEXUS — Real-Time Threat Board v4</title>
@@ -185,6 +186,11 @@
     .hero { grid-template-columns:1fr; }
     .hero-kpis { flex-wrap:wrap; gap:16px; }
   }
+
+/* Performance hints */
+canvas { will-change: transform; }
+.live-feed { contain: content; }
+
 </style>
 </head>
 <body>
@@ -1869,6 +1875,16 @@ function downloadExport() {
 
 // Auto-select first technique on load
 setTimeout(() => selectTechnique(allTids[0]), 400);
+</script>
+<script>
+// Performance: pause animations when tab is hidden
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    if (typeof pauseAllAnimations === 'function') pauseAllAnimations();
+  } else {
+    if (typeof resumeAllAnimations === 'function') resumeAllAnimations();
+  }
+});
 </script>
 </body>
 </html>

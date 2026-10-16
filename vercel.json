@@ -585,6 +585,10 @@
     {
       "source": "/compliance",
       "destination": "/docs/compliance.html"
+    },
+    {
+      "source": "/performance",
+      "destination": "/docs/performance-report.html"
     }
   ]
 }
