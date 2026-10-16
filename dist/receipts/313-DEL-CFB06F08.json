@@ -1,0 +1,12 @@
+{
+  "bind_id": "313-DEL-CFB06F08",
+  "timestamp_ns": 1792118699756071313,
+  "timestamp_iso": "2026-10-16T02:44:59.756094+00:00",
+  "delivery_id": "DEL-EB943BD8",
+  "payload_hash": "sha3_256:4f853dc25dba4a350ff9cdd56fb23c6a5ffa0c25fc02c32ef6bcf4c66391360b",
+  "chain_hash": "sha3_512:06d5c2e570ae8d387c44c12ae9b92b320060aaf764b1ea0c8ed4c4176f910bd66040e268c2bd9a802ba1fca1d43ac5a3a5bdcb81f8e3cfe75621a44a45389f98",
+  "signature_algorithm": "SHA3-512 (SLH-DSA pending liboqs)",
+  "files_delivered": 134,
+  "platform_version": "4.0.0",
+  "git_sha": "a92df31"
+}
