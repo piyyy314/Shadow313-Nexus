@@ -645,6 +645,10 @@
     {
       "source": "/pqc",
       "destination": "/docs/pqc.html"
+    },
+    {
+      "source": "/analysis",
+      "destination": "/docs/shadow313-analysis.html"
     }
   ],
   "headers": [
