@@ -1,0 +1,342 @@
+{
+  "empty_files": [
+    "ghost-watch-terminal/__init__.py",
+    "ghost-watch-terminal/src/core/__init__.py",
+    "ghost-watch-terminal/src/deception/__init__.py",
+    "shadow313/tests/__init__.py",
+    "shadow313/plugins/custom-ai-threat-analyzer/__init__.py",
+    "shadow313/plugins/custom_ai_threat_analyzer/__init__.py",
+    "shadow313/tools/ai/__init__.py",
+    "shadow313/tools/blueteam/__init__.py",
+    "shadow313/tools/purpleteam/__init__.py",
+    "shadow313/tools/redteam/__init__.py",
+    "shadow313/v3/siem/__init__.py",
+    "shadow313/v3/collab/__init__.py",
+    "shadow313/v3/browser_recon/__init__.py",
+    "shadow313/v3/countermeasures/__init__.py",
+    "shadow313/v3/ad_auditor/__init__.py",
+    "shadow313/v3/malware_sandbox/__init__.py",
+    "shadow313/v3/container_scan/__init__.py",
+    "shadow313/v2/cloud_hardening/__init__.py",
+    "shadow313/v2/campaign/__init__.py",
+    "shadow313/v2/graph/__init__.py",
+    "shadow313/v2/docker_sandbox/__init__.py",
+    "shadow313/v2/reports/__init__.py",
+    "shadow313/v2/dashboard/__init__.py",
+    "shadow313/v2/plugin_signing/__init__.py",
+    "shadow313/v2/threat_intel/__init__.py",
+    "shadow313/v2/crypto_agility/__init__.py",
+    "shadow313/v4/benchmarks/__init__.py",
+    "shadow313/v4/deployment/__init__.py",
+    "shadow313/v4/nexus/__init__.py",
+    "shadow313/v4/agent/__init__.py",
+    "shadow313/v4/nexus_router/__init__.py",
+    "shadow313/v4/ledger/__init__.py",
+    "shadow313/v4/workflow/__init__.py",
+    "shadow313/v4/vanguard/__init__.py",
+    "shadow313/v4/stix/__init__.py",
+    "shadow313/v4/update/__init__.py",
+    "shadow313/v4/attack/__init__.py",
+    "shadow313/v4/mobile_api/__init__.py",
+    "shadow313/v4/aegis/__init__.py",
+    "shadow313/v4/finetune_ui/__init__.py",
+    "shadow313/v4/health/__init__.py",
+    "shadow313/v4/threat_actor/__init__.py",
+    "shadow313/v4/detection/zero_evasion/__init__.py"
+  ],
+  "syntax_errors": [
+    {
+      "file": "shadow313/modules/cicd/pipeline.py",
+      "error": "closing parenthesis ']' does not match opening parenthesis '(' (<unknown>, line 16)"
+    }
+  ],
+  "import_errors": [],
+  "duplicate_files": [
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "nexus_toolkit/core/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "nexus_toolkit/shadow313_bridge/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "ghost-watch-terminal/src/core/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "ghost-watch-terminal/src/deception/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v3/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/threat_intel/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/demo/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/integrations/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/tests/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/plugins/custom-ai-threat-analyzer/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/plugins/custom_ai_threat_analyzer/__init__.py"
+    },
+    {
+      "original": "shadow313/plugins/custom-ai-threat-analyzer/analyzer.py",
+      "duplicate": "shadow313/plugins/custom_ai_threat_analyzer/analyzer.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/tools/ai/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/tools/blueteam/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/tools/purpleteam/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/tools/redteam/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/siem/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/collab/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/browser_recon/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/countermeasures/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/ad_auditor/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/malware_sandbox/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v3/container_scan/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/cloud_hardening/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/campaign/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/graph/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/docker_sandbox/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/reports/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/dashboard/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/plugin_signing/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/threat_intel/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v2/crypto_agility/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/core/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/benchmarks/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/deployment/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/tools/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/nexus/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/agent/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/nexus_router/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/satellite/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/ledger/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/workflow/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/vanguard/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/stix/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/update/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/ghost_watch/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/attack/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/mobile_api/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/aegis/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/finetune_ui/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/aegisfortress/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/health/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/temporal_binding/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/threat_actor/__init__.py"
+    },
+    {
+      "original": "nexus_toolkit/__init__.py",
+      "duplicate": "shadow313/v4/simulation/__init__.py"
+    },
+    {
+      "original": "ghost-watch-terminal/__init__.py",
+      "duplicate": "shadow313/v4/detection/zero_evasion/__init__.py"
+    }
+  ],
+  "missing_inits": [
+    "shadow313/plugins",
+    "shadow313/v4/pqc_js",
+    "shadow313/v4/satellite/data",
+    "shadow313/v4/pqc_js/node_modules",
+    "shadow313/v4/pqc_js/node_modules/@noble",
+    "shadow313/v4/pqc_js/node_modules/@noble/post-quantum",
+    "shadow313/v4/pqc_js/node_modules/@noble/ciphers",
+    "shadow313/v4/pqc_js/node_modules/@noble/curves",
+    "shadow313/v4/pqc_js/node_modules/@noble/hashes",
+    "shadow313/v4/pqc_js/node_modules/@noble/post-quantum/src",
+    "shadow313/v4/pqc_js/node_modules/@noble/ciphers/src",
+    "shadow313/v4/pqc_js/node_modules/@noble/curves/abstract",
+    "shadow313/v4/pqc_js/node_modules/@noble/curves/src",
+    "shadow313/v4/pqc_js/node_modules/@noble/hashes/src",
+    "shadow313/v4/pqc_js/node_modules/@noble/curves/src/abstract"
+  ],
+  "stub_only": [
+    "shadow313_platform/__init__.py",
+    "nexus_toolkit/shadow313_bridge/__init__.py",
+    "shadow313/modules/__init__.py",
+    "shadow313/utils/__init__.py",
+    "shadow313/v3/__init__.py",
+    "shadow313/v2/__init__.py",
+    "shadow313/api/__init__.py",
+    "shadow313/v4/__init__.py",
+    "shadow313/threat_intel/__init__.py",
+    "shadow313/demo/__init__.py",
+    "shadow313/integrations/__init__.py",
+    "shadow313/cli/__init__.py",
+    "shadow313/modules/exploit/__init__.py",
+    "shadow313/modules/quantum/__init__.py",
+    "shadow313/modules/docs/__init__.py",
+    "shadow313/modules/plugins/__init__.py",
+    "shadow313/modules/vuln/__init__.py",
+    "shadow313/modules/recon/__init__.py",
+    "shadow313/modules/cicd/__init__.py",
+    "shadow313/modules/network/__init__.py",
+    "shadow313/modules/defense/__init__.py",
+    "shadow313/v3/threat_predictor/__init__.py",
+    "shadow313/v2/agent/__init__.py",
+    "shadow313/v2/rag/__init__.py",
+    "shadow313/v2/vuln_upgrades/__init__.py",
+    "shadow313/v2/network_upgrades/__init__.py",
+    "shadow313/v4/core/__init__.py",
+    "shadow313/v4/tools/__init__.py",
+    "shadow313/v4/intelligence/__init__.py",
+    "shadow313/v4/satellite/__init__.py",
+    "shadow313/v4/dnssec/__init__.py",
+    "shadow313/v4/ghost_watch/__init__.py",
+    "shadow313/v4/aegisfortress/__init__.py",
+    "shadow313/v4/temporal_binding/__init__.py",
+    "shadow313/v4/simulation/__init__.py",
+    "shadow313/v4/tools/blueteam/__init__.py",
+    "shadow313_sdk/examples/__init__.py"
+  ],
+  "broken_tests": [],
+  "summary": {}
+}
