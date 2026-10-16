@@ -1,3 +1,4 @@
+import os
 """
 shadow313.v2.cloud_hardening.cloud_hardening  — v4
 AWS · Kubernetes · Terraform security checks.
