@@ -46,3 +46,8 @@
 *.pptx binary
 *.docx binary
 *.xlsx binary
+
+# ── Merge strategy: always keep our version of route config ──────────────
+# Prevents delivery bot rebase conflicts from overwriting Vercel routes
+vercel.json merge=ours
+netlify.toml merge=ours
