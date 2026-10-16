@@ -589,6 +589,10 @@
     {
       "source": "/performance",
       "destination": "/docs/performance-report.html"
+    },
+    {
+      "source": "/attck-drilldown.json",
+      "destination": "/docs/attck-drilldown.json"
     }
   ]
 }
