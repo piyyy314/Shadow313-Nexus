@@ -72,6 +72,9 @@ from trl import SFTTrainer
 from transformers import TrainingArguments
 from datasets import load_dataset
 import yaml, sys
+import logging
+logger = logging.getLogger(__name__)
+
 
 def main():
     with open("finetune_config.yaml") as f:

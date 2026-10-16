@@ -29,6 +29,9 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -718,15 +721,15 @@ def run_deployment_plan(verbose: bool = True) -> dict:
 
     if verbose:
         print(f"\n{'='*65}")
-        print(f"  FULL DEPLOYMENT PLAN SUMMARY")
+        logger.debug("  FULL DEPLOYMENT PLAN SUMMARY")
         print(f"{'='*65}")
-        print(f"  Windows:        {len(ALL_WINDOWS)}")
-        print(f"  Total receipts: {chain['total']}")
-        print(f"  Chain valid:    {chain['valid']}")
-        print(f"  Chain message:  {chain['message']}")
+        logger.debug("  Windows:        {len(ALL_WINDOWS)}")
+        logger.debug("  Total receipts: {chain['total']}")
+        logger.debug("  Chain valid:    {chain['valid']}")
+        logger.debug("  Chain message:  {chain['message']}")
         print(f"\n  Window timeline:")
         for w in ALL_WINDOWS:
-            print(f"    {w.window_id}: {w.title[:50]:<50} [{w.target_date}]")
+            logger.debug("    {w.window_id}: {w.title[:50]:<50} [{w.target_date}]")
 
     return {
         "windows":        results,

@@ -9,7 +9,7 @@
 #   - Added --no-install-recommends everywhere for smaller layers
 #   - Added ARG HTTP_PROXY / HTTPS_PROXY for corporate/WSL2 builds
 #   - Added apt-get retry logic for flaky network environments
-#   - python:3.14-slim → python:3.12-slim (3.14 is pre-release)
+#   - python:3.12-slim → python:3.12-slim (3.14 is pre-release)
 #
 
 # ── Build-time proxy args (pass with --build-arg if behind proxy) ──

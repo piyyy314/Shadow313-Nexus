@@ -1,3 +1,4 @@
+import os
 """
 shadow313.cli.main  — v4 NEXUS
 Primary CLI entry point — argparse-based command router.
@@ -330,7 +331,7 @@ Docs:
     p_aegis = sub.add_parser('aegis', help='Active defense platform (CADL escalation)')
     p_aegis.add_argument('--ingest',          metavar='EVENT_TYPE', default='')
     p_aegis.add_argument('--event-type',      default='unknown', dest='event_type')
-    p_aegis.add_argument('--source-ip',       default='0.0.0.0', dest='source_ip')
+    p_aegis.add_argument('--source-ip',       default='127.0.0.1', dest='source_ip')
     p_aegis.add_argument('--list-incidents',  action='store_true', dest='list_incidents')
     p_aegis.add_argument('--resolve',         metavar='INCIDENT_ID', default='')
     p_aegis.add_argument('--stats',           action='store_true')

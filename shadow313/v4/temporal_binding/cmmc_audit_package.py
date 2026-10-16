@@ -627,22 +627,22 @@ def main():
         sys.exit(2)
 
     print(f"\\n{'='*65}")
-    print(f"  Shadow313 CMMC Level 2 Audit Package Verification")
+    logger.debug("  Shadow313 CMMC Level 2 Audit Package Verification")
     print(f"{'='*65}")
-    print(f"  Package ID:    {pkg['package_id']}")
-    print(f"  Generated:     {pkg['generated_at']}")
-    print(f"  Operator:      {pkg['operator']}")
-    print(f"  System:        {pkg['system_name']}")
-    print(f"  CMMC Level:    {pkg['cmmc_level']}")
-    print(f"  IPFS Status:   {pkg['ipfs_status']}")
-    print(f"  Receipts:      {len(pkg['receipts'])}")
-    print(f"  Merkle Root:   {pkg['merkle_root'][:32]}...")
-    print(f"  Sig Algorithm: {pkg['sig_algorithm']}")
+    logger.debug("  Package ID:    {pkg['package_id']}")
+    logger.debug("  Generated:     {pkg['generated_at']}")
+    logger.debug("  Operator:      {pkg['operator']}")
+    logger.debug("  System:        {pkg['system_name']}")
+    logger.debug("  CMMC Level:    {pkg['cmmc_level']}")
+    logger.debug("  IPFS Status:   {pkg['ipfs_status']}")
+    logger.debug("  Receipts:      {len(pkg['receipts'])}")
+    logger.debug("  Merkle Root:   {pkg['merkle_root'][:32]}...")
+    logger.debug("  Sig Algorithm: {pkg['sig_algorithm']}")
     print()
 
     # Step 1: Verify package hash
     pkg_hash_ok = verify_package_hash(pkg)
-    print(f"  [{'PASS' if pkg_hash_ok else 'FAIL'}] Package integrity (SHA3-512)")
+    logger.debug("  [{'PASS' if pkg_hash_ok else 'FAIL'}] Package integrity (SHA3-512)")
     if not pkg_hash_ok:
         print("  ERROR: Package hash mismatch — package may have been tampered with")
         sys.exit(1)
@@ -652,12 +652,12 @@ def main():
     if args.receipt:
         receipts = [r for r in receipts if r["receipt_id"] == args.receipt]
         if not receipts:
-            print(f"  ERROR: Receipt {args.receipt} not found")
+            logger.debug("  ERROR: Receipt {args.receipt} not found")
             sys.exit(2)
 
     all_pass = True
     print(f"\\n  Receipt Verification ({len(receipts)} receipts):")
-    print(f"  {'─'*61}")
+    logger.debug("  {'─'*61}")
 
     for receipt in receipts:
         rid = receipt["receipt_id"]
@@ -688,35 +688,35 @@ def main():
 
         status = "PASS" if receipt_pass else "FAIL"
         sev_color = receipt["severity"]
-        print(f"  [{status}] {rid} | {sev_color} | {receipt['finding'][:40]}")
+        logger.debug("  [{status}] {rid} | {sev_color} | {receipt['finding'][:40]}")
 
         if args.verbose or not receipt_pass:
             for check, result in checks.items():
                 icon = "✓" if result else "✗"
-                print(f"         {icon} {check}")
-            print(f"         Timestamp: {receipt['timestamp_iso']}")
-            print(f"         Operator:  {receipt['operator']}")
+                logger.debug("         {icon} {check}")
+            logger.debug("         Timestamp: {receipt['timestamp_iso']}")
+            logger.debug("         Operator:  {receipt['operator']}")
             if receipt.get("cve_ids"):
-                print(f"         CVEs:      {', '.join(receipt['cve_ids'])}")
+                logger.debug("         CVEs:      {', '.join(receipt['cve_ids'])}")
             if receipt.get("mitre_techniques"):
-                print(f"         ATT&CK:    {', '.join(receipt['mitre_techniques'])}")
+                logger.debug("         ATT&CK:    {', '.join(receipt['mitre_techniques'])}")
 
     # Step 3: CMMC control summary
     print(f"\\n  CMMC Level 2 Control Status:")
-    print(f"  {'─'*61}")
+    logger.debug("  {'─'*61}")
     for ctrl_id, ctrl in pkg.get("cmmc_controls", {}).items():
-        print(f"  [{'SATISFIED' if all_pass else 'REVIEW  '}] {ctrl_id}: {ctrl['title']}")
+        logger.debug("  [{'SATISFIED' if all_pass else 'REVIEW  '}] {ctrl_id}: {ctrl['title']}")
 
     # Final verdict
     print(f"\\n{'='*65}")
     if all_pass:
-        print(f"  RESULT: ALL {len(receipts)} RECEIPTS VERIFIED — AUDIT PACKAGE AUTHENTIC")
-        print(f"  Merkle root {pkg['merkle_root'][:20]}... verified against all receipts.")
-        print(f"  No tampering detected. Package satisfies CMMC Level 2 AU controls.")
+        logger.debug("  RESULT: ALL {len(receipts)} RECEIPTS VERIFIED — AUDIT PACKAGE AUTHENTIC")
+        logger.debug("  Merkle root {pkg['merkle_root'][:20]}... verified against all receipts.")
+        logger.debug("  No tampering detected. Package satisfies CMMC Level 2 AU controls.")
     else:
-        print(f"  RESULT: VERIFICATION FAILURE — TAMPER DETECTED")
-        print(f"  One or more receipts failed cryptographic verification.")
-        print(f"  This audit package should NOT be accepted as evidence.")
+        logger.debug("  RESULT: VERIFICATION FAILURE — TAMPER DETECTED")
+        logger.debug("  One or more receipts failed cryptographic verification.")
+        logger.debug("  This audit package should NOT be accepted as evidence.")
     print(f"{'='*65}\\n")
 
     sys.exit(0 if all_pass else 1)

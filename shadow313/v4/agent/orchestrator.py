@@ -1,3 +1,6 @@
+# REFACTOR: This file has 1283 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.agent.orchestrator  — NEXUS Complete
 Full AI Agent Orchestrator implementing the orchestrator-worker pattern

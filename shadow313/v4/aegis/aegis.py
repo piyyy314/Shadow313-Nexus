@@ -1,3 +1,4 @@
+import os
 """
 shadow313.v4.aegis.aegis  — NEXUS Complete
 Aegis: Active defense platform with CADL escalation and automated response.
@@ -467,7 +468,7 @@ class AegisModule:
         self,
         ingest:       str  = "",
         event_type:   str  = "unknown",
-        source_ip:    str  = "0.0.0.0",
+        source_ip:    str  = "127.0.0.1",
         list_incidents:bool= False,
         resolve:      str  = "",
         stats:        bool = False,
@@ -533,7 +534,7 @@ class AegisModule:
             self.out.result(stats, "Simulation Complete")
             return {"simulation": results, "stats": stats}
 
-        if ingest or source_ip != "0.0.0.0":
+        if ingest or source_ip != "127.0.0.1":
             event = self.engine.ingest_event(
                 source_ip  = source_ip,
                 event_type = event_type,

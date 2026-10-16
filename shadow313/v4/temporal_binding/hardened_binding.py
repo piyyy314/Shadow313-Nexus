@@ -62,6 +62,9 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -729,23 +732,23 @@ def demo_hardened_binding() -> None:
     for receipt in creator._receipts:
         result = creator.verify_receipt(receipt)
         status = "✓ VALID" if result["valid"] else "✗ INVALID"
-        print(f"  Receipt {receipt.bind_index}: {status}")
+        logger.debug("  Receipt {receipt.bind_index}: {status}")
 
     print("\n[3] Security status...")
     status = creator.get_security_status()
     cm = status["countermeasures"]
-    print(f"  SK.seed integrity:    {'✓' if cm['fix1_rowhammer_sk_seed_integrity'] else '✗'}")
-    print(f"  mlock():              {'✓' if cm['fix1_mlock'] else '⚠ (needs CAP_IPC_LOCK)'}")
-    print(f"  Hedged mode:          {'✓' if cm['fix1_hedged_mode'] else '✗'}")
-    print(f"  Counter chain:        {'✓' if cm['fix2_signing_counter_chain'] else '✗'}")
-    print(f"  ML-DSA trust reg:     {'✓' if cm['fix3_ml_dsa_trust_registry'] else '✗'}")
-    print(f"  SHA3-256 IPFS CIDs:   {'✓' if cm['fix4_sha3_256_ipfs_cids'] else '✗'}")
-    print(f"  Level 5 param set:    {'✓' if cm['fix5_level5_parameter_set'] else '✗'}")
+    logger.debug("  SK.seed integrity:    {'✓' if cm['fix1_rowhammer_sk_seed_integrity'] else '✗'}")
+    logger.debug("  mlock():              {'✓' if cm['fix1_mlock'] else '⚠ (needs CAP_IPC_LOCK)'}")
+    logger.debug("  Hedged mode:          {'✓' if cm['fix1_hedged_mode'] else '✗'}")
+    logger.debug("  Counter chain:        {'✓' if cm['fix2_signing_counter_chain'] else '✗'}")
+    logger.debug("  ML-DSA trust reg:     {'✓' if cm['fix3_ml_dsa_trust_registry'] else '✗'}")
+    logger.debug("  SHA3-256 IPFS CIDs:   {'✓' if cm['fix4_sha3_256_ipfs_cids'] else '✗'}")
+    logger.debug("  Level 5 param set:    {'✓' if cm['fix5_level5_parameter_set'] else '✗'}")
     print(f"\n  SLasH-DSA:  {status['threat_model']['slashdsa_rowhammer']}")
-    print(f"  HNDL L2a:   {status['threat_model']['hndl_l2a']}")
-    print(f"  HNDL L3:    {status['threat_model']['hndl_l3']}")
-    print(f"  HNDL L4:    {status['threat_model']['hndl_l4']}")
-    print(f"  Gap:        {status['threat_model']['remaining_gap']}")
+    logger.debug("  HNDL L2a:   {status['threat_model']['hndl_l2a']}")
+    logger.debug("  HNDL L3:    {status['threat_model']['hndl_l3']}")
+    logger.debug("  HNDL L4:    {status['threat_model']['hndl_l4']}")
+    logger.debug("  Gap:        {status['threat_model']['remaining_gap']}")
 
 
 if __name__ == "__main__":

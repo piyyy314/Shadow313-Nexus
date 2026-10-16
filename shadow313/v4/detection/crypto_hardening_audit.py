@@ -43,6 +43,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 AUDIT_REPORT_PATH = Path("/tmp/shadow313_crypto_audit.json")
 
@@ -186,7 +189,7 @@ class EntropyBiasDetector:
         }
 
         print(f"\n  Remediation: Use os.urandom() / CSPRNG with NIST SP 800-90B")
-        print(f"  compliant entropy source. Never derive keys from thermal state.")
+        logger.debug("  compliant entropy source. Never derive keys from thermal state.")
         return results
 
 
@@ -335,17 +338,17 @@ class BiometricGANBypassDetector:
         single_rate = single_detections / n_trials
         multi_rate  = multi_detections  / n_trials
 
-        print(f"  Trials: {n_trials}")
+        logger.debug("  Trials: {n_trials}")
         print(f"  Single-modal detection rate: {single_rate:.1%}  "
               f"({'VULNERABLE' if single_rate < 0.7 else 'OK'})")
         print(f"  Multi-modal detection rate:  {multi_rate:.1%}  "
               f"({'VULNERABLE' if multi_rate < 0.7 else 'OK'})")
         print(f"\n  Key signals that catch GANs:")
-        print(f"    • Error rate < 0.5% → suspiciously perfect typing")
-        print(f"    • Mouse linearity > 95% → no natural hand tremor")
-        print(f"    • Cross-modal inconsistency → typing/mouse speeds uncorrelated")
+        logger.debug("    • Error rate < 0.5% → suspiciously perfect typing")
+        logger.debug("    • Mouse linearity > 95% → no natural hand tremor")
+        logger.debug("    • Cross-modal inconsistency → typing/mouse speeds uncorrelated")
         print(f"\n  Remediation: Fuse ≥3 behavioral modalities. Weight error rate")
-        print(f"  heavily — it's the hardest signal for GANs to fake.")
+        logger.debug("  heavily — it's the hardest signal for GANs to fake.")
 
         return {
             "trials": n_trials,
@@ -515,8 +518,8 @@ class KeyRotationAuditor:
                 failures_v += 1
 
         avg_null = statistics.mean(null_windows)
-        print(f"    Rotations:        {n}")
-        print(f"    Avg null window:  {avg_null:.0f} ns")
+        logger.debug("    Rotations:        {n}")
+        logger.debug("    Avg null window:  {avg_null:.0f} ns")
         print(f"    Signing failures: {failures_v} "
               f"({'VULNERABLE — null state exists' if True else 'OK'})")
         results["vulnerable"] = {
@@ -544,12 +547,12 @@ class KeyRotationAuditor:
             if i % 10 == 0:
                 hard.cleanup()
 
-        print(f"    Rotations:        {n}")
+        logger.debug("    Rotations:        {n}")
         print(f"    Signing failures: {failures_h}  "
               f"({'SECURE' if failures_h == 0 else 'VULNERABLE'})")
-        print(f"    Overlap windows:  {overlaps} rotations had >1 valid key")
-        print(f"    Null state:       Never")
-        print(f"    Audit log:        {len(hard._log)} entries")
+        logger.debug("    Overlap windows:  {overlaps} rotations had >1 valid key")
+        logger.debug("    Null state:       Never")
+        logger.debug("    Audit log:        {len(hard._log)} entries")
         results["hardened"] = {
             "rotations": n,
             "signing_failures": failures_h,
@@ -559,7 +562,7 @@ class KeyRotationAuditor:
         }
 
         print(f"\n  Remediation: Overlapping validity windows (TLS 1.3 pattern).")
-        print(f"  Reference: RFC 8446 §4.6.1, NIST SP 800-193 §3.2")
+        logger.debug("  Reference: RFC 8446 §4.6.1, NIST SP 800-193 §3.2")
         return results
 
 
@@ -586,7 +589,7 @@ def run_full_audit() -> dict:
     vuln3_ok = keyrot_results.get("hardened", {}).get("signing_failures", 1) == 0
 
     print(f"\n{'=' * 70}")
-    print(f"  AUDIT SUMMARY")
+    logger.debug("  AUDIT SUMMARY")
     print(f"{'=' * 70}")
     print(f"  [{'✓' if vuln1_ok else '✗'}] VUL-1 Entropy Bias:         "
           f"{'HARDENED' if vuln1_ok else 'NEEDS WORK'} — use os.urandom()")

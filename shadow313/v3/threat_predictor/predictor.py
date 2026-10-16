@@ -30,6 +30,9 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ── EPSS data (simulated — real data from api.first.org/epss) ─────────────────
@@ -373,12 +376,12 @@ class ThreatPredictor:
         rst = "\033[0m"
 
         print(f"\n  \033[96m{'─'*55}\033[0m")
-        print(f"  \033[96m24H THREAT FORECAST — {profile.host}\033[0m")
-        print(f"  \033[96m{'─'*55}\033[0m")
-        print(f"  Risk Score:    {c}{profile.overall_risk:.1%} [{profile.risk_level}]{rst}")
-        print(f"  Behavioral:    {profile.behavioral_score:.1%}")
-        print(f"  TI Matches:    {profile.ti_matches}")
-        print(f"  CVEs Matched:  {len(profile.matched_cves)}")
+        logger.debug("  \033[96m24H THREAT FORECAST — {profile.host}\033[0m")
+        logger.debug("  \033[96m{'─'*55}\033[0m")
+        logger.debug("  Risk Score:    {c}{profile.overall_risk:.1%} [{profile.risk_level}]{rst}")
+        logger.debug("  Behavioral:    {profile.behavioral_score:.1%}")
+        logger.debug("  TI Matches:    {profile.ti_matches}")
+        logger.debug("  CVEs Matched:  {len(profile.matched_cves)}")
 
         if profile.matched_cves:
             print(f"\n  CVE Details:")
@@ -395,4 +398,4 @@ class ThreatPredictor:
 
         print(f"\n  Recommendations:")
         for i, rec in enumerate(profile.recommendations[:3], 1):
-            print(f"    {i}. {rec}")
+            logger.debug("    {i}. {rec}")

@@ -12,6 +12,9 @@ import socket
 import ssl
 from typing import Any
 from urllib import request as urlreq
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ── Static fallback fingerprinter ─────────────────────────────────────────────

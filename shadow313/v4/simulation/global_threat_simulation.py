@@ -29,6 +29,9 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -647,8 +650,8 @@ def run_global_simulation(
 
     if verbose:
         print(f"\n{'='*70}")
-        print(f"  SHADOW313 NEXUS v4 — GLOBAL THREAT ACTOR SIMULATION")
-        print(f"  {len(actors)} threat actors | Date: {_now_iso()[:10]}")
+        logger.debug("  SHADOW313 NEXUS v4 — GLOBAL THREAT ACTOR SIMULATION")
+        logger.debug("  {len(actors)} threat actors | Date: {_now_iso()[:10]}")
         print(f"{'='*70}\n")
 
     for actor in actors:
@@ -697,27 +700,27 @@ def run_global_simulation(
     )[:10]
 
     if verbose:
-        print(f"  OVERALL RESULTS:")
-        print(f"  Total actors simulated: {total}")
-        print(f"  DETECTED:  {detected:>4} ({detected/total*100:.1f}%)")
-        print(f"  PARTIAL:   {partial:>4} ({partial/total*100:.1f}%)")
-        print(f"  EVADED:    {evaded:>4} ({evaded/total*100:.1f}%)")
-        print(f"  Avg detection rate: {avg_detection:.1%}")
+        logger.debug("  OVERALL RESULTS:")
+        logger.debug("  Total actors simulated: {total}")
+        logger.debug("  DETECTED:  {detected:>4} ({detected/total*100:.1f}%)")
+        logger.debug("  PARTIAL:   {partial:>4} ({partial/total*100:.1f}%)")
+        logger.debug("  EVADED:    {evaded:>4} ({evaded/total*100:.1f}%)")
+        logger.debug("  Avg detection rate: {avg_detection:.1%}")
         print()
-        print(f"  BY CATEGORY:")
+        logger.debug("  BY CATEGORY:")
         for cat, stats in sorted(by_category.items()):
             print(f"  {cat:<15} {stats['detected']:>3}D {stats['partial']:>3}P {stats['evaded']:>3}E "
                   f"| mean_det={stats['mean_detection_rate']:.1%}")
         print()
-        print(f"  TOP 10 MOST DANGEROUS (lowest detection rate):")
+        logger.debug("  TOP 10 MOST DANGEROUS (lowest detection rate):")
         for r in top_evaders:
             print(f"  [{r.overall_verdict:<8}] {r.actor_name:<30} det={r.detection_rate:.1%} "
                   f"evaded={r.ttps_evaded}")
         print()
-        print(f"  CADL ESCALATION DISTRIBUTION:")
+        logger.debug("  CADL ESCALATION DISTRIBUTION:")
         for level in sorted(cadl_dist.keys()):
             count = cadl_dist[level]
-            print(f"  L{level}: {count:>4} actors ({count/total*100:.1f}%)")
+            logger.debug("  L{level}: {count:>4} actors ({count/total*100:.1f}%)")
 
     return {
         "timestamp":          _now_iso(),

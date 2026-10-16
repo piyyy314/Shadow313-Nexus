@@ -1,3 +1,6 @@
+# REFACTOR: This file has 1507 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 #!/usr/bin/env python3
 """
 ╔═══════════════════════════════════════════════════════════════════════════════╗

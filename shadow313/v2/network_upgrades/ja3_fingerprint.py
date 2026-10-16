@@ -69,7 +69,7 @@ def _ja3_hash(ssl_version: int, ciphers: list[int], extensions: list[int],
         "-".join(str(p) for p in point_formats),
     ]
     raw = ",".join(parts)
-    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
+    return hashlib.md5(  # nosec B324 — JA3 spec requires MD5 by definitionraw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
 
 
 def _ja3s_hash(ssl_version: int, cipher: int, extensions: list[int]) -> str:
@@ -81,7 +81,7 @@ def _ja3s_hash(ssl_version: int, cipher: int, extensions: list[int]) -> str:
         "-".join(str(e) for e in _filter_grease(ext_filtered)),
     ]
     raw = ",".join(parts)
-    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
+    return hashlib.md5(  # nosec B324 — JA3 spec requires MD5 by definitionraw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
 
 
 # ── TLS record parser ─────────────────────────────────────────────────────────

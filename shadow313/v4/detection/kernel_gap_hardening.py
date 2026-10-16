@@ -1,3 +1,6 @@
+# REFACTOR: This file has 1646 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.detection.kernel_gap_hardening
 ────────────────────────────────────────────

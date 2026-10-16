@@ -1,3 +1,6 @@
+# REFACTOR: This file has 1475 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.tools.advanced_tools  — NEXUS Complete
 40+ advanced security and intelligence tools closing all identified gaps.

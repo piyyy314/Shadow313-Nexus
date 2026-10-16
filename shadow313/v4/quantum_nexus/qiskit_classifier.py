@@ -33,6 +33,9 @@ from qiskit_machine_learning.algorithms import QSVC
 # Qiskit statevector sampler (no IBM account needed)
 from qiskit.primitives import StatevectorSampler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ── Severity label mapping ──────────────────────────────────────────────────

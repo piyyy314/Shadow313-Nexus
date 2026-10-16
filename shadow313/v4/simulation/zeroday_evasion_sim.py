@@ -24,6 +24,9 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 from shadow313.v4.detection.threat_hardening import (
+import logging
+logger = logging.getLogger(__name__)
+
     ValidAccountsDetector,
     C2ProtocolAnalyzer,
     CredentialDumpingDetector,
@@ -732,24 +735,24 @@ def print_report(reports: list[EvasionReport]) -> None:
           f"{total_detected} detected ({total_detected/total_variants:.0%})\n")
 
     for report in reports:
-        print(f"  {'─'*66}")
-        print(f"  {report.fix_id}: {report.detector_name}")
+        logger.debug("  {'─'*66}")
+        logger.debug("  {report.fix_id}: {report.detector_name}")
         print(f"  Bypass rate: {report.bypass_rate:.0%} "
               f"({report.bypassed}/{report.total_variants} variants evaded)\n")
 
         for a in report.attempts:
             status = "BYPASSED ⚠" if a.bypassed else "DETECTED ✓"
-            print(f"    [{status}] {a.variant_name}")
-            print(f"             Method: {a.evasion_method}")
-            print(f"             Notes:  {a.notes}")
+            logger.debug("    [{status}] {a.variant_name}")
+            logger.debug("             Method: {a.evasion_method}")
+            logger.debug("             Notes:  {a.notes}")
 
         print(f"\n  Gaps identified ({len(report.gaps)}):")
         for g in report.gaps:
-            print(f"    • {g}")
+            logger.debug("    • {g}")
 
         print(f"\n  Next-gen countermeasures ({len(report.countermeasures)}):")
         for c in report.countermeasures:
-            print(f"    → {c}")
+            logger.debug("    → {c}")
         print()
 
 

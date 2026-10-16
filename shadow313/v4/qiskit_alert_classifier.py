@@ -24,6 +24,9 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from typing import Optional, List
+import logging
+logger = logging.getLogger(__name__)
+
 
 # ── Severity label mapping ────────────────────────────────────────────────────
 SEVERITY_LABELS = {0: "NORMAL", 1: "MEDIUM", 2: "HIGH", 3: "CRITICAL"}

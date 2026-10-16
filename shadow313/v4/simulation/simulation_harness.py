@@ -28,6 +28,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -884,7 +887,7 @@ class SimulationRunner:
 
         print(f"\n{'='*60}")
         print("  SHADOW313 NEXUS — SIMULATION HARNESS")
-        print(f"  Mode: {'QUICK' if quick else 'FULL'} | Requests: {n}")
+        logger.debug("  Mode: {'QUICK' if quick else 'FULL'} | Requests: {n}")
         print(f"{'='*60}\n")
 
         sims = [
@@ -922,7 +925,7 @@ class SimulationRunner:
         }
 
         print(f"\n{'='*60}")
-        print(f"  SIMULATION COMPLETE in {total_elapsed:.2f}s")
+        logger.debug("  SIMULATION COMPLETE in {total_elapsed:.2f}s")
         print(f"{'='*60}\n")
 
         return report

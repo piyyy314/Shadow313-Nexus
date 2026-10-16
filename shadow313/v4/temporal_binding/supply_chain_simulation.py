@@ -19,6 +19,9 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 # ── ANSI colours ──────────────────────────────────────────────────────────────
 R   = "\033[91m"
@@ -328,7 +331,7 @@ def print_header(title: str, subtitle: str = ""):
     print(f"\n{DSEP}")
     print(f"{BOLD}{C}  {title}{RST}")
     if subtitle:
-        print(f"  {DIM}{subtitle}{RST}")
+        logger.debug("  {DIM}{subtitle}{RST}")
     print(DSEP)
 
 def print_section(title: str):
@@ -446,10 +449,10 @@ def run_simulation():
         flag = "ATTACK" if r.event == "PACKAGE_RELEASE" else ""
         print_receipt(r, flag=flag)
         if r.event == "DIST_BUILT":
-            print(f"    {G}↑ wheel_sha256: {CLEAN_WHEEL_SHA[:40]}... (CLEAN){RST}")
+            logger.debug("    {G}↑ wheel_sha256: {CLEAN_WHEEL_SHA[:40]}... (CLEAN){RST}")
         elif r.event == "PACKAGE_RELEASE":
-            print(f"    {R}↑ wheel_sha256: {MALICIOUS_WHEEL_SHA[:40]}... (MALICIOUS!){RST}")
-            print(f"    {R}↑ MISMATCH: wheel changed between build and publish ← ATTACK{RST}")
+            logger.debug("    {R}↑ wheel_sha256: {MALICIOUS_WHEEL_SHA[:40]}... (MALICIOUS!){RST}")
+            logger.debug("    {R}↑ MISMATCH: wheel changed between build and publish ← ATTACK{RST}")
 
     alerts2 = detector.analyze(all_receipts)
     new2 = [a for a in alerts2 if a.gap_type == "WHEEL_HASH_MISMATCH"]
@@ -468,10 +471,10 @@ def run_simulation():
         flag = "ATTACK" if (not r.payload.get("match", True) or r.event == "PACKAGE_INSTALLED") else ""
         print_receipt(r, flag=flag)
         if r.event == "TRANSITIVE_DEP_VERIFIED" and not r.payload.get("match", True):
-            print(f"    {R}↑ DEPENDENCY CONFUSION: version 99.0.0 ≠ expected 1.2.3{RST}")
-            print(f"    {R}↑ Hash mismatch: attacker wheel ≠ lockfile hash ← ALERT{RST}")
+            logger.debug("    {R}↑ DEPENDENCY CONFUSION: version 99.0.0 ≠ expected 1.2.3{RST}")
+            logger.debug("    {R}↑ Hash mismatch: attacker wheel ≠ lockfile hash ← ALERT{RST}")
         elif r.event == "PACKAGE_INSTALLED":
-            print(f"    {R}↑ INSTALLED DESPITE FAILURE — highest confidence indicator ← ALERT{RST}")
+            logger.debug("    {R}↑ INSTALLED DESPITE FAILURE — highest confidence indicator ← ALERT{RST}")
 
     alerts3 = detector.analyze(all_receipts)
     new3 = [a for a in alerts3 if a.gap_type in ("DEP_HASH_MISMATCH", "INSTALL_AFTER_VERIFICATION_FAILURE") and a not in alerts2]
@@ -488,14 +491,14 @@ def run_simulation():
     print(f"\n  {Y}Receipt log — showing the bind_index gap:{RST}")
     print(f"\n  {G}Receipt #{prev_seq+2:03d}  TESTS_PASSED{RST}  {DIM}(last legitimate receipt){RST}")
     print(f"\n  {R}  ╔══════════════════════════════════════════════════════════╗{RST}")
-    print(f"  {R}  ║  GAP: bind_index #{prev_seq+3} and #{prev_seq+4} DELETED by attacker  ║{RST}")
-    print(f"  {R}  ║  Missing: DIST_BUILT (malicious wheel hash)              ║{RST}")
-    print(f"  {R}  ║  Missing: SECURITY_SCAN_FAILED (scan caught backdoor)    ║{RST}")
-    print(f"  {R}  ╚══════════════════════════════════════════════════════════╝{RST}")
+    logger.debug("  {R}  ║  GAP: bind_index #{prev_seq+3} and #{prev_seq+4} DELETED by attacker  ║{RST}")
+    logger.debug("  {R}  ║  Missing: DIST_BUILT (malicious wheel hash)              ║{RST}")
+    logger.debug("  {R}  ║  Missing: SECURITY_SCAN_FAILED (scan caught backdoor)    ║{RST}")
+    logger.debug("  {R}  ╚══════════════════════════════════════════════════════════╝{RST}")
     for r in attack4:
         print_receipt(r, flag="ATTACK")
-        print(f"    {R}↑ bind_index={r.bind_index} but expected {prev_seq+3}{RST}")
-        print(f"    {R}↑ GAP SIZE: {r.bind_index - prev_seq - 3} missing receipts ← ALERT{RST}")
+        logger.debug("    {R}↑ bind_index={r.bind_index} but expected {prev_seq+3}{RST}")
+        logger.debug("    {R}↑ GAP SIZE: {r.bind_index - prev_seq - 3} missing receipts ← ALERT{RST}")
 
     alerts4 = detector.analyze(all_receipts)
     new4 = [a for a in alerts4 if a.gap_type == "OUT_OF_ORDER_BIND_INDEX" and a not in alerts3]
@@ -514,10 +517,10 @@ def run_simulation():
         flag = "ATTACK" if r.payload.get("workflow_run") == "STOLEN_TOKEN_REPLAY" else ""
         print_receipt(r, flag=flag)
         if r.payload.get("workflow_run") == "55555555":
-            print(f"    {G}↑ FIRST publish: {CLEAN_WHEEL_SHA[:32]}... (legitimate){RST}")
+            logger.debug("    {G}↑ FIRST publish: {CLEAN_WHEEL_SHA[:32]}... (legitimate){RST}")
         elif r.payload.get("workflow_run") == "STOLEN_TOKEN_REPLAY":
-            print(f"    {R}↑ SECOND publish: {MALICIOUS_WHEEL_SHA[:32]}... (MALICIOUS!) ← ALERT{RST}")
-            print(f"    {R}↑ Same version v4.0.5, different wheel — OIDC replay detected{RST}")
+            logger.debug("    {R}↑ SECOND publish: {MALICIOUS_WHEEL_SHA[:32]}... (MALICIOUS!) ← ALERT{RST}")
+            logger.debug("    {R}↑ Same version v4.0.5, different wheel — OIDC replay detected{RST}")
 
     alerts5 = detector.analyze(all_receipts)
     new5 = [a for a in alerts5 if a.gap_type == "DUPLICATE_VERSION_RELEASE" and a not in alerts4]
@@ -530,9 +533,9 @@ def run_simulation():
     all_alerts = detector.analyze(all_receipts)
 
     print(f"\n  {BOLD}Receipt chain statistics:{RST}")
-    print(f"  Total receipts:  {len(all_receipts)}")
-    print(f"  Total alerts:    {len(all_alerts)}")
-    print(f"  Chain span:      bind_index 1 → {all_receipts[-1].bind_index}")
+    logger.debug("  Total receipts:  {len(all_receipts)}")
+    logger.debug("  Total alerts:    {len(all_alerts)}")
+    logger.debug("  Chain span:      bind_index 1 → {all_receipts[-1].bind_index}")
 
     by_sev = {}
     for a in all_alerts:
@@ -543,20 +546,20 @@ def run_simulation():
                      (AlertSeverity.MEDIUM, M), (AlertSeverity.INFO, C)]:
         count = len(by_sev.get(sev, []))
         if count:
-            print(f"  {col}{sev.value}: {count}{RST}")
+            logger.debug("  {col}{sev.value}: {count}{RST}")
 
     print(f"\n  {BOLD}Gap types detected:{RST}")
     gap_counts: dict[str, int] = {}
     for a in all_alerts:
         gap_counts[a.gap_type] = gap_counts.get(a.gap_type, 0) + 1
     for gt, cnt in sorted(gap_counts.items()):
-        print(f"  {DIM}{gt}: {cnt}{RST}")
+        logger.debug("  {DIM}{gt}: {cnt}{RST}")
 
     print(f"\n  {BOLD}Automated actions triggered:{RST}")
     seen_actions: set[str] = set()
     for a in all_alerts:
         if a.automated_action not in seen_actions:
-            print(f"  {Y}{a.automated_action}{RST}")
+            logger.debug("  {Y}{a.automated_action}{RST}")
             seen_actions.add(a.automated_action)
 
     print(f"\n{DSEP}")

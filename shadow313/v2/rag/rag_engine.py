@@ -551,8 +551,8 @@ def main() -> None:
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    print(f"[+] Config loaded: {args.config}")
-    print(f"[+] Base model: {cfg.get('model_name')}")
+    logger.info("[+] Config loaded: {args.config}")
+    logger.info("[+] Base model: {cfg.get('model_name')}")
 
     if args.dry_run:
         print("[+] Dry-run complete — config valid.")
@@ -569,7 +569,7 @@ def main() -> None:
     train_cfg  = cfg.get("training", {})
     max_seq    = train_cfg.get("max_seq_length", 2048)
 
-    print(f"[+] Loading {model_name} with 4-bit quantization...")
+    logger.info("[+] Loading {model_name} with 4-bit quantization...")
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=model_name,
         max_seq_length=max_seq,
@@ -599,7 +599,7 @@ def main() -> None:
         if fpath.exists():
             ds = load_dataset("json", data_files=str(fpath), split="train")
             splits.append(ds)
-            print(f"[+] Loaded {len(ds)} examples from {fname}")
+            logger.info("[+] Loaded {len(ds)} examples from {fname}")
     if not splits:
         print("[WARN] No dataset files found — create JSONL files first.")
         return
@@ -642,10 +642,10 @@ def main() -> None:
     out_dir = Path(cfg.get("output_dir","./output")).expanduser()
     model.save_pretrained_gguf(str(out_dir), tokenizer,
         quantization_method=cfg.get("export",{}).get("quantization","q4_k_m"))
-    print(f"[+] GGUF saved to {out_dir}")
+    logger.info("[+] GGUF saved to {out_dir}")
 
     ollama_name = cfg.get("export",{}).get("ollama_model_name","shadow313-sec:latest")
-    print(f"[+] Import into Ollama: ollama create {ollama_name} -f {out_dir}/Modelfile")
+    logger.info("[+] Import into Ollama: ollama create {ollama_name} -f {out_dir}/Modelfile")
 
 if __name__ == "__main__":
     main()
@@ -659,6 +659,9 @@ if __name__ == "__main__":
 import math as _math
 import re as _re
 from collections import defaultdict as _defaultdict
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 class TFIDFVectorStore:

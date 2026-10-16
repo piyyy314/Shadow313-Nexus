@@ -1,3 +1,6 @@
+# REFACTOR: This file has 1301 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.detection.threat_detector — NEXUS Complete
 Comprehensive threat detection engine covering all 42 ATT&CK threat scenarios.
@@ -40,6 +43,9 @@ import re
 import time
 from dataclasses import dataclass, field
 from typing import Any
+import logging
+logger = logging.getLogger(__name__)
+
 
 DETECT_THRESHOLD = 0.60
 
@@ -1259,24 +1265,24 @@ class ThreatDetectionSuite:
         W = 70
         print("=" * W)
         print("  SHADOW313 v4 — COMPREHENSIVE THREAT DETECTION TEST SUITE")
-        print(f"  Testing {run_result['summary']['total']} threats across all ATT&CK tactics")
+        logger.debug("  Testing {run_result['summary']['total']} threats across all ATT&CK tactics")
         print("=" * W)
 
         for r in run_result["results"]:
             status = "DETECTED" if r["detected"] else "MISSED  "
             name   = r["name"][:50]
             score  = r["score"]
-            print(f"  [{status}] {r['threat_id']:<12} {name:<50} score={score:.3f}")
+            logger.debug("  [{status}] {r['threat_id']:<12} {name:<50} score={score:.3f}")
 
         print()
         print("=" * W)
         print("  RESULTS SUMMARY")
         print("=" * W)
         s = run_result["summary"]
-        print(f"  Total:     {s['total']}")
-        print(f"  Detected:  {s['detected']}  ({s['detection_rate']*100:.1f}%)")
-        print(f"  Missed:    {s['missed']}")
-        print(f"  Time:      {s['elapsed_ms']:.0f} ms")
+        logger.debug("  Total:     {s['total']}")
+        logger.debug("  Detected:  {s['detected']}  ({s['detection_rate']*100:.1f}%)")
+        logger.debug("  Missed:    {s['missed']}")
+        logger.debug("  Time:      {s['elapsed_ms']:.0f} ms")
 
         print()
         print("  By Tactic:")
@@ -1285,17 +1291,17 @@ class ThreatDetectionSuite:
             bar  = "#" * d + "." * (t - d)
             pct  = int(d / max(1, t) * 100)
             label = self.TACTIC_LABELS.get(tactic, tactic)
-            print(f"    {label:<30} [{bar}] {d}/{t} ({pct}%)")
+            logger.debug("    {label:<30} [{bar}] {d}/{t} ({pct}%)")
 
         print()
         print("  By LSTM Head:")
         for head, stats in sorted(run_result["head_stats"].items()):
             d, t = stats["detected"], stats["total"]
             pct  = int(d / max(1, t) * 100)
-            print(f"    {head:<30} {d}/{t} ({pct}%)")
+            logger.debug("    {head:<30} {d}/{t} ({pct}%)")
 
         if run_result["evasion_stats"]:
             print()
             print("  Missed by evasion:")
             for ev, count in sorted(run_result["evasion_stats"].items()):
-                print(f"    {ev:<30} {count}")
+                logger.debug("    {ev:<30} {count}")

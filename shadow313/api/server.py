@@ -25,7 +25,60 @@ from datetime import UTC, datetime
 from typing import Any
 
 try:
-    from fastapi import Depends, FastAPI, Header, HTTPException
+    
+import os
+import time
+import hmac
+import hashlib
+from functools import wraps
+from fastapi import HTTPException, Request, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+# ── Simple API Key Auth (replace with JWT in production) ──────────────────
+_API_KEY = os.environ.get("SHADOW313_API_KEY", "shadow313-local-dev-key")
+_security = HTTPBearer(auto_error=False)
+
+# ── Rate limiting (simple in-memory) ─────────────────────────────────────
+_rate_store: dict = {}
+_RATE_LIMIT = 100  # requests per minute
+
+def _check_rate_limit(client_ip: str) -> None:
+    now = time.time()
+    window = int(now // 60)
+    key = f"{client_ip}:{window}"
+    _rate_store[key] = _rate_store.get(key, 0) + 1
+    # Clean old keys
+    old_keys = [k for k in _rate_store if int(k.split(":")[-1]) < window - 1]
+    for k in old_keys:
+        del _rate_store[k]
+    if _rate_store[key] > _RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded (100 req/min)")
+
+async def verify_api_key(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(_security)
+) -> str:
+    """Verify API key from Authorization: Bearer <key> header."""
+    # Allow localhost without auth in dev mode
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    _check_rate_limit(client_ip)
+    
+    dev_mode = os.environ.get("SHADOW313_DEV_MODE", "true").lower() == "true"
+    if dev_mode and client_ip in ("127.0.0.1", "::1", "localhost"):
+        return "dev"
+    
+    if not credentials:
+        raise HTTPException(status_code=401, detail="API key required")
+    
+    provided = credentials.credentials
+    expected = _API_KEY
+    if not hmac.compare_digest(provided.encode(), expected.encode()):
+        raise HTTPException(status_code=403, detail="Invalid API key")
+    
+    return provided
+
+
+from fastapi import Depends, FastAPI, Header, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel
     import uvicorn
@@ -34,6 +87,9 @@ except ImportError:
     HAS_FASTAPI = False
 
 from shadow313 import __version__
+import logging
+logger = logging.getLogger(__name__)
+
 
 # Intelligence modules (lazy import — graceful if not available)
 try:
@@ -289,9 +345,9 @@ def main():
     app = create_app(api_key=api_key)
 
     print(f"Shadow313 NEXUS API v{__version__}")
-    print(f"  Listening: http://{args.host}:{args.port}")
-    print(f"  Docs:      http://{args.host}:{args.port}/api/docs")
-    print(f"  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
+    logger.debug("  Listening: http://{args.host}:{args.port}")
+    logger.debug("  Docs:      http://{args.host}:{args.port}/api/docs")
+    logger.debug("  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
 
     uvicorn.run(
         app,

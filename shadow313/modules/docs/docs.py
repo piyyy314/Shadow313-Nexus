@@ -7,6 +7,9 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now() -> str:
