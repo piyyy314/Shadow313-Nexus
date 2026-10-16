@@ -3,22 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>cvss deprecation nvsm — Shadow313 NEXUS</title>
+<title>CVSS Deprecation & NVSM — Shadow313 NEXUS</title>
 <style>
-body{background:#000;color:#e2e8f0;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
-.box{text-align:center;padding:40px;}
-.logo{font-size:32px;font-weight:800;color:#22c55e;margin-bottom:16px;}
-.title{font-size:20px;font-weight:700;margin-bottom:12px;}
-.sub{color:#64748b;font-size:14px;margin-bottom:24px;}
-a{color:#22c55e;text-decoration:none;font-weight:700;}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--accent:#a855f7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid #a855f733;height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:#a855f7;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;}
+.nav-links{display:flex;gap:4px;margin-left:8px;}
+.nav-link{padding:4px 10px;border-radius:5px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .15s;}
+.nav-link:hover{color:var(--text);background:rgba(34,197,94,0.08);}
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.page-title{font-size:24px;font-weight:800;color:#a855f7;margin-bottom:6px;}
+.page-sub{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:24px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.panel-badge{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.card{background:rgba(0,0,0,0.3);border:1px solid #a855f733;border-left:3px solid #a855f7;border-radius:8px;padding:14px;}
+.card-title{font-size:12px;font-weight:700;color:#a855f7;margin-bottom:5px;}
+.card-body{font-size:10px;color:var(--muted);line-height:1.7;}
+.stat{text-align:center;padding:16px;}
+.stat-val{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#a855f7;}
+.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.tag{display:inline-flex;align-items:center;font-size:9px;font-family:'JetBrains Mono',monospace;background:#a855f722;color:#a855f7;border:1px solid #a855f744;border-radius:4px;padding:2px 8px;margin:2px;}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid #a855f722;font-family:'JetBrains Mono',monospace;margin-top:20px;}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">⬡ SHADOW313 NEXUS</div>
-  <div class="title">cvss deprecation nvsm</div>
-  <div class="sub">This dashboard is available on the live platform.</div>
-  <a href="https://shadow313.dev">← Back to shadow313.dev</a>
+<nav class="nav">
+  <div class="nav-hex">S3</div>
+  <span style="font-size:14px;font-weight:800;">SHADOW313 <span style="color:#a855f7;">NEXUS</span></span>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <a class="nav-link" href="/attck">ATT&amp;CK</a>
+    <a class="nav-link" href="/ghost-watch">Ghost-Watch</a>
+    <a class="nav-link" href="/vsat">VSAT</a>
+    <a class="nav-link" href="/pqc">PQC</a>
+    <a class="nav-link" href="/roadmap">Roadmap</a>
+  </div>
+  <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">shadow313.dev</div>
+</nav>
+<div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
+<div class="page-title">CVSS Deprecation & NVSM</div>
+<div class="page-sub">Next-Generation Vulnerability Scoring Model — EPSS + chain composability + forensic evasion potential | Shadow313 NEXUS</div>
+
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-hdr">
+        <span class="panel-title" style="color:#a855f7;">Overview</span>
+        <span class="panel-badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744;">Shadow313 NEXUS</span>
+      </div>
+      <div style="padding:16px;"><div class="card" style="margin-bottom:12px;">
+               <div class="card-title">CVSS Deprecation & NVSM</div>
+               <div class="card-body">Next-Generation Vulnerability Scoring Model — EPSS + chain composability + forensic evasion potential</div>
+             </div>
+             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+               <span class="tag">Shadow313 NEXUS v4.0.0</span>
+               <span class="tag">Ottawa, ON, Canada</span>
+               <span class="tag">Post-Quantum Security</span>
+               <span class="tag">313-BIND Protocol</span>
+             </div></div>
+    </div>
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-hdr">
+        <span class="panel-title" style="color:#a855f7;">Related Resources</span>
+        <span class="panel-badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744;">Navigation</span>
+      </div>
+      <div style="padding:16px;"><div style="display:flex;flex-wrap:wrap;gap:8px;">
+               <a href="/dashboard" style="background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;text-decoration:none;">Dashboard</a>
+               <a href="/attck" style="background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;text-decoration:none;">ATT&amp;CK Coverage</a>
+               <a href="/roadmap" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;text-decoration:none;">Project Roadmap</a>
+               <a href="/ghost-watch" style="background:rgba(168,85,247,0.12);color:#a855f7;border:1px solid rgba(168,85,247,0.25);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;text-decoration:none;">Ghost-Watch</a>
+             </div></div>
+    </div>
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; CVSS Deprecation & NVSM &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+<div style="position:fixed;bottom:24px;right:24px;z-index:999;">
+  <button onclick="window.print()" style="background:#a855f7;color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;">&#11015; Export</button>
 </div>
 </body>
 </html>
