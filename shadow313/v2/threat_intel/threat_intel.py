@@ -198,12 +198,12 @@ class ThreatIntelDB:
         cur = self._conn.execute(
             "SELECT last_sync, record_count FROM feed_meta WHERE feed=?", (feed,)
         )
-        row = cur.fetchone()
+        row = cur.fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)
         return {"last_sync": row[0], "count": row[1]} if row else None
 
     def lookup_ip(self, ip: str) -> dict | None:
         cur = self._conn.execute("SELECT * FROM ioc_ip WHERE ip=?", (ip,))
-        row = cur.fetchone()
+        row = cur.fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)
         if not row:
             return None
         cols = ["ip","tags","malware","country","ports","source","first_seen","fetched_at"]
@@ -216,7 +216,7 @@ class ThreatIntelDB:
         cur = self._conn.execute(
             "SELECT * FROM ioc_domain WHERE domain=?", (domain,)
         )
-        row = cur.fetchone()
+        row = cur.fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)
         if not row:
             return None
         cols = ["domain","tags","malware","source","first_seen","fetched_at"]
@@ -228,7 +228,7 @@ class ThreatIntelDB:
         cur = self._conn.execute(
             "SELECT * FROM ioc_hash WHERE hash=?", (hash_val,)
         )
-        row = cur.fetchone()
+        row = cur.fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)
         if not row:
             return None
         cols = ["hash","hash_type","malware","tags","source","first_seen","fetched_at"]
@@ -247,7 +247,7 @@ class ThreatIntelDB:
 
     def stats(self) -> dict:
         def _count(table):
-            return self._conn.execute("SELECT COUNT(*) FROM ?", (table,)).fetchone()[0]  # nosec B608 — internal table/col names, not user input
+            return self._conn.execute("SELECT COUNT(*) FROM ?", (table,)).fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)[0]  # nosec B608 — internal table/col names, not user input
         meta = {}
         for row in self._conn.execute("SELECT feed, last_sync, record_count FROM feed_meta"):
             meta[row[0]] = {"last_sync": row[1], "count": row[2]}

@@ -40,7 +40,27 @@ _security = HTTPBearer(auto_error=False)
 
 # ── Rate limiting (simple in-memory) ─────────────────────────────────────
 _rate_store: dict = {}
+
+# Global rate limit — prevents IP rotation attacks
+_global_rate_store: dict = {}
+_GLOBAL_RATE_LIMIT = 1000  # total requests per minute across all IPs
+
+def _check_global_rate_limit() -> None:
+    """Secondary global rate limit to prevent IP rotation bypass."""
+    now = time.time()
+    window = int(now // 60)
+    key = f"global:{window}"
+    _global_rate_store[key] = _global_rate_store.get(key, 0) + 1
+    old_keys = [k for k in list(_global_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
+    for k in old_keys:
+        del _global_rate_store[k]
+    if _global_rate_store[key] > _GLOBAL_RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Global rate limit exceeded")
+
 _RATE_LIMIT = 100  # requests per minute
+
+_MAX_STORE_SIZE = 10000   # cap memory growth from IP rotation attacks
+_MAX_KEY_LENGTH = 256     # prevent DoS via huge API keys
 
 def _check_rate_limit(client_ip: str) -> None:
     now = time.time()
@@ -48,9 +68,15 @@ def _check_rate_limit(client_ip: str) -> None:
     key = f"{client_ip}:{window}"
     _rate_store[key] = _rate_store.get(key, 0) + 1
     # Clean old keys
-    old_keys = [k for k in _rate_store if int(k.split(":")[-1]) < window - 1]
+    old_keys = [k for k in list(_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
     for k in old_keys:
         del _rate_store[k]
+    # Cap store size to prevent memory exhaustion from IP rotation attacks
+    if len(_rate_store) > _MAX_STORE_SIZE:
+        # Remove oldest half
+        sorted_keys = sorted(_rate_store.keys(), key=lambda k: int(k.split(":")[-1]))
+        for k in sorted_keys[:len(sorted_keys)//2]:
+            _rate_store.pop(k, None)
     if _rate_store[key] > _RATE_LIMIT:
         raise HTTPException(status_code=429, detail="Rate limit exceeded (100 req/min)")
 
@@ -59,7 +85,6 @@ async def verify_api_key(
     credentials: HTTPAuthorizationCredentials = Depends(_security)
 ) -> str:
     """Verify API key from Authorization: Bearer <key> header."""
-    # Allow localhost without auth in dev mode
     client_ip = request.client.host if request.client else "127.0.0.1"
     _check_rate_limit(client_ip)
     
@@ -71,6 +96,12 @@ async def verify_api_key(
         raise HTTPException(status_code=401, detail="API key required")
     
     provided = credentials.credentials
+    
+    # Prevent DoS via extremely long keys
+    if len(provided) > _MAX_KEY_LENGTH:
+        raise HTTPException(status_code=400, detail="API key too long")
+    
+    # Constant-time comparison prevents timing attacks
     expected = _API_KEY
     if not hmac.compare_digest(provided.encode(), expected.encode()):
         raise HTTPException(status_code=403, detail="Invalid API key")
