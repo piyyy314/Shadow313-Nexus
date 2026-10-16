@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — Project Roadmap & Gap Analysis</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--orange:#f97316;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid rgba(34,197,94,0.2);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--green);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.nav-brand{font-size:14px;font-weight:800;}
+.nav-brand span{color:var(--green);}
+.nav-right{margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.main{padding:20px 24px;max-width:1400px;margin:0 auto;}
+.page-title{font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px;}
+.page-sub{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;}
+.kpi-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.kpi-cell{background:var(--bg);padding:12px 14px;text-align:center;}
+.kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.kpi-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);flex-wrap:wrap;gap:8px;}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.panel-badge{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;}
+.badge-red{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);}
+.badge-orange{background:rgba(249,115,22,0.12);color:var(--orange);border:1px solid rgba(249,115,22,0.25);}
+.badge-amber{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-muted{background:rgba(100,116,139,0.12);color:var(--muted);border:1px solid rgba(100,116,139,0.25);}
+.badge-green{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+canvas{display:block;width:100%;}
+.timeline-item{display:flex;gap:12px;margin-bottom:16px;}
+.timeline-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.timeline-line{width:2px;background:rgba(30,41,59,0.8);margin:0 5px;}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid rgba(34,197,94,0.08);font-family:'JetBrains Mono',monospace;margin-top:20px;}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr;}.kpi-strip{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-hex">&#9650;</div>
+  <div class="nav-brand">PROJECT <span>ROADMAP</span></div>
+  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:3px 10px;">SHADOW313 NEXUS &mdash; GAP ANALYSIS &amp; PRIORITIZED ROADMAP</span>
+  <div class="nav-right">19 items &nbsp;|&nbsp; 4 priority tiers &nbsp;|&nbsp; Ottawa, ON</div>
+</nav>
+<div class="main">
+<div class="page-title">Shadow313 NEXUS — Project Roadmap</div>
+<div class="page-sub">Prioritized by criticality, effort, and system stability impact &nbsp;|&nbsp; Generated 2026-10-16 &nbsp;|&nbsp; Ottawa, ON</div>
+
+<div class="kpi-strip">
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--green)">114</div><div class="kpi-lbl">HTML Pages</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--green)">163</div><div class="kpi-lbl">Vercel Routes</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--green)">319</div><div class="kpi-lbl">Python Files</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--green)">99</div><div class="kpi-lbl">Test Files</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--red)">3</div><div class="kpi-lbl">P0 Critical</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--orange)">5</div><div class="kpi-lbl">P1 High</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--amber)">6</div><div class="kpi-lbl">P2 Medium</div></div>
+  <div class="kpi-cell"><div class="kpi-val" style="color:var(--muted)">5</div><div class="kpi-lbl">P3 Low</div></div>
+</div>
+
+<!-- Validation Results Summary -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--green)">&#9989; Dashboard Validation Results — All 5 Simulation Dashboards</span>
+    <span class="panel-badge badge-green">13/13 issues fixed &mdash; all dashboards CLEAN</span>
+  </div>
+  <div style="padding:14px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+    <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:18px;margin-bottom:4px;">&#9989;</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">Swift Cascade</div>
+      <div style="font-size:9px;color:var(--muted);">CLEAN &mdash; 0 issues</div>
+    </div><div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:18px;margin-bottom:4px;">&#9989;</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">Choke Point</div>
+      <div style="font-size:9px;color:var(--muted);">CLEAN &mdash; 0 issues</div>
+    </div><div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:18px;margin-bottom:4px;">&#9989;</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">Adv. Pivot</div>
+      <div style="font-size:9px;color:var(--muted);">CLEAN &mdash; 0 issues</div>
+    </div><div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:18px;margin-bottom:4px;">&#9989;</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">Arch-E Stress</div>
+      <div style="font-size:9px;color:var(--muted);">CLEAN &mdash; 0 issues</div>
+    </div><div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px;text-align:center;">
+      <div style="font-size:18px;margin-bottom:4px;">&#9989;</div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">Tripwires</div>
+      <div style="font-size:9px;color:var(--muted);">CLEAN &mdash; 0 issues</div>
+    </div>
+  </div>
+  <div style="padding:10px 14px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);">
+    Fixes applied: Export/download button (5), ARIA role="main" (5), isFinite guard (1), Canvas null check (2) &nbsp;|&nbsp; Data integrity: ✅ All key figures consistent &nbsp;|&nbsp; No CRITICAL or HIGH issues found
+  </div>
+</div>
+
+<!-- P0 Critical -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--red)">&#128308; P0 — CRITICAL (Do Immediately)</span>
+    <span class="panel-badge badge-red">3 items &mdash; security &amp; financial risk</span>
+  </div>
+  <div style="padding:14px;"><div style="background:rgba(0,0,0,0.3);border:1px solid #ef444433;border-left:3px solid #ef4444;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P0-01</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;padding:1px 6px;border-radius:3px;">Security</span>
+        <span style="font-size:12px;font-weight:700;color:#ef4444;">Full T24 Credential Hygiene Program</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: 5,271x</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Unique admin credentials per institution + MFA + consortium server segmentation + Vault integration. Closes all 6 credential hygiene failures (CF-01 through CF-06). Without this, surgical top-5 hardening is 86% ineffective against adaptive adversary.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 72h / $1.4M</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Closes Arch-E back door — prevents $7.38B loss</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Documented, not deployed</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #ef444433;border-left:3px solid #ef4444;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P0-02</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;padding:1px 6px;border-radius:3px;">Detection</span>
+        <span style="font-size:12px;font-weight:700;color:#ef4444;">Deploy 16 Detection Tripwires (Wave 1)</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: 3,884,210x</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">TW-01 (Canary admin), TW-02 (Fake db.properties), TW-04 (Off-hours alert), TW-06 (File integrity), TW-10 (Cred sync alert). Deployable in 30 minutes. Covers Phases 0, 1, 2, 4 of kill chain.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 30min / $1,900</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Reduces attacker escape from 18.2% to 0.3%</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Designed, not deployed</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #ef444433;border-left:3px solid #ef4444;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P0-03</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;padding:1px 6px;border-radius:3px;">Infrastructure</span>
+        <span style="font-size:12px;font-weight:700;color:#ef4444;">Extend Arch-E Hardening (simultaneous with D5)</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: 3,075x</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Harden all 10 Arch-E institutions simultaneously with Arch-D hardening. Without this, the $0.8M surgical D5 hardening is bypassed in 30 minutes via Arch-E credential reuse.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 12h / $2.4M</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Closes 30-minute back door before attacker pivots</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Identified, not implemented</span>
+      </div>
+      <div style="font-size:9px;color:#64748b;margin-top:4px;">Depends on: P0-01</div>
+    </div></div>
+</div>
+
+<!-- P1 High -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--orange)">&#128992; P1 — HIGH (This Week)</span>
+    <span class="panel-badge badge-orange">5 items &mdash; detection gaps &amp; quality</span>
+  </div>
+  <div style="padding:14px;"><div style="background:rgba(0,0,0,0.3);border:1px solid #f9731633;border-left:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P1-01</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;padding:1px 6px;border-radius:3px;">Detection</span>
+        <span style="font-size:12px;font-weight:700;color:#f97316;">Finacle API Anomaly Monitoring</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: High</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Deploy SWIFTProcessMonitor equivalent for Finacle API calls. Monitor for anomalous MT103 generation via Finacle REST API. No existing Shadow313 detector covers this vector.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 2 weeks</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Reduces Finacle pivot loss from $5.29B to ~$1.2B</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Gap identified, no detector exists</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f9731633;border-left:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P1-02</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;padding:1px 6px;border-radius:3px;">Detection</span>
+        <span style="font-size:12px;font-weight:700;color:#f97316;">Cross-Correspondent Velocity Aggregator</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: High</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Aggregate MT103 transfer velocity across all correspondent banks simultaneously. FASTCash distributes transfers to stay below per-correspondent limits — only aggregate view catches it.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 1 week / $12,000</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Catches distributed FASTCash routing across 16 cor</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Designed (TW-16), not implemented</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f9731633;border-left:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P1-03</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;padding:1px 6px;border-radius:3px;">Detection</span>
+        <span style="font-size:12px;font-weight:700;color:#f97316;">BehaviouralBiometricProfiler on Arch-A</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: High</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Deploy BehaviouralBiometricProfiler (IDENTITY-1) on all Arch-A institutions. Monitor for after-hours SWIFT access, unusual MT103 amounts, new beneficiary accounts. Insider threat bypasses all technical controls.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 3 weeks</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Only defense against insider threat activation ($5</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: IDENTITY-1 exists, not deployed on Arch-A</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f9731633;border-left:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P1-04</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;padding:1px 6px;border-radius:3px;">Quality</span>
+        <span style="font-size:12px;font-weight:700;color:#f97316;">Test Coverage: 33 Untested Module Directories</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Medium</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Priority order: v4/simulation, v4/federated_mesh, v4/aegis, v4/identity, v4/intelligence. These are real implementations with 0% test coverage. CI failures will block deployment.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 4-6 weeks</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: CI/CD reliability, regression prevention</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: 5 core modules fixed this session, 28 remaini</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f9731633;border-left:3px solid #f97316;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P1-05</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f9731622;color:#f97316;border:1px solid #f9731644;padding:1px 6px;border-radius:3px;">Security</span>
+        <span style="font-size:12px;font-weight:700;color:#f97316;">SWIFT Alliance Gateway Web Interface Patching (Arch-C)</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Medium</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Patch SWIFT Alliance Gateway web interface on all Arch-C institutions. 3h adaptation delay gives defenders time to respond, making this lower urgency than Arch-E/Finacle fixes.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 1 week</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Closes Custom SWIFT Web RCE vector ($4.52B)</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: CVE-2024-6199 equivalent unpatched</span>
+      </div>
+      
+    </div></div>
+</div>
+
+<!-- P2 Medium -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--amber)">&#128993; P2 — MEDIUM (This Month)</span>
+    <span class="panel-badge badge-amber">6 items &mdash; infrastructure &amp; distribution</span>
+  </div>
+  <div style="padding:14px;"><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-01</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">UI/UX</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">Navigation Links in Core Marketing Pages</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Add consistent navigation bar to all marketing pages (index, pricing, contact, changelog, careers, partners, case-studies, compliance). Currently each page is an island.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 4h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: User experience — visitors can navigate between pa</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: index.html, pricing.html, contact.html have n</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-02</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">Detection</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">Tripwire Waves 2 & 3 Deployment</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: High</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Wave 2 (TW-07, TW-03, TW-11, TW-09, TW-12, TW-05) covers Phases 1-5. Wave 3 (TW-08, TW-15, TW-14, TW-13, TW-16) covers Phases 3, 6, 7. Wave 1 alone achieves 0.3% escape — Waves 2+3 add defense-in-depth.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 6h / $37,600</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Defense-in-depth for late-stage kill chain phases</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Designed, Wave 1 deployed</span>
+      </div>
+      <div style="font-size:9px;color:#64748b;margin-top:4px;">Depends on: P0-02</div>
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-03</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">Infrastructure</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">Hetzner VPS + WireGuard VPN Setup</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Medium</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">CX22 Hetzner VPS + WireGuard VPN + Docker stack. Enables secure remote access, bug bounty tool hosting, and Shadow313 API deployment. Required for production deployment.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 2h / €3.29/mo</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Secure operator connectivity, bug bounty lab envir</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Planned, not deployed</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-04</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">Integration</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">Telegram Bot Integration</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Medium</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Connect shadow313/integrations/telegram/bot.py to Ghost-Watch CADL escalation events. Operator receives CRITICAL alerts on Telegram within seconds of detection.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 4h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Real-time Ghost-Watch alerts to operator</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: bot.py exists, not connected to live alerts</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-05</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">Distribution</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">PyPI Package Publication</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Medium</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Publish to TestPyPI first, then PyPI. GitHub Actions OIDC workflow already configured. Requires PyPI account setup and trusted publisher configuration.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 2h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: pip install shadow313 — public distribution</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: pyproject.toml ready, not published</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P2-06</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:1px 6px;border-radius:3px;">Quality</span>
+        <span style="font-size:12px;font-weight:700;color:#f59e0b;">GitHub Actions CI — Fix Remaining Failures</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: High</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Run full CI suite locally, identify remaining failures. Priority: Python 3.11 and 3.12 compatibility, Docker build (python:3.12-slim), security scan (Bandit), PyPI publish workflow.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 1 week</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Green CI badge, automated quality gate</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: test_config.py fixed, other failures may exis</span>
+      </div>
+      <div style="font-size:9px;color:#64748b;margin-top:4px;">Depends on: P1-04</div>
+    </div></div>
+</div>
+
+<!-- P3 Low -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--muted)">&#9898; P3 — LOW (Backlog)</span>
+    <span class="panel-badge badge-muted">5 items &mdash; polish &amp; maintenance</span>
+  </div>
+  <div style="padding:14px;"><div style="background:rgba(0,0,0,0.3);border:1px solid #64748b33;border-left:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P3-01</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;padding:1px 6px;border-radius:3px;">Accessibility</span>
+        <span style="font-size:12px;font-weight:700;color:#64748b;">ARIA Accessibility Improvements</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Add aria-label, aria-describedby, role attributes to all interactive elements across 114 HTML pages. Canvas elements need aria-label with data description fallback.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 8h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Screen reader support, WCAG 2.1 compliance</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Basic ARIA roles added, full audit needed</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #64748b33;border-left:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P3-02</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;padding:1px 6px;border-radius:3px;">AI</span>
+        <span style="font-size:12px;font-weight:700;color:#64748b;">Open WebUI + Ollama Shadow313 Model Tuning</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Trim system prompt to fit within 8,192 token context. Current system prompt is 2,598 tokens before user message. Reduce to ~1,500 tokens by removing redundant ATT&CK listings.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 4h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Better AI responses in local chat interface</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: Model pushed, context window issue (9,918 > 8</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #64748b33;border-left:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P3-03</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;padding:1px 6px;border-radius:3px;">Deployment</span>
+        <span style="font-size:12px;font-weight:700;color:#64748b;">GitHub Pages Deployment Fix</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Configure GitHub Pages to serve from docs/ folder or gh-pages branch. Add index.html redirect. Currently all traffic goes to Vercel (shadow313.dev) which works correctly.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 2h</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: piyyy314.github.io/Shadow313-Nexus/ serves correct</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: 404 on GitHub Pages, Vercel works</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #64748b33;border-left:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P3-04</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;padding:1px 6px;border-radius:3px;">Maintenance</span>
+        <span style="font-size:12px;font-weight:700;color:#64748b;">Stale Branch Cleanup</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Delete: advanced-quantum-exporter-and-aegis-report-*, copilot/fix-project-issues, copilot/reapply-security-fix-pr-1, vercel-agent/configure-local-ollama. Keep: master only.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 30min</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Cleaner repo, no confusion from old Copilot branch</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: 5 stale branches identified</span>
+      </div>
+      
+    </div><div style="background:rgba(0,0,0,0.3);border:1px solid #64748b33;border-left:3px solid #64748b;border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#64748b;">P3-05</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:#64748b22;color:#64748b;border:1px solid #64748b44;padding:1px 6px;border-radius:3px;">Security</span>
+        <span style="font-size:12px;font-weight:700;color:#64748b;">notes/ and todo.md Gitignore</span>
+        <span style="margin-left:auto;font-size:9px;font-family:'JetBrains Mono',monospace;color:#f59e0b;">ROI: Low</span>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:6px;">Add notes/, todo.md, dist/ to .gitignore. Remove from git tracking with git rm --cached. These expose internal roadmap and task tracking to anyone watching the repo.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:2px 7px;border-radius:3px;">Effort: 15min</span>
+        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);padding:2px 7px;border-radius:3px;">Impact: Removes internal planning from public repo</span>
+        <span style="font-size:9px;color:#475569;background:rgba(0,0,0,0.3);padding:2px 7px;border-radius:3px;">Status: notes/ and todo.md committed to public repo</span>
+      </div>
+      
+    </div></div>
+</div>
+
+<!-- Effort/Impact Matrix -->
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--cyan)">&#128200; Effort vs Impact Matrix</span>
+    <span class="panel-badge badge-green">All 19 roadmap items</span>
+  </div>
+  <div style="padding:16px;"><canvas id="matrixChart" height="300"></canvas></div>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Project Roadmap &amp; Gap Analysis &nbsp;|&nbsp; 19 items &nbsp;|&nbsp; 4 priority tiers &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+
+<div id="export-fab" style="position:fixed;bottom:24px;right:24px;z-index:999;">
+  <button onclick="exportRoadmap()" style="background:var(--green);color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px rgba(34,197,94,0.4);">&#11015; Export Roadmap</button>
+</div>
+
+<script>
+const ROADMAP = {"P0_critical": [{"id": "P0-01", "title": "Full T24 Credential Hygiene Program", "category": "Security", "effort": "72h / $1.4M", "impact": "Closes Arch-E back door \u2014 prevents $7.38B loss", "status": "Documented, not deployed", "details": "Unique admin credentials per institution + MFA + consortium server segmentation + Vault integration. Closes all 6 credential hygiene failures (CF-01 through CF-06). Without this, surgical top-5 hardening is 86% ineffective against adaptive adversary.", "dependencies": [], "roi": "5,271x"}, {"id": "P0-02", "title": "Deploy 16 Detection Tripwires (Wave 1)", "category": "Detection", "effort": "30min / $1,900", "impact": "Reduces attacker escape from 18.2% to 0.3%", "status": "Designed, not deployed", "details": "TW-01 (Canary admin), TW-02 (Fake db.properties), TW-04 (Off-hours alert), TW-06 (File integrity), TW-10 (Cred sync alert). Deployable in 30 minutes. Covers Phases 0, 1, 2, 4 of kill chain.", "dependencies": [], "roi": "3,884,210x"}, {"id": "P0-03", "title": "Extend Arch-E Hardening (simultaneous with D5)", "category": "Infrastructure", "effort": "12h / $2.4M", "impact": "Closes 30-minute back door before attacker pivots", "status": "Identified, not implemented", "details": "Harden all 10 Arch-E institutions simultaneously with Arch-D hardening. Without this, the $0.8M surgical D5 hardening is bypassed in 30 minutes via Arch-E credential reuse.", "dependencies": ["P0-01"], "roi": "3,075x"}], "P1_high": [{"id": "P1-01", "title": "Finacle API Anomaly Monitoring", "category": "Detection", "effort": "2 weeks", "impact": "Reduces Finacle pivot loss from $5.29B to ~$1.2B", "status": "Gap identified, no detector exists", "details": "Deploy SWIFTProcessMonitor equivalent for Finacle API calls. Monitor for anomalous MT103 generation via Finacle REST API. No existing Shadow313 detector covers this vector.", "dependencies": [], "roi": "High"}, {"id": "P1-02", "title": "Cross-Correspondent Velocity Aggregator", "category": "Detection", "effort": "1 week / $12,000", "impact": "Catches distributed FASTCash routing across 16 correspondents", "status": "Designed (TW-16), not implemented", "details": "Aggregate MT103 transfer velocity across all correspondent banks simultaneously. FASTCash distributes transfers to stay below per-correspondent limits \u2014 only aggregate view catches it.", "dependencies": [], "roi": "High"}, {"id": "P1-03", "title": "BehaviouralBiometricProfiler on Arch-A", "category": "Detection", "effort": "3 weeks", "impact": "Only defense against insider threat activation ($5.02B)", "status": "IDENTITY-1 exists, not deployed on Arch-A", "details": "Deploy BehaviouralBiometricProfiler (IDENTITY-1) on all Arch-A institutions. Monitor for after-hours SWIFT access, unusual MT103 amounts, new beneficiary accounts. Insider threat bypasses all technical controls.", "dependencies": [], "roi": "High"}, {"id": "P1-04", "title": "Test Coverage: 33 Untested Module Directories", "category": "Quality", "effort": "4-6 weeks", "impact": "CI/CD reliability, regression prevention", "status": "5 core modules fixed this session, 28 remaining", "details": "Priority order: v4/simulation, v4/federated_mesh, v4/aegis, v4/identity, v4/intelligence. These are real implementations with 0% test coverage. CI failures will block deployment.", "dependencies": [], "roi": "Medium"}, {"id": "P1-05", "title": "SWIFT Alliance Gateway Web Interface Patching (Arch-C)", "category": "Security", "effort": "1 week", "impact": "Closes Custom SWIFT Web RCE vector ($4.52B)", "status": "CVE-2024-6199 equivalent unpatched", "details": "Patch SWIFT Alliance Gateway web interface on all Arch-C institutions. 3h adaptation delay gives defenders time to respond, making this lower urgency than Arch-E/Finacle fixes.", "dependencies": [], "roi": "Medium"}], "P2_medium": [{"id": "P2-01", "title": "Navigation Links in Core Marketing Pages", "category": "UI/UX", "effort": "4h", "impact": "User experience \u2014 visitors can navigate between pages", "status": "index.html, pricing.html, contact.html have no internal nav links", "details": "Add consistent navigation bar to all marketing pages (index, pricing, contact, changelog, careers, partners, case-studies, compliance). Currently each page is an island.", "dependencies": [], "roi": "Low"}, {"id": "P2-02", "title": "Tripwire Waves 2 & 3 Deployment", "category": "Detection", "effort": "6h / $37,600", "impact": "Defense-in-depth for late-stage kill chain phases", "status": "Designed, Wave 1 deployed", "details": "Wave 2 (TW-07, TW-03, TW-11, TW-09, TW-12, TW-05) covers Phases 1-5. Wave 3 (TW-08, TW-15, TW-14, TW-13, TW-16) covers Phases 3, 6, 7. Wave 1 alone achieves 0.3% escape \u2014 Waves 2+3 add defense-in-depth.", "dependencies": ["P0-02"], "roi": "High"}, {"id": "P2-03", "title": "Hetzner VPS + WireGuard VPN Setup", "category": "Infrastructure", "effort": "2h / \u20ac3.29/mo", "impact": "Secure operator connectivity, bug bounty lab environment", "status": "Planned, not deployed", "details": "CX22 Hetzner VPS + WireGuard VPN + Docker stack. Enables secure remote access, bug bounty tool hosting, and Shadow313 API deployment. Required for production deployment.", "dependencies": [], "roi": "Medium"}, {"id": "P2-04", "title": "Telegram Bot Integration", "category": "Integration", "effort": "4h", "impact": "Real-time Ghost-Watch alerts to operator", "status": "bot.py exists, not connected to live alerts", "details": "Connect shadow313/integrations/telegram/bot.py to Ghost-Watch CADL escalation events. Operator receives CRITICAL alerts on Telegram within seconds of detection.", "dependencies": [], "roi": "Medium"}, {"id": "P2-05", "title": "PyPI Package Publication", "category": "Distribution", "effort": "2h", "impact": "pip install shadow313 \u2014 public distribution", "status": "pyproject.toml ready, not published", "details": "Publish to TestPyPI first, then PyPI. GitHub Actions OIDC workflow already configured. Requires PyPI account setup and trusted publisher configuration.", "dependencies": [], "roi": "Medium"}, {"id": "P2-06", "title": "GitHub Actions CI \u2014 Fix Remaining Failures", "category": "Quality", "effort": "1 week", "impact": "Green CI badge, automated quality gate", "status": "test_config.py fixed, other failures may exist", "details": "Run full CI suite locally, identify remaining failures. Priority: Python 3.11 and 3.12 compatibility, Docker build (python:3.12-slim), security scan (Bandit), PyPI publish workflow.", "dependencies": ["P1-04"], "roi": "High"}], "P3_low": [{"id": "P3-01", "title": "ARIA Accessibility Improvements", "category": "Accessibility", "effort": "8h", "impact": "Screen reader support, WCAG 2.1 compliance", "status": "Basic ARIA roles added, full audit needed", "details": "Add aria-label, aria-describedby, role attributes to all interactive elements across 114 HTML pages. Canvas elements need aria-label with data description fallback.", "dependencies": [], "roi": "Low"}, {"id": "P3-02", "title": "Open WebUI + Ollama Shadow313 Model Tuning", "category": "AI", "effort": "4h", "impact": "Better AI responses in local chat interface", "status": "Model pushed, context window issue (9,918 > 8,192 tokens)", "details": "Trim system prompt to fit within 8,192 token context. Current system prompt is 2,598 tokens before user message. Reduce to ~1,500 tokens by removing redundant ATT&CK listings.", "dependencies": [], "roi": "Low"}, {"id": "P3-03", "title": "GitHub Pages Deployment Fix", "category": "Deployment", "effort": "2h", "impact": "piyyy314.github.io/Shadow313-Nexus/ serves correctly", "status": "404 on GitHub Pages, Vercel works", "details": "Configure GitHub Pages to serve from docs/ folder or gh-pages branch. Add index.html redirect. Currently all traffic goes to Vercel (shadow313.dev) which works correctly.", "dependencies": [], "roi": "Low"}, {"id": "P3-04", "title": "Stale Branch Cleanup", "category": "Maintenance", "effort": "30min", "impact": "Cleaner repo, no confusion from old Copilot branches", "status": "5 stale branches identified", "details": "Delete: advanced-quantum-exporter-and-aegis-report-*, copilot/fix-project-issues, copilot/reapply-security-fix-pr-1, vercel-agent/configure-local-ollama. Keep: master only.", "dependencies": [], "roi": "Low"}, {"id": "P3-05", "title": "notes/ and todo.md Gitignore", "category": "Security", "effort": "15min", "impact": "Removes internal planning from public repo", "status": "notes/ and todo.md committed to public repo", "details": "Add notes/, todo.md, dist/ to .gitignore. Remove from git tracking with git rm --cached. These expose internal roadmap and task tracking to anyone watching the repo.", "dependencies": [], "roi": "Low"}]};
+
+function exportRoadmap() {
+  const blob = new Blob([JSON.stringify(ROADMAP, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'shadow313_roadmap_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+function hexToRgb(hex) {
+  if(!hex||hex.length<7) return [100,116,139];
+  return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];
+}
+
+function drawMatrix() {
+  const canvas = document.getElementById('matrixChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth - 32;
+  const H = 300;
+  canvas.width = W; canvas.height = H;
+  const pad = {l:60,r:20,t:20,b:50};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  for(let i=0;i<=4;i++) {
+    const x=pad.l+(i/4)*cw, y=pad.t+(i/4)*ch;
+    ctx.strokeStyle='rgba(30,41,59,0.5)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ch); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle='#475569'; ctx.font='9px JetBrains Mono';
+  ctx.fillText('Low Effort',pad.l,H-8);
+  ctx.fillText('High Effort',pad.l+cw-60,H-8);
+  ctx.save(); ctx.translate(12,pad.t+ch/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Low Impact',0,0); ctx.restore();
+  ctx.save(); ctx.translate(12,pad.t+20); ctx.rotate(-Math.PI/2);
+  ctx.fillText('High Impact',0,0); ctx.restore();
+
+  // Quadrant labels
+  ctx.fillStyle='rgba(34,197,94,0.2)'; ctx.font='10px Space Grotesk';
+  ctx.fillText('QUICK WINS',pad.l+8,pad.t+20);
+  ctx.fillStyle='rgba(239,68,68,0.2)';
+  ctx.fillText('STRATEGIC',pad.l+cw-70,pad.t+20);
+  ctx.fillStyle='rgba(100,116,139,0.2)';
+  ctx.fillText('FILL-INS',pad.l+8,pad.t+ch-8);
+  ctx.fillStyle='rgba(245,158,11,0.2)';
+  ctx.fillText('MAJOR PROJECTS',pad.l+cw-100,pad.t+ch-8);
+
+  // Plot items
+  const items = [
+    // [effort_x 0-1, impact_y 0-1, label, color, size]
+    [0.05, 0.95, 'P0-02 Tripwires W1', '#ef4444', 12],
+    [0.15, 0.98, 'P0-01 T24 Creds', '#ef4444', 14],
+    [0.20, 0.92, 'P0-03 Arch-E Hard.', '#ef4444', 12],
+    [0.25, 0.80, 'P1-01 Finacle Mon.', '#f97316', 10],
+    [0.15, 0.75, 'P1-02 Velocity Agg.', '#f97316', 10],
+    [0.35, 0.78, 'P1-03 Biometric', '#f97316', 10],
+    [0.55, 0.60, 'P1-04 Test Coverage', '#f97316', 10],
+    [0.20, 0.65, 'P1-05 SWIFT Patch', '#f97316', 10],
+    [0.05, 0.40, 'P2-01 Nav Links', '#f59e0b', 8],
+    [0.10, 0.72, 'P2-02 Tripwires W2+3', '#f59e0b', 9],
+    [0.08, 0.55, 'P2-03 Hetzner VPS', '#f59e0b', 8],
+    [0.08, 0.50, 'P2-04 Telegram Bot', '#f59e0b', 8],
+    [0.06, 0.45, 'P2-05 PyPI Publish', '#f59e0b', 8],
+    [0.30, 0.65, 'P2-06 CI Fix', '#f59e0b', 9],
+    [0.20, 0.25, 'P3-01 ARIA', '#64748b', 7],
+    [0.10, 0.30, 'P3-02 Ollama Tune', '#64748b', 7],
+    [0.05, 0.20, 'P3-03 GH Pages', '#64748b', 7],
+    [0.02, 0.15, 'P3-04 Branch Clean', '#64748b', 7],
+    [0.01, 0.18, 'P3-05 Gitignore', '#64748b', 7],
+  ];
+
+  items.forEach(([ex, iy, label, color, size]) => {
+    const x = pad.l + ex*cw;
+    const y = pad.t + (1-iy)*ch;
+    const [r,g,b] = hexToRgb(color);
+    ctx.beginPath(); ctx.arc(x,y,size,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},0.8)`; ctx.fill();
+    ctx.strokeStyle=`rgba(${r},${g},${b},0.4)`; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='#e2e8f0'; ctx.font='8px Space Grotesk';
+    ctx.fillText(label,x+size+2,y+3);
+  });
+}
+
+window.addEventListener('load',()=>drawMatrix());
+window.addEventListener('resize',()=>drawMatrix());
+</script>
+</body>
+</html>

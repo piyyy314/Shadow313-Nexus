@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arch-E Stress Test — Shadow313 NEXUS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--accent:#ef4444;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid #ef444433;height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:#ef4444;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;}
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.kpi-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:#ef444422;border:1px solid #ef444433;border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--bg);padding:12px 14px;text-align:center;}
+.kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.kpi-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.finding{background:rgba(0,0,0,0.3);border-left:3px solid #ef4444;border-radius:6px;padding:12px;margin-bottom:8px;}
+.finding-title{font-size:12px;font-weight:700;color:#ef4444;margin-bottom:4px;}
+.finding-body{font-size:10px;color:var(--muted);line-height:1.6;}
+.data-table{width:100%;border-collapse:collapse;font-size:11px;}
+.data-table th{text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(30,41,59,0.3);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(34,197,94,0.03);}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid #ef444422;font-family:'JetBrains Mono',monospace;margin-top:20px;}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-hex">&#9650;</div>
+  <span style="font-size:14px;font-weight:800;color:#ef4444;">ARCH-E STRESS TEST</span>
+  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:#ef444422;color:#ef4444;border:1px solid #ef444444;border-radius:4px;padding:3px 10px;">CREDENTIAL HYGIENE FAILURE ANALYSIS — KILL CHAIN & INTERVENTIONS</span>
+  <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">Shadow313 NEXUS &nbsp;|&nbsp; Ottawa, ON</div>
+</nav>
+<div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
+<div style="font-size:22px;font-weight:800;color:#ef4444;margin-bottom:4px;">Arch-E Stress Test</div>
+<div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">Credential Hygiene Failure Analysis — Kill Chain & Interventions &nbsp;|&nbsp; Shadow313 NEXUS threat model &nbsp;|&nbsp; Ottawa, ON</div>
+
+<div class="kpi-strip"><div class="kpi"><div class="kpi-val" style="color:#ef4444;">6</div><div class="kpi-lbl">Cred Failures</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">30s</div><div class="kpi-lbl">Fastest Exploit</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">3.7min</div><div class="kpi-lbl">Full PE Chain</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">5%</div><div class="kpi-lbl">Min Detection</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">$7.38B</div><div class="kpi-lbl">Arch-E Loss</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">$0.1M</div><div class="kpi-lbl">Cheapest Fix</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">6</div><div class="kpi-lbl">Interventions</div></div><div class="kpi"><div class="kpi-val" style="color:#ef4444;">T+5h</div><div class="kpi-lbl">Optimal Window</div></div></div>
+
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#ef4444;">Key Findings</span></div>
+  <div style="padding:14px;"><div class="finding"><div class="finding-title">Shared SWIFT Admin Credentials (CF-01) — CRITICAL</div><div class="finding-body">Temenos T24 'swiftadm' reused across all 10 Arch-E institutions. Single theft = 10 instant compromises in 30 seconds. Detection probability: 5%.</div></div><div class="finding"><div class="finding-title">Consortium Password Synchronization (CF-02) — CRITICAL</div><div class="finding-body">All 10 Arch-E institutions sync passwords monthly via shared T24 management server (10.100.0.5). Attacker who compromises one gets all 10 simultaneously.</div></div><div class="finding"><div class="finding-title">No MFA on SWIFT Operator Accounts (CF-05) — HIGH</div><div class="finding-body">Password-only authentication means stolen credentials = immediate full access. Exploit time: 10 seconds. Detection probability: 2%.</div></div><div class="finding"><div class="finding-title">Full PE Chain Completes in 3.7 Minutes with 0% Detection</div><div class="finding-body">SWIFT Operator → SWIFT Admin (10s) → T24 DB Root (30s) → Consortium Server Admin (60s) → All 10 Arch-E SWIFT Admin (120s). Zero detection at any stage.</div></div></div>
+</div>
+
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#ef4444;">Data Table</span></div>
+  <table class="data-table"><thead><tr><th>Scenario</th><th>Entry</th><th>Delay</th><th>Comp.</th><th>Loss</th><th>vs Hard.</th><th>Effective?</th></tr></thead><tbody><tr><td>#1</td><td>T+5h (simultaneous)</td><td>Extend hardening to all Arch-E</td><td>$2.4M</td><td>12h</td><td>$7.38B</td><td>HIGH</td></tr><tr><td>#2</td><td>T+9.5h (recon)</td><td>Deploy MFA on Arch-E SWIFT accounts</td><td>$0.4M</td><td>4h</td><td>$7.38B</td><td>MEDIUM</td></tr><tr><td>#3</td><td>T+10h (Phase 1)</td><td>Cross-institution login velocity SIEM rule</td><td>$0.1M</td><td>1h</td><td>$7.38B</td><td>HIGH</td></tr><tr><td>#4</td><td>T+10.08h (Phase 3)</td><td>Network segment consortium server</td><td>$0.2M</td><td>2h</td><td>$6.50B</td><td>HIGH</td></tr><tr><td>#5</td><td>T+10.13h (Phase 4)</td><td>Out-of-schedule credential sync alert</td><td>$0.05M</td><td>0.5h</td><td>$6.20B</td><td>HIGH</td></tr><tr><td>#6</td><td>T+10.20h (Phase 6)</td><td>SWIFTProcessMonitor (already deployed)</td><td>$0</td><td>0h</td><td>$4.10B</td><td>DEPLOYED</td></tr></tbody></table>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Arch-E Stress Test &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+<div id="export-fab" style="position:fixed;bottom:24px;right:24px;z-index:999;">
+  <button onclick="exportDashboard()" style="background:#ef4444;color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px #ef444466;">&#11015; Export JSON</button>
+</div>
+<script>
+function exportDashboard(){
+  const data={dashboard:document.title,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arch-e-stress-test_export.json';a.click();
+}
+</script>
+</body>
+</html>
