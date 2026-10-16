@@ -597,6 +597,30 @@
     {
       "source": "/adversarial-pivot-dashboard",
       "destination": "/docs/adversarial-pivot-dashboard.html"
+    },
+    {
+      "source": "/swift-cascade",
+      "destination": "/docs/swift-cascade-topology.html"
+    },
+    {
+      "source": "/swift-choke-point",
+      "destination": "/docs/swift-choke-point-hardening.html"
+    },
+    {
+      "source": "/adversarial-pivot",
+      "destination": "/docs/adversarial-pivot-analysis.html"
+    },
+    {
+      "source": "/arch-e-stress",
+      "destination": "/docs/arch-e-stress-test.html"
+    },
+    {
+      "source": "/detection-tripwires",
+      "destination": "/docs/detection-tripwire-analysis.html"
+    },
+    {
+      "source": "/roadmap",
+      "destination": "/docs/project-roadmap.html"
     }
   ]
 }
