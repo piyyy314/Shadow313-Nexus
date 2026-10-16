@@ -593,6 +593,10 @@
     {
       "source": "/attck-drilldown.json",
       "destination": "/docs/attck-drilldown.json"
+    },
+    {
+      "source": "/adversarial-pivot-dashboard",
+      "destination": "/docs/adversarial-pivot-dashboard.html"
     }
   ]
 }
