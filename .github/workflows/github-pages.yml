@@ -36,7 +36,7 @@ jobs:
         run: |
           mkdir -p _site
           # Copy root index.html
-          cp index.html _site/index.html
+          cp index.html _site/index.html 2>/dev/null || cp docs/index.html _site/index.html
           # Copy all docs
           cp -r docs/ _site/docs/
           # Create a simple 404 page
@@ -56,7 +56,9 @@ jobs:
           cp -r marketplace/ _site/marketplace/ 2>/dev/null || true
           cp -r about/ _site/about/ 2>/dev/null || true
           # Additional route aliases for clean URLs
-          mkdir -p _site/coverage _site/analytics/live _site/vsat _site/aegis-nexus _site/chronos _site/apt-simulation
+          mkdir -p _site/coverage _site/analytics/live _site/vsat _site/aegis-nexus _site/chronos _site/apt-simulation \
+            _site/swift-cascade _site/swift-choke-point _site/adversarial-pivot _site/arch-e-stress \
+            _site/detection-tripwires _site/roadmap _site/performance _site/adversarial-pivot-dashboard
           cp docs/coverage_matrix.html _site/coverage/index.html 2>/dev/null || true
           cp marketplace/analytics.html _site/analytics/index.html 2>/dev/null || true
           cp marketplace/analytics-live.html _site/analytics/live/index.html 2>/dev/null || true
@@ -64,6 +66,14 @@ jobs:
           cp docs/aegis_nexus.html _site/aegis-nexus/index.html 2>/dev/null || true
           cp docs/chronos-sentinel.html _site/chronos/index.html 2>/dev/null || true
           cp docs/s313-apt-simulation.html _site/apt-simulation/index.html 2>/dev/null || true
+          cp docs/swift-cascade-topology.html _site/swift-cascade/index.html 2>/dev/null || true
+          cp docs/swift-choke-point-hardening.html _site/swift-choke-point/index.html 2>/dev/null || true
+          cp docs/adversarial-pivot-analysis.html _site/adversarial-pivot/index.html 2>/dev/null || true
+          cp docs/arch-e-stress-test.html _site/arch-e-stress/index.html 2>/dev/null || true
+          cp docs/detection-tripwire-analysis.html _site/detection-tripwires/index.html 2>/dev/null || true
+          cp docs/project-roadmap.html _site/roadmap/index.html 2>/dev/null || true
+          cp docs/performance-report.html _site/performance/index.html 2>/dev/null || true
+          cp docs/adversarial-pivot-dashboard.html _site/adversarial-pivot-dashboard/index.html 2>/dev/null || true
           echo "Site contents:"
           find _site -type f | sort
 

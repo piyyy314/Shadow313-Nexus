@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shadow313.dev/sitemap.xml
+
+# Shadow313 NEXUS — Post-Quantum Security Intelligence
+# Ottawa, ON, Canada
