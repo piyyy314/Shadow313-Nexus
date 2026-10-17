@@ -94,6 +94,7 @@ services:
     command: ["python", "-m", "shadow313.integrations.telegram.bot"]
     networks:
       - shadow313_internal
+      - shadow313_external  # Outbound HTTPS to api.telegram.org; no published ports
     profiles:
       - telegram
     logging:
@@ -336,7 +337,7 @@ networks:
       config:
         - subnet: 172.20.0.0/24
 
-  # External network — only nginx + webui + api
+  # External network — nginx + webui + api + Telegram outbound HTTPS
   shadow313_external:
     driver: bridge
     ipam:

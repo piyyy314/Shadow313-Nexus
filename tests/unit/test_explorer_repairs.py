@@ -16,7 +16,11 @@ def test_ollama_healthcheck_and_bot_port():
     assert services['ollama']['healthcheck']['test'][-1].endswith(':11434/api/tags')
     bot = services['telegram-bot']
     assert 'SHADOW313_API_URL=http://shadow313-api:8313' in bot['environment']
-    assert bot['networks'] == ['shadow313_internal']
+    assert 'shadow313_internal' in bot['networks']
+    assert any(
+        not config['networks'][network].get('internal', False)
+        for network in bot['networks']
+    ), 'Telegram requires an internet-routable network for outbound HTTPS'
     assert 'healthcheck' not in bot
 
 
