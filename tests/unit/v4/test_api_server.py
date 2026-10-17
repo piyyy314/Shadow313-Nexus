@@ -8,7 +8,7 @@ import pytest
 # Graceful skip if fastapi/httpx not installed
 try:
     from fastapi.testclient import TestClient
-    from shadow313.api.server import app
+    from shadow313.api.server import create_app
     HAS_FASTAPI = True
 except ImportError:
     HAS_FASTAPI = False
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.skipif(not HAS_FASTAPI, reason="fastapi/httpx not insta
 
 @pytest.fixture(scope="module")
 def client():
-    return TestClient(app)
+    return TestClient(create_app(api_key=None))
 
 
 class TestStatusEndpoint:

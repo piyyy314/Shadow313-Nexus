@@ -161,6 +161,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     if not HAS_FASTAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
+    api_key = api_key or os.environ.get("SHADOW313_API_KEY")
+    if os.environ.get("SHADOW313_ENV", "development") == "production" and not api_key:
+        raise RuntimeError("SHADOW313_API_KEY must be set in production")
+
     app = FastAPI(
         title="Shadow313 NEXUS API",
         description="Local-First AI-Powered Security Intelligence — REST Interface",
@@ -178,6 +182,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "http://localhost:8080",
             "http://localhost:7313",
             "http://open-webui:8080",
+            "https://shadow313.com",
+            "https://shadow313.dev",
         ],
         allow_credentials=True,
         allow_methods=["*"],
