@@ -79,7 +79,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-networks:
+    networks:
       - shadow313_internal  # Internal only — not on external network
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
