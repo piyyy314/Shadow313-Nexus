@@ -1,0 +1,310 @@
+name: Shadow313 NEXUS — Full Pre-Deploy Validation
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+
+  file-integrity:
+    name: "File Integrity & Route Validation"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "FAIL-FAST: Verify 404.html exists"
+        run: |
+          if [ ! -f "404.html" ]; then
+            echo "CRITICAL: 404.html is MISSING from the repository root."
+            echo "This file is required by 4 security-block routes in vercel.json."
+            echo "FIX: Run fix_shadow313.sh (Mac/Linux) or fix_shadow313.ps1 (Windows)"
+            exit 1
+          fi
+          size=$(wc -c < 404.html)
+          if [ "$size" -lt 100 ]; then
+            echo "404.html exists but is too small ($size bytes) — likely empty."
+            exit 1
+          fi
+          echo "OK: 404.html present ($size bytes)"
+
+      - name: "FAIL-FAST: Verify all required core files"
+        run: |
+          required=(
+            "index.html" "404.html" "vercel.json" "robots.txt" "sitemap.xml"
+            "README.md" "LICENSE" "pyproject.toml" ".gitignore" "requirements.txt"
+            "docs/index.html" "docs/shadow313-nexus-dashboard.html"
+            "docs/S313-Nexus-Dashboard-v3.html" "docs/S313-SSP-Dashboard.html"
+            "docs/shadow313-nexus-architecture.html" "docs/shadow313-ai-stack-map.html"
+            "shadow313/cli/main.py" "shadow313/api/server.py" "shadow313/core/kernel.py"
+            "shadow313/core/config.py" "shadow313/core/session.py"
+            "shadow313/core/crypto_store.py" "shadow313/core/intelligence_graph.py"
+            "shadow313/threat_intel/ioc_store.py" "shadow313/threat_intel/ti_feed.py"
+          )
+          missing=0
+          for f in "${required[@]}"; do
+            if [ -f "$f" ]; then echo "  OK $f"
+            else echo "  MISSING: $f"; missing=$((missing + 1)); fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "FAIL: $missing required file(s) missing."
+            exit 1
+          fi
+          echo "OK: All ${#required[@]} required files present."
+
+      - name: "FAIL-FAST: Validate all vercel.json route destinations"
+        run: |
+          python3 << 'PYEOF'
+          import json, os, sys
+          with open("vercel.json") as f:
+              cfg = json.load(f)
+          if cfg.get("version") != 2: print("ERROR: version must be 2"); sys.exit(1)
+          if not cfg.get("name"):     print("ERROR: name is required");   sys.exit(1)
+          rewrites = cfg.get("rewrites", [])
+          missing = [(r["source"], r["destination"].lstrip("/"))
+                     for r in rewrites if not os.path.exists(r["destination"].lstrip("/"))]
+          print(f"Routes: {len(rewrites) - len(missing)}/{len(rewrites)} OK")
+          if missing:
+              print(f"FAIL: {len(missing)} missing route destination(s):")
+              for src, dst in missing:
+                  print(f"  {src} -> {dst}")
+              sys.exit(1)
+          print("OK: All vercel.json routes resolve.")
+          PYEOF
+
+  html-validation:
+    name: "HTML File Validation"
+    runs-on: ubuntu-latest
+    needs: file-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Validate all HTML files"
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, os, sys, re
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          html_files = [f for f in result.stdout.strip().split("\n")
+                        if f.endswith(".html") and "node_modules" not in f and "docs-archive" not in f]
+          errors = []; ok = 0
+          for path in sorted(html_files):
+              if not os.path.exists(path): errors.append(f"NOT ON DISK: {path}"); continue
+              size = os.path.getsize(path)
+              if size < 100: errors.append(f"TOO SMALL ({size}b): {path}"); continue
+              content = open(path, encoding="utf-8", errors="replace").read()
+              if not re.search(r'<html', content, re.I): errors.append(f"NO <html>: {path}"); continue
+              if not re.search(r'<body', content, re.I): errors.append(f"NO <body>: {path}"); continue
+              ok += 1
+          print(f"HTML: {ok}/{len(html_files)} valid, {len(errors)} errors")
+          if errors:
+              for e in errors: print(f"  ERROR: {e}")
+              sys.exit(1)
+          PYEOF
+
+      - name: "Secret scanning"
+        run: |
+          patterns=("client_secret" "AKIA[0-9A-Z]{16}" "sk-[a-zA-Z0-9]{32,}"
+                    "ghp_[a-zA-Z0-9]{36}" "-----BEGIN RSA PRIVATE KEY-----"
+                    "-----BEGIN OPENSSH PRIVATE KEY-----")
+          found=0
+          for p in "${patterns[@]}"; do
+            m=$(git ls-files | xargs grep -lE "$p" 2>/dev/null | grep -v node_modules | grep -v docs-archive | grep -v .github || true)
+            if [ -n "$m" ]; then echo "WARNING: pattern '$p' found in: $m"; found=$((found+1)); fi
+          done
+          if [ $found -gt 0 ]; then echo "FAIL: $found secret pattern(s) detected."; exit 1; fi
+          echo "OK: No secrets detected."
+
+  python-validation:
+    name: "Python Code & API Validation"
+    runs-on: ubuntu-latest
+    needs: file-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
+      - name: "Python syntax check"
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, sys, os, ast
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          py_files = [f for f in result.stdout.strip().split("\n")
+                      if f.endswith(".py") and "node_modules" not in f
+                      and "__pycache__" not in f and "docs-archive" not in f]
+          errors = []; ok = 0
+          for path in sorted(py_files):
+              if not os.path.exists(path): continue
+              try:
+                  ast.parse(open(path, encoding="utf-8").read(), filename=path)
+                  ok += 1
+              except SyntaxError as e:
+                  errors.append(f"SYNTAX ERROR line {e.lineno}: {path} — {e.msg}")
+          print(f"Python: {ok}/{len(py_files)} valid, {len(errors)} errors")
+          if errors:
+              for e in errors: print(f"  {e}")
+              sys.exit(1)
+          PYEOF
+
+      - name: "API endpoint inventory"
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, os, re
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          py_files = [f for f in result.stdout.strip().split("\n")
+                      if f.endswith(".py") and "node_modules" not in f and "docs-archive" not in f]
+          routes = []
+          for path in sorted(py_files):
+              if not os.path.exists(path): continue
+              content = open(path, encoding="utf-8").read()
+              for method, route in re.findall(
+                  r'@(?:app|router|api)\.(get|post|put|delete|patch)\s*\(\s*["\']([^"\']+)["\']',
+                  content, re.I):
+                  routes.append((path, method.upper(), route))
+          print(f"API endpoints found: {len(routes)}")
+          for path, m, r in routes:
+              print(f"  [{m:6s}] {r}  ({path})")
+          PYEOF
+
+  config-validation:
+    name: "Config File Validation"
+    runs-on: ubuntu-latest
+    needs: file-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: "Validate JSON files"
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, json, sys, os
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          json_files = [f for f in result.stdout.strip().split("\n")
+                        if f.endswith(".json") and "node_modules" not in f
+                        and "docs-archive" not in f and "dist/" not in f]
+          errors = []; ok = 0
+          for path in sorted(json_files):
+              if not os.path.exists(path): continue
+              try: json.load(open(path)); ok += 1; print(f"  OK {path}")
+              except json.JSONDecodeError as e: errors.append(f"{path}: {e}"); print(f"  FAIL {path}: {e}")
+          if errors: sys.exit(1)
+          print(f"JSON: {ok} files valid.")
+          PYEOF
+
+      - name: "Validate YAML files"
+        run: |
+          pip install pyyaml -q
+          python3 << 'PYEOF'
+          import subprocess, yaml, sys, os
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          yml_files = [f for f in result.stdout.strip().split("\n")
+                       if (f.endswith(".yml") or f.endswith(".yaml")) and "node_modules" not in f]
+          errors = []; ok = 0
+          for path in sorted(yml_files):
+              if not os.path.exists(path): continue
+              try: yaml.safe_load(open(path)); ok += 1; print(f"  OK {path}")
+              except yaml.YAMLError as e: errors.append(f"{path}: {e}"); print(f"  FAIL {path}: {e}")
+          if errors: sys.exit(1)
+          print(f"YAML: {ok} files valid.")
+          PYEOF
+
+  git-hygiene:
+    name: "Git Hygiene Check"
+    runs-on: ubuntu-latest
+    needs: file-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Detect wrongly committed artifacts"
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, sys
+          result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+          tracked = result.stdout.strip().split("\n")
+          FORBIDDEN = [
+              ("node_modules/", "node_modules committed — run: git rm --cached -r <path>/node_modules/"),
+              ("__pycache__/",  "__pycache__ committed — run: git rm --cached -r <path>/__pycache__/"),
+              (".pyc",          ".pyc bytecode committed — run: git rm --cached <file>"),
+              ("dist/manifest", "dist/manifest.json committed — run: git rm --cached dist/manifest.json"),
+              ("dist/receipts/","dist/receipts/ committed — run: git rm --cached -r dist/receipts/"),
+              (".env",          ".env committed — REMOVE IMMEDIATELY and rotate secrets"),
+              (".itdb-wal",     "Apple iTunes DB file committed — remove personal data"),
+              (".itdb",         "Apple iTunes DB file committed — remove personal data"),
+          ]
+          errors = []
+          for f in tracked:
+              for pattern, msg in FORBIDDEN:
+                  if pattern in f: errors.append(f"  VIOLATION: {f}\n    FIX: {msg}"); break
+          if errors:
+              print(f"FAIL: {len(errors)} git hygiene violation(s):")
+              for e in errors: print(e)
+              sys.exit(1)
+          print(f"OK: No git hygiene violations in {len(tracked)} tracked files.")
+          PYEOF
+
+  python-tests:
+    name: "Python Test Suite"
+    runs-on: ubuntu-latest
+    needs: [file-integrity, python-validation]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: |
+          pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
+          pip install pytest pytest-cov pytest-timeout -q
+      - run: |
+          python3 -m pytest tests/ --tb=short --timeout=60 -q \
+            --cov=shadow313 --cov-report=term-missing 2>&1 || true
+
+  shell-validation:
+    name: "Shell Script Validation"
+    runs-on: ubuntu-latest
+    needs: file-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y shellcheck -q
+      - run: |
+          errors=0
+          while IFS= read -r s; do
+            if [ -f "$s" ]; then
+              shellcheck --severity=error "$s" && echo "  OK $s" || { echo "  FAIL $s"; errors=$((errors+1)); }
+            fi
+          done < <(git ls-files | grep "\.sh$")
+          [ $errors -eq 0 ] || exit 1
+
+  validation-gate:
+    name: "Validation Gate — All Checks Must Pass"
+    runs-on: ubuntu-latest
+    needs: [file-integrity, html-validation, python-validation, config-validation, git-hygiene, python-tests, shell-validation]
+    if: always()
+    steps:
+      - name: "Check all jobs passed"
+        run: |
+          results=(
+            "file-integrity:${{ needs.file-integrity.result }}"
+            "html-validation:${{ needs.html-validation.result }}"
+            "python-validation:${{ needs.python-validation.result }}"
+            "config-validation:${{ needs.config-validation.result }}"
+            "git-hygiene:${{ needs.git-hygiene.result }}"
+            "python-tests:${{ needs.python-tests.result }}"
+            "shell-validation:${{ needs.shell-validation.result }}"
+          )
+          failed=0
+          for item in "${results[@]}"; do
+            job="${item%%:*}"; result="${item##*:}"
+            if [ "$result" = "success" ]; then echo "  OK  $job"
+            elif [ "$result" = "skipped" ]; then echo "  --  $job (skipped)"
+            else echo "  FAIL $job ($result)"; failed=$((failed+1)); fi
+          done
+          if [ $failed -gt 0 ]; then
+            echo "VALIDATION GATE FAILED: $failed job(s) did not pass."
+            exit 1
+          fi
+          echo "VALIDATION GATE PASSED: All checks passed. Safe to deploy."

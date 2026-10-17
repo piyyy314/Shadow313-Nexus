@@ -133,8 +133,8 @@ jobs:
 
       - name: Commit manifest and receipts
         run: |
-          git config user.name  "piyyy314"
-          git config user.email "matarmohamad313@duck.com"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dist/manifest.json dist/receipts/ || true
           git diff --staged --quiet || git commit -m "chore(delivery): update manifest ${{ needs.build.outputs.delivery_id }} [skip ci]"
           git push origin master || true
