@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.report
 ─────────────────────────────────────────
@@ -10,7 +11,6 @@ Every report includes:
   - QR code placeholder for the IPFS CID
   - Verification instructions
 """
-from __future__ import annotations
 
 import json
 from pathlib import Path

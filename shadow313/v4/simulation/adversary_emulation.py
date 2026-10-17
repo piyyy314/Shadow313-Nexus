@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.adversary_emulation
 Adversary Emulation Test Harness — Purple Team MTTD Validation
@@ -22,7 +23,6 @@ Test scenarios:
   SCENARIO-007: T1548.002 UAC Bypass (fodhelper)
   SCENARIO-008: T1003.006 DCSync (Mimikatz lsadump)
 """
-from __future__ import annotations
 
 import math
 import random

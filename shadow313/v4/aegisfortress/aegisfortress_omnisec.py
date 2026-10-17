@@ -1,3 +1,4 @@
+from __future__ import annotations
 # REFACTOR: This file has 1507 lines and should be split into focused modules.
 # See: docs/project-roadmap.html for refactoring plan.
 # Priority: Split into 200-300 line modules by responsibility.
@@ -25,7 +26,6 @@ FIXES APPLIED vs original DeepSeek-generated code:
 
 AUTHORIZED USE ONLY. All scanning requires explicit written authorization.
 """
-from __future__ import annotations
 
 import argparse
 import asyncio

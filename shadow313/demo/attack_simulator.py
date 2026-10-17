@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.demo.attack_simulator
 ─────────────────────────────────
@@ -12,7 +13,6 @@ Simulates full kill chains for:
 
 Each simulation produces log entries compatible with the 37-dim feature extractor.
 """
-from __future__ import annotations
 
 import random
 import time

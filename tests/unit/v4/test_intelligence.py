@@ -1,11 +1,12 @@
 """Unit tests — shadow313.v4.intelligence"""
 import pytest
 from pathlib import Path
+ROOT_DIR = Path(__file__).parent.parent.parent.parent  # workspace root
 
 
 class TestIntelligence:
     def test_module_path_exists(self):
-        p = Path("shadow313/v4")
+        p = ROOT_DIR / "shadow313/v4"
         assert p.exists()
 
     def test_import_v4(self):
@@ -16,7 +17,7 @@ class TestIntelligence:
             pytest.skip("v4 not fully importable")
 
     def test_intelligence_graph_exists(self):
-        p = Path("shadow313/core/intelligence_graph.py")
+        p = ROOT_DIR / "shadow313/core/intelligence_graph.py"
         assert p.exists(), "intelligence_graph.py should exist in core"
 
     def test_intelligence_graph_importable(self):

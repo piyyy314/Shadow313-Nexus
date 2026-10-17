@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 shadow313.modules.docs  — v4
 Documentation, AI ask command, tutorials, man page generation, glossary.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path

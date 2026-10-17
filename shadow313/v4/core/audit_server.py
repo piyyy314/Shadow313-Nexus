@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.core.audit_server
 ────────────────────────────────
@@ -10,7 +11,6 @@ Provides a tamper-evident audit log server that:
   - Integrates with 313-BIND for cryptographic timestamping
   - Supports export to JSON, CSV, and STIX 2.1
 """
-from __future__ import annotations
 
 import hashlib
 import json

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.ai_native.explaincve
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ AI-powered CVE explanation and exploitation guidance
 Category: Ai Native
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

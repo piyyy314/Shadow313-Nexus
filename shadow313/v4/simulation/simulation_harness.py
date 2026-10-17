@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.simulation_harness  — NEXUS Complete
 Comprehensive simulation and benchmark harness.
@@ -14,7 +15,6 @@ Simulates:
   9. Tool routing A/B test simulation
   10. Full NEXUS platform stress test
 """
-from __future__ import annotations
 import asyncio
 import json
 import math

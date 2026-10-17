@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.zeroday_evasion_sim
 ────────────────────────────────────────────
@@ -15,7 +16,6 @@ Each bypass attempt is scored:
   DETECTED   — detector returned detected=True  (evasion failed)
   PARTIAL    — detector flagged but below high-confidence threshold
 """
-from __future__ import annotations
 
 import math
 import random
@@ -23,10 +23,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable
 
-from shadow313.v4.detection.threat_hardening import (
 import logging
 logger = logging.getLogger(__name__)
 
+from shadow313.v4.detection.threat_hardening import (
     ValidAccountsDetector,
     C2ProtocolAnalyzer,
     CredentialDumpingDetector,

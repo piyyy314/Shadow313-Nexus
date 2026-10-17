@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — AETHER
 Synthetic Traffic Generator — floods network with PQC-spoofed packet noise.
 """
-from __future__ import annotations
 import random, uuid, hashlib
 from datetime import datetime, timezone
 from typing import Dict, List

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.deployment.deployment_window
 ──────────────────────────────────────────
@@ -20,7 +21,6 @@ Each deployment window:
 All deployment receipts are chained — a complete deployment produces
 an immutable, tamper-evident audit trail of every step.
 """
-from __future__ import annotations
 
 import hashlib
 import json

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.quantum_nexus.quantum_nexus  — NEXUS Complete
 Quantum NEXUS: Advanced quantum security module.
@@ -9,7 +10,6 @@ Features:
   ML-KEM:       ML-KEM side-channel timing variance detection
   PQC Readiness: Organization-wide PQC readiness assessment
 """
-from __future__ import annotations
 import hashlib
 import json
 import math

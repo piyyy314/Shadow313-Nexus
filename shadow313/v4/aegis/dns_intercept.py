@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 """
 shadow313.v4.aegis.dns_intercept  — NEXUS Complete
@@ -15,7 +16,6 @@ Capabilities:
   - Industrial IoT bridge security analysis
   - Threat feed DNS monitoring
 """
-from __future__ import annotations
 import json
 import random
 import socket

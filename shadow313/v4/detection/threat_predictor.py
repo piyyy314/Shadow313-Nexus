@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 Nexus v3 — Predictive Threat Scoring Engine
 ======================================================
@@ -21,7 +22,6 @@ Output:
   - Early warning for emerging threats
 """
 
-from __future__ import annotations
 
 import json
 import math

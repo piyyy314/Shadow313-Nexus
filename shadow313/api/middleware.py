@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.api.middleware
 ─────────────────────────
@@ -25,7 +26,6 @@ Environment variables:
     SHADOW313_RATE_LIMIT   — requests per minute (default: 60)
     SHADOW313_ENV          — production | development (default: development)
 """
-from __future__ import annotations
 
 import hashlib
 import logging

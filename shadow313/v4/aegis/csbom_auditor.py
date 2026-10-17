@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Cryptographic Software Bill of Materials (C-SBOM) Auditor
 CycloneDX 1.5 format. NIST FIPS 203/204/205 + NSA CNSA 2.0 compliance.
 Readiness Score: 67% | Grade: C | Status: INTERMEDIATE MIGRATION REQUIRED
 """
-from __future__ import annotations
 import json, uuid
 from datetime import datetime, timezone
 from typing import Dict, List

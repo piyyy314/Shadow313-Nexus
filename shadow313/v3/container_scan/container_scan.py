@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.container_scan.container_scan  — v4
 OCI image layer CVE analysis, Dockerfile linting, base image risk scoring.
@@ -9,7 +10,6 @@ BUG FIXES:
     fixed to always return a dict.
   - Docker SDK calls had no timeout — added timeout parameter.
 """
-from __future__ import annotations
 import re
 import subprocess
 from pathlib import Path

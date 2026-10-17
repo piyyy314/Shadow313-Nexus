@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Plugin Manager
 Sandboxed plugin loading with HMAC-SHA256 signature verification.
 """
-from __future__ import annotations
 import importlib, hashlib, hmac, json
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Callable

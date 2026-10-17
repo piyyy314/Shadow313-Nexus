@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.intelligence_graph
 ───────────────────────────────────
@@ -6,7 +7,6 @@ IntelligenceGraph v3 — threat intelligence graph for Shadow313 core.
 Lightweight version used by the v3 kernel and CLI.
 Wraps the v4 IntelligenceGraph with v3-compatible API.
 """
-from __future__ import annotations
 
 from shadow313.v4.core.intelligence_graph import (
     IntelligenceGraph as _IntelligenceGraphV4,

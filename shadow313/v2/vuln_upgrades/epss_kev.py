@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Shadow313 v2 - EPSS + KEV Scoring Engine
 =========================================
 Integrates EPSS scores and CISA KEV feed for composite risk scoring.
 """
-from __future__ import annotations
 
 import csv
 import gzip

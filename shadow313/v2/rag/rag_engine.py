@@ -1,10 +1,11 @@
+from __future__ import annotations
+from __future__ import annotations
 """
 shadow313.v2.rag.rag_engine
 Feature #2 — RAG Vector Knowledge Base
 ChromaDB-backed local vector store ingesting NVD CVEs, MITRE ATT&CK,
 OWASP Top 10, and session history. Fully offline, no cloud dependency.
 """
-from __future__ import annotations
 import json
 import hashlib
 import os
@@ -532,7 +533,6 @@ Requires: pip install unsloth torch transformers datasets trl peft bitsandbytes
 
 Run: python finetune.py --config ~/.shadow313/finetune_config.yaml
 """
-from __future__ import annotations
 import argparse, json, sys
 from pathlib import Path
 

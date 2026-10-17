@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.intelligence.honeypot_analyzer
 Honeypot Event Analyzer — ATT&CK Mapper
@@ -21,7 +22,6 @@ T1003.008 OS Credential Dumping (/etc/shadow)
 T1046    Network Service Discovery (port scanning)
 T1598    Phishing for Information (WE-FORGE decoy)
 """
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

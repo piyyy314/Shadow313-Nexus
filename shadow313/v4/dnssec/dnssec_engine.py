@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — DNSSEC Engine
 DNS Security Extensions validation and DNS tunneling detection.
 """
-from __future__ import annotations
 import math, hashlib
 from datetime import datetime, timezone
 from typing import Dict, List, Optional

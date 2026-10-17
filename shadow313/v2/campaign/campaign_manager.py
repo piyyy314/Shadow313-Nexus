@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Campaign Manager
 Multi-target security assessment campaign orchestration.
 """
-from __future__ import annotations
 import uuid, json
 from datetime import datetime, timezone
 from typing import Dict, List, Optional

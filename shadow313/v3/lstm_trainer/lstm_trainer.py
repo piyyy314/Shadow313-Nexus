@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.lstm_trainer.lstm_trainer
 ────────────────────────────────────────
@@ -18,7 +19,6 @@ FIXES APPLIED:
   3. Composite score: 0.55 * ngram_score + 0.35 * timing_score + 0.10 * entropy_score
   4. Threshold floor: minimum 0.45 to avoid false positive explosion
 """
-from __future__ import annotations
 
 import math
 import random

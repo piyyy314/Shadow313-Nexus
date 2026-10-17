@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.output  — v4
 Unified output formatter: rich/color terminal · JSON · Markdown · plain.
@@ -10,7 +11,6 @@ BUG FIXES vs v1:
   - _print_list() called _print_dict() recursively without title guard,
     causing duplicate section headers — fixed
 """
-from __future__ import annotations
 import json
 import sys
 from typing import Any

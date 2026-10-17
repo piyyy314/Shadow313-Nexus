@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — PQC Migration Graph</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--green:#22c55e;--cyan:#06b6d4;--amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;--bg:#020617;--bg2:#0b1329;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(2,6,23,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(34,197,94,0.15);height:48px;display:flex;align-items:center;padding:0 20px;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;text-decoration:none;color:var(--text);}
+.nav-icon{width:28px;height:28px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:12px;}
+.main{max-width:1000px;margin:0 auto;padding:30px 20px;}
+h1{font-size:28px;font-weight:800;margin-bottom:6px;}
+h1 span{color:var(--green);}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:30px;}
+.timeline{position:relative;padding-left:40px;}
+.timeline::before{content:'';position:absolute;left:16px;top:0;bottom:0;width:2px;background:rgba(34,197,94,0.2);}
+.event{position:relative;margin-bottom:24px;}
+.event::before{content:'';position:absolute;left:-30px;top:6px;width:12px;height:12px;border-radius:50%;border:2px solid;}
+.event.done::before{background:var(--green);border-color:var(--green);}
+.event.progress::before{background:var(--amber);border-color:var(--amber);}
+.event.planned::before{background:transparent;border-color:var(--muted);}
+.event-year{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);margin-bottom:4px;}
+.event-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.event-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.badge{display:inline-flex;font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:8px;}
+.badge-done{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.badge-progress{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-planned{background:rgba(100,116,139,0.12);color:var(--muted);border:1px solid rgba(100,116,139,0.25);}
+.crqc-bar{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:10px;padding:20px;margin-bottom:24px;}
+.crqc-bar h3{font-size:13px;font-weight:700;color:var(--green);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;}
+.patch-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;}
+.patch-id{font-family:'JetBrains Mono',monospace;color:var(--cyan);width:80px;flex-shrink:0;}
+.patch-bar-wrap{flex:1;background:rgba(0,0,0,0.3);border-radius:3px;height:6px;}
+.patch-bar{height:6px;border-radius:3px;}
+.footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);border-top:1px solid rgba(34,197,94,0.08);margin-top:30px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-icon">S3</div>SHADOW313 NEXUS</a>
+</nav>
+<div class="main">
+  <h1>PQC Migration <span>Graph</span></h1>
+  <p class="subtitle">Post-quantum cryptography migration timeline — CRQC threat window 2030–2035</p>
+  <div class="crqc-bar">
+    <h3>CRQC Patch Status — 12/14 Closed</h3>
+    <div class="patch-row"><span class="patch-id">CRQC-001</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:100%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px">✅ PATCHED</span></div>
+    <div class="patch-row"><span class="patch-id">CRQC-002</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:100%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px">✅ PATCHED</span></div>
+    <div class="patch-row"><span class="patch-id">CRQC-003</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:100%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px">✅ PATCHED</span></div>
+    <div class="patch-row"><span class="patch-id">CRQC-007</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:100%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px">✅ PATCHED</span></div>
+    <div class="patch-row"><span class="patch-id">CRQC-012</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:100%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px">✅ PATCHED</span></div>
+    <div class="patch-row"><span class="patch-id">DW-1</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:40%;background:var(--amber)"></div></div><span style="color:var(--amber);font-size:11px">⏳ Q4 2026</span></div>
+    <div class="patch-row"><span class="patch-id">DW-2</span><div class="patch-bar-wrap"><div class="patch-bar" style="width:15%;background:var(--amber)"></div></div><span style="color:var(--amber);font-size:11px">⏳ Q1 2027</span></div>
+  </div>
+  <div class="timeline">
+    <div class="event done"><div class="event-year">2026 Q2</div><div class="event-title">ML-KEM-768 (FIPS 203) Deployed<span class="badge badge-done">DONE</span></div><div class="event-desc">Quantum-safe key encapsulation replacing RSA/ECDH. Shor-resistant.</div></div>
+    <div class="event done"><div class="event-year">2026 Q2</div><div class="event-title">ML-DSA-65 (FIPS 204) Deployed<span class="badge badge-done">DONE</span></div><div class="event-desc">Digital signatures replacing ECDSA. Integrity and non-repudiation.</div></div>
+    <div class="event done"><div class="event-year">2026 Q2</div><div class="event-title">SLH-DSA (FIPS 205) Deployed<span class="badge badge-done">DONE</span></div><div class="event-desc">Hash-based stateless signatures. Root of trust for 313-BIND.</div></div>
+    <div class="event done"><div class="event-year">2026 Q3</div><div class="event-title">pyspx SLH-DSA Fallback<span class="badge badge-done">DONE</span></div><div class="event-desc">Closes deployment gap for air-gapped environments without liboqs.</div></div>
+    <div class="event progress"><div class="event-year">2026 Q4</div><div class="event-title">liboqs ML-DSA-65 Real Implementation<span class="badge badge-progress">IN PROGRESS</span></div><div class="event-desc">Replace HMAC proxy with actual liboqs C library binding.</div></div>
+    <div class="event planned"><div class="event-year">2027 Q1</div><div class="event-title">HSM Key Storage Migration<span class="badge badge-planned">PLANNED</span></div><div class="event-desc">Migrate in-memory keys to Azure Key Vault HSM for hardware-backed security.</div></div>
+    <div class="event planned"><div class="event-year">2030–2035</div><div class="event-title">CRQC Threat Window<span class="badge badge-planned">MONITOR</span></div><div class="event-desc">Cryptographically Relevant Quantum Computer expected. All classical crypto at risk.</div></div>
+  </div>
+</div>
+<div class="footer">Shadow313 NEXUS v4.0.0 · PQC Migration Graph · Ottawa, ON, Canada</div>
+</body>
+</html>

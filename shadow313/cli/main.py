@@ -1,3 +1,5 @@
+"""Shadow313 NEXUS CLI — Local-first AI-powered security intelligence platform."""
+from __future__ import annotations
 import os
 """
 shadow313.cli.main  — v4 NEXUS
@@ -13,7 +15,6 @@ BUG FIXES vs v1:
   - Missing commands: agent, campaign, graph, serve, report, threat-intel,
     sandbox, cloud, crypto-agility, rag, temporal, nexus, stix — all added.
 """
-from __future__ import annotations
 
 import argparse
 import sys

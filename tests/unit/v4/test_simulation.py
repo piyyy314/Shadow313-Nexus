@@ -1,6 +1,7 @@
 """Unit tests — shadow313.v4.simulation"""
 import pytest
 from pathlib import Path
+ROOT_DIR = Path(__file__).parent.parent.parent.parent  # workspace root
 
 
 class TestSimulation:
@@ -13,9 +14,9 @@ class TestSimulation:
             pytest.skip("simulation module not fully implemented")
 
     def test_apt_lateral_movement_exists(self):
-        p = Path("shadow313/v4/simulation/apt_lateral_movement.py")
+        p = ROOT_DIR / "shadow313/v4/simulation/apt_lateral_movement.py"
         assert p.exists(), "apt_lateral_movement.py should exist"
 
     def test_simulation_init(self):
-        p = Path("shadow313/v4/simulation/__init__.py")
+        p = ROOT_DIR / "shadow313/v4/simulation/__init__.py"
         assert p.exists(), "__init__.py should exist"

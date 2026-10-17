@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 -- Third-Generation Countermeasure Integration Test
 ===============================================================
@@ -15,7 +16,6 @@ Mutations tested:
 
 Expected outcome: composite score >= 0.80 for all mutations
 """
-from __future__ import annotations
 
 import time
 from datetime import datetime, timezone

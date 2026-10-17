@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.satellite.ground_segment_sweep
 ─────────────────────────────────────────────
@@ -13,7 +14,6 @@ Implements the 5-phase sweep shown in the AEGIS NEXUS tactical UI:
 
 All findings are 313-bound with SHA3-256 chain hashes.
 """
-from __future__ import annotations
 
 import hashlib
 import json

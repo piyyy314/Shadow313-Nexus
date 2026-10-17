@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.global_threat_simulation
 ──────────────────────────────────────────────────
@@ -19,7 +20,6 @@ Categories (H1 2026 breakdown):
 
 Date: 2026-08-31 | Classification: Threat Intelligence
 """
-from __future__ import annotations
 
 import hashlib
 import json

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Adaptive Defense Loop (ADL)
 ===========================================
@@ -20,7 +21,6 @@ Just the real closed loop between detection, response, and evolution.
 Author: Shadow313 Core Team
 """
 
-from __future__ import annotations
 
 import hashlib
 import json

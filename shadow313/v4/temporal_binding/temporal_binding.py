@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.temporal_binding.temporal_binding  — v4 NEXUS
 313 Temporal Binding Protocol — the core NEXUS differentiator.
@@ -25,7 +26,6 @@ BUG FIXES:
   - IPFS anchor used requests library without timeout — switched to urllib
     with 15s timeout.
 """
-from __future__ import annotations
 import hashlib
 import hmac
 import json

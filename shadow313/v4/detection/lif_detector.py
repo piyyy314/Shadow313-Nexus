@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.lif_detector — NEXUS Complete
 Leaky Integrate-and-Fire (LIF) Neuromorphic Detector for Low-and-Slow APT Detection
@@ -30,7 +31,6 @@ ATT&CK techniques detected:
   T1046      Network Scanning (slow port scan)
   T1074.001  Data Staging (gradual file access accumulation)
 """
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field, asdict

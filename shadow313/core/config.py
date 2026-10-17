@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.config  — v4
 Config loader: YAML + env-var overrides.
@@ -9,7 +10,6 @@ BUG FIXES vs v1:
   - init_user_dirs missing 'data' and 'reports' subdirs
   - save() wrote full nested dict without 'shadow313' wrapper — fixed
 """
-from __future__ import annotations
 import os
 import copy
 import yaml

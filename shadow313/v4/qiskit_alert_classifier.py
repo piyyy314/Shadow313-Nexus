@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 — Qiskit ML Alert Classifier
 =======================================
@@ -17,7 +18,6 @@ Hilbert space via the ZZFeatureMap — a 2-local entangling feature map
 that creates correlations classical kernels cannot easily replicate.
 """
 
-from __future__ import annotations
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder

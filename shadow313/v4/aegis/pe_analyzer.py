@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.aegis.pe_analyzer  — NEXUS Complete
 Aegis PE Static Header Analyzer and Entropy Profiler.
@@ -18,7 +19,6 @@ Capabilities:
   - eBPF kernel execution log capture
   - Diffie-Hellman handshake simulation for key negotiation analysis
 """
-from __future__ import annotations
 import hashlib
 import json
 import math

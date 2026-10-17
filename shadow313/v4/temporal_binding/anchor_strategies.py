@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.temporal_binding.anchor_strategies
 ─────────────────────────────────────────────────
@@ -35,7 +36,6 @@ ALTERNATIVE STRATEGIES IMPLEMENTED:
   4. HybridAnchor     — IPFS primary + LedgerAnchor fallback + MultiHash always
   5. RFC3161Anchor    — RFC 3161 trusted timestamp (external CA, no IPFS needed)
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

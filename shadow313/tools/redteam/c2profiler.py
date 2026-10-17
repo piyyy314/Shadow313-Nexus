@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.red_team.c2profiler
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Command and control infrastructure profiler and beacon analyzer
 Category: Red Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

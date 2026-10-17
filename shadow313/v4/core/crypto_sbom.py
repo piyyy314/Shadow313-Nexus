@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.core.crypto_sbom
 ───────────────────────────────
@@ -11,7 +12,6 @@ Catalogs all cryptographic primitives in use across the codebase:
 
 Exports to CycloneDX JSON format for compliance reporting.
 """
-from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field

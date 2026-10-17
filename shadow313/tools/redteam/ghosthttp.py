@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 — GhostHTTP
 HTTP fingerprinting engine. Extracts server secrets from timing
@@ -6,7 +7,6 @@ analysis. Identifies hidden technologies, WAF presence, and
 information disclosure vulnerabilities.
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib

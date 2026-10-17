@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.identity_layer
 ──────────────────────────────────────
@@ -15,7 +16,6 @@ Supporting controls:
   4. MFAChallengeOrchestrator: step-up auth triggers for high-risk events
   5. HardwareTokenBindingVerifier: FIDO2/WebAuthn device binding verification
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

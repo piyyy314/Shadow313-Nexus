@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Identity Layer Controls
 8 zero-trust identity controls (IDENTITY-1 through IDENTITY-8).
 """
-from __future__ import annotations
 import time, hashlib, uuid, math
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.ghost_watch.valkyrie
 ───────────────────────────────────
@@ -21,7 +22,6 @@ Architecture:
   - Cryptographic audit trail via 313-BIND
   - Human-in-the-loop authorization gate
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

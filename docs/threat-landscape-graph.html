@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — Threat Landscape Graph</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--green:#22c55e;--cyan:#06b6d4;--amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;--bg:#020617;--bg2:#0b1329;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(2,6,23,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(34,197,94,0.15);height:48px;display:flex;align-items:center;padding:0 20px;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;text-decoration:none;color:var(--text);}
+.nav-icon{width:28px;height:28px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:12px;}
+.main{max-width:1100px;margin:0 auto;padding:30px 20px;}
+h1{font-size:28px;font-weight:800;margin-bottom:6px;}
+h1 span{color:var(--green);}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:30px;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px;}
+.actor-card{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:10px;padding:18px;}
+.actor-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.actor-origin{font-size:11px;color:var(--muted);margin-bottom:10px;}
+.actor-ttps{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.ttp{font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.2);border-radius:3px;padding:2px 6px;}
+.detection-bar{background:rgba(0,0,0,0.3);border-radius:3px;height:6px;margin-bottom:4px;}
+.detection-fill{height:6px;border-radius:3px;}
+.detection-label{font-size:10px;color:var(--muted);}
+.footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);border-top:1px solid rgba(34,197,94,0.08);margin-top:30px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-icon">S3</div>SHADOW313 NEXUS</a>
+</nav>
+<div class="main">
+  <h1>Threat Landscape <span>Graph</span></h1>
+  <p class="subtitle">Top threat actor profiles with Shadow313 detection rates and primary TTPs</p>
+  <div class="grid" id="actors"></div>
+</div>
+<div class="footer">Shadow313 NEXUS v4.0.0 · Threat Landscape Graph · Ottawa, ON, Canada</div>
+<script>
+const actors=[
+  {name:"APT29 (Cozy Bear)",origin:"Russia / SVR",detection:78,color:"#22c55e",ttps:["T1566.001","T1078","T1550.003","T1573.002","T1195.002"]},
+  {name:"APT28 (Fancy Bear)",origin:"Russia / GRU",detection:82,color:"#22c55e",ttps:["T1566.001","T1059.001","T1003.001","T1071.001"]},
+  {name:"APT41 (Winnti)",origin:"China / MSS",detection:71,color:"#f59e0b",ttps:["T1190","T1059.006","T1055.001","T1048"]},
+  {name:"Lazarus Group",origin:"North Korea / DPRK",detection:65,color:"#f59e0b",ttps:["T1566.001","T1059.001","T1071.004","T1486","T1565.001"]},
+  {name:"FIN7",origin:"Criminal / Eastern Europe",detection:74,color:"#22c55e",ttps:["T1566.001","T1204.002","T1059.001","T1003.001"]},
+  {name:"BlackCat / ALPHV",origin:"Criminal / RaaS",detection:80,color:"#22c55e",ttps:["T1486","T1490","T1078","T1021.002"]},
+  {name:"Conti",origin:"Criminal / Russia",detection:83,color:"#22c55e",ttps:["T1486","T1490","T1021.002","T1003.001"]},
+  {name:"REvil / Sodinokibi",origin:"Criminal / RaaS",detection:79,color:"#22c55e",ttps:["T1486","T1490","T1078","T1021.002"]},
+  {name:"Sandworm",origin:"Russia / GRU",detection:68,color:"#f59e0b",ttps:["T1190","T1059","T1485","T1498"]},
+];
+const grid=document.getElementById('actors');
+actors.forEach(a=>{
+  const div=document.createElement('div');
+  div.className='actor-card';
+  div.innerHTML=`<div class="actor-name">${a.name}</div>
+    <div class="actor-origin">${a.origin}</div>
+    <div class="actor-ttps">${a.ttps.map(t=>`<span class="ttp">${t}</span>`).join('')}</div>
+    <div class="detection-bar"><div class="detection-fill" style="width:${a.detection}%;background:${a.color}"></div></div>
+    <div class="detection-label">Detection Rate: <span style="color:${a.color};font-weight:700">${a.detection}%</span></div>`;
+  grid.appendChild(div);
+});
+</script>
+</body>
+</html>

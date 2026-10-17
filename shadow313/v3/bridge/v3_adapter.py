@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 """
 Shadow313 v3 → v1 Bridge Adapter
@@ -37,7 +38,6 @@ GAP 6 — Thread safety
   Bridge: asyncio.run_in_executor wraps blocking v3 calls
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib

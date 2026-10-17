@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.core.event_bus
 ─────────────────────────────
@@ -11,7 +12,6 @@ Provides async pub/sub event routing between modules:
 
 Uses asyncio queues internally; FastAPI WebSocket for external consumers.
 """
-from __future__ import annotations
 
 import asyncio
 import logging

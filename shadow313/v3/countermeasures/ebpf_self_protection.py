@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Countermeasure 1: eBPF Self-Protection
 ======================================================
@@ -17,7 +18,6 @@ Closes Mutation 1A (eBPF detachment via bpf() syscall abuse).
 MITRE ATT&CK: T1055.012 (Process Hollowing), T1562.006 (Indicator Blocking)
 """
 
-from __future__ import annotations
 
 import hashlib
 import hmac

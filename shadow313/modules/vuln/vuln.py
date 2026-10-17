@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.modules.vuln
 Vulnerability analysis — CVE correlation, CVSS scoring, exploit availability,
 dependency auditing, and AI-driven triage.
 """
-from __future__ import annotations
 import json
 import re
 import sqlite3

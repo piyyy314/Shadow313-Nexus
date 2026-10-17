@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.siem.siem  — v4
 SIEM integration: Splunk HEC · Elasticsearch · Wazuh.
@@ -9,7 +10,6 @@ BUG FIXES:
   - _format_event() crashed on non-serializable datetime objects — added
     default=str to json.dumps.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from typing import Any

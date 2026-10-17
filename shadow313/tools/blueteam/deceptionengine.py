@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.blue_team.deceptionengine
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Active deception and adversary misdirection engine
 Category: Blue Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 # REFACTOR: This file has 1301 lines and should be split into focused modules.
 # See: docs/project-roadmap.html for refactoring plan.
 # Priority: Split into 200-300 line modules by responsibility.
@@ -36,7 +37,6 @@ Covers all 17 previously missed threats:
   APT41-001 APT41 supply chain implant
   FIN7-001  FIN7 COM object hijacking
 """
-from __future__ import annotations
 
 import math
 import re

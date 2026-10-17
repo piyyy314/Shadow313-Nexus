@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.mttd_optimizer
 MTTD Optimizer — Architectural Changes to Push MTTD Below 2 Minutes
@@ -23,7 +24,6 @@ Architectural changes implemented:
   E. ParallelDetectionPipeline — concurrent rule evaluation
   F. EarlyWarningSystem — detect precursor behaviors before main technique
 """
-from __future__ import annotations
 
 import math
 import random

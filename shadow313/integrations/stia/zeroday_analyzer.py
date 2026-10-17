@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.stia.zeroday_analyzer
 ──────────────────────────────────────────────
@@ -9,7 +10,6 @@ Analyzes STIA scan results for zero-day indicators:
   - EPSS score spikes indicating active exploitation
   - KEV (Known Exploited Vulnerabilities) cross-reference
 """
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

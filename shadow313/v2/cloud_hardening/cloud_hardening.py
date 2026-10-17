@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 """
 shadow313.v2.cloud_hardening.cloud_hardening  — v4
@@ -11,7 +12,6 @@ BUG FIXES:
   - _check_rds_public() iterated over wrong key 'DBInstances' vs 'dbInstances'
     — fixed to use correct AWS SDK response key.
 """
-from __future__ import annotations
 import re
 from pathlib import Path
 from typing import Any

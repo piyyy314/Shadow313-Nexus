@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.integrations.stia.report
 ────────────────────────────────────
 Generates HTML and JSON bound reports for STIA scan results
 with embedded 313 Temporal Binding receipt metadata.
 """
-from __future__ import annotations
 
 import json
 import os

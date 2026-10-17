@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.vuln_upgrades.epss_kev_enhanced — v4
 Enhanced EPSS + KEV Scoring Engine
@@ -23,7 +24,6 @@ Usage:
     result = scorer.score("CVE-2021-44228", cvss=10.0)
     print(result.risk_tier, result.composite_risk)
 """
-from __future__ import annotations
 
 import asyncio
 import csv

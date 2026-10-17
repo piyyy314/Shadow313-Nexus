@@ -1,11 +1,12 @@
 """Unit tests — shadow313.v4.agent"""
 import pytest
 from pathlib import Path
+ROOT_DIR = Path(__file__).parent.parent.parent.parent  # workspace root
 
 
 class TestAgent:
     def test_agent_runner_exists(self):
-        p = Path("shadow313/v4/agent/agent_runner.py")
+        p = ROOT_DIR / "shadow313/v4/agent/agent_runner.py"
         assert p.exists(), "agent_runner.py should exist"
 
     def test_import(self):
@@ -16,12 +17,12 @@ class TestAgent:
             pytest.skip("agent_runner not fully implemented")
 
     def test_orchestrator_exists(self):
-        p = Path("shadow313/v4/agent/orchestrator.py")
+        p = ROOT_DIR / "shadow313/v4/agent/orchestrator.py"
         assert p.exists(), "orchestrator.py should exist"
 
     def test_no_bare_excepts(self):
         import re
-        p = Path("shadow313/v4/agent")
+        p = ROOT_DIR / "shadow313/v4/agent"
         if p.exists():
             for f in p.rglob("*.py"):
                 content = f.read_text(errors="ignore")

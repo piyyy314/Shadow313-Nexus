@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.crypto_store  — v4
 AES-256-GCM encrypted session store with 4-tier key resolution.
@@ -15,7 +16,6 @@ Key resolution hierarchy:
   3. PBKDF2 from passphrase
   4. Auto-generated key (stored in keychain if available)
 """
-from __future__ import annotations
 import os
 import json
 from pathlib import Path

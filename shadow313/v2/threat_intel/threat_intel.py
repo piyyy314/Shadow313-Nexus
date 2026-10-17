@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.threat_intel.threat_intel
 Feature #16 — Threat Intelligence Feeds
 Auto-sync MITRE ATT&CK, AlienVault OTX, Abuse.ch, Shodan InternetDB.
 All data stored locally under ~/.shadow313/threat_intel/
 """
-from __future__ import annotations
 import json
 import sqlite3
 import time
@@ -247,7 +247,7 @@ class ThreatIntelDB:
 
     def stats(self) -> dict:
         def _count(table):
-            return self._conn.execute("SELECT COUNT(*) FROM ?", (table,)).fetchone()  # NOTE: never use fetched data directly in subsequent SQL queries (second-order injection risk)[0]  # nosec B608 — internal table/col names, not user input
+            return self._conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]  # nosec B608 — internal table/col names, not user input
         meta = {}
         for row in self._conn.execute("SELECT feed, last_sync, record_count FROM feed_meta"):
             meta[row[0]] = {"last_sync": row[1], "count": row[2]}

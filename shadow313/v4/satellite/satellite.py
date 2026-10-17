@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.satellite.satellite  — NEXUS Complete
 VSAT Satellite Ground Segment Security Module.
@@ -9,7 +10,6 @@ Features:
   RF Telemetry Correlation: SNR, clock skew, cyber threat correlation
   Ground Station Security: Uplink/downlink security assessment
 """
-from __future__ import annotations
 import json
 import math
 import random

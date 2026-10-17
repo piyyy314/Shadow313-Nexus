@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.network_upgrades.dns_covert  — v4
 DNS covert channel / tunneling detection: 6 heuristic rules + DoH detection.
@@ -11,7 +12,6 @@ BUG FIXES:
     now uses PCAP packet timestamps for rate calculation.
   - Known tunnel tool pattern matching was case-sensitive — fixed to lowercase.
 """
-from __future__ import annotations
 import math
 import re
 from collections import defaultdict

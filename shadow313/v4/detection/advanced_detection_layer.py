@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.advanced_detection_layer
 ─────────────────────────────────────────────────
@@ -23,7 +24,6 @@ Three advanced detection capabilities that close the remaining 36% bypass gap:
       - SNI/ALPN anomaly detection
     Does NOT decrypt traffic — uses metadata only (privacy-preserving).
 """
-from __future__ import annotations
 
 import hashlib
 import math

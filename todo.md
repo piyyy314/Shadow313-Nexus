@@ -1,10 +1,7 @@
-# Tasks - Shadow313 PPTX Design Match
-- [x] Parse Master Intelligence Platform PPTX (30 slides, 350 media files)
-- [x] Parse NEXUS SECURITY Full-Spectrum Services PPTX (12 slides)
-- [x] Parse Live POC Simulation Platform PDF
-- [x] Parse Python Toolkit README and Developer Guide DOCX
-- [x] Extract design system: black bg, green accents, Space Grotesk, JetBrains Mono, hexagon logo
-- [x] Extract real data: competitive scorecard, APT detection rates, ML ensemble specs, SOAR playbooks
-- [x] Rebuild shadow313-nexus-dashboard.html to match PPTX visual style exactly
-- [x] Confirm 3462 tests GREEN
-- [x] HTML audit: all 4 files self-contained with download buttons
+# Tasks - Shadow313 NEXUS Gap Closure Roadmap
+- [x] Create batch-1 unit tests: Ghost Watch modules (cadl, we_forge, oracle, cerberus, nightshade, hephaestus, aether, tartarus, valkyrie, chronos)
+- [x] Create batch-2 unit tests: new detection modules (file_access, hndl, quantum_dna, swift_monitor, temporal_corr, identity_engine)
+- [x] Create batch-3 unit tests: simulation modules (swift_cascade, choke_point, arch_e, tripwires, lateral_movement)
+- [x] Create batch-4 unit tests: quantum nexus (qkd_bb84, orbital_dsp, omega_purge, lif_snn, aeon, ceqs, qebim, nvl72)
+- [x] Create integration tests: SOAR+CADL pipeline, federated mesh gossip, identity zero-trust, 313-BIND chain, VSAT e2e
+- [x] Deliver gap closure report

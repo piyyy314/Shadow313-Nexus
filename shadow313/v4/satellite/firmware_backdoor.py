@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.satellite.firmware_backdoor
 VSAT Firmware Backdoor Analyzer — SHA-19
@@ -22,7 +23,6 @@ Detection capabilities:
 7. Supply chain integrity (hash comparison against known-good)
 8. Debug interface detection (UART/JTAG exposure)
 """
-from __future__ import annotations
 
 import hashlib
 import math

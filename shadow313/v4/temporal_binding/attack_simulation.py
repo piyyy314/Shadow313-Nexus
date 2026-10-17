@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.temporal_binding.attack_simulation  — NEXUS Complete
 Interactive simulation of the SHA-3 chain bypass attack against 313-BIND.
@@ -11,7 +12,6 @@ how the three 313-BIND layers (timestamp, SLH-DSA, IPFS) work together.
 Run directly:
   python -m shadow313.v4.temporal_binding.attack_simulation
 """
-from __future__ import annotations
 import hashlib
 import hmac
 import json

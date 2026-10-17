@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — NVL72 30TB Unified VRAM Telemetry Monitor
 Monitors GB200 NVL72 exascale compute for quantum simulation workloads.
 Total VRAM: 30000 GB | Peak: 26506 GB | Max Threads: 353894
 """
-from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Dict, List
 

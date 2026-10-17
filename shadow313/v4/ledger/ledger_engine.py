@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.ledger.ledger_engine  — NEXUS Complete
 Distributed append-only ledger with Merkle checkpointing.
@@ -13,7 +14,6 @@ Implements §4 of the Architecture Reference:
 Performance targets (5-node cluster):
   p50: 22ms, p95: 49ms, p99: 105ms
 """
-from __future__ import annotations
 import hashlib
 import json
 import threading

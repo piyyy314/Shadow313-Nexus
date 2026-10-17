@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.bridge.extended_c2_correlator
 ────────────────────────────────────────────
@@ -12,7 +13,6 @@ Extends c2_attribution_analysis.py with:
 
 Implements the recommendations from Part 6 of c2_attribution_analysis.py.
 """
-from __future__ import annotations
 
 import re
 import statistics

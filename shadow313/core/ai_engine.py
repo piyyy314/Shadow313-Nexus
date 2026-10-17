@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.ai_engine  — v4
 AI Engine abstraction: Ollama (local) · OpenAI-compatible · Disabled.
@@ -13,7 +14,6 @@ BUG FIXES vs v1:
   - stream() fell back to chat() for non-ollama backends but ignored
     system_prompt parameter — fixed.
 """
-from __future__ import annotations
 import json
 import os
 import sys

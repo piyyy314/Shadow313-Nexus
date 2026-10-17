@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Cryptographic Hardening Audit
 =============================================
@@ -28,7 +29,6 @@ References:
   - Serwadda et al. 2013 (GAN keystroke spoofing)
 """
 
-from __future__ import annotations
 
 import hashlib
 import hmac

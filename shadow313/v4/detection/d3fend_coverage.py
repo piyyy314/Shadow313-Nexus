@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.d3fend_coverage — NEXUS Complete
 MITRE D3FEND v1.5.0 coverage model for Shadow313 v4.
@@ -12,7 +13,6 @@ Provides:
 
 All D3FEND IDs and definitions sourced from d3fend.mitre.org v1.5.0.
 """
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum

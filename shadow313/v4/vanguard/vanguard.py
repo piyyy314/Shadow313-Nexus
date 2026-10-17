@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.vanguard.vanguard  — NEXUS Complete
 Vanguard: Autonomous vulnerability chain planning and verification.
@@ -10,7 +11,6 @@ Capabilities:
   - Integration with 313 Temporal Binding for chain receipts
   - NEXUS Tier 1 Defensible Moat feature
 """
-from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass, field, asdict

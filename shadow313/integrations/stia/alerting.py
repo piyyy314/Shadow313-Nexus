@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.stia.alerting
 ──────────────────────────────────────
@@ -9,7 +10,6 @@ Supports:
   - Severity-based routing (CRITICAL → immediate, HIGH → queued)
   - 313-BIND receipt attachment to alerts
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

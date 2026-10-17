@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 """
 shadow313.v4.satellite.cwmp_hardening
@@ -12,7 +13,6 @@ Implements all immediate mitigations for unsigned CWMP provisioning:
   5. Sigma rule export for anomalous ACS connection detection
   6. TR-369 USP migration readiness checker
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

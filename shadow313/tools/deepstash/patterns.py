@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.tools.deepstash.patterns
 ────────────────────────────────────
 60+ curated regex patterns across 12 categories for secret detection.
 """
-from __future__ import annotations
 import re
 
 SECRET_PATTERNS = [

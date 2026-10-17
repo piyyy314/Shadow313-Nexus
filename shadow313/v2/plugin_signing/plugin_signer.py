@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.plugin_signing.plugin_signer
 Feature #15 — Plugin Code Signing
 sigstore/cosign-based verification of plugin manifests.
 Falls back to SHA-256 HMAC signing when sigstore/cosign unavailable.
 """
-from __future__ import annotations
 import hashlib
 import hmac
 import json

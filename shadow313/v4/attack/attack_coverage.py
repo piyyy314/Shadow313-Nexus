@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.attack.attack_coverage
 ──────────────────────────────────────
@@ -15,7 +16,6 @@ Coverage levels:
 
 Exports ATT&CK Navigator layer JSON for import into the UI.
 """
-from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field

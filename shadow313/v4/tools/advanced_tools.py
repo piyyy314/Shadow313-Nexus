@@ -1,3 +1,4 @@
+from __future__ import annotations
 # REFACTOR: This file has 1475 lines and should be split into focused modules.
 # See: docs/project-roadmap.html for refactoring plan.
 # Priority: Split into 200-300 line modules by responsibility.
@@ -17,7 +18,6 @@ Tool categories:
   9. Crypto Agility Advanced (4 tools)
   10. OSINT Advanced (4 tools)
 """
-from __future__ import annotations
 import hashlib
 import json
 import os

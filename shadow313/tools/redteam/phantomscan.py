@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.red_team.phantomscan
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Stealth port and service scanner with evasion capabilities
 Category: Red Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

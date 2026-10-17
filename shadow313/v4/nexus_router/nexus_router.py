@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.nexus_router.nexus_router  — NEXUS Complete v4.7.2
 Implements all 6 routing defect fixes from the Architecture Reference:
@@ -13,7 +14,6 @@ Also implements:
   - Per-tool circuit breaker profiles
   - Weighted round-robin, consistent hashing, failover strategies
 """
-from __future__ import annotations
 import hashlib
 import hmac
 import ipaddress

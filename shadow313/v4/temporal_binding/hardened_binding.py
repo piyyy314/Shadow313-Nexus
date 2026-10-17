@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.temporal_binding.hardened_binding — NEXUS Complete
 Hardened 313-BIND implementation addressing SLasH-DSA and HNDL threats.
@@ -50,7 +51,6 @@ References:
   FIPS 204 (ML-DSA, NIST August 2024)
   NIST IR 8547 (PQC transition, 2030 deadline)
 """
-from __future__ import annotations
 
 import ctypes
 import hashlib

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Zero-Evasion Countermeasure Layer
 =================================================
@@ -42,7 +43,6 @@ References:
   - DKOM detection: "Detecting Kernel-Level Rootkits" (Rutkowska 2006)
 """
 
-from __future__ import annotations
 import hmac
 
 import hashlib

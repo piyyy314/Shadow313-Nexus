@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.binding_sdk.registry
 ─────────────────────────────────────
@@ -7,7 +8,6 @@ Every app in the ecosystem is registered here with its identity.
 This enables cross-app receipt verification — you can verify a receipt
 from Ghost-Watch using the Shadow313 CLI, or vice versa.
 """
-from __future__ import annotations
 
 from .binder import AppIdentity, Binder313
 

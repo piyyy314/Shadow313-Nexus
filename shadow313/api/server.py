@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.api.server
 FastAPI REST API for Shadow313 NEXUS v4.0.0
@@ -13,7 +14,6 @@ Endpoints:
   POST /api/bind/create     — create 313-BIND receipt
   GET  /api/bind/{bind_id}  — retrieve receipt
 """
-from __future__ import annotations
 
 import argparse
 import hashlib
@@ -24,8 +24,6 @@ import time
 from datetime import UTC, datetime
 from typing import Any
 
-try:
-    
 import os
 import time
 import hmac
@@ -110,12 +108,10 @@ async def verify_api_key(
 
 
 from fastapi import Depends, FastAPI, Header, HTTPException
-    from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
-    import uvicorn
-    HAS_FASTAPI = True
-except ImportError:
-    HAS_FASTAPI = False
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import uvicorn
+HAS_FASTAPI = True
 
 from shadow313 import __version__
 import logging

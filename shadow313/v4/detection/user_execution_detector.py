@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.user_execution_detector
 User Execution Detector — T1204
@@ -13,7 +14,6 @@ Covers:
 - Double-click execution of .js, .vbs, .hta, .bat files
 - HTML smuggling patterns
 """
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

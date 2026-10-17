@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.bridge.c2_attribution_analysis
 ─────────────────────────────────────────────
@@ -15,7 +16,6 @@ Key finding: TLS cert correlation produces HIGH FALSE POSITIVE RATE when
 CDN/domain-fronting is used (Cloudflare cert shared across all customers).
 URI pattern + JA3 are the correct primary separators.
 """
-from __future__ import annotations
 
 import math
 import re

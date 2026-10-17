@@ -1,3 +1,4 @@
+from __future__ import annotations
 #!/usr/bin/env python3
 """
 313-BIND Supply Chain Attack Simulation
@@ -9,7 +10,6 @@ specific gap/mismatch that triggers the alert.
 
 Run: python3 shadow313/v4/temporal_binding/supply_chain_simulation.py
 """
-from __future__ import annotations
 
 import hashlib
 import json

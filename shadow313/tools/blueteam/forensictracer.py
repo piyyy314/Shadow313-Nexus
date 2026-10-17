@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.blue_team.forensictracer
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Digital forensics artifact collection and timeline reconstruction
 Category: Blue Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

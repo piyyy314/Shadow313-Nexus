@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.enforcement — NEXUS Complete
 D3-PT (Process Termination) + D3-OTF (Outbound Traffic Filtering)
@@ -20,7 +21,6 @@ ATT&CK techniques countered:
   T1071.004  DNS Tunneling
   T1105  Ingress Tool Transfer (curl download)
 """
-from __future__ import annotations
 
 import hmac
 import logging

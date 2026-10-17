@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.sigma_rules.rules
 NEXUS Shadow313 — Production Sigma Rules Registry
@@ -6,7 +7,6 @@ NEXUS Shadow313 — Production Sigma Rules Registry
 Author: Shadow313 NEXUS Detection Engineering
 Date: 2026-09-22 | Version: 2.0.1
 """
-from __future__ import annotations
 
 from typing import Optional
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.tools.blueteam.crypto_sbom — NEXUS Complete
 Cryptographic Software Bill of Materials (Crypto-SBOM) Generator
@@ -22,7 +23,6 @@ ATT&CK / D3FEND integration:
 Kernel registration:
   ("crypto_sbom", "shadow313.v4.tools.blueteam.crypto_sbom.CryptoSBOMModule")
 """
-from __future__ import annotations
 
 import hashlib
 import json

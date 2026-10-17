@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.campaign.campaign  — v4
 Asyncio-parallel multi-target scanning campaigns.
@@ -10,7 +11,6 @@ BUG FIXES:
   - _run_target() swallowed all exceptions silently — now records error status.
   - list_campaigns() crashed on malformed JSON files — added try/except.
 """
-from __future__ import annotations
 import asyncio
 import json
 import re

@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.agent.agent
 Feature #3 — Agentic Auto-Chain Loop
 State machine that chains modules autonomously (recon → vuln → exploit-check → report)
 with human-in-the-loop approval gates, step logging, and rollback capability.
 """
-from __future__ import annotations
 import json
 import time
 import uuid

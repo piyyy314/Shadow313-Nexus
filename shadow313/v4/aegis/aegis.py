@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 """
 shadow313.v4.aegis.aegis  — NEXUS Complete
@@ -18,7 +19,6 @@ Features:
   - Incident timeline and forensic capture
   - 313 Temporal Binding for all response actions
 """
-from __future__ import annotations
 import json
 import threading
 import time

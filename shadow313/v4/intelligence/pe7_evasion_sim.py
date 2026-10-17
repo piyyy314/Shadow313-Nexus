@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.intelligence.pe7_evasion_sim
 PE-7 Evasion Retraining Simulator
@@ -13,7 +14,6 @@ GA Target: November 15, 2026 (30 days ahead of original Dec 15, 2026)
 PE-7 baseline: 97.3% overall detection, 91.8% TA0005 detection
 Target post-retraining: ≥98.0% overall, ≥96.0% TA0005
 """
-from __future__ import annotations
 
 import math
 import random

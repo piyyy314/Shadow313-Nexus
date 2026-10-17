@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.tools.blueteam.tls_edge_cases
 ───────────────────────────────────────────
@@ -13,7 +14,6 @@ Simulates and cryptographically timestamps 5 categories of TLS failures:
 Every check result — pass or fail — is bound to a 313 temporal receipt
 and chain-linked so that tampering with any record is immediately detectable.
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

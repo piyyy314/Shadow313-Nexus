@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Agent Automation Runner
 Autonomous security assessment with task scheduling.
 """
-from __future__ import annotations
 import time, json, uuid
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Callable, Optional

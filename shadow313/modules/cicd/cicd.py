@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.modules.cicd
 CI/CD integration — SARIF output, secret scanning, dependency audit,
 GitHub Actions / GitLab CI template generation, pipeline threshold gating.
 """
-from __future__ import annotations
 import json
 import os
 import re

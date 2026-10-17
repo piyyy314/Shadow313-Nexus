@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.telegram.bot
 ────────────────────────────────────
@@ -19,7 +20,6 @@ Quick start:
   3. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
   4. docker compose --profile telegram up -d telegram-bot
 """
-from __future__ import annotations
 
 import asyncio
 import json

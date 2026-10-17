@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.docker_sandbox.docker_sandbox  — NEXUS Complete
 CVE reproduction sandbox using Docker with comprehensive security constraints.
@@ -20,7 +21,6 @@ Security constraints (applied to every container):
   --read-only              Read-only root filesystem
   --tmpfs /tmp:noexec      No execution from /tmp
 """
-from __future__ import annotations
 import json
 import subprocess
 import time
