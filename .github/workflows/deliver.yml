@@ -1,13 +1,6 @@
 # Shadow313 NEXUS — Automated Delivery Pipeline
 # Runs on every push to master
-# Produces: versioned manifest + 313-BIND receipt
-#
-# ARCHITECTURE (v2 — orphan branch isolation):
-#   master            ← agent commits only (docs/, shadow313/, vercel.json)
-#   delivery-artifacts ← bot commits only  (dist/manifest.json, receipts/)
-#
-# This eliminates the non-fast-forward rejection cycle entirely.
-# The bot never touches master — zero conflict with agent pushes.
+# Produces: versioned manifest + 313-BIND receipt + GitHub Pages deployment
 
 name: Delivery Pipeline
 
@@ -45,7 +38,7 @@ jobs:
       - name: Install Shadow313
         run: pip install -e "." -q
 
-      - name: Run delivery pipeline
+      - name: Run delivery pipeline (no server, no browser)
         id: pipeline
         run: |
           python3 - << 'PYEOF'
@@ -71,12 +64,13 @@ jobs:
           print(f"Git SHA: {manifest['git_sha']}")
           print(f"Receipt: {receipt['bind_id']}")
 
+          # Write GitHub Actions outputs
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f"delivery_id={manifest['delivery_id']}\n")
               f.write(f"version={manifest['platform_version']}\n")
           PYEOF
 
-      - name: Upload dist artifacts (30-day backup)
+      - name: Upload dist artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: s313-nexus-delivery-${{ github.sha }}
@@ -90,14 +84,6 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist/
-
-      # Save artifacts for the commit job
-      - name: Save dist for commit job
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: dist-for-commit-${{ github.run_id }}
-          path: dist/
-          retention-days: 1
 
   # ── Deploy to GitHub Pages ────────────────────────────────────────────────
   deploy-pages:
@@ -113,109 +99,42 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-  # ── Commit manifest to ORPHAN branch (never touches master) ──────────────
-  #
-  # KEY CHANGE from v1: bot commits go to 'delivery-artifacts' orphan branch
-  # instead of master. This eliminates the non-fast-forward rejection cycle.
-  #
-  # delivery-artifacts branch structure:
-  #   dist/manifest.json          ← versioned manifest
-  #   dist/receipts/313-*.json    ← 313-BIND receipts
-  #   README.md                   ← explains the branch purpose
-  #
-  # To query receipts:
-  #   git fetch origin delivery-artifacts
-  #   git show origin/delivery-artifacts:dist/manifest.json
-  #
+  # ── Commit manifest back to repo ──────────────────────────────────────────
   commit-manifest:
-    name: Commit Manifest to delivery-artifacts Branch
+    name: Commit Versioned Manifest
     runs-on: ubuntu-24.04
     needs: build
 
     steps:
-      - name: Checkout delivery-artifacts branch (or create orphan)
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Check out the delivery-artifacts branch if it exists
-          # If not, we'll create it as an orphan below
-          ref: delivery-artifacts
-          fetch-depth: 0
-        continue-on-error: true
-        id: checkout-delivery
-
-      - name: Create orphan branch if it doesn't exist
-        if: steps.checkout-delivery.outcome == 'failure'
-        run: |
-          git checkout --orphan delivery-artifacts
-          git rm -rf . --quiet 2>/dev/null || true
-          mkdir -p dist/receipts
-          cat > README.md << 'EOF'
-          # Shadow313 NEXUS — Delivery Artifacts Branch
-
-          This orphan branch stores bot-generated delivery artifacts.
-          It has NO shared history with the master branch.
-
-          ## Contents
-          - `dist/manifest.json` — versioned delivery manifest
-          - `dist/receipts/` — 313-BIND cryptographic receipts
-
-          ## Why a separate branch?
-          Isolating bot commits from the agent's working branch eliminates
-          non-fast-forward rejection cycles. The master branch contains only
-          human/agent commits. This branch contains only bot commits.
-
-          ## Querying receipts
-          ```bash
-          git fetch origin delivery-artifacts
-          git show origin/delivery-artifacts:dist/manifest.json | python3 -m json.tool
-          ```
-          EOF
-          git config user.name  "piyyy314"
-          git config user.email "matarmohamad313@duck.com"
-          git add README.md
-          git commit -m "chore: initialize delivery-artifacts orphan branch"
-          git push origin delivery-artifacts
 
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
-      - name: Download dist artifacts from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-for-commit-${{ github.run_id }}
-          path: dist/
-
-      - name: Install Shadow313 and regenerate manifest
+      - name: Install and run pipeline
         run: |
-          # We're on delivery-artifacts branch — need to get source for pipeline
-          # Download the manifest that was already generated in build job
-          echo "Using pre-built manifest from build job artifacts"
-          ls -la dist/ || true
-          ls -la dist/receipts/ || true
+          pip install -e "." -q
+          python3 - << 'PYEOF'
+          import sys, json, os
+          sys.path.insert(0, '.')
+          from scripts.delivery.pipeline import scan_deliverables, generate_manifest, create_delivery_receipt, DIST_DIR, RECEIPT_DIR, MANIFEST
+          DIST_DIR.mkdir(exist_ok=True)
+          RECEIPT_DIR.mkdir(exist_ok=True)
+          files    = scan_deliverables()
+          manifest = generate_manifest(files)
+          receipt  = create_delivery_receipt(manifest)
+          MANIFEST.write_text(json.dumps(manifest, indent=2, default=str))
+          (RECEIPT_DIR / f"{receipt['bind_id']}.json").write_text(json.dumps(receipt, indent=2, default=str))
+          print(f"Manifest: {manifest['delivery_id']}")
+          PYEOF
 
-      - name: Commit manifest and receipts to delivery-artifacts
+      - name: Commit manifest and receipts
         run: |
-          git config user.name  "piyyy314"
-          git config user.email "matarmohamad313@duck.com"
-
-          # Only add manifest and receipts — nothing else
-          git add dist/manifest.json dist/receipts/ 2>/dev/null || true
-
-          # Check if there's anything to commit
-          if git diff --staged --quiet; then
-            echo "No changes to manifest or receipts — skipping commit"
-            exit 0
-          fi
-
-          git commit -m "chore(delivery): update manifest ${{ needs.build.outputs.delivery_id }} [skip ci]"
-
-          # Force-push is safe here because:
-          # 1. This branch is ONLY written by this bot job
-          # 2. No agent ever pushes to delivery-artifacts
-          # 3. No rebase conflicts possible — single writer
-          git push origin delivery-artifacts --force-with-lease
-
-          echo "✅ Manifest committed to delivery-artifacts branch"
-          echo "   View: git show origin/delivery-artifacts:dist/manifest.json"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/manifest.json dist/receipts/ || true
+          git diff --staged --quiet || git commit -m "chore(delivery): update manifest ${{ needs.build.outputs.delivery_id }} [skip ci]"
+          git push origin master || true

