@@ -28,7 +28,7 @@ markdown>=3.5.0
 
 # Security
 bandit>=1.7.0
-safety>=2.3.0
+safety>=3.8.1
 
 # Testing
 pytest>=7.4.0
