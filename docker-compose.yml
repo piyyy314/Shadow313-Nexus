@@ -51,34 +51,6 @@ services:
       - OLLAMA_NUM_PARALLEL=2
       - OLLAMA_HOST=0.0.0.0
     
-  # ── Telegram Alert Bot ──────────────────────────────────────────────────────
-  telegram-bot:
-    build:
-      context: .
-      target: nexus
-    container_name: shadow313-telegram-bot
-    restart: unless-stopped
-    depends_on:
-      shadow313-api:
-        condition: service_healthy
-    environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
-      - SHADOW313_API_URL=http://shadow313-api:8000
-      - TELEGRAM_MIN_SEVERITY=${TELEGRAM_MIN_SEVERITY:-HIGH}
-      - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-10}
-      - SHADOW313_AI_BACKEND=disabled
-    command: ["python", "-m", "shadow313.integrations.telegram.bot"]
-    networks:
-      - shadow313_net
-    profiles:
-      - telegram
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
     networks:
       - shadow313_internal  # Internal only — not on external network
     healthcheck:
@@ -95,6 +67,41 @@ services:
           cpus: "4.0"
         reservations:
           memory: 2G
+
+  # ── Telegram Alert Bot ──────────────────────────────────────────────────────
+  telegram-bot:
+    build:
+      context: .
+      target: nexus
+    container_name: shadow313-telegram-bot
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+    restart: unless-stopped
+    depends_on:
+      shadow313-api:
+        condition: service_healthy
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - SHADOW313_API_URL=http://shadow313-api:8313
+      - TELEGRAM_MIN_SEVERITY=${TELEGRAM_MIN_SEVERITY:-HIGH}
+      - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-10}
+      - SHADOW313_AI_BACKEND=disabled
+    command: ["python", "-m", "shadow313.integrations.telegram.bot"]
+    networks:
+      - shadow313_internal
+      - shadow313_external  # Outbound HTTPS to api.telegram.org; no published ports
+    profiles:
+      - telegram
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ── Ollama model puller — runs once on startup ────────────────────
   ollama-init:
@@ -330,7 +337,7 @@ networks:
       config:
         - subnet: 172.20.0.0/24
 
-  # External network — only nginx + webui + api
+  # External network — nginx + webui + api + Telegram outbound HTTPS
   shadow313_external:
     driver: bridge
     ipam:
