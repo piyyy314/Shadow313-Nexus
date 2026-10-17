@@ -66,7 +66,12 @@ except ImportError:
 # ── Config ────────────────────────────────────────────────────────────────────
 
 API_KEY        = os.getenv("SHADOW313_API_KEY", "")
-JWT_SECRET     = os.getenv("SHADOW313_JWT_SECRET", secrets.token_hex(32))
+JWT_SECRET     = os.getenv("SHADOW313_JWT_SECRET")
+if not JWT_SECRET:
+    raise RuntimeError(
+        "SHADOW313_JWT_SECRET must be set in environment. "
+        "Generate with: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )
 JWT_ISSUER     = os.getenv("SHADOW313_JWT_ISSUER", "shadow313-nexus")
 JWT_ALGORITHM  = "HS256"
 JWT_EXPIRE_MIN = int(os.getenv("SHADOW313_JWT_EXPIRE_MIN", "60"))
