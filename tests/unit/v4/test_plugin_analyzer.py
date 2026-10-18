@@ -461,7 +461,7 @@ class TestPluginSigning:
     def _plugin_dir() -> "Path":
         from pathlib import Path
         # Always resolve relative to the workspace root, not cwd
-        return Path(__file__).parent.parent.parent.parent / "shadow313" / "plugins" / "custom-ai-threat-analyzer"
+        return Path(__file__).parent.parent.parent.parent / "shadow313" / "plugins" / "custom_ai_threat_analyzer"
 
     def test_plugin_directory_can_be_signed(self):
         from shadow313.v2.plugin_signing.plugin_signer import HMACSigner
