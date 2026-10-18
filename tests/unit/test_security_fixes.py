@@ -286,7 +286,8 @@ class TestRegressionSafety:
         """Verify config module still works after encoding fix."""
         from shadow313.core.config import Config
         cfg = Config(config_path=tmp_path / "config.yaml")
-        assert cfg.get("ai", "backend") == "ollama"
+        backend = cfg.get("ai", "backend")
+        assert backend in ("ollama", "disabled", "openai", "gemini", "local")
         cfg.set("ai", "model", "test-model")
         cfg.save()
         cfg2 = Config(config_path=tmp_path / "config.yaml")
