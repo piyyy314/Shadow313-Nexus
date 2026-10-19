@@ -128,7 +128,7 @@ jobs:
     needs: file-integrity
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12", cache: pip }
       - run: pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
       - name: "Python syntax check"
@@ -179,7 +179,7 @@ jobs:
     needs: file-integrity
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
       - name: "Validate JSON files"
         run: |
@@ -254,7 +254,7 @@ jobs:
     needs: [file-integrity, python-validation]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12", cache: pip }
       - run: |
           pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
