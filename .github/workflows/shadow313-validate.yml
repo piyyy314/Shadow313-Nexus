@@ -20,7 +20,7 @@ jobs:
     name: "File Integrity & Route Validation"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: "FAIL-FAST: Verify 404.html exists"
         run: |
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: file-integrity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: "Validate all HTML files"
         run: |
           python3 << 'PYEOF'
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: file-integrity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: file-integrity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: "Validate JSON files"
@@ -220,7 +220,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: file-integrity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: "Detect wrongly committed artifacts"
         run: |
           python3 << 'PYEOF'
@@ -253,7 +253,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [file-integrity, python-validation]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: |
@@ -268,7 +268,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: file-integrity
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: sudo apt-get install -y shellcheck -q
       - run: |
           errors=0
