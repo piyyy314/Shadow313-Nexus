@@ -32,7 +32,7 @@ RUN apt-get update -o Acquire::Retries=3 \
         gcc g++ libssl-dev libffi-dev git \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml setup.py ./
+COPY pyproject.toml ./
 COPY shadow313/ ./shadow313/
 
 RUN pip install --upgrade pip wheel \

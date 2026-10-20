@@ -50,9 +50,8 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_NUM_PARALLEL=2
       - OLLAMA_HOST=0.0.0.0
-    
     networks:
-      - shadow313_internal  # Internal only — not on external network
+      - shadow313_internal
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
       interval: 30s
@@ -63,16 +62,17 @@ services:
     deploy:
       resources:
         limits:
-          memory: 8G      # LLM needs more memory
+          memory: 8G
           cpus: "4.0"
         reservations:
           memory: 2G
 
-  # ── Telegram Alert Bot ──────────────────────────────────────────────────────
+  # ── Telegram SATExpert bot ────────────────────────────────────────
   telegram-bot:
     build:
       context: .
       target: nexus
+    image: shadow313-satexpert-bot:local
     container_name: shadow313-telegram-bot
     <<: *security-defaults
     deploy:
@@ -82,26 +82,28 @@ services:
           cpus: "0.5"
     restart: unless-stopped
     depends_on:
-      shadow313-api:
+      ollama:
         condition: service_healthy
     environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
-      - SHADOW313_API_URL=http://shadow313-api:8313
-      - TELEGRAM_MIN_SEVERITY=${TELEGRAM_MIN_SEVERITY:-HIGH}
-      - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-10}
-      - SHADOW313_AI_BACKEND=disabled
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?TELEGRAM_BOT_TOKEN must be set}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:?TELEGRAM_CHAT_ID must be set}
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-matarmohamad313/shadow313-nexus}
+      TELEGRAM_POLL_INTERVAL: ${TELEGRAM_POLL_INTERVAL:-2}
     command: ["python", "-m", "shadow313.integrations.telegram.bot"]
     networks:
       - shadow313_internal
-      - shadow313_external  # Outbound HTTPS to api.telegram.org; no published ports
-    profiles:
-      - telegram
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    read_only: true
+    tmpfs:
+      - /tmp:size=50m,mode=1777
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+        reservations:
+          memory: 64M
 
   # ── Ollama model puller — runs once on startup ────────────────────
   ollama-init:

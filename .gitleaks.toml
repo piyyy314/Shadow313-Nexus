@@ -1,0 +1,4 @@
+[allowlist]
+  description = "Known safe test fixtures"
+  regexes = ["AKIAIOSFODNN7EXAMPLE"]
+  paths = ["tests/unit/v4/test_deepstash.py","tests/unit/v4/test_secrets_manager.py"]

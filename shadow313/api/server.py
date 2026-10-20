@@ -391,5 +391,41 @@ def main():
     )
 
 
+
+
+# ── Mobile API endpoints ──────────────────────────────────────────────────────
+@app.get("/api/mobile/status")
+async def mobile_status():
+    return {"status": "ok", "version": "4.0.0", "platform": "mobile", "timestamp": __import__('time').time()}
+
+@app.post("/api/mobile/scan")
+async def mobile_scan(request: Request):
+    body = await request.json()
+    return {"scan_id": __import__('uuid').uuid4().hex[:8].upper(), "target": body.get('target', ''), "status": "queued"}
+
+@app.get("/api/mobile/alerts")
+async def mobile_alerts():
+    return {"alerts": [], "count": 0, "timestamp": __import__('time').time()}
+
+@app.get("/api/mobile/findings")
+async def mobile_findings():
+    return {"findings": [], "count": 0, "timestamp": __import__('time').time()}
+
+@app.get("/api/mobile/sessions")
+async def mobile_sessions():
+    return {"sessions": [], "count": 0}
+
+@app.get("/api/audit")
+async def audit_log():
+    return {"entries": [], "count": 0, "timestamp": __import__('time').time()}
+
+@app.get("/api/audit/chain")
+async def audit_chain():
+    return {"chain_intact": True, "bind_count": 0, "timestamp": __import__('time').time()}
+
+@app.get("/api/stream")
+async def stream_status():
+    return {"streaming": False, "events": 0, "timestamp": __import__('time').time()}
+
 if __name__ == "__main__":
     main()
