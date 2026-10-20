@@ -60,8 +60,10 @@ jobs:
           results = []
 
           def test(name, method, path, expected_status=200, expected_ct="application/json",
-                   schema=None, body=None, auth=True):
+                   schema=None, body=None, auth=True, headers=None):
               h = dict(HEADERS) if auth else {}
+              if headers:
+                  h.update(headers)
               url = f"{BASE}{path}"
               t0 = time.time()
               try:
@@ -82,7 +84,7 @@ jobs:
                               if rk not in data:
                                   if not opt: errs.append(f"SCHEMA: '{rk}' MISSING (required)")
                               elif t != "any" and not isinstance(data[rk], t):
-                                  errs.append(f"SCHEMA: '{rk}' expected {t.__name__}, got {type(data[rk]).__name__}")
+                                  errs.append(f"SCHEMA: '{rk}' expected {t}, got {type(data[rk]).__name__}")
                       except Exception as e:
                           errs.append(f"JSON PARSE: {e}")
                   status = "OK  " if not errs else "FAIL"
@@ -101,12 +103,12 @@ jobs:
 
           print("\n=== GROUP 2: Auth Enforcement ===")
           test("modules no auth",   "GET", "/api/modules", auth=False, expected_status=401)
-          test("modules wrong key", "GET", "/api/modules", auth=False, expected_status=403,
-               body=None)
+          test("modules wrong key", "GET", "/api/modules", auth=False, expected_status=401,
+               body=None, headers={"X-API-Key": "invalid-test-key"})
 
           print("\n=== GROUP 3: Authenticated GETs ===")
           test("modules",        "GET", "/api/modules",       schema={"modules":list})
-          test("attck/coverage", "GET", "/api/attck/coverage",schema={"overall_pct":[int,float],"techniques_covered":int,"techniques_total":int,"tactics":dict,"timestamp":str})
+          test("attck/coverage", "GET", "/api/attck/coverage",schema={"overall_pct":(int,float),"techniques_covered":int,"techniques_total":int,"tactics":dict,"timestamp":str})
           test("bind list",      "GET", "/api/bind",          schema={"count":int,"receipts":list})
 
           print("\n=== GROUP 4: POST Endpoints ===")
@@ -143,6 +145,8 @@ jobs:
           for method, path, auth in [("GET","/health",False),("GET","/api/status",False),
                                       ("GET","/api/modules",True),("GET","/api/attck/coverage",True)]:
               h = dict(HEADERS) if auth else {}
+              if headers:
+                  h.update(headers)
               t0 = time.time()
               try:
                   with httpx.Client(timeout=5) as c: c.request(method, f"{BASE}{path}", headers=h)

@@ -111,16 +111,8 @@ jobs:
 
       - name: "Secret scanning"
         run: |
-          patterns=("client_secret" "AKIA[0-9A-Z]{16}" "sk-[a-zA-Z0-9]{32,}"
-                    "ghp_[a-zA-Z0-9]{36}" "-----BEGIN RSA PRIVATE KEY-----"
-                    "-----BEGIN OPENSSH PRIVATE KEY-----")
-          found=0
-          for p in "${patterns[@]}"; do
-            m=$(git ls-files | xargs grep -lE "$p" 2>/dev/null | grep -v node_modules | grep -v docs-archive | grep -v .github || true)
-            if [ -n "$m" ]; then echo "WARNING: pattern '$p' found in: $m"; found=$((found+1)); fi
-          done
-          if [ $found -gt 0 ]; then echo "FAIL: $found secret pattern(s) detected."; exit 1; fi
-          echo "OK: No secrets detected."
+          python3 scripts/check-secrets.py
+
 
   python-validation:
     name: "Python Code & API Validation"
@@ -235,6 +227,9 @@ jobs:
                               ]
           errors = []
           for f in tracked:
+              # Reviewed public defaults, not private environment files.
+              if f in {".env.example", "ollama/shadow313_ollama_config.env"}:
+                  continue
               for pattern, msg in FORBIDDEN:
                   if pattern in f: errors.append(f"  VIOLATION: {f}\n    FIX: {msg}"); break
           if errors:
