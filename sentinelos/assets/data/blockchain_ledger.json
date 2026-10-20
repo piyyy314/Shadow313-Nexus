@@ -1,0 +1,16 @@
+[
+  {
+    "block_index": 0,
+    "timestamp": "2026-05-21T01:10:00Z",
+    "data": "Genesis Root Entropy Seed",
+    "hash": "0000a89f26cd398e09fbc751842831bb219800fc4ea120e8b15d0fc389bde009",
+    "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "block_index": 1,
+    "timestamp": "2026-05-21T01:40:05Z",
+    "data": "MFA Zero-Knowledge proof token validation seal",
+    "hash": "0000bc2def98a89f26cd398e09fbc751842831bb219800fc4ea120e8b15d0fc3",
+    "previous_hash": "0000a89f26cd398e09fbc751842831bb219800fc4ea120e8b15d0fc389bde009"
+  }
+]

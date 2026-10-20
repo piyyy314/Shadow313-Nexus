@@ -3,6 +3,16 @@
   "name": "shadow313-nexus",
   "rewrites": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "shadow313.dev"
+        }
+      ],
+      "destination": "/sentinelos/index.html"
+    },
+    {
       "source": "/attck-coverage-graph",
       "destination": "/docs/attck-coverage-graph.html"
     },

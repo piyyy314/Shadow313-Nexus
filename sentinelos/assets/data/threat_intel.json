@@ -1,0 +1,23 @@
+{
+  "system_status": "online",
+  "threat_level": "low",
+  "recent_incidents": [
+    {
+      "id": "INC-4801",
+      "timestamp": "2026-05-21T01:51:22Z",
+      "vector": "DDoS Probe on Subnet B-7",
+      "source_ip": "185.190.140.23",
+      "status": "mitigated",
+      "action_taken": "Decoy honeypot diversion + firewall auto-ban"
+    },
+    {
+      "id": "INC-4802",
+      "timestamp": "2026-05-21T01:54:10Z",
+      "vector": "Credential Stuffing Attempt",
+      "source_ip": "45.110.12.9",
+      "status": "blocked",
+      "action_taken": "Zero-Knowledge MFA lock"
+    }
+  ],
+  "intelligence_summary": "Neural threat engine reports a 24-hour stability index of 98.4%. Standard port scanning activity remains within normal operating baselines."
+}

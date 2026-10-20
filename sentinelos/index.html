@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="OaFfTr-W8XG8ZETZcbrhAOXJbqllkF-0H1ME_BuMnlI" />
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <title>SentinelOS - Advanced Ethical Security Platform</title>
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    <!-- FontAwesome Vector Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for futuristic cyberpunk aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/sentinelos/styles.css">
+</head>
+<body>
+    <aside style="position:fixed;bottom:0;left:0;right:0;z-index:10000;background:#0b1229;color:#e2e8f8;padding:6px;text-align:center;font:12px sans-serif">Restored SentinelOS prototype — simulated data and demo tools; hosted AI is not connected.</aside>
+    <!-- 1. LOADING SCREEN -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo"></div>
+        <div class="loading-text" id="loading-text">CONNECTING TO SECURE PLATFORM NODE...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loading-progress"></div>
+        </div>
+    </div>
+
+    <!-- Cyberpunk grid/glow overlays -->
+    <div class="cyber-grid"></div>
+    <div class="glow-sphere main-glow"></div>
+    <div class="glow-sphere secondary-glow"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 100 100" class="logo-svg">
+                        <polygon points="50,10 90,30 90,70 50,90 10,70 10,30" class="outer-shield" />
+                        <polygon points="50,22 80,37 80,63 50,78 20,63 20,37" class="inner-shield" />
+                        <circle cx="50" cy="50" r="10" class="quantum-core" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>SENTINEL<span>OS</span></h1>
+                    <p>QUANTUM SECURED</p>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#overview" class="nav-item active" data-view="overview">
+                    <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Overview Dashboard
+                </a>
+                <div class="nav-section-title">Core Systems</div>
+                <a href="#quantum" class="nav-item" data-view="quantum">
+                    <span class="nav-icon"><i class="fa-solid fa-atom"></i></span> Quantum Encryption
+                </a>
+                <a href="#threat" class="nav-item" data-view="threat">
+                    <span class="nav-icon"><i class="fa-solid fa-satellite-dish"></i></span> Neural Threat Intel
+                </a>
+                <a href="#blockchain" class="nav-item" data-view="blockchain">
+                    <span class="nav-icon"><i class="fa-solid fa-cubes"></i></span> Blockchain Evidence
+                </a>
+                <a href="#zkp" class="nav-item" data-view="zkp">
+                    <span class="nav-icon"><i class="fa-solid fa-shield-halved"></i></span> Zero-Knowledge proofs
+                </a>
+                
+                <div class="nav-section-title">Operations</div>
+                <a href="#workspace" class="nav-item" data-view="workspace">
+                    <span class="nav-icon"><i class="fa-solid fa-user-group"></i></span> Security Workspace
+                </a>
+                <a href="#vuln" class="nav-item" data-view="vuln">
+                    <span class="nav-icon"><i class="fa-solid fa-magnifying-glass-shield"></i></span> Vulnerability Audit
+                </a>
+                <a href="#darkweb" class="nav-item" data-view="darkweb">
+                    <span class="nav-icon"><i class="fa-solid fa-circle-nodes"></i></span> Darknet Intelligence
+                </a>
+                <a href="#incident" class="nav-item" data-view="incident">
+                    <span class="nav-icon"><i class="fa-solid fa-bolt"></i></span> Response Playbooks
+                </a>
+
+                <div class="nav-section-title">Advanced Suite</div>
+                <a href="#chaos" class="nav-item" data-view="chaos">
+                    <span class="nav-icon"><i class="fa-solid fa-fire-flame-curved"></i></span> Red Team Chaos
+                </a>
+                <a href="#deception" class="nav-item" data-view="deception">
+                    <span class="nav-icon"><i class="fa-solid fa-spider"></i></span> Honeypot Deception
+                </a>
+                <a href="#sandbox" class="nav-item" data-view="sandbox">
+                    <span class="nav-icon"><i class="fa-solid fa-flask"></i></span> Malware Sandbox
+                </a>
+
+                <div class="nav-section-title">Next-Gen Experimental</div>
+                <a href="#pqc" class="nav-item" data-view="pqc">
+                    <span class="nav-icon"><i class="fa-solid fa-unlock-keyhole"></i></span> PQC Scanner
+                </a>
+                <a href="#swarm" class="nav-item" data-view="swarm">
+                    <span class="nav-icon"><i class="fa-solid fa-disease"></i></span> Autonomous Swarm
+                </a>
+                <a href="#deepfake" class="nav-item" data-view="deepfake">
+                    <span class="nav-icon"><i class="fa-solid fa-masks-theater"></i></span> Deepfake Analyzer
+                </a>
+                <a href="#rf" class="nav-item" data-view="rf">
+                    <span class="nav-icon"><i class="fa-solid fa-broadcast-tower"></i></span> RF Spectrum
+                </a>
+                <a href="#ztna" class="nav-item" data-view="ztna">
+                    <span class="nav-icon"><i class="fa-solid fa-network-wired"></i></span> Zero-Trust Matrix
+                </a>
+
+                <div class="nav-section-title">Quantum Kernel</div>
+                <a href="#shadow313" class="nav-item" data-view="shadow313">
+                    <span class="nav-icon"><i class="fa-solid fa-satellite"></i></span> Shadow313 Uplink
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="security-level">
+                    <div class="level-indicator"></div>
+                    <div class="level-text">
+                        <span>CLEARANCE: LEVEL 5</span>
+                        <span class="auth-status">DECRYPTED</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header with Platform Metrics -->
+            <header class="app-header">
+                <div class="header-search">
+                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" placeholder="Query platform node addresses, threat vectors or ledger hashes..." id="global-search">
+                </div>
+
+                <div class="system-metrics">
+                    <div class="metric-card">
+                        <span class="metric-label">AI PREDICTION CORRELATION</span>
+                        <div class="metric-value-container">
+                            <span class="metric-val" id="metric-ai">98.4%</span>
+                            <span class="metric-trend up">▲ 0.2%</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">QUANTUM ENTROPY FREQ</span>
+                        <div class="metric-value-container">
+                            <span class="metric-val" id="metric-entropy">4.89 GHz</span>
+                            <span class="metric-trend text-glow">ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="metric-card font-mono">
+                        <span class="metric-label">SECURE LEDGER INDEX</span>
+                        <div class="metric-value-container">
+                            <span class="metric-val" id="metric-blocks">#74,902</span>
+                            <span class="metric-trend up" id="mining-status">MINING</span>
+                        </div>
+                    </div>
+                    <div class="metric-card font-mono">
+                        <span class="metric-label">NETWORK THROUGHPUT</span>
+                        <div class="metric-value-container">
+                            <span class="metric-val" id="metric-network">1.20 Gbps</span>
+                            <span class="metric-trend up">LIVE</span>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-avatar" title="Sentinel Administrator">A</div>
+                        <div class="level-text">
+                            <span style="font-size: 11px; font-weight: 600;">Root Admin</span>
+                            <span style="font-size: 8px; color: var(--accent);">SECURE WORKSPACE</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Global Action ticker banner -->
+            <div class="action-banner">
+                <div class="banner-title"><i class="fa-solid fa-bell"></i> SYSTEM ACTION:</div>
+                <div class="banner-ticker-container">
+                    <div class="banner-ticker" id="global-ticker">Initializing quantum entropy keys... platform nodes fully synchronized. Standing by for administrative tasks.</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content Container (Dynamic Views) -->
+            <div class="view-container">
+
+                <!-- 1. OVERVIEW DASHBOARD -->
+                <section id="view-overview" class="view-pane active">
+                    <div class="overview-grid-top">
+                        <div class="hero-card">
+                            <div class="hero-content">
+                                <h2>Welcome to SentinelOS</h2>
+                                <p>You are logged into the next-generation ethical security node. All telemetry and threat metrics are synced via AI predictive models, sealed with quantum-resistant keys, and committed to the immutable hyperledger.</p>
+                                <div class="hero-stats">
+                                    <div class="h-stat">
+                                        <span class="h-stat-num text-red" id="stat-threats">0</span>
+                                        <span class="h-stat-label">Active Threats</span>
+                                    </div>
+                                    <div class="h-stat">
+                                        <span class="h-stat-num">100%</span>
+                                        <span class="h-stat-label">Quantum Immune</span>
+                                    </div>
+                                    <div class="h-stat">
+                                        <span class="h-stat-num text-glow" id="stat-honeypots">3</span>
+                                        <span class="h-stat-label">Active Decoys</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hero-visual">
+                                <canvas id="hero-particles-canvas"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Integrated Biometric Panel -->
+                        <div class="biometric-panel glass-card">
+                            <div class="biometric-header">
+                                <div class="biometric-title"><i class="fa-solid fa-fingerprint"></i> Biometric Scanner</div>
+                                <div class="biometric-status">
+                                    <span class="biometric-indicator" id="bio-indicator"></span>
+                                    <span id="bio-status-text">SYSTEM SECURE</span>
+                                </div>
+                            </div>
+                            <div class="biometric-scanner">
+                                <div class="scanner-animation">
+                                    <div class="scanner-ring"></div>
+                                    <div class="scanner-ring"></div>
+                                    <div class="scanner-ring"></div>
+                                    <svg class="fingerprint-svg" viewBox="0 0 100 100">
+                                        <path d="M20,50 Q20,30 50,30 Q80,30 80,50 Q80,70 50,70 Q20,70 20,50 Z" class="fp-path fp-outer"/>
+                                        <path d="M30,50 Q30,38 50,38 Q70,38 70,50 Q70,62 50,62 Q30,62 30,50 Z" class="fp-path fp-middle"/>
+                                        <path d="M40,50 Q40,44 50,44 Q60,44 60,50 Q60,56 50,56 Q40,56 40,50 Z" class="fp-path fp-inner"/>
+                                        <path d="M50,30 L50,70" class="fp-center-line"/>
+                                    </svg>
+                                    <div class="scanner-laser"></div>
+                                </div>
+                            </div>
+                            <!-- Biometric Metrics display grid -->
+                            <div class="biometric-data">
+                                <div class="biometric-metric">
+                                    <span class="biometric-metric-name">Heart Rate</span>
+                                    <span class="biometric-metric-value" id="bio-metric-pulse">72 bpm</span>
+                                </div>
+                                <div class="biometric-metric">
+                                    <span class="biometric-metric-name">Match Score</span>
+                                    <span class="biometric-metric-value" id="bio-metric-match">99.8%</span>
+                                </div>
+                                <div class="biometric-metric">
+                                    <span class="biometric-metric-name">Temp</span>
+                                    <span class="biometric-metric-value" id="bio-metric-temp">36.6 °C</span>
+                                </div>
+                                <div class="biometric-metric">
+                                    <span class="biometric-metric-name">Auth Status</span>
+                                    <span class="biometric-metric-value" id="bio-metric-status">VERIFIED</span>
+                                </div>
+                            </div>
+                            <div class="scanner-controls">
+                                <button class="btn btn-primary" id="btn-biometric-scan">Scan Fingerprint</button>
+                                <button class="btn btn-secondary" id="btn-biometric-reset">Reset Key</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced CSS features section integration -->
+                    <div class="advanced-features">
+                        <!-- Neural Threat Prediction Panel -->
+                        <div class="neural-panel glass-card">
+                            <div class="neural-header">
+                                <div class="neural-title"><i class="fa-solid fa-brain"></i> Neural Threat Prediction</div>
+                                <div class="neural-status">
+                                    <span class="neural-indicator"></span>
+                                    <span>AI PREDICT RUNNING</span>
+                                </div>
+                            </div>
+                            <div class="neural-visualization">
+                                <canvas id="neural-matrix-canvas" class="neural-network"></canvas>
+                            </div>
+                            <div class="neural-predictions">
+                                <div class="prediction-item">
+                                    <span class="prediction-label">DDoS Volumetric</span>
+                                    <div class="prediction-bar-container">
+                                        <div class="prediction-bar prediction-low" style="width: 18%"></div>
+                                    </div>
+                                    <span class="prediction-value" id="pred-ddos">18%</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="prediction-label">Credential Stuffing</span>
+                                    <div class="prediction-bar-container">
+                                        <div class="prediction-bar prediction-medium" style="width: 52%"></div>
+                                    </div>
+                                    <span class="prediction-value" id="pred-creds">52%</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="prediction-label">Zero-Day Injection</span>
+                                    <div class="prediction-bar-container">
+                                        <div class="prediction-bar prediction-high" style="style: width: 84%; width: 84%"></div>
+                                    </div>
+                                    <span class="prediction-value" id="pred-zeroday">84%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Zero-Knowledge Proof System Panel -->
+                        <div class="zkp-panel glass-card">
+                            <div class="zkp-header">
+                                <div class="zkp-title"><i class="fa-solid fa-lock-open"></i> Zero-Knowledge Proof System</div>
+                                <div class="zkp-status">
+                                    <span class="zkp-indicator"></span>
+                                    <span>ZK-ENG SYNCED</span>
+                                </div>
+                            </div>
+                            <div class="zkp-tabs">
+                                <button class="zkp-tab active" data-tab="active-proofs">Active Proofs</button>
+                                <button class="zkp-tab" data-tab="zkp-parameters">Parameters</button>
+                            </div>
+                            <div class="zkp-content" id="zkp-panel-content">
+                                <div class="zkp-proof">
+                                    <div class="zkp-proof-header">
+                                        <span class="zkp-proof-title">Auth Token: ZK-AUTH-7412</span>
+                                        <span class="zkp-proof-status status-verified">VERIFIED</span>
+                                    </div>
+                                    <div class="zkp-proof-details">
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Hash:</span>
+                                            <span class="zkp-detail-value">9f8e...3c2a</span>
+                                        </div>
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Curve:</span>
+                                            <span class="zkp-detail-value">BLS12-381</span>
+                                        </div>
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Entropy:</span>
+                                            <span class="zkp-detail-value">256-bit</span>
+                                        </div>
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Latency:</span>
+                                            <span class="zkp-detail-value">0.12ms</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="zkp-proof">
+                                    <div class="zkp-proof-header">
+                                        <span class="zkp-proof-title">Node Handshake: CL-AUTH-909</span>
+                                        <span class="zkp-proof-status status-verified">VERIFIED</span>
+                                    </div>
+                                    <div class="zkp-proof-details">
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Hash:</span>
+                                            <span class="zkp-detail-value">bc2d...ef98</span>
+                                        </div>
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Curve:</span>
+                                            <span class="zkp-detail-value">BN254</span>
+                                        </div>
+                                        <div class="zkp-detail">
+                                            <span class="zkp-detail-label">Latency:</span>
+                                            <span class="zkp-detail-value">0.15ms</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform timeline logs -->
+                    <div class="timeline-log-panel glass-card">
+                        <h3><i class="fa-solid fa-list-check"></i> Live SentinelOS Action Logs</h3>
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-time">01:54:10</div>
+                                <div class="timeline-content">Quantum entropy key rotation successfully committed to blockchain block #74902.</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">01:51:22</div>
+                                <div class="timeline-content">AI Threat Engine predicted suspicious CVE matching network scan vectors. Dynamic Honeypot deployed to subgrid E-4.</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">01:40:05</div>
+                                <div class="timeline-content">Platform administrator initialized clearance verification via secure ZK Handshake.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. QUANTUM ENCRYPTION -->
+                <section id="view-quantum" class="view-pane">
+                    <div class="view-header">
+                        <h2>🧬 Quantum-Resistant Encryption Suite</h2>
+                        <p>Generate high-entropy key pairs and encrypt sensitive data using lattice-based parameters resilient to Shor's algorithm attacks.</p>
+                    </div>
+                    <div class="quantum-split-layout">
+                        <div class="quantum-controls glass-card">
+                            <h3>Key Parameters</h3>
+                            <div class="form-group">
+                                <label for="quantum-algo">Cryptographic Engine</label>
+                                <select id="quantum-algo" class="form-control">
+                                    <option value="kyber">Kyber-1024 (Lattice-MLWE Key Encapsulation)</option>
+                                    <option value="ntru">NTRU-HPS-4096 (Polynomial Lattice Cipher)</option>
+                                    <option value="mceliece">Classic McEliece-8192 (Goppa-Code Matrix)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Seed Quantum Entropy</label>
+                                <div class="entropy-slider-container">
+                                    <input type="range" min="128" max="1024" step="128" value="512" class="slider" id="quantum-seed-slider">
+                                    <span class="slider-val" id="seed-slider-val">512 bits</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-full" id="btn-quantum-genkeys"><i class="fa-solid fa-key"></i> Generate Quantum Keypair</button>
+
+                            <div class="keypair-display">
+                                <div class="key-block">
+                                    <label>PUBLIC KEY (Apx)</label>
+                                    <textarea readonly id="txt-public-key" placeholder="Generate keypair to display..."></textarea>
+                                </div>
+                                <div class="key-block">
+                                    <label>PRIVATE KEY (S)</label>
+                                    <textarea readonly id="txt-private-key" placeholder="Generate keypair to display..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quantum-payload-panel glass-card">
+                            <h3>Data Encapsulation</h3>
+                            <div class="form-group">
+                                <label for="txt-quantum-plain">Cleartext Payload</label>
+                                <textarea id="txt-quantum-plain" class="form-control" placeholder="Enter sensitive intelligence to protect..."></textarea>
+                            </div>
+                            <div class="payload-actions">
+                                <button class="btn btn-primary" id="btn-quantum-encrypt"><i class="fa-solid fa-lock"></i> Encrypt (Lattice Scramble)</button>
+                                <button class="btn btn-secondary" id="btn-quantum-decrypt"><i class="fa-solid fa-lock-open"></i> Decrypt (Lattice Solve)</button>
+                            </div>
+
+                            <div class="form-group margin-top-15">
+                                <label for="txt-quantum-cipher">Ciphertext Packet (Hex Encoded Matrix)</label>
+                                <textarea id="txt-quantum-cipher" class="form-control font-mono" placeholder="Scrambled quantum payload will appear here..."></textarea>
+                            </div>
+
+                            <div class="lattice-vis-box">
+                                <div class="lattice-title">Lattice Scramble Vector Grid</div>
+                                <div class="lattice-canvas-container">
+                                    <canvas id="lattice-canvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantum Signal Interception Panel -->
+                    <div class="quantum-interception-panel glass-card">
+                        <div class="quantum-interception-header">
+                            <div class="quantum-interception-title">
+                                <i class="fa-solid fa-microchip"></i> Quantum Signal Interceptor
+                            </div>
+                            <div class="quantum-interception-status">
+                                <div class="quantum-interception-indicator"></div>
+                                <span id="quantum-intercept-status-text">DECODING SIGNAL</span>
+                            </div>
+                        </div>
+                        <div class="quantum-signal-visualization" id="quantum-signal-viz">
+                            <div class="quantum-grid"></div>
+                            <canvas id="quantum-signal-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+                        </div>
+                        <div class="quantum-controls">
+                            <div class="quantum-control">
+                                <div class="quantum-control-label">Interception Rate</div>
+                                <div class="quantum-control-value">
+                                    <span class="quantum-control-number" id="quantum-ctrl-rate">84.2</span>
+                                    <span class="quantum-control-unit">Gb/s</span>
+                                </div>
+                                <div class="quantum-control-slider" id="quantum-slider-rate">
+                                    <div class="quantum-control-progress" style="width: 84.2%"></div>
+                                </div>
+                            </div>
+                            <div class="quantum-control">
+                                <div class="quantum-control-label">Coherence Level</div>
+                                <div class="quantum-control-value">
+                                    <span class="quantum-control-number" id="quantum-ctrl-coherence">99.9</span>
+                                    <span class="quantum-control-unit">%</span>
+                                </div>
+                                <div class="quantum-control-slider" id="quantum-slider-coherence">
+                                    <div class="quantum-control-progress" style="width: 99.9%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quantum-interception-data">
+                            <div class="quantum-data-item">
+                                <div class="quantum-data-value" id="quantum-data-scrambled">1,208,409</div>
+                                <div class="quantum-data-label">Packets Scrambled</div>
+                            </div>
+                            <div class="quantum-data-item">
+                                <div class="quantum-data-value" id="quantum-data-keys">12,408</div>
+                                <div class="quantum-data-label">Quantum Keys Cycled</div>
+                            </div>
+                            <div class="quantum-data-item">
+                                <div class="quantum-data-value" id="quantum-data-immunity">100%</div>
+                                <div class="quantum-data-label">Shor's Immunity</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. NEURAL THREAT INTEL -->
+                <section id="view-threat" class="view-pane">
+                    <div class="view-header">
+                        <h2>📡 Predictive Threat Intelligence Engine</h2>
+                        <p>Dynamic monitoring of network vector telemetry, generating real-time predictions and mapping attack sources before breaches occur.</p>
+                    </div>
+                    <div class="threat-layout">
+                        <div class="threat-left glass-card">
+                            <h3>Live Cyber-Attack Threat Map</h3>
+                            <div class="map-wrapper">
+                                <canvas id="threat-map-canvas"></canvas>
+                                <div class="map-overlay-coordinates" id="map-coords">NODE RECEPTOR: 0.0, 0.0</div>
+                            </div>
+                            <div class="map-controls">
+                                <button class="btn btn-secondary" id="btn-recalibrate-threats"><i class="fa-solid fa-arrows-rotate"></i> Recalibrate Receivers</button>
+                                <button class="btn btn-danger" id="btn-sim-alert"><i class="fa-solid fa-triangle-exclamation"></i> Force Simulated Breach</button>
+                            </div>
+                        </div>
+
+                        <div class="threat-right">
+                            <div class="glass-card metric-chart-card">
+                                <h3>📈 Predictive Incident Likelihood (24h Window)</h3>
+                                <div class="chart-wrapper">
+                                    <svg viewBox="0 0 500 200" id="threat-trend-svg" class="svg-chart">
+                                        <defs>
+                                            <linearGradient id="chart-glow" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.4"/>
+                                                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <!-- Grid lines -->
+                                        <line x1="50" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                                        <line x1="50" y1="70" x2="480" y2="70" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                                        <line x1="50" y1="120" x2="480" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                                        <line x1="50" y1="170" x2="480" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+                                        <!-- Trend area -->
+                                        <path d="M50,170 L50,140 Q120,90 200,150 T400,60 L480,110 L480,170 Z" fill="url(#chart-glow)"/>
+                                        <!-- Trend line -->
+                                        <path d="M50,140 Q120,90 200,150 T400,60 L480,110" fill="none" stroke="var(--accent)" stroke-width="3" id="threat-path-line"/>
+                                        <!-- Hover nodes -->
+                                        <circle cx="400" cy="60" r="5" fill="var(--danger)" id="threat-peek-circle"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="glass-card margin-top-20 threat-notifications">
+                                <h3>🔮 Predictive Alert Feed</h3>
+                                <div class="notifications-scroller" id="threat-intel-notifications">
+                                    <div class="threat-notif medium">
+                                        <div class="notif-badge">AI ALERT</div>
+                                        <div class="notif-body">
+                                            <strong>DDoS Target Prediction [Confidence: 89%]</strong>
+                                            <p>Suspicious botnet coordination mapped on Node 14. Deploying SCADA deception node.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Threat Forecast Panel -->
+                    <div class="threat-forecast-panel glass-card">
+                        <div class="threat-forecast-header">
+                            <div class="threat-forecast-title">
+                                <i class="fa-solid fa-compass-calibration"></i> Advanced Neural Threat Forecast
+                            </div>
+                            <div class="threat-forecast-status">
+                                <div class="threat-forecast-indicator"></div>
+                                <span id="forecast-status-text">MONITORING TIMELINE</span>
+                            </div>
+                        </div>
+                        
+                        <div class="forecast-timeline">
+                            <div class="forecast-period">
+                                <div class="forecast-time">T - 3h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-low" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">T - 2h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-medium" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">T - 1h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-medium" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">CURRENT</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-high" style="width: 100%" id="forecast-current-level"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">T + 1h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-medium" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">T + 2h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-low" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="forecast-period">
+                                <div class="forecast-time">T + 3h</div>
+                                <div class="forecast-level">
+                                    <div class="forecast-level-fill level-low" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="threat-categories">
+                            <div class="threat-category">
+                                <div class="threat-category-header">
+                                    <div class="threat-category-name">
+                                        <div class="threat-category-icon" style="background: rgba(255, 107, 107, 0.15); color: var(--danger);"><i class="fa-solid fa-wifi"></i></div>
+                                        Botnet / DDoS Activity
+                                    </div>
+                                    <div class="threat-category-trend trend-up">
+                                        <i class="fa-solid fa-arrow-up"></i> +12%
+                                    </div>
+                                </div>
+                                <div class="threat-category-progress">
+                                    <div class="threat-category-fill level-high" style="width: 68%" id="threat-fill-ddos"></div>
+                                </div>
+                                <div class="threat-category-details">
+                                    <span>Likelihood: 68%</span>
+                                    <span>CRITICAL VECTOR</span>
+                                </div>
+                            </div>
+                            <div class="threat-category">
+                                <div class="threat-category-header">
+                                    <div class="threat-category-name">
+                                        <div class="threat-category-icon" style="background: rgba(72, 219, 251, 0.15); color: var(--success);"><i class="fa-solid fa-key"></i></div>
+                                        Credential Stuffing
+                                    </div>
+                                    <div class="threat-category-trend trend-down">
+                                        <i class="fa-solid fa-arrow-down"></i> -4%
+                                    </div>
+                                </div>
+                                <div class="threat-category-progress">
+                                    <div class="threat-category-fill level-low" style="width: 24%" id="threat-fill-creds"></div>
+                                </div>
+                                <div class="threat-category-details">
+                                    <span>Likelihood: 24%</span>
+                                    <span>LOW VECTOR</span>
+                                </div>
+                            </div>
+                            <div class="threat-category">
+                                <div class="threat-category-header">
+                                    <div class="threat-category-name">
+                                        <div class="threat-category-icon" style="background: rgba(254, 202, 87, 0.15); color: var(--warning);"><i class="fa-solid fa-bug"></i></div>
+                                        Zero-Day Injection
+                                    </div>
+                                    <div class="threat-category-trend trend-stable">
+                                        <i class="fa-solid fa-minus"></i> STABLE
+                                    </div>
+                                </div>
+                                <div class="threat-category-progress">
+                                    <div class="threat-category-fill level-medium" style="width: 45%" id="threat-fill-zeroday"></div>
+                                </div>
+                                <div class="threat-category-details">
+                                    <span>Likelihood: 45%</span>
+                                    <span>MODERATE VECTOR</span>
+                                </div>
+                            </div>
+                            <div class="threat-category">
+                                <div class="threat-category-header">
+                                    <div class="threat-category-name">
+                                        <div class="threat-category-icon" style="background: rgba(255, 56, 56, 0.15); color: #ff3838;"><i class="fa-solid fa-mask"></i></div>
+                                        Ransomware Campaigns
+                                    </div>
+                                    <div class="threat-category-trend trend-up">
+                                        <i class="fa-solid fa-arrow-up"></i> +3%
+                                    </div>
+                                </div>
+                                <div class="threat-category-progress">
+                                    <div class="threat-category-fill level-critical" style="width: 82%" id="threat-fill-ransom"></div>
+                                </div>
+                                <div class="threat-category-details">
+                                    <span>Likelihood: 82%</span>
+                                    <span>URGENT ATTENTION</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. BLOCKCHAIN EVIDENCE -->
+                <section id="view-blockchain" class="view-pane">
+                    <div class="view-header">
+                        <h2>⛓️ Blockchain Evidence Verification System</h2>
+                        <p>Seal security incidents, credentials, and scan audits into blocks. Calculate cryptographic proofs to secure evidence chains.</p>
+                    </div>
+                    <div class="blockchain-layout">
+                        <div class="bc-entry-panel glass-card">
+                            <h3>Forensic Input Sealer</h3>
+                            <div class="form-group">
+                                <label for="txt-bc-incident">Incident Metadata Description</label>
+                                <input type="text" id="txt-bc-incident" class="form-control" placeholder="e.g. Host-9 memory extraction dump">
+                            </div>
+                            <div class="form-group">
+                                <label for="txt-bc-evidence">Raw Evidence / Logs Hash Base</label>
+                                <textarea id="txt-bc-evidence" class="form-control font-mono" placeholder="Paste hexadecimal logs, binary signatures or hashes here..."></textarea>
+                            </div>
+                            <button class="btn btn-success btn-full" id="btn-bc-mine"><i class="fa-solid fa-cube"></i> Seal Evidence Block</button>
+
+                            <div class="mining-feedback margin-top-15" id="mining-feedback-box" style="display:none;">
+                                <div class="miner-pulse-container">
+                                    <div class="miner-pulse"></div>
+                                    <span>Solving PoW Nonce target `0000`...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bc-ledger-panel glass-card">
+                            <div class="bc-ledger-header">
+                                <h3>🗄️ SentinelOS Block Ledger</h3>
+                                <button class="btn btn-secondary btn-sm" id="btn-bc-verify"><i class="fa-solid fa-check-double"></i> Verify Integrity</button>
+                            </div>
+                            <div class="bc-ledger-container" id="ledger-blocks-wrapper">
+                                <!-- Preloaded sealed blocks -->
+                                <div class="block-card verified" data-index="0">
+                                    <div class="block-header">
+                                        <span class="block-index">BLOCK #0 (GENESIS)</span>
+                                        <span class="block-badge">SECURE</span>
+                                    </div>
+                                    <div class="block-body font-mono">
+                                        <div><strong>Timestamp:</strong> 2026-05-21T01:10:00</div>
+                                        <div><strong>Data:</strong> Genesis Root Entropy Seed</div>
+                                        <div><strong>Hash:</strong> <span class="hash-text">0000a89f26cd398e09fbc751842831bb219800fc4ea120e8b15d0fc389bde009</span></div>
+                                        <div><strong>Prev:</strong> 0000000000000000000000000000000000000000000000000000000000000000</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. ZERO-KNOWLEDGE PROOFS -->
+                <section id="view-zkp" class="view-pane">
+                    <div class="view-header">
+                        <h2>🛡️ Zero-Knowledge Proof System Wizard</h2>
+                        <p>Initiate cryptographic proving channels. Prove database passcode authorization or identity assertions without transferring plaintext credentials.</p>
+                    </div>
+                    <div class="zkp-wizard-layout">
+                        <div class="zkp-setup glass-card">
+                            <h3>Wizard Parameters</h3>
+                            <div class="form-group">
+                                <label for="zkp-secret-input">Secret Passcode (Prover's Secret)</label>
+                                <input type="password" id="zkp-secret-input" class="form-control" value="SentinelCore2026">
+                            </div>
+                            <div class="form-group">
+                                <label for="zkp-curve">Mathematical Mapping Elliptic Curve</label>
+                                <select id="zkp-curve" class="form-control">
+                                    <option value="bls">BLS12-381 (Highest Security pairing)</option>
+                                    <option value="bn">BN-254 (Fast proof generation)</option>
+                                    <option value="alt">alt_bn128 (Ethereum Native compatibility)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-full" id="btn-zkp-initiate"><i class="fa-solid fa-network-wired"></i> Generate Cryptographic Handshake</button>
+
+                            <div class="handshake-nodes-vis margin-top-20">
+                                <div class="nodes-handshake-wrapper">
+                                    <div class="node-actor prover" id="actor-prover">
+                                        <div class="actor-avatar">PROVER</div>
+                                        <div class="actor-status">Ready</div>
+                                    </div>
+                                    <div class="handshake-beam-path">
+                                        <div class="handshake-particle" id="beam-particle"></div>
+                                    </div>
+                                    <div class="node-actor verifier" id="actor-verifier">
+                                        <div class="actor-avatar">VERIFIER</div>
+                                        <div class="actor-status">Listening</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="zkp-process-logs glass-card">
+                            <h3>Proof Transaction Logs</h3>
+                            <div class="zkp-log-box" id="zkp-output-logs">
+                                <div class="zk-log-line system">[ZKP Engine] System initialized. Select parameters and click initiate to generate proofs.</div>
+                            </div>
+                            <div class="zkp-verification-result" id="zkp-verif-badge" style="display:none;">
+                                <div class="badge-title">VERIFICATION STATUS</div>
+                                <div class="badge-body verified" id="zkp-verif-badge-text">PROOF ACCEPTED</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. SECURITY WORKSPACE -->
+                <section id="view-workspace" class="view-pane">
+                    <div class="view-header">
+                        <h2>👥 Real-time Collaborative Security Workspace</h2>
+                        <p>Simulate remote security terminal workflows while cooperating with AI-driven co-analyst nodes in a shared telemetry room.</p>
+                    </div>
+                    <div class="workspace-layout">
+                        <!-- Left Terminal Shell -->
+                        <div class="workspace-terminal-panel glass-card">
+                            <div class="panel-header">
+                                <h3>🎛️ Collaborative Cryptographic Terminal</h3>
+                                <span class="term-status pulsing">CONNECTED</span>
+                            </div>
+                            <div class="terminal-container" id="terminal-screen">
+                                <div class="term-line">SentinelOS v5.01 Security Shell - Nodes Active</div>
+                                <div class="term-line">Type 'help' to review available administrative routines.</div>
+                                <div class="term-line" id="terminal-cursor-line">
+                                    <span class="prompt">sentinel@core:~$</span>
+                                    <input type="text" id="terminal-input" autofocus autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Collaborative Chat -->
+                        <div class="workspace-chat-panel glass-card">
+                            <div class="panel-header">
+                                <h3>💬 Security Operations Chat</h3>
+                                <span class="chat-members-count">2 Agents Active</span>
+                            </div>
+                            <div class="chat-messages-container" id="chat-messages">
+                                <div class="chat-message system">
+                                    <strong>SYSTEM:</strong> Operations lobby initialized. Node-9 synchronizations finished.
+                                </div>
+                                <div class="chat-message agent-ai">
+                                    <span class="avatar">🤖</span>
+                                    <div class="msg-bubble">
+                                        <div class="msg-author">Nova-AI</div>
+                                        <div class="msg-text">Scanning telemetry outputs. Let me know if you would like me to compile security patches for Node-12 or deploy a Deception Honeypot.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input-bar">
+                                <input type="text" placeholder="Send intelligence details to Nova-AI..." id="chat-input">
+                                <button class="btn btn-primary" id="btn-chat-send">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. VULNERABILITY AUDIT -->
+                <section id="view-vuln" class="view-pane">
+                    <div class="view-header">
+                        <h2>🔍 Automated Vulnerability Assessment Engine</h2>
+                        <p>Analyze server configurations, network ports, SSL parameters, and correlation vectors to compile real-time scorecards.</p>
+                    </div>
+                    <div class="vuln-layout">
+                        <div class="vuln-setup glass-card">
+                            <h3>Vulnerability Sweep Configuration</h3>
+                            <div class="form-group">
+                                <label for="txt-vuln-target">Target IP / Domain Hostname</label>
+                                <input type="text" id="txt-vuln-target" class="form-control" value="192.168.100.45">
+                            </div>
+                            <div class="form-group">
+                                <label for="vuln-profile">Scan Auditing Strategy</label>
+                                <select id="vuln-profile" class="form-control">
+                                    <option value="quick">Quick Discovery (Port scan + HTTP Headers)</option>
+                                    <option value="deep">Full Auditing (Correlate CVE + SSL Strength)</option>
+                                    <option value="aggressive">Aggressive Injection Probe (Dynamic Deception Test)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-full" id="btn-vuln-scan"><i class="fa-solid fa-radar"></i> Run Assessment Routine</button>
+
+                            <div class="scan-visuals-panel margin-top-20" id="scan-progress-box" style="display:none;">
+                                <div class="radial-scan-container">
+                                    <svg viewBox="0 0 100 100" class="radial-progress-svg">
+                                        <circle cx="50" cy="50" r="40" class="progress-track" />
+                                        <circle cx="50" cy="50" r="40" class="progress-fill" id="vuln-progress-ring" />
+                                    </svg>
+                                    <div class="progress-percentage" id="vuln-progress-text">0%</div>
+                                </div>
+                                <div class="scanning-phase" id="vuln-phase-text">Resolving targets...</div>
+                            </div>
+                        </div>
+
+                        <div class="vuln-scorecard-panel glass-card">
+                            <h3>Audit Performance Scorecard</h3>
+                            <div class="empty-scorecard" id="vuln-scorecard-empty">
+                                <span>No active audits run yet. Configure target node and start sweep.</span>
+                            </div>
+                            <div class="scorecard-report" id="vuln-scorecard-report" style="display:none;">
+                                <div class="scorecard-header-row">
+                                    <div class="scorecard-grade" id="vuln-grade">A-</div>
+                                    <div class="scorecard-summary-info">
+                                        <h4 id="scorecard-summary-ip">Host: 192.168.100.45</h4>
+                                        <p>Sweep Finished: <span id="scorecard-timestamp">2026-05-21 01:59</span></p>
+                                    </div>
+                                </div>
+
+                                <div class="threat-breakdown">
+                                    <div class="threat-stat high">
+                                        <span class="stat-num" id="vuln-count-high">0</span>
+                                        <span class="stat-lbl">High Risk</span>
+                                    </div>
+                                    <div class="threat-stat medium">
+                                        <span class="stat-num" id="vuln-count-med">1</span>
+                                        <span class="stat-lbl">Medium Risk</span>
+                                    </div>
+                                    <div class="threat-stat low">
+                                        <span class="stat-num" id="vuln-count-low">3</span>
+                                        <span class="stat-lbl">Low Risk</span>
+                                    </div>
+                                </div>
+
+                                <div class="vulnerabilities-list">
+                                    <h4>Identified Vulnerability Details</h4>
+                                    <ul class="vuln-bullet-list" id="vuln-detail-list">
+                                        <!-- Generated dynamically -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. DARKNET MONITOR -->
+                <section id="view-darkweb" class="view-pane">
+                    <div class="view-header">
+                        <h2>🧅 Dark Web Monitoring & Threat Intelligence</h2>
+                        <p>Scan tor repositories, leaked directories, Paste bins, and hacker chat rooms for database compromised entries.</p>
+                    </div>
+                    <div class="darkweb-layout">
+                        <div class="dw-controls glass-card">
+                            <h3>Leak Search Portal</h3>
+                            <div class="form-group">
+                                <label for="txt-dw-search">Query Phrase (Domain / Email / Hostname)</label>
+                                <input type="text" id="txt-dw-search" class="form-control" value="sentinelos.com">
+                            </div>
+                            <button class="btn btn-danger btn-full" id="btn-dw-search"><i class="fa-solid fa-mask"></i> Initiate Darknet Audit</button>
+
+                            <div class="dw-tor-nodes margin-top-20">
+                                <h4>Integrated Tor Gateways</h4>
+                                <div class="nodes-list font-mono text-small">
+                                    <div class="node-line"><span class="status-dot green"></span> onion-node-1.entry [18.23.45.1]</div>
+                                    <div class="node-line"><span class="status-dot green"></span> onion-node-2.relay [142.110.4.99]</div>
+                                    <div class="node-line"><span class="status-dot orange animate-pulse"></span> onion-node-3.exit [DECRYPTING]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dw-results-panel glass-card">
+                            <h3>Threat Intel Breach Database</h3>
+                            <div class="dw-results-scroller" id="dw-results-list">
+                                <div class="dw-empty-state" id="dw-empty">
+                                    <span>Configure query parameters above to scan decentralized dump indexes.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. RESPONSE PLAYBOOKS -->
+                <section id="view-incident" class="view-pane">
+                    <div class="view-header">
+                        <h2>⚡ Advanced Incident Response Automation</h2>
+                        <p>Orchestrate automated containment strategies using visual playbook flowcharts that link mitigation sequences.</p>
+                    </div>
+                    <div class="incident-layout">
+                        <div class="inc-configs glass-card">
+                            <h3>Automation Orchestration</h3>
+                            <div class="form-group">
+                                <label for="inc-playbook-select">Active Mitigation Playbook</label>
+                                <select id="inc-playbook-select" class="form-control">
+                                    <option value="ransomware">Ransomware Containment & Memory Forensic Sweep</option>
+                                    <option value="ddos">DDoS Mitigation & Honey-decoy Reroute</option>
+                                    <option value="zeroday">Zero-Day Isolation & Lattice Key Re-encryption</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Action Safety Parameters</label>
+                                <div class="safety-switches">
+                                    <label class="switch-container">
+                                        <input type="checkbox" id="safety-isolate" checked>
+                                        <span class="switch-slider"></span>
+                                        Isolate hosts dynamically
+                                    </label>
+                                    <label class="switch-container">
+                                        <input type="checkbox" id="safety-alert" checked>
+                                        <span class="switch-slider"></span>
+                                        Alert legal compliance block
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger btn-full" id="btn-execute-playbook"><i class="fa-solid fa-bolt-lighting"></i> Trigger Playbook Automation</button>
+                        </div>
+
+                        <div class="inc-visualizer glass-card">
+                            <h3>Playbook Execution Graph</h3>
+                            <div class="execution-flow-wrapper">
+                                <div class="playbook-steps-container" id="playbook-steps-box">
+                                    <!-- Flow items are created dynamically based on selected playbooks -->
+                                    <div class="flow-step" id="step-0">
+                                        <div class="step-badge">1</div>
+                                        <div class="step-body">
+                                            <strong>Isolate Infected Subnet Range</strong>
+                                            <p class="status-text">Pending Trigger</p>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" id="step-1">
+                                        <div class="step-badge">2</div>
+                                        <div class="step-body">
+                                            <strong>Extract Volatile RAM Logs</strong>
+                                            <p class="status-text">Pending Trigger</p>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" id="step-2">
+                                        <div class="step-badge">3</div>
+                                        <div class="step-body">
+                                            <strong>Deploy Lattice encryption patches</strong>
+                                            <p class="status-text">Pending Trigger</p>
+                                        </div>
+                                    </div>
+                                    <div class="flow-step" id="step-3">
+                                        <div class="step-badge">4</div>
+                                        <div class="step-body">
+                                            <strong>Commit audit proofs to blockchain ledger</strong>
+                                            <p class="status-text">Pending Trigger</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. RED TEAM CHAOS -->
+                <section id="view-chaos" class="view-pane">
+                    <div class="view-header">
+                        <h2>☄️ Red Team Chaos Engineering Simulator</h2>
+                        <p>Simulate hostile breach scenarios to trigger SentinelOS self-healing infrastructure protocols in real-time.</p>
+                    </div>
+                    <div class="chaos-layout">
+                        <div class="chaos-controls glass-card">
+                            <h3>Chaos Intrusion Vector</h3>
+                            <div class="form-group">
+                                <label for="chaos-vector">Hostile Incident Profile</label>
+                                <select id="chaos-vector" class="form-control">
+                                    <option value="outage">Cascade Network Partition Outage</option>
+                                    <option value="hijack">AI Node Telemetry Hijack Probe</option>
+                                    <option value="ransom">Ransomware Database Crypt Encryption</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger btn-full" id="btn-chaos-inject"><i class="fa-solid fa-burst"></i> Inject Chaos Event</button>
+
+                            <div class="self-healing-stats margin-top-20">
+                                <h4>Self-Healing State</h4>
+                                <div class="heal-bar-wrapper">
+                                    <div class="heal-bar-container">
+                                        <div class="heal-bar" id="chaos-heal-fill" style="width: 100%"></div>
+                                    </div>
+                                    <span class="heal-percent" id="chaos-heal-text">100% HEALTHY</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chaos-vis-panel glass-card">
+                            <h3>Target Node Topology map</h3>
+                            <div class="topology-grid-wrapper">
+                                <div class="topology-grid" id="chaos-grid-container">
+                                    <!-- Dynamic elements representation -->
+                                </div>
+                            </div>
+                            <div class="topology-logs-panel">
+                                <h4>Infrastructure Healing Log Output</h4>
+                                <div class="topology-log font-mono" id="chaos-log-screen">
+                                    <div class="log-line text-green">[Engine] All platform subnodes running healthy. Waiting for incident payloads...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. DECEPTION NETWORK -->
+                <section id="view-deception" class="view-pane">
+                    <div class="view-header">
+                        <h2>🕸️ Deception Network & Honey-Decoy Deployer</h2>
+                        <p>Set trap environments to ensnare active attackers and collect analytical telemetry profiles safely.</p>
+                    </div>
+                    <div class="deception-layout">
+                        <div class="dec-controls glass-card">
+                            <h3>Honeypot Decoy Configurator</h3>
+                            <div class="form-group">
+                                <label for="dec-type">Decoy Node Profile</label>
+                                <select id="dec-type" class="form-control">
+                                    <option value="scada">Industrial SCADA Modbus Controller</option>
+                                    <option value="mysql">Secure Financial MySQL Database</option>
+                                    <option value="ssh">Admin Terminal SSH Receptor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="txt-dec-bait">Decoy Bait Configuration (JSON)</label>
+                                <textarea id="txt-dec-bait" class="form-control font-mono" rows="6">{
+  "decoy_db": "cust_records_fin",
+  "bait_rows": 1250,
+  "canary_token": "TOK-5582f"
+}</textarea>
+                            </div>
+                            <button class="btn btn-primary btn-full" id="btn-deploy-decoy"><i class="fa-solid fa-spider"></i> Deploy Honeypot to Subnet</button>
+                        </div>
+
+                        <div class="dec-monitor glass-card">
+                            <div class="dec-monitor-header">
+                                <h3>📡 Active Trap Telemetry</h3>
+                                <div class="honeypots-active-counter"><span id="active-honeypots-count">3</span> Honeypots Deployed</div>
+                            </div>
+                            <div class="deception-subnet-visualizer">
+                                <div class="subnet-row" id="subnet-decoy-grid">
+                                    <!-- Dynamic blocks representation -->
+                                </div>
+                            </div>
+                            <div class="deception-traps-log font-mono">
+                                <h4>Entrapment Diagnostic Shell</h4>
+                                <div class="traps-log-screen" id="dec-log-box">
+                                    <div class="log-line">[Trap Engine] Listening on SCADA ports. Honeypot decoy active...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. MALWARE SANDBOX -->
+                <section id="view-sandbox" class="view-pane">
+                    <div class="view-header">
+                        <h2>🧪 Heuristic Malware Sandbox & AI Disassembler</h2>
+                        <p>Safely dissemble hostile payloads, trace assembly vectors, and compute threat severity indexes within zero-knowledge boxes.</p>
+                    </div>
+                    <div class="sandbox-layout">
+                        <div class="sb-controls glass-card">
+                            <h3>Malicious Payload Upload</h3>
+                            <div class="payload-presets">
+                                <label>Select Test Incident Payloads</label>
+                                <button class="btn btn-secondary btn-preset active" data-preset="worm">worm.bin (Suspicious Socket API)</button>
+                                <button class="btn btn-secondary btn-preset" data-preset="safe">clean_utility.exe (Safe Payload)</button>
+                            </div>
+                            <div class="payload-manual-upload margin-top-15">
+                                <label>Or paste custom hexadecimal opcode arrays</label>
+                                <textarea id="txt-sb-binary" class="form-control font-mono" rows="5">89 E5 31 C0 50 68 2F 2F 73 68 68 2F 62 69 6E 89 E3 50 89 E2 53 89 E1 B0 0B CD 80</textarea>
+                            </div>
+                            <button class="btn btn-danger btn-full" id="btn-sb-disassemble"><i class="fa-solid fa-flask"></i> Execute Heuristic Assembly Scan</button>
+                        </div>
+
+                        <div class="sb-analysis glass-card">
+                            <div class="analysis-row-top">
+                                <div class="sb-metric-box">
+                                    <span class="lbl">HEURISTIC SAFETY LEVEL</span>
+                                    <span class="val danger" id="sb-grade">CRITICAL RISK</span>
+                                </div>
+                                <div class="sb-metric-box">
+                                    <span class="lbl">AI CORRELATED THREAT</span>
+                                    <span class="val" id="sb-threat-score">92 / 100</span>
+                                </div>
+                            </div>
+
+                            <div class="disassembly-panel font-mono">
+                                <h4>Assembly Instructions Map</h4>
+                                <div class="disasm-screen" id="sb-disassembly-screen">
+                                    <!-- Generated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 13. NEXT-GEN EXPERIMENTAL TOOLS -->
+                <section id="view-pqc" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ PQC Scanner</h2>
+                        <p>Review vulnerable cryptographic surfaces and simulate migration to post-quantum Kyber profiles.</p>
+                    </div>
+                    <div class="glass-card" style="padding:20px; min-height:340px;">
+                        <canvas id="pqc-matrix-canvas" style="width:100%; height:220px; display:block; margin-bottom:20px;"></canvas>
+                        <div class="tool-grid">
+                            <div class="glass-card" style="padding:16px;">
+                                <strong>RSA-2048 Gateway</strong>
+                                <p>Estimated quantum crack window: <span class="crack-val text-red">8 HOURS</span></p>
+                                <button class="btn btn-primary btn-migrate">MIGRATE</button>
+                            </div>
+                            <div class="glass-card" style="padding:16px;">
+                                <strong>ECC-P256 API Node</strong>
+                                <p>Estimated quantum crack window: <span class="crack-val text-red">3 HOURS</span></p>
+                                <button class="btn btn-primary btn-migrate">MIGRATE</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-swarm" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ Autonomous Swarm</h2>
+                        <p>Deploy simulated defensive agents to isolate hostile anomalies across the protected mesh.</p>
+                    </div>
+                    <div class="glass-card" style="padding:20px; min-height:420px;">
+                        <canvas id="swarm-canvas" style="width:100%; height:320px; display:block;"></canvas>
+                        <div class="s313-sat-metrics">
+                            <div class="s313-metric"><span class="s313-metric-label">Agents</span><span class="s313-metric-value" id="swarm-count">0</span></div>
+                            <div class="s313-metric"><span class="s313-metric-label">Threats</span><span class="s313-metric-value text-red" id="swarm-threats">1</span></div>
+                            <div class="s313-metric"><span class="s313-metric-label">Status</span><span class="s313-metric-value" id="swarm-status-log">STANDBY</span></div>
+                        </div>
+                        <button class="btn btn-primary" id="btn-deploy-swarm">Deploy Swarm</button>
+                    </div>
+                </section>
+
+                <section id="view-deepfake" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ Deepfake Analyzer</h2>
+                        <p>Inspect synthetic media signals with facial mesh and spectral consistency simulations.</p>
+                    </div>
+                    <div class="glass-card" style="padding:20px;">
+                        <div id="df-face" style="position:relative; min-height:180px; border:1px solid var(--border); border-radius:12px; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+                            <div class="df-scan-overlay" style="position:absolute; left:0; top:0; width:100%; height:0; background:rgba(255,71,87,0.18); transition:height .2s;"></div>
+                            <i class="fa-solid fa-user-secret" style="font-size:64px;"></i>
+                        </div>
+                        <canvas id="df-audio-canvas" style="width:100%; height:120px; display:block;"></canvas>
+                        <p>Lip-sync coherence: <span id="df-lip-fill">0%</span></p>
+                        <p>Audio spectral match: <span id="df-audio-fill">0%</span></p>
+                        <p>Probability: <span id="df-prob">0%</span></p>
+                        <p id="df-verdict" class="df-verdict">Awaiting sample analysis.</p>
+                        <button class="btn btn-primary" id="btn-df-analyze">Analyze Sample</button>
+                    </div>
+                </section>
+
+                <section id="view-rf" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ RF Spectrum</h2>
+                        <p>Sweep nearby simulated spectrum signals and identify rogue transmitters.</p>
+                    </div>
+                    <div class="glass-card" style="padding:20px; min-height:420px;">
+                        <canvas id="rf-radar-canvas" style="width:100%; height:300px; display:block;"></canvas>
+                        <ul id="rf-signal-list" style="list-style:none; padding:0; margin:16px 0;"></ul>
+                        <button class="btn btn-primary" id="btn-rf-sweep">Run RF Sweep</button>
+                    </div>
+                </section>
+
+                <section id="view-ztna" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ Zero-Trust Matrix</h2>
+                        <p>Visualize trust cells, breach injection, and micro-segmentation containment controls.</p>
+                    </div>
+                    <div class="glass-card" style="padding:20px;">
+                        <div id="ztna-scene" style="min-height:240px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;"></div>
+                        <div id="ztna-logs" class="font-mono" style="min-height:80px; color:var(--text-muted);">&gt; Matrix stable.</div>
+                        <button class="btn btn-primary" id="btn-ztna-breach">Simulate Breach</button>
+                        <button class="btn btn-secondary" id="btn-ztna-reset">Reset Matrix</button>
+                    </div>
+                </section>
+
+                <!-- 14. SHADOW313 QUANTUM KERNEL -->
+                <section id="view-shadow313" class="view-pane">
+                    <div class="view-header">
+                        <h2>⬡ Shadow313 — Quantum Kernel & Satellite Uplink</h2>
+                        <p>Your proprietary quantum kernel communicating through middleware to satellite constellation nodes. 313 temporal binding secures every transmission.</p>
+                    </div>
+
+                    <div class="shadow313-layout">
+                        <!-- Left Column -->
+                        <div class="s313-left">
+                            <!-- Satellite Uplink Visualization -->
+                            <div class="glass-card s313-uplink-panel">
+                                <div class="s313-panel-header">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-satellite-dish"></i> Satellite Constellation Uplink</div>
+                                    <div class="s313-panel-status">
+                                        <span class="s313-status-dot" id="s313-uplink-dot"></span>
+                                        <span id="s313-uplink-status">UPLINK ACTIVE</span>
+                                    </div>
+                                </div>
+                                <div class="s313-canvas-wrap">
+                                    <canvas id="s313-sat-canvas"></canvas>
+                                    <div class="s313-canvas-overlay" id="s313-canvas-overlay">
+                                        <span class="s313-coord" id="s313-coord">LAT 42.331 · LON -83.046 · ALT 550km</span>
+                                    </div>
+                                </div>
+                                <div class="s313-sat-metrics">
+                                    <div class="s313-metric">
+                                        <span class="s313-metric-label">Active Sats</span>
+                                        <span class="s313-metric-value" id="s313-active-sats">7</span>
+                                    </div>
+                                    <div class="s313-metric">
+                                        <span class="s313-metric-label">Latency</span>
+                                        <span class="s313-metric-value" id="s313-latency">42ms</span>
+                                    </div>
+                                    <div class="s313-metric">
+                                        <span class="s313-metric-label">Signal Str</span>
+                                        <span class="s313-metric-value" id="s313-signal">-67 dBm</span>
+                                    </div>
+                                    <div class="s313-metric">
+                                        <span class="s313-metric-label">Bandwidth</span>
+                                        <span class="s313-metric-value" id="s313-bandwidth">2.4 Gbps</span>
+                                    </div>
+                                </div>
+                                <div class="s313-uplink-controls">
+                                    <button class="btn btn-primary" id="btn-s313-ping"><i class="fa-solid fa-tower-broadcast"></i> Ping Constellation</button>
+                                    <button class="btn btn-secondary" id="btn-s313-recalibrate"><i class="fa-solid fa-arrows-rotate"></i> Recalibrate</button>
+                                </div>
+                            </div>
+
+                            <!-- 313 Temporal Binding Protocol -->
+                            <div class="glass-card s313-temporal-panel">
+                                <div class="s313-panel-header">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-hourglass-half"></i> 313 Temporal Binding Protocol</div>
+                                    <div class="s313-panel-status">
+                                        <span class="s313-status-dot active"></span>
+                                        <span>BINDING ACTIVE</span>
+                                    </div>
+                                </div>
+                                <div class="s313-temporal-display">
+                                    <div class="s313-temporal-core">
+                                        <div class="s313-temporal-ring"></div>
+                                        <div class="s313-temporal-ring ring-2"></div>
+                                        <div class="s313-temporal-ring ring-3"></div>
+                                        <div class="s313-temporal-number" id="s313-temporal-num">313</div>
+                                    </div>
+                                    <div class="s313-temporal-info">
+                                        <div class="s313-temporal-row">
+                                            <span class="s313-temp-label">Current Bind</span>
+                                            <span class="s313-temp-value font-mono" id="s313-bind-ts">---</span>
+                                        </div>
+                                        <div class="s313-temporal-row">
+                                            <span class="s313-temp-label">SHA-3 Signature</span>
+                                            <span class="s313-temp-value font-mono" id="s313-bind-hash">---</span>
+                                        </div>
+                                        <div class="s313-temporal-row">
+                                            <span class="s313-temp-label">Total Binds</span>
+                                            <span class="s313-temp-value" id="s313-bind-count">0</span>
+                                        </div>
+                                        <div class="s313-temporal-row">
+                                            <span class="s313-temp-label">Bind Frequency</span>
+                                            <span class="s313-temp-value" id="s313-bind-freq">~3.13/sec</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="s313-right">
+                            <!-- Middleware Bridge Status -->
+                            <div class="glass-card s313-middleware-panel">
+                                <div class="s313-panel-header">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-bridge"></i> Middleware Bridge Status</div>
+                                </div>
+                                <div class="s313-middleware-grid">
+                                    <div class="s313-mw-node">
+                                        <div class="s313-mw-icon kernel"><i class="fa-solid fa-microchip"></i></div>
+                                        <div class="s313-mw-label">Shadow313<br>Kernel</div>
+                                        <div class="s313-mw-status online">ONLINE</div>
+                                    </div>
+                                    <div class="s313-mw-connector">
+                                        <div class="s313-mw-beam" id="s313-beam-1"></div>
+                                        <span class="s313-mw-proto">QKD-TLS</span>
+                                    </div>
+                                    <div class="s313-mw-node">
+                                        <div class="s313-mw-icon middleware"><i class="fa-solid fa-code"></i></div>
+                                        <div class="s313-mw-label">Middleware<br>Bridge</div>
+                                        <div class="s313-mw-status online">ROUTING</div>
+                                    </div>
+                                    <div class="s313-mw-connector">
+                                        <div class="s313-mw-beam" id="s313-beam-2"></div>
+                                        <span class="s313-mw-proto">SAT-LINK</span>
+                                    </div>
+                                    <div class="s313-mw-node">
+                                        <div class="s313-mw-icon satellite"><i class="fa-solid fa-satellite"></i></div>
+                                        <div class="s313-mw-label">Satellite<br>Constellation</div>
+                                        <div class="s313-mw-status online" id="s313-sat-status">7 NODES</div>
+                                    </div>
+                                </div>
+                                <div class="s313-mw-throughput">
+                                    <span class="s313-mw-tp-label">Middleware Throughput</span>
+                                    <div class="s313-mw-tp-bar">
+                                        <div class="s313-mw-tp-fill" id="s313-tp-fill" style="width: 78%"></div>
+                                    </div>
+                                    <span class="s313-mw-tp-val" id="s313-tp-val">78%</span>
+                                </div>
+                            </div>
+
+                            <!-- Circuit Profiler -->
+                            <div class="glass-card s313-profiler-panel">
+                                <div class="s313-panel-header">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-chart-bar"></i> Circuit Profiler</div>
+                                    <div class="s313-backend-badge">
+                                        <select id="s313-backend-select" class="form-control" style="width: auto; padding: 4px 8px; font-size: 11px;">
+                                            <option value="local_sim">local_sim</option>
+                                            <option value="fake_ibm">fake_ibm (sim)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="s313-profiler-bars">
+                                    <div class="s313-prof-row">
+                                        <span class="s313-prof-label">Qubits</span>
+                                        <div class="s313-prof-track"><div class="s313-prof-fill" id="s313-prof-qubits" style="width:65%; --pbar: #7b61ff;"></div></div>
+                                        <span class="s313-prof-val" id="s313-prof-qubits-val">4</span>
+                                    </div>
+                                    <div class="s313-prof-row">
+                                        <span class="s313-prof-label">Depth</span>
+                                        <div class="s313-prof-track"><div class="s313-prof-fill" id="s313-prof-depth" style="width:45%; --pbar: #00d4aa;"></div></div>
+                                        <span class="s313-prof-val" id="s313-prof-depth-val">12</span>
+                                    </div>
+                                    <div class="s313-prof-row">
+                                        <span class="s313-prof-label">1Q Gates</span>
+                                        <div class="s313-prof-track"><div class="s313-prof-fill" id="s313-prof-1q" style="width:80%; --pbar: #ff6b9d;"></div></div>
+                                        <span class="s313-prof-val" id="s313-prof-1q-val">28</span>
+                                    </div>
+                                    <div class="s313-prof-row">
+                                        <span class="s313-prof-label">2Q Gates</span>
+                                        <div class="s313-prof-track"><div class="s313-prof-fill" id="s313-prof-2q" style="width:35%; --pbar: #ffd700;"></div></div>
+                                        <span class="s313-prof-val" id="s313-prof-2q-val">8</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quantum Circuit Code Exporter & QASM Viewer -->
+                            <div class="glass-card s313-code-exporter-panel" style="margin-top: 20px; padding: 20px;">
+                                <div class="s313-panel-header" style="margin-bottom: 12px;">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-code"></i> Quantum Code Exporter</div>
+                                </div>
+                                <div class="s313-code-tabs" style="display: flex; gap: 8px; margin-bottom: 12px;">
+                                    <button class="btn btn-secondary btn-sm active" id="btn-tab-qiskit" style="padding: 4px 10px; font-size: 11px;">Qiskit (Python)</button>
+                                    <button class="btn btn-secondary btn-sm" id="btn-tab-qasm" style="padding: 4px 10px; font-size: 11px;">OpenQASM 2.0</button>
+                                </div>
+                                <div class="s313-code-container" style="position: relative;">
+                                    <textarea id="txt-s313-code" readonly class="form-control font-mono" style="font-size: 11px; height: 160px; width: 100%; background: rgba(0,0,0,0.4); border-color: var(--border); color: var(--green); resize: none;"></textarea>
+                                    <button class="btn btn-primary btn-sm" id="btn-s313-copy-code" style="position: absolute; right: 10px; bottom: 10px; padding: 4px 10px; font-size: 11px;"><i class="fa-solid fa-copy"></i> Copy</button>
+                                </div>
+                            </div>
+
+                            <!-- Quantum Chat Terminal -->
+                            <div class="glass-card s313-chat-panel">
+                                <div class="s313-panel-header">
+                                    <div class="s313-panel-title"><i class="fa-solid fa-comments"></i> Quantum Chat Terminal</div>
+                                    <div class="s313-panel-status">
+                                        <span class="s313-status-dot active"></span>
+                                        <span>THOUGHT ENGINE</span>
+                                    </div>
+                                </div>
+                                <div class="s313-chat-screen" id="s313-chat-screen">
+                                    <div class="s313-chat-msg system">⬡ Shadow313 Quantum Chat active. Type your question...</div>
+                                </div>
+                                <div class="s313-chat-input-row">
+                                    <input type="text" id="s313-chat-input" class="form-control" placeholder="Ask the quantum thought engine..." autocomplete="off">
+                                    <button class="btn btn-primary" id="btn-s313-send"><i class="fa-solid fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals, status logs -->
+    <div class="status-overlay" id="status-overlay" style="display:none;">
+        <div class="status-box">
+            <div class="status-box-spinner"></div>
+            <div class="status-box-title" id="status-overlay-title">Verifying Node Connections</div>
+            <div class="status-box-desc" id="status-overlay-desc">Decrypting blockchain signatures...</div>
+        </div>
+    </div>
+
+    <!-- Platform dynamic scripts -->
+    <script src="/sentinelos/js/app.js"></script>
+    <script src="/sentinelos/js/quantum.js"></script>
+    <script src="/sentinelos/js/threat.js"></script>
+    <script src="/sentinelos/js/blockchain.js"></script>
+    <script src="/sentinelos/js/zkp.js"></script>
+    <script src="/sentinelos/js/workspace.js"></script>
+    <script src="/sentinelos/js/vuln.js"></script>
+    <script src="/sentinelos/js/darkweb.js"></script>
+    <script src="/sentinelos/js/incident.js"></script>
+    <script src="/sentinelos/js/chaos.js"></script>
+    <script src="/sentinelos/js/deception.js"></script>
+    <script src="/sentinelos/js/sandbox.js"></script>
+    <script src="/sentinelos/js/advanced-tools.js"></script>
+    <script src="/sentinelos/js/shadow313.js"></script>
+</body>
+</html>
