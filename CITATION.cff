@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use Shadow313 NEXUS in your research, please cite it."
+type: software
+title: "Shadow313 NEXUS"
+abstract: "Local-first, AI-augmented, post-quantum security intelligence CLI with 313 Temporal Binding Protocol."
+authors:
+  - family-names: "Matar"
+    given-names: "Mohamad"
+    email: "matarmohamad313@duck.com"
+    city: "Ottawa"
+    country: "CA"
+version: "4.0.0"
+date-released: "2026-10-20"
+url: "https://github.com/piyyy314/Shadow313-Nexus"
+license: MIT
+keywords:
+  - cybersecurity
+  - post-quantum-cryptography
+  - threat-detection
+  - MITRE-ATT&CK
+  - 313-temporal-binding
+  - SLH-DSA
+  - FIPS-205

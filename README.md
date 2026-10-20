@@ -16,7 +16,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Security: Local-First](https://img.shields.io/badge/security-local--first-green.svg)](#)
 [![PQC: FIPS 203/204/205](https://img.shields.io/badge/PQC-FIPS%20203%2F204%2F205-purple.svg)](#)
-[![Tests: 3799 passed](https://img.shields.io/badge/tests-3799%20passed-brightgreen.svg)](#)
+[![Tests: 4107 passed](https://img.shields.io/badge/tests-4107%20passed-brightgreen.svg)](#)
 
 Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligence CLI spanning **28 modules** across reconnaissance, vulnerability intelligence, exploit advisory, network forensics, defense hardening, quantum cryptography migration, agentic automation, cloud hardening, and the proprietary **313 Temporal Binding Protocol** — all from the terminal, with no data leaving your machine.
 
@@ -391,3 +391,4 @@ MIT — see [LICENSE](LICENSE)
 
 *Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
 *"The only security platform where every finding is a cryptographic fact."*
+
