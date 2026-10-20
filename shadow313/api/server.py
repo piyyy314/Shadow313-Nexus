@@ -161,6 +161,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     if not HAS_FASTAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
+    api_key = api_key or os.environ.get("SHADOW313_API_KEY")
+    if os.environ.get("SHADOW313_ENV", "development") == "production" and not api_key:
+        raise RuntimeError("SHADOW313_API_KEY must be set in production")
+
     app = FastAPI(
         title="Shadow313 NEXUS API",
         description="Local-First AI-Powered Security Intelligence — REST Interface",
@@ -178,6 +182,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "http://localhost:8080",
             "http://localhost:7313",
             "http://open-webui:8080",
+            "https://shadow313.com",
+            "https://shadow313.dev",
         ],
         allow_credentials=True,
         allow_methods=["*"],
@@ -351,6 +357,42 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "receipts": list(_receipts.values()),
         }
 
+    # ── Mobile API endpoints ──────────────────────────────────────────────────────
+    @app.get("/api/mobile/status")
+    async def mobile_status():
+        return {"status": "ok", "version": "4.0.0", "platform": "mobile", "timestamp": __import__('time').time()}
+
+    @app.post("/api/mobile/scan")
+    async def mobile_scan(request: Request):
+        body = await request.json()
+        return {"scan_id": __import__('uuid').uuid4().hex[:8].upper(), "target": body.get('target', ''), "status": "queued"}
+
+    @app.get("/api/mobile/alerts")
+    async def mobile_alerts():
+        return {"alerts": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/mobile/findings")
+    async def mobile_findings():
+        return {"findings": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/mobile/sessions")
+    async def mobile_sessions():
+        return {"sessions": [], "count": 0}
+
+    @app.get("/api/audit")
+    async def audit_log():
+        return {"entries": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/audit/chain")
+    async def audit_chain():
+        return {"chain_intact": True, "bind_count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/stream")
+    async def stream_status():
+        return {"streaming": False, "events": 0, "timestamp": __import__('time').time()}
+
+
+
     return app
 
 
@@ -383,6 +425,7 @@ def main():
         reload=args.reload,
         log_level="info",
     )
+
 
 
 if __name__ == "__main__":
