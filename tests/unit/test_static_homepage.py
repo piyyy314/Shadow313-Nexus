@@ -24,7 +24,7 @@ class Links(HTMLParser):
 class StaticHomepageTests(unittest.TestCase):
     def test_root_serves_recovered_purple_homepage(self):
         config = json.loads((ROOT / "vercel.json").read_text())
-        route = next(r for r in config["rewrites"] if r["source"] == "/")
+        route = next(r for r in config["rewrites"] if r["source"] == "/" and not r.get("has"))
         self.assertEqual(route["destination"], "/index.html")
         page = (ROOT / "index.html").read_text()
         self.assertIn("--accent:         #7b61ff", page)
