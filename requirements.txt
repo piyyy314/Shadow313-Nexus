@@ -20,7 +20,7 @@ uvicorn>=0.35.0
 pydantic>=2.14.1
 
 # Database
-sqlalchemy>=2.0.51
+sqlalchemy>=2.1.5
 
 # Reporting
 jinja2>=3.1.0
