@@ -3,6 +3,14 @@
   "name": "shadow313-nexus",
   "rewrites": [
     {
+      "source": "/attck-coverage-graph",
+      "destination": "/docs/attck-coverage-graph.html"
+    },
+    {
+      "source": "/coverage_matrix",
+      "destination": "/docs/coverage_matrix.html"
+    },
+    {
       "source": "/:path*.env",
       "destination": "/404.html"
     },
