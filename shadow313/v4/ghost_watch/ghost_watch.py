@@ -677,7 +677,7 @@ class ThreatIntelIndex:
                 "severity":    ind.get("severity", "HIGH"),
                 "category":    "detection",
                 "title":       f"TI Feed Auto-Trigger: {ind.get('threat_type', 'Unknown')}",
-                "message":     f"Source: {ind.get('source_ip', os.environ.get("SHADOW313_BIND_HOST", "0.0.0.0"))} | Confidence: {ind.get('confidence', 50)}%",
+                "message":     "Source: " + str(ind.get('source_ip', os.environ.get('SHADOW313_BIND_HOST', '0.0.0.0'))) + " | Confidence: " + str(ind.get('confidence', 50)) + "%",
                 "mitre":       ind.get("mitre", "T1000"),
                 "host":        ind.get("source_ip", os.environ.get("SHADOW313_BIND_HOST", "0.0.0.0")),
                 "action_taken":"IOC added to blocklist",
