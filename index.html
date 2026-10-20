@@ -1,32 +1,122 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Shadow313 NEXUS — Post-Quantum Security Intelligence</title>
-<meta name="description" content="Shadow313 NEXUS — Local-first AI-powered security intelligence platform with 313 Temporal Binding Protocol, post-quantum cryptography, and 29 active detectors.">
-<!-- Vercel Speed Insights -->
-<script type="module">
-  import { injectSpeedInsights } from 'https://cdn.jsdelivr.net/npm/@vercel/speed-insights@1/dist/index.mjs';
-  injectSpeedInsights();
-</script>
-<meta http-equiv="refresh" content="0;url=/docs/index.html">
+<meta content="Shadow313 NEXUS — Local-first AI-powered security intelligence CLI with 313 Temporal Binding Protocol, post-quantum cryptography (FIPS 203/204/205), and 3,905 tests GREEN." name="description"/>
+<meta content="security, pentest, CLI, AI, vulnerability, recon, quantum, nexus, PQC, MITRE ATT&amp;CK" name="keywords"/>
 <style>
-body{background:#020617;color:#e2e8f0;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
-.loader{text-align:center;}
-.hex{width:48px;height:48px;background:#22c55e;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);margin:0 auto 16px;animation:spin 2s linear infinite;}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-h1{font-size:20px;font-weight:800;color:#22c55e;margin-bottom:8px;}
-p{font-size:12px;color:#64748b;font-family:'JetBrains Mono',monospace;}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--green:#22c55e;--cyan:#06b6d4;--amber:#f59e0b;--purple:#a78bfa;--bg:#020617;--bg2:#0b1329;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(2,6,23,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(34,197,94,0.15);height:52px;display:flex;align-items:center;padding:0 24px;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;text-decoration:none;color:var(--text);}
+.nav-icon{width:30px;height:30px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:12px;font-family:'JetBrains Mono',monospace;}
+.nav-links{display:flex;gap:2px;margin-left:12px;}
+.nav-link{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .15s;}
+.nav-link:hover{color:var(--text);background:rgba(34,197,94,0.08);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.btn{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;font-family:'Space Grotesk',sans-serif;}
+.btn-primary{background:var(--green);color:#000;}
+.btn-primary:hover{background:#16a34a;}
+.btn-outline{border:1px solid rgba(34,197,94,0.4);color:var(--green);}
+.btn-outline:hover{background:rgba(34,197,94,0.1);}
+.hero{max-width:1100px;margin:0 auto;padding:80px 24px 60px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:20px;padding:5px 16px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:24px;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.hero h1{font-size:56px;font-weight:800;line-height:1.1;margin-bottom:20px;}
+.hero h1 span{color:var(--green);}
+.hero p{font-size:18px;color:var(--muted);max-width:640px;margin:0 auto 36px;line-height:1.7;}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
+.hero-actions .btn{padding:12px 28px;font-size:14px;}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 12px;border-radius:4px;font-weight:600;}
+.badge-green{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.badge-cyan{background:rgba(6,182,212,0.12);color:var(--cyan);border:1px solid rgba(6,182,212,0.25);}
+.badge-purple{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25);}
+.badge-amber{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.install-box{background:var(--bg2);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:16px 24px;display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--cyan);margin-bottom:60px;}
+.install-box span{color:var(--muted);}
+.features{max-width:1100px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.feature{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:12px;padding:24px;transition:all .2s;}
+.feature:hover{border-color:rgba(34,197,94,0.3);transform:translateY(-2px);}
+.feature-icon{font-size:28px;margin-bottom:12px;}
+.feature h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+.feature p{font-size:13px;color:var(--muted);line-height:1.6;}
+.stats{max-width:1100px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:10px;padding:20px;text-align:center;}
+.stat-val{font-size:32px;font-weight:800;color:var(--green);}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.footer{border-top:1px solid rgba(34,197,94,0.08);padding:24px;text-align:center;font-size:12px;color:var(--muted);}
+.footer a{color:var(--green);text-decoration:none;}
+@media(max-width:768px){.hero h1{font-size:36px;}.features{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.nav-links{display:none;}}
 </style>
 </head>
 <body>
-<div class="loader">
-  <div class="hex"></div>
-  <h1>SHADOW313 NEXUS</h1>
-  <p>Post-Quantum Security Intelligence</p>
-  <p style="margin-top:8px;">Redirecting...</p>
+<nav class="nav">
+<a class="nav-logo" href="/"><div class="nav-icon">S3</div>SHADOW313 NEXUS</a>
+<div class="nav-links">
+<a class="nav-link" href="/platform">Platform</a>
+<a class="nav-link" href="/docs">Docs</a>
+<a class="nav-link" href="/attck">ATT&amp;CK</a>
+<a class="nav-link" href="/marketplace">Marketplace</a>
+<a class="nav-link" href="/pricing">Pricing</a>
+<a class="nav-link" href="/changelog">Changelog</a>
+<a class="nav-link" href="/about">About</a>
 </div>
-<script>window.location.replace('/docs/index.html');</script>
+<div class="nav-right">
+<a class="btn btn-outline" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub</a>
+<a class="btn btn-primary" href="/quickstart">Get Started</a>
+</div>
+</nav>
+<div class="hero">
+<div class="hero-badge"><div class="pulse"></div>v4.0.0-NEXUS  ·  3,905 Tests GREEN</div>
+<h1>Post-Quantum<br/><span>Security Intelligence</span></h1>
+<p>Local-first AI-powered security CLI spanning 28 modules — recon, vulnerability intelligence, exploit advisory, network forensics, defense hardening, and the proprietary <strong>313 Temporal Binding Protocol</strong>. Zero data leaves your machine.</p>
+<div class="hero-actions">
+<a class="btn btn-primary" href="/quickstart">Quick Start →</a>
+<a class="btn btn-outline" href="/docs">Documentation</a>
+<a class="btn btn-outline" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">View on GitHub</a>
+</div>
+<div class="badges">
+<span class="badge badge-green">✅ 3,905 Tests Passing</span>
+<span class="badge badge-cyan">🔐 FIPS 203/204/205</span>
+<span class="badge badge-purple">⚛️ Post-Quantum Ready</span>
+<span class="badge badge-amber">🛡️ 29 Active Detectors</span>
+<span class="badge badge-green">🏠 Local-First · Zero Telemetry</span>
+<span class="badge badge-cyan">📜 Apache-2.0</span>
+</div>
+<div class="install-box">
+<span>$</span> pip install shadow313
+  </div>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-val">28</div><div class="stat-lbl">CLI Modules</div></div>
+<div class="stat"><div class="stat-val">3,905</div><div class="stat-lbl">Tests Passing</div></div>
+<div class="stat"><div class="stat-val">29</div><div class="stat-lbl">Active Detectors</div></div>
+<div class="stat"><div class="stat-val">51.4%</div><div class="stat-lbl">ATT&amp;CK Coverage</div></div>
+</div>
+<div class="features">
+<div class="feature"><div class="feature-icon">🔍</div><h3>Recon &amp; Intelligence</h3><p>DNS enumeration, subdomain discovery, async port scanning, WHOIS, GeoIP enrichment, and AI-generated target profiles via local Ollama.</p></div>
+<div class="feature"><div class="feature-icon">🛡️</div><h3>313 Temporal Binding</h3><p>Every finding is cryptographically timestamped with SLH-DSA (FIPS 205) + SHA3-512 + IPFS anchoring. Tamper-evident audit trail — independently verifiable.</p></div>
+<div class="feature"><div class="feature-icon">⚛️</div><h3>Post-Quantum Crypto</h3><p>ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204), SLH-DSA (FIPS 205). Quantum-safe before CRQC arrives. 12/14 CRQC patches closed.</p></div>
+<div class="feature"><div class="feature-icon">🎯</div><h3>MITRE ATT&amp;CK</h3><p>29 active detectors mapped to ATT&amp;CK techniques. FIX-12 through IDENTITY-8. Navigator JSON export. 51.4% technique coverage across 265 techniques.</p></div>
+<div class="feature"><div class="feature-icon">🛰️</div><h3>VSAT &amp; Satellite</h3><p>Ground segment vulnerability scanner. CVE-2026-3392 TR-069 detection. RF health monitoring. Firmware integrity auditing. 7 critical findings baseline.</p></div>
+<div class="feature"><div class="feature-icon">👁️</div><h3>Ghost-Watch CADL</h3><p>5-tier Cognitive-Adaptive Deception Layer. WE-FORGE linguistic watermarking. AETHER synthetic traffic. TARTARUS exfil trap. Autonomous adversary engagement.</p></div>
+</div>
+<div class="footer">
+<p>Shadow313 NEXUS v4.0.0  ·  Ottawa, ON, Canada  · 
+  <a href="https://shadow313.dev">shadow313.dev</a>  · 
+  <a href="https://github.com/piyyy314/Shadow313-Nexus">GitHub</a>  · 
+  <a href="/security-policy">Security</a>  · 
+  <a href="/privacy">Privacy</a>  · 
+  <a href="/terms">Terms</a>  · 
+  <a href="/contact">Contact</a>  · 
+  Apache-2.0</p>
+</div>
 </body>
 </html>

@@ -1,0 +1,22 @@
+title: Shadow313 WebShell Detection — PHP Eval Execution
+id: s313-ws-001
+status: stable
+description: Detects PHP webshell execution via eval() (T1505.003)
+author: Shadow313 Core Team
+date: 2026-10-20
+tags:
+  - attack.persistence
+  - attack.t1505.003
+logsource:
+  category: webserver
+detection:
+  selection:
+    cs-uri-query|contains:
+      - 'eval('
+      - 'base64_decode'
+      - 'system('
+      - 'passthru('
+  condition: selection
+falsepositives:
+  - Legitimate PHP applications using eval
+level: critical

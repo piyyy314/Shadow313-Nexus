@@ -1,0 +1,163 @@
+openapi: "3.1.0"
+info:
+  title: Shadow313 NEXUS API
+  description: Local-First AI-Powered Security Intelligence REST API
+  version: "4.0.0"
+  contact:
+    name: Shadow313 Core Team
+    email: ops@shadow313.dev
+    url: https://shadow313.dev
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: https://shadow313.dev/api
+    description: Production
+  - url: http://localhost:8313/api
+    description: Local development
+
+paths:
+  /status:
+    get:
+      summary: API status
+      operationId: getStatus
+      responses:
+        "200":
+          description: API operational
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: {type: string}
+                  version: {type: string}
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Healthy
+
+  /modules:
+    get:
+      summary: List available modules
+      operationId: listModules
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Module list
+        "401":
+          description: Unauthorized
+
+  /detect:
+    post:
+      summary: Run threat detection
+      operationId: detect
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                events: {type: array}
+                session_id: {type: string}
+      responses:
+        "200":
+          description: Detection results
+        "401":
+          description: Unauthorized
+
+  /webshell/scan:
+    post:
+      summary: Scan for web shells
+      operationId: webshellScan
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Scan results
+
+  /attck/coverage:
+    get:
+      summary: ATT&CK coverage matrix
+      operationId: attckCoverage
+      responses:
+        "200":
+          description: Coverage data
+
+  /bind/create:
+    post:
+      summary: Create 313-BIND receipt
+      operationId: createBind
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Receipt created
+
+  /bind/{bind_id}:
+    get:
+      summary: Get bind receipt
+      operationId: getBind
+      parameters:
+        - name: bind_id
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Receipt data
+        "404":
+          description: Not found
+
+  /bind:
+    get:
+      summary: List bind receipts
+      operationId: listBinds
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Receipt list
+
+  /mobile/status:
+    get:
+      summary: Mobile API status
+      operationId: mobileStatus
+      responses:
+        "200":
+          description: Mobile status
+
+  /audit:
+    get:
+      summary: Audit log
+      operationId: getAuditLog
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Audit entries
+
+  /audit/chain:
+    get:
+      summary: Audit chain integrity
+      operationId: getAuditChain
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Chain status
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
