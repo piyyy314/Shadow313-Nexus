@@ -56,7 +56,7 @@ Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligenc
 | **CI/CD** | SARIF output, 13-pattern secret scanning, GitHub Actions / GitLab CI integration |
 | **Docs** | AI `ask` command, interactive tutorials, man page generation |
 
-### V2 Advanced Modules (10)
+### V2 Advanced Modules (17)
 | Module | Capability |
 |--------|-----------|
 | **RAG** | ChromaDB/TF-IDF vector store, 5 knowledge namespaces, LoRA fine-tune config |
@@ -391,5 +391,6 @@ MIT — see [LICENSE](LICENSE)
 
 *Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
 *"The only security platform where every finding is a cryptographic fact."*
+
 
 
