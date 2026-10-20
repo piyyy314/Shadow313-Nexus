@@ -20,11 +20,13 @@ PATTERNS = [
 
 def violations(path, content, fixtures):
     allowed = fixtures.get(path, [])
-    for pattern in PATTERNS:
-        for match in re.finditer(pattern, content):
-            digest = hashlib.sha256(content.splitlines()[content.count('\n', 0, match.start())].encode()).hexdigest()
-            if digest not in allowed:
-                yield content.count('\n', 0, match.start()) + 1
+    for index, line in enumerate(content.splitlines()):
+        for pattern in PATTERNS:
+            if re.search(pattern, line):
+                digest = hashlib.sha256(line.encode()).hexdigest()
+                if digest not in allowed:
+                    yield index + 1
+                break
 
 
 def main():
