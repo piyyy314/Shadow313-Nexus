@@ -74,6 +74,12 @@ services:
       target: nexus
     image: shadow313-satexpert-bot:local
     container_name: shadow313-telegram-bot
+    <<: *security-defaults
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
     restart: unless-stopped
     depends_on:
       ollama:
@@ -333,7 +339,7 @@ networks:
       config:
         - subnet: 172.20.0.0/24
 
-  # External network — only nginx + webui + api
+  # External network — nginx + webui + api + Telegram outbound HTTPS
   shadow313_external:
     driver: bridge
     ipam:
