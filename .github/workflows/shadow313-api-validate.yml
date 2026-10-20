@@ -145,8 +145,6 @@ jobs:
           for method, path, auth in [("GET","/health",False),("GET","/api/status",False),
                                       ("GET","/api/modules",True),("GET","/api/attck/coverage",True)]:
               h = dict(HEADERS) if auth else {}
-              if headers:
-                  h.update(headers)
               t0 = time.time()
               try:
                   with httpx.Client(timeout=5) as c: c.request(method, f"{BASE}{path}", headers=h)
