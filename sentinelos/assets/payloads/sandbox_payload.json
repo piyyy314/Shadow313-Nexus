@@ -1,0 +1,13 @@
+{
+  "payload_name": "worm.bin",
+  "size_bytes": 128,
+  "sha256": "89e531c050682f2f7368682f62696e89e35089e25389e1b00bcd80",
+  "classification": "executive_hijack_shellcode",
+  "risk_score": 92,
+  "risk_level": "critical",
+  "behavioral_flags": [
+    "forces_syscall_execve",
+    "pushes_command_strings",
+    "clears_eax_register"
+  ]
+}
