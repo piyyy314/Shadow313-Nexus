@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — APT Lateral Movement Simulation
 APT29-style kill chain: Phishing → LSASS → PtH → PrintNightmare → DCSync → Exfil
 """
-from __future__ import annotations
 import time, uuid
 from datetime import datetime, timezone
 from typing import Dict, List

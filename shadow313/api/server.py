@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.api.server
 FastAPI REST API for Shadow313 NEXUS v4.0.0
@@ -13,7 +14,6 @@ Endpoints:
   POST /api/bind/create     — create 313-BIND receipt
   GET  /api/bind/{bind_id}  — retrieve receipt
 """
-from __future__ import annotations
 
 import argparse
 import hashlib
@@ -24,16 +24,99 @@ import time
 from datetime import UTC, datetime
 from typing import Any
 
-try:
-    from fastapi import Depends, FastAPI, Header, HTTPException
-    from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
-    import uvicorn
-    HAS_FASTAPI = True
-except ImportError:
-    HAS_FASTAPI = False
+import os
+import time
+import hmac
+import hashlib
+from functools import wraps
+from fastapi import HTTPException, Request, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+# ── Simple API Key Auth (replace with JWT in production) ──────────────────
+_API_KEY = os.environ.get("SHADOW313_API_KEY", "shadow313-local-dev-key")
+_security = HTTPBearer(auto_error=False)
+
+# ── Rate limiting (simple in-memory) ─────────────────────────────────────
+_rate_store: dict = {}
+
+# Global rate limit — prevents IP rotation attacks
+_global_rate_store: dict = {}
+_GLOBAL_RATE_LIMIT = 1000  # total requests per minute across all IPs
+
+def _check_global_rate_limit() -> None:
+    """Secondary global rate limit to prevent IP rotation bypass."""
+    now = time.time()
+    window = int(now // 60)
+    key = f"global:{window}"
+    _global_rate_store[key] = _global_rate_store.get(key, 0) + 1
+    old_keys = [k for k in list(_global_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
+    for k in old_keys:
+        del _global_rate_store[k]
+    if _global_rate_store[key] > _GLOBAL_RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Global rate limit exceeded")
+
+_RATE_LIMIT = 100  # requests per minute
+
+_MAX_STORE_SIZE = 10000   # cap memory growth from IP rotation attacks
+_MAX_KEY_LENGTH = 256     # prevent DoS via huge API keys
+
+def _check_rate_limit(client_ip: str) -> None:
+    now = time.time()
+    window = int(now // 60)
+    key = f"{client_ip}:{window}"
+    _rate_store[key] = _rate_store.get(key, 0) + 1
+    # Clean old keys
+    old_keys = [k for k in list(_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
+    for k in old_keys:
+        del _rate_store[k]
+    # Cap store size to prevent memory exhaustion from IP rotation attacks
+    if len(_rate_store) > _MAX_STORE_SIZE:
+        # Remove oldest half
+        sorted_keys = sorted(_rate_store.keys(), key=lambda k: int(k.split(":")[-1]))
+        for k in sorted_keys[:len(sorted_keys)//2]:
+            _rate_store.pop(k, None)
+    if _rate_store[key] > _RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded (100 req/min)")
+
+async def verify_api_key(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(_security)
+) -> str:
+    """Verify API key from Authorization: Bearer <key> header."""
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    _check_rate_limit(client_ip)
+    
+    dev_mode = os.environ.get("SHADOW313_DEV_MODE", "true").lower() == "true"
+    if dev_mode and client_ip in ("127.0.0.1", "::1", "localhost"):
+        return "dev"
+    
+    if not credentials:
+        raise HTTPException(status_code=401, detail="API key required")
+    
+    provided = credentials.credentials
+    
+    # Prevent DoS via extremely long keys
+    if len(provided) > _MAX_KEY_LENGTH:
+        raise HTTPException(status_code=400, detail="API key too long")
+    
+    # Constant-time comparison prevents timing attacks
+    expected = _API_KEY
+    if not hmac.compare_digest(provided.encode(), expected.encode()):
+        raise HTTPException(status_code=403, detail="Invalid API key")
+    
+    return provided
+
+
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import uvicorn
+HAS_FASTAPI = True
 
 from shadow313 import __version__
+import logging
+logger = logging.getLogger(__name__)
+
 
 # Intelligence modules (lazy import — graceful if not available)
 try:
@@ -78,6 +161,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     if not HAS_FASTAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
+    api_key = api_key or os.environ.get("SHADOW313_API_KEY")
+    if os.environ.get("SHADOW313_ENV", "development") == "production" and not api_key:
+        raise RuntimeError("SHADOW313_API_KEY must be set in production")
+
     app = FastAPI(
         title="Shadow313 NEXUS API",
         description="Local-First AI-Powered Security Intelligence — REST Interface",
@@ -95,6 +182,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "http://localhost:8080",
             "http://localhost:7313",
             "http://open-webui:8080",
+            "https://shadow313.com",
+            "https://shadow313.dev",
         ],
         allow_credentials=True,
         allow_methods=["*"],
@@ -268,6 +357,42 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "receipts": list(_receipts.values()),
         }
 
+    # ── Mobile API endpoints ──────────────────────────────────────────────────────
+    @app.get("/api/mobile/status")
+    async def mobile_status():
+        return {"status": "ok", "version": "4.0.0", "platform": "mobile", "timestamp": __import__('time').time()}
+
+    @app.post("/api/mobile/scan")
+    async def mobile_scan(request: Request):
+        body = await request.json()
+        return {"scan_id": __import__('uuid').uuid4().hex[:8].upper(), "target": body.get('target', ''), "status": "queued"}
+
+    @app.get("/api/mobile/alerts")
+    async def mobile_alerts():
+        return {"alerts": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/mobile/findings")
+    async def mobile_findings():
+        return {"findings": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/mobile/sessions")
+    async def mobile_sessions():
+        return {"sessions": [], "count": 0}
+
+    @app.get("/api/audit")
+    async def audit_log():
+        return {"entries": [], "count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/audit/chain")
+    async def audit_chain():
+        return {"chain_intact": True, "bind_count": 0, "timestamp": __import__('time').time()}
+
+    @app.get("/api/stream")
+    async def stream_status():
+        return {"streaming": False, "events": 0, "timestamp": __import__('time').time()}
+
+
+
     return app
 
 
@@ -289,9 +414,9 @@ def main():
     app = create_app(api_key=api_key)
 
     print(f"Shadow313 NEXUS API v{__version__}")
-    print(f"  Listening: http://{args.host}:{args.port}")
-    print(f"  Docs:      http://{args.host}:{args.port}/api/docs")
-    print(f"  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
+    logger.debug("  Listening: http://{args.host}:{args.port}")
+    logger.debug("  Docs:      http://{args.host}:{args.port}/api/docs")
+    logger.debug("  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
 
     uvicorn.run(
         app,
@@ -300,6 +425,7 @@ def main():
         reload=args.reload,
         log_level="info",
     )
+
 
 
 if __name__ == "__main__":

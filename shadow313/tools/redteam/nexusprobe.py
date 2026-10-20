@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.red_team.nexusprobe
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Active probe engine for service fingerprinting and vulnerability surface mapping
 Category: Red Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

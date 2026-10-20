@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 Bridge — EventRateTracker
 =======================================
@@ -31,7 +32,6 @@ Beacon detection (C2 indicator):
   Low CV = highly regular = likely automated/beaconing
 """
 
-from __future__ import annotations
 
 import math
 import statistics

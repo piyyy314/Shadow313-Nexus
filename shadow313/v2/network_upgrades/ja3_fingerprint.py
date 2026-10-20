@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.network_upgrades.ja3_fingerprint  — v4
 Pure-Python JA3/JA3S TLS fingerprinting with known-malicious signature detection.
@@ -11,7 +12,6 @@ BUG FIXES:
     IndexError — added bounds checking throughout.
   - scan_pcap() opened PCAP file without checking magic bytes — added validation.
 """
-from __future__ import annotations
 import hashlib
 import json
 import struct
@@ -69,7 +69,7 @@ def _ja3_hash(ssl_version: int, ciphers: list[int], extensions: list[int],
         "-".join(str(p) for p in point_formats),
     ]
     raw = ",".join(parts)
-    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
+    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # nosec B324 - JA3 spec requires MD5
 
 
 def _ja3s_hash(ssl_version: int, cipher: int, extensions: list[int]) -> str:
@@ -81,7 +81,7 @@ def _ja3s_hash(ssl_version: int, cipher: int, extensions: list[int]) -> str:
         "-".join(str(e) for e in _filter_grease(ext_filtered)),
     ]
     raw = ",".join(parts)
-    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # JA3 fingerprint, not security
+    return hashlib.md5(raw.encode(), usedforsecurity=False).hexdigest()  # nosec B324 - JA3 spec requires MD5
 
 
 # ── TLS record parser ─────────────────────────────────────────────────────────

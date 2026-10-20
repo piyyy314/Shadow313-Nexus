@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.bridge.beacon_detector
 ─────────────────────────────────────
@@ -11,7 +12,6 @@ Detects:
 
 Integrates with c2_attribution_analysis.py for signal correlation.
 """
-from __future__ import annotations
 
 import math
 import statistics

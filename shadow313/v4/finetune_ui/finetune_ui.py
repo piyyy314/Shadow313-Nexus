@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.v4.finetune_ui.finetune_ui  — v4
 LoRA/QLoRA fine-tuning configuration generator for Shadow313-7B.
 Generates Unsloth + QLoRA training config with GGUF export for Ollama.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -72,6 +72,9 @@ from trl import SFTTrainer
 from transformers import TrainingArguments
 from datasets import load_dataset
 import yaml, sys
+import logging
+logger = logging.getLogger(__name__)
+
 
 def main():
     with open("finetune_config.yaml") as f:

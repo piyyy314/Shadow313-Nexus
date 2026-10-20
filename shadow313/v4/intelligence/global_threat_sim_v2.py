@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.intelligence.global_threat_sim_v2
 Global Threat Simulation v2 — Q2-Q3 2026 Worldwide Threat Landscape
@@ -17,7 +18,6 @@ ATT&CK techniques: 65 techniques across 12 tactics
 Threat actors: 12 groups
 CVEs: 8 critical (EPSS > 0.85)
 """
-from __future__ import annotations
 
 import random
 import secrets  # for cryptographic operations

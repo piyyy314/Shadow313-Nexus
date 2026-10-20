@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.zeroday_evasion_sim
 ────────────────────────────────────────────
@@ -15,13 +16,15 @@ Each bypass attempt is scored:
   DETECTED   — detector returned detected=True  (evasion failed)
   PARTIAL    — detector flagged but below high-confidence threshold
 """
-from __future__ import annotations
 
 import math
 import random
 import time
 from dataclasses import dataclass, field
 from typing import Callable
+
+import logging
+logger = logging.getLogger(__name__)
 
 from shadow313.v4.detection.threat_hardening import (
     ValidAccountsDetector,
@@ -732,24 +735,24 @@ def print_report(reports: list[EvasionReport]) -> None:
           f"{total_detected} detected ({total_detected/total_variants:.0%})\n")
 
     for report in reports:
-        print(f"  {'─'*66}")
-        print(f"  {report.fix_id}: {report.detector_name}")
+        logger.debug("  {'─'*66}")
+        logger.debug("  {report.fix_id}: {report.detector_name}")
         print(f"  Bypass rate: {report.bypass_rate:.0%} "
               f"({report.bypassed}/{report.total_variants} variants evaded)\n")
 
         for a in report.attempts:
             status = "BYPASSED ⚠" if a.bypassed else "DETECTED ✓"
-            print(f"    [{status}] {a.variant_name}")
-            print(f"             Method: {a.evasion_method}")
-            print(f"             Notes:  {a.notes}")
+            logger.debug("    [{status}] {a.variant_name}")
+            logger.debug("             Method: {a.evasion_method}")
+            logger.debug("             Notes:  {a.notes}")
 
         print(f"\n  Gaps identified ({len(report.gaps)}):")
         for g in report.gaps:
-            print(f"    • {g}")
+            logger.debug("    • {g}")
 
         print(f"\n  Next-gen countermeasures ({len(report.countermeasures)}):")
         for c in report.countermeasures:
-            print(f"    → {c}")
+            logger.debug("    → {c}")
         print()
 
 

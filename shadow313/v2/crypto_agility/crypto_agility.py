@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.crypto_agility.crypto_agility  — v4
 PQC migration scanning, code snippets, hybrid TLS testing.
@@ -12,7 +13,6 @@ BUG FIXES:
   - migration_plan() called kernel.ai.chat() with empty context when no
     session data found — now provides default context.
 """
-from __future__ import annotations
 import re
 import ssl
 import socket

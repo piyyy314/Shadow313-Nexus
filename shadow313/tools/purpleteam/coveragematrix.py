@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.purple_team.coveragematrix
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ ATT&CK coverage matrix builder and gap analyzer
 Category: Purple Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

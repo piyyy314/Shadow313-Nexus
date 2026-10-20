@@ -3,22 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>threat intel feed — Shadow313 NEXUS</title>
+<title>Threat Intelligence Feed — Shadow313 NEXUS</title>
 <style>
-body{background:#000;color:#e2e8f0;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}
-.box{text-align:center;padding:40px;}
-.logo{font-size:32px;font-weight:800;color:#22c55e;margin-bottom:16px;}
-.title{font-size:20px;font-weight:700;margin-bottom:12px;}
-.sub{color:#64748b;font-size:14px;margin-bottom:24px;}
-a{color:#22c55e;text-decoration:none;font-weight:700;}
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--green:#22c55e;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Space Grotesk",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid rgba(239,68,68,0.2);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--bg);padding:14px;text-align:center;}
+.kpi-val{font-size:22px;font-weight:800;font-family:"JetBrains Mono",monospace;}
+.kpi-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.ioc-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(30,41,59,0.3);font-size:11px;}
+.ioc-row:last-child{border-bottom:none;}
+.card{background:rgba(0,0,0,0.3);border-left:3px solid var(--red);border-radius:6px;padding:12px;margin-bottom:8px;}
+.card-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;}
+.card-body{font-size:10px;color:var(--muted);line-height:1.6;}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid rgba(239,68,68,0.08);font-family:"JetBrains Mono",monospace;margin-top:20px;}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">⬡ SHADOW313 NEXUS</div>
-  <div class="title">threat intel feed</div>
-  <div class="sub">This dashboard is available on the live platform.</div>
-  <a href="https://shadow313.dev">← Back to shadow313.dev</a>
+<nav class="nav">
+  <div style="width:28px;height:28px;background:#ef4444;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:9px;">S3</div>
+  <span style="font-size:14px;font-weight:800;">THREAT <span style="color:#ef4444;">INTELLIGENCE</span></span>
+  <div style="margin-left:auto;font-size:11px;font-family:"JetBrains Mono",monospace;color:var(--muted);">shadow313.dev/threat-intel</div>
+</nav>
+<div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
+<div style="font-size:24px;font-weight:800;color:#ef4444;margin-bottom:6px;">Threat Intelligence Feed</div>
+<div style="font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace;margin-bottom:24px;">FeodoTracker · URLhaus · MalwareBazaar · Shodan InternetDB · OTX feeds | Shadow313 NEXUS</div>
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-val" style="color:#ef4444;">35</div><div class="kpi-lbl">Active IOCs</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:#f59e0b;">4</div><div class="kpi-lbl">TI Sources</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:#22c55e;">12h</div><div class="kpi-lbl">Sync Interval</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:#06b6d4;">SQLite</div><div class="kpi-lbl">Local Cache</div></div>
 </div>
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#ef4444;">Active IOCs</span><span style="font-size:9px;font-family:"JetBrains Mono",monospace;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25);padding:2px 8px;border-radius:4px;">35 indicators</span></div>
+  <div class="ioc-row"><span style="font-family:"JetBrains Mono",monospace;color:#ef4444;width:140px;">185.220.101.42</span><span style="font-size:9px;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25);padding:1px 6px;border-radius:3px;">IP</span><span style="color:#64748b;">Cobalt Strike C2 — FeodoTracker</span><span style="margin-left:auto;font-size:9px;color:#64748b;">CRITICAL</span></div>
+  <div class="ioc-row"><span style="font-family:"JetBrains Mono",monospace;color:#ef4444;width:140px;">91.207.175.33</span><span style="font-size:9px;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25);padding:1px 6px;border-radius:3px;">IP</span><span style="color:#64748b;">Lazarus Group C2 — OTX</span><span style="margin-left:auto;font-size:9px;color:#64748b;">HIGH</span></div>
+  <div class="ioc-row"><span style="font-family:"JetBrains Mono",monospace;color:#f59e0b;width:140px;">malware.example.com</span><span style="font-size:9px;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);padding:1px 6px;border-radius:3px;">DOMAIN</span><span style="color:#64748b;">Phishing domain — URLhaus</span><span style="margin-left:auto;font-size:9px;color:#64748b;">HIGH</span></div>
+  <div class="ioc-row"><span style="font-family:"JetBrains Mono",monospace;color:#06b6d4;width:140px;">d41d8cd98f00b204...</span><span style="font-size:9px;background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);padding:1px 6px;border-radius:3px;">HASH</span><span style="color:#64748b;">Emotet dropper — MalwareBazaar</span><span style="margin-left:auto;font-size:9px;color:#64748b;">CRITICAL</span></div>
+</div>
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#ef4444;">Intelligence Sources</span></div>
+  <div style="padding:14px;display:flex;flex-direction:column;gap:8px;">
+    <div class="card"><div class="card-title">FeodoTracker (Abuse.ch)</div><div class="card-body">Botnet C2 tracker — Emotet, Dridex, TrickBot, QakBot, BazarLoader. Updated every 5 minutes. 847 active C2 servers tracked.</div></div>
+    <div class="card"><div class="card-title">URLhaus (Abuse.ch)</div><div class="card-body">Malware distribution URLs — phishing, drive-by downloads, malware hosting. 2.3M URLs in database. Real-time feed.</div></div>
+    <div class="card"><div class="card-title">MalwareBazaar (Abuse.ch)</div><div class="card-body">Malware sample repository — SHA256 hashes, YARA rules, file metadata. 1.2M samples. API rate limit: 100 req/min.</div></div>
+    <div class="card"><div class="card-title">Shodan InternetDB</div><div class="card-body">IP reputation and open port data — CVEs, tags, hostnames. No API key required for basic lookups. 800M IPs indexed.</div></div>
+  </div>
+</div>
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Threat Intelligence Feed &nbsp;|&nbsp; Ottawa, ON, Canada</div>
 </body>
 </html>

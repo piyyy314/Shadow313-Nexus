@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.simulation.full_technique_simulation
 Full ATT&CK Technique Simulation — Every Known Technique
@@ -9,7 +10,6 @@ Simulates ALL 47+ tracked techniques across:
 
 Total: 140+ technique simulations across all 14 ATT&CK tactics
 """
-from __future__ import annotations
 
 import math
 import random

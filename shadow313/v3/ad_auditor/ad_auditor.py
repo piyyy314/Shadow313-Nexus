@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.ad_auditor.ad_auditor  — v4
 Active Directory security auditing: Kerberoastable accounts, ACL review,
@@ -5,7 +6,6 @@ privilege path analysis, password policy checks.
 
 Uses ldap3 library (optional) with fallback to subprocess ldapsearch.
 """
-from __future__ import annotations
 import re
 import subprocess
 from typing import Any

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.ai_native.adaptiveruleengine
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Self-tuning detection rule engine with ML-based threshold adaptation
 Category: Ai Native
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

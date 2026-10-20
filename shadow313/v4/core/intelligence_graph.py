@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.core.intelligence_graph
 ──────────────────────────────────────
@@ -13,7 +14,6 @@ Provides:
   - Lateral movement path analysis
   - Export to STIX 2.1 bundle
 """
-from __future__ import annotations
 
 import hashlib
 import json

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.intelligence.secrets_manager
 Hardened Secrets Management — Shadow313 NEXUS v4
@@ -29,7 +30,6 @@ Secret classes:
   MEDIUM    — rotate every 30d (integration keys)
   LOW       — rotate every 90d (non-sensitive config)
 """
-from __future__ import annotations
 
 import hashlib
 import math

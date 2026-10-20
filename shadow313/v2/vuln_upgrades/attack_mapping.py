@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v2.vuln_upgrades.attack_mapping  — v4
 MITRE ATT&CK mapping: 70+ keyword→technique rules, Navigator v4 JSON export.
@@ -9,7 +10,6 @@ BUG FIXES:
   - map_findings() returned duplicate technique IDs when multiple findings
     matched the same technique — added dedup set.
 """
-from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone

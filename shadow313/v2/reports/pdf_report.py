@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.v2.reports.pdf_report  — v4
 Professional PDF/HTML security reports with AI executive summaries.
 WeasyPrint → HTML fallback auto-activates.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path

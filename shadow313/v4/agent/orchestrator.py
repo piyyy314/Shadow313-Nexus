@@ -1,3 +1,7 @@
+from __future__ import annotations
+# REFACTOR: This file has 1283 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.agent.orchestrator  — NEXUS Complete
 Full AI Agent Orchestrator implementing the orchestrator-worker pattern
@@ -13,7 +17,6 @@ Key metrics from production telemetry (Q1-Q3 2026):
   - p50 latency: 312ms → target <300ms
   - p99 latency: 2,840ms → target <1,500ms
 """
-from __future__ import annotations
 import asyncio
 import hashlib
 import json

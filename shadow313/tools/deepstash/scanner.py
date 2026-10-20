@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.tools.deepstash.scanner
 ───────────────────────────────────
 Core scanning engine for DeepStash.
 Typed result objects, policy evaluation, and parallel scanning.
 """
-from __future__ import annotations
 
 import hashlib
 import math

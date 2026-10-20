@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWIFT Cascade Failure — Archetype D vs A Pivot</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--green:#22c55e;--orange:#f97316;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid rgba(239,68,68,0.2);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:9px;}
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--bg);padding:14px;text-align:center;}
+.kpi-val{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.kpi-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+canvas{display:block;width:100%;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.finding{background:rgba(0,0,0,0.3);border-left:3px solid var(--red);border-radius:6px;padding:12px;margin-bottom:8px;}
+.finding-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:4px;}
+.finding-body{font-size:10px;color:var(--muted);line-height:1.6;}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid rgba(239,68,68,0.08);font-family:'JetBrains Mono',monospace;margin-top:20px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-hex">&#9889;</div>
+  <span style="font-size:14px;font-weight:800;">SWIFT CASCADE <span style="color:var(--red);">FAILURE</span></span>
+  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:4px;padding:3px 10px;">ARCHETYPE D vs A PIVOT SIMULATION</span>
+  <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">50 Institutions &nbsp;|&nbsp; 5 Archetypes &nbsp;|&nbsp; Shadow313 NEXUS</div>
+</nav>
+<div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
+<div style="font-size:22px;font-weight:800;color:var(--red);margin-bottom:4px;">Cascading Failure Network Topology</div>
+<div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">Pivot at T+10h &nbsp;|&nbsp; Simulation seed: 313 &nbsp;|&nbsp; Shadow313 NEXUS threat model &nbsp;|&nbsp; Ottawa, ON</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-val" style="color:var(--purple)">50</div><div class="kpi-lbl">D-Pivot Final</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--red)">50</div><div class="kpi-lbl">A-Pivot Final</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--amber)">0.008h</div><div class="kpi-lbl">D: +10 Inst</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--orange)">0.008h</div><div class="kpi-lbl">A: +10 Inst</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--purple)">$8.55B</div><div class="kpi-lbl">D-Pivot Loss</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--red)">$8.53B</div><div class="kpi-lbl">A-Pivot Loss</div></div>
+</div>
+
+<div class="panel">
+  <div class="panel-hdr">
+    <span class="panel-title" style="color:var(--cyan);">Cascade Speed — Institutions Compromised Over Time</span>
+    <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25);padding:2px 8px;border-radius:4px;">T+10h to T+22h</span>
+  </div>
+  <div style="padding:16px;"><canvas id="cascadeChart" height="220"></canvas></div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-hdr"><span class="panel-title" style="color:var(--red);">Key Findings</span></div>
+    <div style="padding:14px;">
+      <div class="finding">
+        <div class="finding-title">Both Pivots Reach Full Compromise in ~24 Minutes</div>
+        <div class="finding-body">The difference between D-pivot and A-pivot is less than 1 minute to full network compromise. Credential reuse (47% of propagation events) is so dominant that the starting archetype barely matters once the cascade begins.</div>
+      </div>
+      <div class="finding">
+        <div class="finding-title">D-Pivot Unlocks Fed Routing Immediately</div>
+        <div class="finding-body">D-pivot unlocks Federal Reserve routing at T+10h:00. A-pivot must wait until a 2nd-order D-arch institution falls — adding 0.5–2h delay before $1.8B/day Fed wire capacity is available.</div>
+      </div>
+      <div class="finding">
+        <div class="finding-title">Credential Vector Is the Real Choke Point</div>
+        <div class="finding-body">The network is so densely connected via credential reuse that no single institution is a meaningful chokepoint. The real intervention must be at the vector level — eliminating shared credentials across Temenos T24 institutions.</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-hdr"><span class="panel-title" style="color:var(--amber);">Propagation Vector Breakdown</span></div>
+    <div style="padding:14px;">
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="color:var(--red);">Credential Reuse</span><span style="font-family:'JetBrains Mono',monospace;">47%</span></div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:3px;height:8px;"><div style="width:47%;background:var(--red);height:8px;border-radius:3px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="color:var(--cyan);">Correspondent Pivot</span><span style="font-family:'JetBrains Mono',monospace;">29%</span></div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:3px;height:8px;"><div style="width:29%;background:var(--cyan);height:8px;border-radius:3px;"></div></div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;"><span style="color:var(--amber);">Fed Routing</span><span style="font-family:'JetBrains Mono',monospace;">24%</span></div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:3px;height:8px;"><div style="width:24%;background:var(--amber);height:8px;border-radius:3px;"></div></div>
+      </div>
+      <div style="margin-top:16px;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:4px;">Archetype D Pivot Score: 136/130</div>
+        <div style="font-size:10px;color:var(--muted);">Scores above maximum — only archetype combining CRITICAL credentials + Fed connection + T24 vendor + 18 correspondent relationships simultaneously.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:var(--purple);">Cascade Timeline Comparison</span></div>
+  <div style="padding:14px;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-size:9px;text-transform:uppercase;">Time</th>
+        <th style="padding:8px 12px;color:var(--purple);font-size:9px;text-transform:uppercase;">D-Pivot Inst.</th>
+        <th style="padding:8px 12px;color:var(--red);font-size:9px;text-transform:uppercase;">A-Pivot Inst.</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted);font-size:9px;text-transform:uppercase;">Key Event</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(30,41,59,0.3);"><td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;color:var(--muted);">T+10.0h</td><td style="padding:8px 12px;text-align:center;color:var(--purple);font-weight:700;">1</td><td style="padding:8px 12px;text-align:center;color:var(--red);font-weight:700;">1</td><td style="padding:8px 12px;color:var(--muted);">Initial pivot — credential reuse begins</td></tr>
+        <tr style="border-bottom:1px solid rgba(30,41,59,0.3);"><td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;color:var(--muted);">T+10.5h</td><td style="padding:8px 12px;text-align:center;color:var(--purple);font-weight:700;">50</td><td style="padding:8px 12px;text-align:center;color:var(--red);font-weight:700;">50</td><td style="padding:8px 12px;color:var(--muted);">Full network compromise — 30 min total</td></tr>
+        <tr style="border-bottom:1px solid rgba(30,41,59,0.3);"><td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;color:var(--muted);">T+22.0h</td><td style="padding:8px 12px;text-align:center;color:var(--purple);font-weight:700;">50</td><td style="padding:8px 12px;text-align:center;color:var(--red);font-weight:700;">50</td><td style="padding:8px 12px;color:var(--muted);">Sustained FASTCash — $8.55B total loss</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; SWIFT Cascade Failure Simulation &nbsp;|&nbsp; Archetype D vs A Pivot &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+
+<div id="export-fab" style="position:fixed;bottom:24px;right:24px;z-index:999;">
+  <button onclick="exportDashboard()" style="background:var(--green);color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px rgba(34,197,94,0.4);">&#11015; Export JSON</button>
+</div>
+<script>
+function exportDashboard(){
+  const data={dashboard:document.title,exported:new Date().toISOString(),findings:["Both pivots reach full compromise in 24 minutes","Credential reuse accounts for 47% of propagation","D-pivot unlocks Fed routing immediately","Arch-E is the unguarded back door"]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='swift_cascade_export.json';a.click();
+}
+function drawChart(){
+  const canvas=document.getElementById('cascadeChart');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return;
+  const W=canvas.parentElement.clientWidth-32,H=220;
+  canvas.width=W;canvas.height=H;
+  const pad={l:36,r:16,t:20,b:28};
+  const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const labels=['T+10h','T+10.5h','T+11h','T+12h','T+14h','T+16h','T+18h','T+22h'];
+  const dataD=[1,50,50,50,50,50,50,50];
+  const dataA=[1,50,50,50,50,50,50,50];
+  for(let i=0;i<=5;i++){
+    const y=pad.t+ch-(i/5)*ch;
+    ctx.strokeStyle='rgba(30,41,59,0.5)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    ctx.fillStyle='#475569';ctx.font='9px JetBrains Mono';ctx.fillText((i*10).toString(),2,y+3);
+  }
+  labels.forEach((l,i)=>{
+    const x=pad.l+(i/(labels.length-1))*cw;
+    ctx.fillStyle='#334155';ctx.font='8px JetBrains Mono';
+    if(i%2===0)ctx.fillText(l,x-14,H-4);
+  });
+  function drawLine(data,color){
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;
+    data.forEach((v,i)=>{const x=pad.l+(i/(data.length-1))*cw,y=pad.t+ch-(v/50)*ch;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();
+  }
+  drawLine(dataA,'#ef4444');drawLine(dataD,'#a855f7');
+  ctx.fillStyle='#a855f7';ctx.fillRect(pad.l,8,16,3);ctx.fillStyle='#e2e8f0';ctx.font='9px Space Grotesk';ctx.fillText('D-Pivot',pad.l+20,14);
+  ctx.fillStyle='#ef4444';ctx.fillRect(pad.l+70,8,16,3);ctx.fillStyle='#e2e8f0';ctx.fillText('A-Pivot',pad.l+90,14);
+}
+window.addEventListener('load',()=>drawChart());
+window.addEventListener('resize',()=>drawChart());
+</script>
+</body>
+</html>

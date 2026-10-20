@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.v4.mobile_api.mobile_api  — v4
 REST API for iOS/Android companion app.
 Push alerts for critical findings, session management, dashboard data.
 """
-from __future__ import annotations
 import hmac
 import json
 from datetime import datetime, timezone

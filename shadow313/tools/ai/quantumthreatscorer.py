@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.ai_native.quantumthreatscorer
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Post-quantum cryptography threat scoring and migration advisor
 Category: Ai Native
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

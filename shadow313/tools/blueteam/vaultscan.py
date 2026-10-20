@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.blue_team.vaultscan
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Secrets and credential vault security scanner
 Category: Blue Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.threat_intel.ti_feed
 ────────────────────────────────
@@ -11,7 +12,6 @@ Sources:
 
 Falls back to local IOC store when external feeds are unavailable.
 """
-from __future__ import annotations
 
 import hashlib
 import json

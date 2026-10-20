@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — CEQS (Chrono-Entanglement Quantum Simulator)
 Temporal threat prediction using quantum superposition across time slices.
 """
-from __future__ import annotations
 from typing import Dict, List
 
 class CEQSEngine:

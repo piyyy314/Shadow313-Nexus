@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.stia.parser
 ────────────────────────────────────
@@ -9,7 +10,6 @@ Supports three input formats:
   2. JSON string (STIA export)
   3. Python dict (programmatic)
 """
-from __future__ import annotations
 
 import json
 import re

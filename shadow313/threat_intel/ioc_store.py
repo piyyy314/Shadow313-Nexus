@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.threat_intel.ioc_store
 ──────────────────────────────────
@@ -9,7 +10,6 @@ Stores and queries:
   - MITRE ATT&CK technique mappings
   - First/last seen timestamps
 """
-from __future__ import annotations
 
 import hashlib
 import json

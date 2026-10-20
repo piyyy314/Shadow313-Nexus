@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — CI/CD Security Pipeline
 Secret scanning, SARIF export, dependency checking.
 """
-from __future__ import annotations
 import json, hashlib, re, uuid
 from datetime import datetime, timezone
 from typing import Dict, List, Tuple

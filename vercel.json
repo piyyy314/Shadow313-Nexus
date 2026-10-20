@@ -3,6 +3,30 @@
   "name": "shadow313-nexus",
   "rewrites": [
     {
+      "source": "/attck-coverage-graph",
+      "destination": "/docs/attck-coverage-graph.html"
+    },
+    {
+      "source": "/coverage_matrix",
+      "destination": "/docs/coverage_matrix.html"
+    },
+    {
+      "source": "/:path*.env",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/:path*.py",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/.git/:path*",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/shadow313/:path*",
+      "destination": "/404.html"
+    },
+    {
       "source": "/",
       "destination": "/docs/index.html"
     },
@@ -585,6 +609,93 @@
     {
       "source": "/compliance",
       "destination": "/docs/compliance.html"
+    },
+    {
+      "source": "/performance",
+      "destination": "/docs/performance-report.html"
+    },
+    {
+      "source": "/attck-drilldown.json",
+      "destination": "/docs/attck-drilldown.json"
+    },
+    {
+      "source": "/adversarial-pivot-dashboard",
+      "destination": "/docs/adversarial-pivot-dashboard.html"
+    },
+    {
+      "source": "/swift-cascade",
+      "destination": "/docs/swift-cascade-topology.html"
+    },
+    {
+      "source": "/swift-choke-point",
+      "destination": "/docs/swift-choke-point-hardening.html"
+    },
+    {
+      "source": "/adversarial-pivot",
+      "destination": "/docs/adversarial-pivot-analysis.html"
+    },
+    {
+      "source": "/arch-e-stress",
+      "destination": "/docs/arch-e-stress-test.html"
+    },
+    {
+      "source": "/detection-tripwires",
+      "destination": "/docs/detection-tripwire-analysis.html"
+    },
+    {
+      "source": "/roadmap",
+      "destination": "/docs/project-roadmap.html"
+    },
+    {
+      "source": "/attck",
+      "destination": "/docs/attck.html"
+    },
+    {
+      "source": "/pqc",
+      "destination": "/docs/pqc.html"
+    },
+    {
+      "source": "/analysis",
+      "destination": "/docs/shadow313-analysis.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "X-Powered-By",
+          "value": ""
+        }
+      ]
     }
   ]
 }

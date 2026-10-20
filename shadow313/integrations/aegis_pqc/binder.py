@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.binder
 ─────────────────────────────────────────
@@ -8,7 +9,6 @@ Usage:
     audit, receipt = binder.bind_shadow313_sbom(components)
     html_path, json_path = binder.generate_report(audit, receipt)
 """
-from __future__ import annotations
 
 import json
 import logging

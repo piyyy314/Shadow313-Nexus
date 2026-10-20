@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.lstm_trainer.lstm_trainer
 ────────────────────────────────────────
@@ -18,7 +19,6 @@ FIXES APPLIED:
   3. Composite score: 0.55 * ngram_score + 0.35 * timing_score + 0.10 * entropy_score
   4. Threshold floor: minimum 0.45 to avoid false positive explosion
 """
-from __future__ import annotations
 
 import math
 import random
@@ -26,6 +26,9 @@ import statistics
 import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ── Sequence generators ───────────────────────────────────────────────────────
@@ -183,7 +186,7 @@ class LSTMHeadTrainer:
         """
         if verbose:
             print(f"\n  Training {self.head_name} head...")
-            print(f"    Positive: {len(positive_sequences)} | Negative: {len(negative_sequences)}")
+            logger.debug("    Positive: {len(positive_sequences)} | Negative: {len(negative_sequences)}")
 
         # ── Extract n-gram frequencies ────────────────────────────────────────
         pos_ngram_freq = self._count_ngrams(positive_sequences)
@@ -239,7 +242,7 @@ class LSTMHeadTrainer:
             )
 
         if verbose:
-            print(f"    Threshold: {self.threshold:.3f}")
+            logger.debug("    Threshold: {self.threshold:.3f}")
 
         # ── Compute training metrics ───────────────────────────────────────────
         tp = sum(1 for s in pos_scores if s >= self.threshold)
@@ -255,9 +258,9 @@ class LSTMHeadTrainer:
                      if (precision + recall) > 0 else 0.0)
 
         if verbose:
-            print(f"    Training accuracy: {accuracy:.1f}%")
-            print(f"    Precision: {precision:.1f}% | Recall: {recall:.1f}%")
-            print(f"    F1: {f1:.1f}%")
+            logger.debug("    Training accuracy: {accuracy:.1f}%")
+            logger.debug("    Precision: {precision:.1f}% | Recall: {recall:.1f}%")
+            logger.debug("    F1: {f1:.1f}%")
 
         self._trained = True
         return {

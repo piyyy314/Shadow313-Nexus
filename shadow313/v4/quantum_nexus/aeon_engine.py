@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — AEON (Unified CEQS + QE-BIM Framework)
 Project AEON: Quantum-secured predictive threat intelligence.
 """
-from __future__ import annotations
 from typing import Dict
 from shadow313.v4.quantum_nexus.ceqs_engine import CEQSEngine
 from shadow313.v4.quantum_nexus.qebim_engine import QEBIMEngine

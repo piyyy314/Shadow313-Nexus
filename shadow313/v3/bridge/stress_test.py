@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.bridge.stress_test
 ─────────────────────────────────
@@ -13,7 +14,6 @@ Exposes known gaps:
   GAP-1: Session.id attribute (fixed — uses session.id)
   GAP-3: Kernel.dispatch_async (fixed — async wrapper added)
 """
-from __future__ import annotations
 
 import asyncio
 import time

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.modules.quantum
 Post-quantum cryptography audit — detect quantum-vulnerable algorithms in TLS,
@@ -5,7 +6,6 @@ certificates, source code, and configuration files. Generate NIST PQC migration 
 NOTE: This module assesses CLASSICAL systems for quantum readiness.
       It does NOT perform quantum computing.
 """
-from __future__ import annotations
 import json
 import re
 import socket

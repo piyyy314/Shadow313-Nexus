@@ -45,7 +45,7 @@ security  = [
 ]
 rag       = ["chromadb>=0.4","sentence-transformers>=2.2"]
 finetune  = ["unsloth>=2024.1","trl>=0.7","datasets>=2.14","peft>=0.6"]
-pqc       = ["pqcrypto>=0.1"]
+pqc       = ["pyspx>=0.5.0"]
 recon     = ["dnspython>=2.4","python-whois>=0.8"]
 network   = ["scapy>=2.5"]
 browser   = ["playwright>=1.40"]

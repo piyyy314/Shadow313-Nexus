@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.intelligence.evidence_envelope
 Canonical Evidence Envelope — Shadow313 NEXUS v4
@@ -22,7 +23,6 @@ Minimum fields (from Governance doc):
   evidence_hash, signature, trusted_timestamp, sequence/loss state
   secret_redaction_status, chain_of_custody, validation_status
 """
-from __future__ import annotations
 
 import hashlib
 import secrets

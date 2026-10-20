@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.update.updater  — NEXUS Complete
 Auto-update system with integrity verification and rollback support.
@@ -11,7 +12,6 @@ Features:
   - Offline update support (local package)
   - 313 Temporal Binding for update receipts
 """
-from __future__ import annotations
 import hashlib
 import json
 import os

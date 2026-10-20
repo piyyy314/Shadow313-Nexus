@@ -12,6 +12,9 @@ import sys
 import time
 import numpy as np
 from datetime import datetime
+import logging
+logger = logging.getLogger(__name__)
+
 
 try:
     from rich.console import Console
@@ -87,10 +90,10 @@ class CyberOps:
 
         console.print("[*] Analyzing 100-Hour Traffic Stream for Low-and-Slow APT...")
         time.sleep(1)
-        console.print(f"    -> Standard SIEM Alerts : {len(standard_siem_alerts)} (Failed to detect)")
+        console.logger.debug("    -> Standard SIEM Alerts : {len(standard_siem_alerts)} (Failed to detect)")
         time.sleep(1)
         if spikes:
-            console.print(f"    -> CORTEX SNN Alerts    : {len(spikes)} (Spiked at hour {spikes[0]})")
+            console.logger.debug("    -> CORTEX SNN Alerts    : {len(spikes)} (Spiked at hour {spikes[0]})")
             console.print("\n[bold green]✅ APT DETECTED: Temporal accumulation successfully identified stealth beaconing.[/]")
         else:
             console.print("    -> CORTEX SNN Alerts    : 0 (No spikes — adjust threshold)")
@@ -114,7 +117,7 @@ class KineticOps:
         with console.status("[green]Executing Standard BB84 Quantum Exchange..."):
             time.sleep(1)
             qber_safe = 0.0
-            console.print(f"[*] Baseline Protocol    -> QBER: {qber_safe*100:.2f}% (Safe. Protocol Continues)")
+            console.logger.info("[*] Baseline Protocol    -> QBER: {qber_safe*100:.2f}% (Safe. Protocol Continues)")
 
         with console.status("[red]Injecting 1mW CW Laser (Blinding APD Detectors)..."):
             time.sleep(1.5)
@@ -122,8 +125,8 @@ class KineticOps:
             detected_by_bob = (eve_bases == bob_bases)
             qber_hacked = 0.0
 
-            console.print(f"[*] Project SCYTHE       -> QBER: {qber_hacked*100:.2f}% (Below 11% Abort Threshold!)")
-            console.print(f"[*] Key Intercept Rate   -> 100% of sifted key compromised.")
+            console.logger.info("[*] Project SCYTHE       -> QBER: {qber_hacked*100:.2f}% (Below 11% Abort Threshold!)")
+            console.logger.info("[*] Key Intercept Rate   -> 100% of sifted key compromised.")
 
         console.print("\n[bold red]💀 VULNERABILITY CONFIRMED: Quantum encryption bypassed via hardware blinding.[/]")
         Prompt.ask("\nPress Enter to return to Mainframe")
@@ -141,8 +144,8 @@ class KineticOps:
         with console.status("[cyan]Routing Data through Costas Loop DSP..."):
             time.sleep(2)
             ber = 0.012  # 1.2% bit error rate after DSP phase lock
-            console.print(f"    -> Signal Lock Achieved. Costas Loop Synchronized.")
-            console.print(f"    -> Bit Error Rate (BER): {ber*100:.2f}%")
+            console.logger.debug("    -> Signal Lock Achieved. Costas Loop Synchronized.")
+            console.logger.debug("    -> Bit Error Rate (BER): {ber*100:.2f}%")
 
         console.print("\n[bold green]✅ INTERCEPT SUCCESSFUL: Satellite telemetry recovered from Doppler noise.[/]")
         Prompt.ask("\nPress Enter to return to Mainframe")

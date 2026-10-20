@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.api.audit_server
 ───────────────────────────
@@ -11,7 +12,6 @@ Routes:
   GET  /api/public-key           — SLH-DSA public key
   GET  /api/health               — Health check
 """
-from __future__ import annotations
 
 import hashlib
 from importlib.util import find_spec

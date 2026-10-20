@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.modules.defense
 Defensive hardening — CIS benchmark audits, firewall analysis,
 SSH hardening, file permission checks, AI remediation plan generation.
 """
-from __future__ import annotations
 import json
 import os
 import re

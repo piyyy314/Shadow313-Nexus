@@ -1,3 +1,5 @@
+from __future__ import annotations
+import os
 """
 shadow313.v4.aegis.dns_intercept  — NEXUS Complete
 DNS Intercept and OT/ICS/SCADA/Satellite monitoring module.
@@ -14,7 +16,6 @@ Capabilities:
   - Industrial IoT bridge security analysis
   - Threat feed DNS monitoring
 """
-from __future__ import annotations
 import json
 import random
 import socket
@@ -293,13 +294,13 @@ class GeoTracedIntelDeck:
             "tracesRecorded": [
                 {
                     "traceId":   f"TRC-{random.randint(1000,9999)}",
-                    "targetIp":  t.get("source_ip", "0.0.0.0"),
+                    "targetIp":  t.get("source_ip", "127.0.0.1"),
                     "threatType":t.get("threat_type", "Unknown"),
                     "severity":  t.get("severity", "MEDIUM"),
                     "confidence":t.get("confidence", 50),
                     "mitre":     t.get("mitre", "T1000"),
                     "geoLocation":{
-                        "country": self._geolocate(t.get("source_ip","0.0.0.0")),
+                        "country": self._geolocate(t.get("source_ip","127.0.0.1")),
                         "lat":     round(random.uniform(-90, 90), 4),
                         "lon":     round(random.uniform(-180, 180), 4),
                     },

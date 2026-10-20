@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adversarial Pivot Analysis — Shadow313 NEXUS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--accent:#a855f7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:rgba(2,6,23,0.97);border-bottom:1px solid #a855f733;height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100;}
+.nav-hex{width:28px;height:28px;background:#a855f7;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:9px;}
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.kpi-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:#a855f722;border:1px solid #a855f733;border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--bg);padding:12px 14px;text-align:center;}
+.kpi-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.kpi-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.4);}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.finding{background:rgba(0,0,0,0.3);border-left:3px solid #a855f7;border-radius:6px;padding:12px;margin-bottom:8px;}
+.finding-title{font-size:12px;font-weight:700;color:#a855f7;margin-bottom:4px;}
+.finding-body{font-size:10px;color:var(--muted);line-height:1.6;}
+.data-table{width:100%;border-collapse:collapse;font-size:11px;}
+.data-table th{text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);}
+.data-table td{padding:8px 12px;border-bottom:1px solid rgba(30,41,59,0.3);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(34,197,94,0.03);}
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid #a855f722;font-family:'JetBrains Mono',monospace;margin-top:20px;}
+@media(max-width:900px){.kpi-strip{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-hex">&#9650;</div>
+  <span style="font-size:14px;font-weight:800;color:#a855f7;">ADVERSARIAL PIVOT ANALYSIS</span>
+  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:#a855f722;color:#a855f7;border:1px solid #a855f744;border-radius:4px;padding:3px 10px;">COUNTER-STRATEGY SIMULATION — 5 ATTACK PIVOTS</span>
+  <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">Shadow313 NEXUS &nbsp;|&nbsp; Ottawa, ON</div>
+</nav>
+<div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
+<div style="font-size:22px;font-weight:800;color:#a855f7;margin-bottom:4px;">Adversarial Pivot Analysis</div>
+<div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">Counter-Strategy Simulation — 5 Attack Pivots &nbsp;|&nbsp; Shadow313 NEXUS threat model &nbsp;|&nbsp; Ottawa, ON</div>
+
+<div class="kpi-strip"><div class="kpi"><div class="kpi-val" style="color:#a855f7;">$8.55B</div><div class="kpi-lbl">Baseline Loss</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">$7.63B</div><div class="kpi-lbl">Hardened Loss</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">$4.52B</div><div class="kpi-lbl">Best Adv. Loss</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">$7.38B</div><div class="kpi-lbl">Worst Adv. Loss</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">5</div><div class="kpi-lbl">Adv. Strategies</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">+0.5h</div><div class="kpi-lbl">Min Adapt Delay</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">+4.0h</div><div class="kpi-lbl">Max Adapt Delay</div></div><div class="kpi"><div class="kpi-val" style="color:#a855f7;">45/50</div><div class="kpi-lbl">Avg Final Comp.</div></div></div>
+
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#a855f7;">Key Findings</span></div>
+  <div style="padding:14px;"><div class="finding"><div class="finding-title">Arch-E Is the Unguarded Back Door</div><div class="finding-body">Arch-E credential reuse achieves $7.38B loss with only 0.5h adaptation delay — nearly identical to the unhardened baseline. The $0.8M surgical hardening saved only $1.17B against this counter-strategy.</div></div><div class="finding"><div class="finding-title">Adaptation Delay Is the Defender's Only Window</div><div class="finding-body">Every adversarial pivot requires 0.5h–4.0h adaptation time. This window is the defender's only opportunity to extend hardening before the attacker re-enters.</div></div><div class="finding"><div class="finding-title">The Most Sophisticated Attack Is Least Effective</div><div class="finding-body">Custom SWIFT Web RCE achieves the lowest loss ($4.52B) because it enters via Arch-C (60-80% CSP). Simple Arch-E credential reuse achieves $7.38B with zero new exploit development.</div></div><div class="finding"><div class="finding-title">Hardening Must Cover the Full T24 Cluster</div><div class="finding-body">Surgical top-5 hardening leaves 10 Arch-E and 8 Arch-A institutions with shared T24 credentials unprotected. Complete defense requires hardening all 24 T24 shared-credential institutions.</div></div></div>
+</div>
+
+<div class="panel">
+  <div class="panel-hdr"><span class="panel-title" style="color:#a855f7;">Data Table</span></div>
+  <table class="data-table"><thead><tr><th>Scenario</th><th>Entry</th><th>Delay</th><th>Comp.</th><th>Loss</th><th>vs Hard.</th><th>Effective?</th></tr></thead><tbody><tr><td>Arch-E Credential Reuse</td><td>Arch-E</td><td>+0.5h</td><td>45/50</td><td>$7.38B</td><td>+$0.25B</td><td>❌ No</td></tr><tr><td>Multi-Vector Blended</td><td>Arch-E</td><td>+1.5h</td><td>45/50</td><td>$6.74B</td><td>-$0.89B</td><td>⚠️ Partial</td></tr><tr><td>Finacle API Pivot</td><td>Arch-B</td><td>+2.0h</td><td>45/50</td><td>$5.29B</td><td>-$2.34B</td><td>⚠️ Partial</td></tr><tr><td>Insider Threat Activation</td><td>Arch-A</td><td>+4.0h</td><td>45/50</td><td>$5.02B</td><td>-$2.61B</td><td>⚠️ Partial</td></tr><tr><td>Custom SWIFT Web RCE</td><td>Arch-C</td><td>+3.0h</td><td>45/50</td><td>$4.52B</td><td>-$3.11B</td><td>⚠️ Partial</td></tr></tbody></table>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Adversarial Pivot Analysis &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+<div id="export-fab" style="position:fixed;bottom:24px;right:24px;z-index:999;">
+  <button onclick="exportDashboard()" style="background:#a855f7;color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px #a855f766;">&#11015; Export JSON</button>
+</div>
+<script>
+function exportDashboard(){
+  const data={dashboard:document.title,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='adversarial-pivot-analysis_export.json';a.click();
+}
+</script>
+</body>
+</html>

@@ -1,3 +1,7 @@
+from __future__ import annotations
+# REFACTOR: This file has 1646 lines and should be split into focused modules.
+# See: docs/project-roadmap.html for refactoring plan.
+# Priority: Split into 200-300 line modules by responsibility.
 """
 shadow313.v4.detection.kernel_gap_hardening
 ────────────────────────────────────────────
@@ -27,7 +31,6 @@ Each detector returns a KernelGapAlert with:
   - artifact      (what NEXUS can observe post-hoc)
   - blocked       (False — NEXUS detects, cannot block without kernel driver)
 """
-from __future__ import annotations
 
 import hashlib
 import math

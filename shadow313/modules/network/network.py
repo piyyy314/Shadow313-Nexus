@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.modules.network  — v4
 Network intelligence: pure-Python PCAP parsing, flow tracking,
@@ -12,7 +13,6 @@ BUG FIXES vs v1:
   - TopologyMapper._ping() used hardcoded 'ping -c 1 -W 1' which fails on
     macOS (uses -t instead of -W) — added platform detection.
 """
-from __future__ import annotations
 import asyncio
 import json
 import os

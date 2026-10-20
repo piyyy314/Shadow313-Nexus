@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.alternate_auth_detector
 Alternate Authentication Material Detector — T1550
@@ -12,7 +13,6 @@ Detects abuse of alternate authentication material:
 
 Extends IDENTITY-7 LOTLAuthBypassDetector with hash/ticket-specific detection.
 """
-from __future__ import annotations
 
 import re
 from collections import defaultdict

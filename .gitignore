@@ -70,3 +70,12 @@ scripts/push-missing-html.ps1
 # Sandbox artifacts
 uploaded_files/
 local_bundle/
+
+# Route guardian backup
+.route-backup.json
+
+# Additional patterns
+dist/*.json
+!dist/manifest.json
+node_modules/
+scan_results.json

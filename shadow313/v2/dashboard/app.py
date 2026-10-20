@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.dashboard.app  — v4
 FastAPI + HTMX security operations dashboard.
 Dark terminal aesthetic, SSE live feed, RAG-enhanced AI chat.
 Port: 7313
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path

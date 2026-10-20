@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.threat_hardening
 ─────────────────────────────────────────
@@ -22,7 +23,6 @@ ADVERSARIAL_ML fixes:
   FIX-10: IOC poisoning — source credibility weighting + outlier rejection
   FIX-11: APT kill chain — multi-signal correlation requirement
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — AI Documentation System
 Interactive documentation with AI assistance via local Ollama.
 """
-from __future__ import annotations
 import json
 from typing import Dict, List, Optional
 

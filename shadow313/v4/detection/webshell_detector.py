@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.webshell_detector
 Web Shell Detector — T1505.003
@@ -12,7 +13,6 @@ Detects web shell deployment and execution across multiple languages:
 
 ATT&CK: T1505.003 (Server Software Component: Web Shell)
 """
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

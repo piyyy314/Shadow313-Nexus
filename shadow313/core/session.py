@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.session  — v4
 UUID-scoped session management with optional AES-256-GCM encryption.
@@ -9,7 +10,6 @@ BUG FIXES vs v1:
   - _load_meta() version field hardcoded "1.0.0" — now uses __version__
   - Session.resume() didn't validate session_id format — added UUID check
 """
-from __future__ import annotations
 import uuid
 import json
 import time

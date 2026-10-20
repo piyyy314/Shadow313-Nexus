@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.core.binding_sdk.binder
 ───────────────────────────────────
@@ -13,7 +14,6 @@ Receipt properties:
   - signature_algorithm: SLH-DSA (pyspx) or HMAC-SHA3-256 fallback
   - ipfs_cid: optional IPFS anchor
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

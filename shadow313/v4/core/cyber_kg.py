@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.core.cyber_kg
 ────────────────────────────
@@ -12,7 +13,6 @@ Provides higher-level queries:
 Wraps IntelligenceGraph with domain-specific query methods
 and ATT&CK Navigator integration.
 """
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Optional

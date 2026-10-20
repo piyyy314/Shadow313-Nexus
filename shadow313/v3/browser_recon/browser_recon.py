@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.browser_recon.browser_recon  — v4
 Playwright-powered fingerprinting of JavaScript-heavy SPAs.
@@ -5,13 +6,15 @@ Dynamic content extraction, CSP analysis, SPA framework detection.
 
 Falls back to requests-based static analysis when Playwright is unavailable.
 """
-from __future__ import annotations
 import json
 import re
 import socket
 import ssl
 from typing import Any
 from urllib import request as urlreq
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ── Static fallback fingerprinter ─────────────────────────────────────────────

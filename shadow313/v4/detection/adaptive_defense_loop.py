@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Adaptive Defense Loop (ADL)
 ===========================================
@@ -20,7 +21,6 @@ Just the real closed loop between detection, response, and evolution.
 Author: Shadow313 Core Team
 """
 
-from __future__ import annotations
 
 import hashlib
 import json
@@ -31,6 +31,9 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 # ── Shared paths ───────────────────────────────────────────────────────────────
 ADL_LOG_PATH    = Path("/tmp/shadow313_adl_log.jsonl")
@@ -590,7 +593,7 @@ class AdaptiveDefenseLoop:
     def run_cycle(self, cycle_num: int) -> dict:
         """Execute one full Blue→Red→Fuse→Evolve cycle."""
         print(f"\n{'━'*70}")
-        print(f"  ADAPTIVE DEFENSE LOOP — Cycle {cycle_num}/{self.max_cycles}")
+        logger.debug("  ADAPTIVE DEFENSE LOOP — Cycle {cycle_num}/{self.max_cycles}")
         print(f"{'━'*70}")
 
         cycle_start = time.perf_counter()
@@ -601,10 +604,10 @@ class AdaptiveDefenseLoop:
         detections = self.blue.process_telemetry_batch(batch)
         blue_summary = self.blue.get_coverage_summary()
 
-        print(f"  Processed:      {blue_summary['total_processed']} events")
-        print(f"  Detected:       {blue_summary['detected']} alerts")
-        print(f"  Missed:         {blue_summary['missed']} (false negatives)")
-        print(f"  Detection rate: {blue_summary['detection_rate']:.1%}")
+        logger.debug("  Processed:      {blue_summary['total_processed']} events")
+        logger.debug("  Detected:       {blue_summary['detected']} alerts")
+        logger.debug("  Missed:         {blue_summary['missed']} (false negatives)")
+        logger.debug("  Detection rate: {blue_summary['detection_rate']:.1%}")
 
         self._audit("BLUE_CYCLE", {
             "cycle": cycle_num,
@@ -634,12 +637,12 @@ class AdaptiveDefenseLoop:
         print(f"\n[FUSE]  Computing Blue/Red delta...")
         intel = self.fusion.fuse(self.blue, self.red)
 
-        print(f"  Evasion gaps:   {len(intel.evasion_gaps)}")
-        print(f"  High-risk gaps: {len(intel.high_risk_gaps)}")
+        logger.debug("  Evasion gaps:   {len(intel.evasion_gaps)}")
+        logger.debug("  High-risk gaps: {len(intel.high_risk_gaps)}")
         if intel.high_risk_gaps:
             for gap in intel.high_risk_gaps[:3]:
                 risk = IntelligenceFusion.GAP_RISK_SCORES.get(gap, 0)
-                print(f"    ⚠ {gap}  risk={risk:.1f}/10")
+                logger.debug("    ⚠ {gap}  risk={risk:.1f}/10")
 
         self._audit("INTELLIGENCE_FUSION", {
             "cycle":        cycle_num,
@@ -654,11 +657,11 @@ class AdaptiveDefenseLoop:
         deployed  = self.evolution.deploy_rules(new_rules)
         coverage_gain = self.evolution.estimate_coverage_improvement(new_rules)
 
-        print(f"  Rules generated: {len(new_rules)}")
-        print(f"  Rules deployed:  {deployed}")
-        print(f"  Est. coverage gain: +{coverage_gain:.1%}")
+        logger.debug("  Rules generated: {len(new_rules)}")
+        logger.debug("  Rules deployed:  {deployed}")
+        logger.debug("  Est. coverage gain: +{coverage_gain:.1%}")
         for rule in new_rules:
-            print(f"    ✓ [{rule.rule_type}] {rule.rule_content.get('title', rule.rule_id)}")
+            logger.debug("    ✓ [{rule.rule_type}] {rule.rule_content.get('title', rule.rule_id)}")
 
         self._audit("RULE_EVOLUTION", {
             "cycle":         cycle_num,
@@ -694,7 +697,7 @@ class AdaptiveDefenseLoop:
         """Run the full adaptive defense loop for max_cycles iterations."""
         print("\n" + "="*70)
         print("  SHADOW313 v3 — ADAPTIVE DEFENSE LOOP")
-        print(f"  Cycles: {self.max_cycles}  |  Mode: {'DRY-RUN' if self.dry_run else 'LIVE'}")
+        logger.debug("  Cycles: {self.max_cycles}  |  Mode: {'DRY-RUN' if self.dry_run else 'LIVE'}")
         print("="*70)
 
         t_start = time.perf_counter()
@@ -711,20 +714,20 @@ class AdaptiveDefenseLoop:
         projected_coverage = min(baseline_coverage + total_coverage_gain, 0.95)
 
         print(f"\n{'='*70}")
-        print(f"  ADAPTIVE DEFENSE LOOP — FINAL REPORT")
+        logger.debug("  ADAPTIVE DEFENSE LOOP — FINAL REPORT")
         print(f"{'='*70}")
-        print(f"  Cycles completed:      {self.max_cycles}")
-        print(f"  Total rules generated: {total_rules}")
-        print(f"  Total coverage gain:   +{total_coverage_gain:.1%}")
-        print(f"  Baseline coverage:     {baseline_coverage:.1%}")
-        print(f"  Projected coverage:    {projected_coverage:.1%}")
-        print(f"  Audit entries:         {len(self.audit_chain)}")
-        print(f"  Total runtime:         {total_ms:.0f} ms")
+        logger.debug("  Cycles completed:      {self.max_cycles}")
+        logger.debug("  Total rules generated: {total_rules}")
+        logger.debug("  Total coverage gain:   +{total_coverage_gain:.1%}")
+        logger.debug("  Baseline coverage:     {baseline_coverage:.1%}")
+        logger.debug("  Projected coverage:    {projected_coverage:.1%}")
+        logger.debug("  Audit entries:         {len(self.audit_chain)}")
+        logger.debug("  Total runtime:         {total_ms:.0f} ms")
 
         # Cycle-by-cycle table
         print(f"\n  {'Cycle':<8} {'Blue Det%':<12} {'Red Det%':<12} "
               f"{'Gaps':<8} {'Rules':<8} {'Gain':<8}")
-        print(f"  {'─'*60}")
+        logger.debug("  {'─'*60}")
         for c in self.cycle_log:
             print(f"  {c['cycle']:<8} "
                   f"{c['blue_detection_rate']:.1%}{'':>5} "
@@ -748,8 +751,8 @@ class AdaptiveDefenseLoop:
 
         ADL_REPORT_PATH.write_text(json.dumps(report, indent=2))
         print(f"\n  Report saved to: {ADL_REPORT_PATH}")
-        print(f"  Rules saved to:  {EVOLVED_RULES}")
-        print(f"  Audit log:       {ADL_LOG_PATH}")
+        logger.debug("  Rules saved to:  {EVOLVED_RULES}")
+        logger.debug("  Audit log:       {ADL_LOG_PATH}")
 
         return report
 
@@ -759,4 +762,3 @@ class AdaptiveDefenseLoop:
 if __name__ == "__main__":
     loop = AdaptiveDefenseLoop(max_cycles=3, dry_run=True)
     report = loop.run()
-

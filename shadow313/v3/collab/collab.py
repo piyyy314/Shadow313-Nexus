@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.v3.collab.collab  — v4
 Multi-user session sharing with end-to-end encryption.
 Team-based assessment workflows with role-based access.
 """
-from __future__ import annotations
 import hashlib
 import json
 import os

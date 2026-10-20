@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — Session Storage Model
 Persistent encrypted session management with 313-BIND audit trail.
 """
-from __future__ import annotations
 import json, uuid, time, hashlib
 from pathlib import Path
 from datetime import datetime, timezone

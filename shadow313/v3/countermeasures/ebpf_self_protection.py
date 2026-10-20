@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Countermeasure 1: eBPF Self-Protection
 ======================================================
@@ -17,7 +18,6 @@ Closes Mutation 1A (eBPF detachment via bpf() syscall abuse).
 MITRE ATT&CK: T1055.012 (Process Hollowing), T1562.006 (Indicator Blocking)
 """
 
-from __future__ import annotations
 
 import hashlib
 import hmac
@@ -28,6 +28,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable
+import logging
+logger = logging.getLogger(__name__)
+
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -177,7 +180,7 @@ class PrimaryMemoryProbe:
 
         print(f"[eBPF-PRIMARY] Attested {len(self.attestation)} kprobes:")
         for sc in MONITORED_SYSCALL_FAMILY:
-            print(f"  ✓ kprobe/{sc} — hash:{self.attestation[sc].bytecode_hash[:12]}...")
+            logger.debug("  ✓ kprobe/{sc} — hash:{self.attestation[sc].bytecode_hash[:12]}...")
 
     def start(self) -> None:
         self._active = True
@@ -233,7 +236,7 @@ class PrimaryMemoryProbe:
             target_comm = target_comm,
             access_size = access_size,
             score       = score,
-            token       = "ebpf_syscall",
+            token = os.environ.get("SHADOW313_TOKEN", ""),
         )
 
         with self._lock:
@@ -277,8 +280,8 @@ class GuardianBPFProbe:
         self._blocked     = 0
 
         print(f"[eBPF-GUARDIAN] Guardian probe attested:")
-        print(f"  ✓ kprobe/bpf — hash:{self.attestation.bytecode_hash[:12]}...")
-        print(f"  ✓ Mutual independence: guardian cannot be detached by primary")
+        logger.debug("  ✓ kprobe/bpf — hash:{self.attestation.bytecode_hash[:12]}...")
+        logger.debug("  ✓ Mutual independence: guardian cannot be detached by primary")
 
     def start(self) -> None:
         self._active = True
@@ -300,8 +303,8 @@ class GuardianBPFProbe:
             # Check if target prog_id matches any of our probes
             # In production: compare against loaded prog FDs
             print(f"[eBPF-GUARDIAN] ⚠ BPF_PROG_DETACH intercepted!")
-            print(f"  PID:{pid} ({comm}) attempting to detach prog_id:{prog_id}")
-            print(f"  → BLOCKING detach — primary probe integrity preserved")
+            logger.debug("  PID:{pid} ({comm}) attempting to detach prog_id:{prog_id}")
+            logger.debug("  → BLOCKING detach — primary probe integrity preserved")
             blocked = True
             self._blocked += 1
 
@@ -519,7 +522,7 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
         target_comm = "lsass.exe",
         access_size = 0x1000,
     )
-    print(f"  Score: {evt.score:.4f} | Token: {evt.token}")
+    logger.debug("  Score: {evt.score:.4f} | Token: {evt.token}")
     results["test1_standard_lsass"] = evt.score
 
     # ── Test 2: Mutation 1C — NtMapViewOfSection (previously unmonitored) ─────
@@ -533,8 +536,8 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
         target_comm = "lsass.exe",
         access_size = 0x8000,
     )
-    print(f"  Score: {evt2.score:.4f} | Token: {evt2.token}")
-    print(f"  → Previously BLIND, now DETECTED via expanded syscall family")
+    logger.debug("  Score: {evt2.score:.4f} | Token: {evt2.token}")
+    logger.debug("  → Previously BLIND, now DETECTED via expanded syscall family")
     results["test2_mutation1c_mapview"] = evt2.score
 
     # ── Test 3: Mutation 1A — Attacker tries to detach primary probe ──────────
@@ -545,8 +548,8 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
         bpf_cmd = BPF_DETACH_CMD,
         prog_id = 42,
     )
-    print(f"  Blocked: {bpf_evt.blocked} | Threat: {bpf_evt.is_threat}")
-    print(f"  Primary probe status: {list(system.primary.attestation.values())[0].status.value}")
+    logger.debug("  Blocked: {bpf_evt.blocked} | Threat: {bpf_evt.is_threat}")
+    logger.debug("  Primary probe status: {list(system.primary.attestation.values())[0].status.value}")
     results["test3_mutation1a_detach_blocked"] = bpf_evt.blocked
 
     # ── Test 4: After detach attempt — primary still fires ────────────────────
@@ -560,7 +563,7 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
         target_comm = "lsass.exe",
         access_size = 0x1000,
     )
-    print(f"  Score: {evt3.score:.4f} — probe survived detach attempt")
+    logger.debug("  Score: {evt3.score:.4f} — probe survived detach attempt")
     results["test4_probe_survived"] = evt3.score
 
     # ── Test 5: Full syscall family coverage ──────────────────────────────────
@@ -577,7 +580,7 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
             access_size = 0x100,
         )
         family_scores[sc] = e.score
-        print(f"  {sc:<35} score:{e.score:.3f}")
+        logger.debug("  {sc:<35} score:{e.score:.3f}")
     results["test5_family_coverage"] = family_scores
 
     time.sleep(0.6)  # Let watchdog run another cycle
@@ -587,13 +590,13 @@ def demo_ebpf_self_protection() -> dict[str, Any]:
     print("  FINAL REPORT")
     print("="*60)
     report = system.report()
-    print(f"  Primary probes:    {report['primary']['probes_attached']} attached")
-    print(f"  Guardian alerts:   {report['guardian']['detach_attempts']} detach attempts blocked")
-    print(f"  Watchdog checks:   {report['watchdog']['checks_run']}")
-    print(f"  Total alerts:      {report['alerts']}")
-    print(f"  Composite score:   {report['composite_score']:.4f}")
-    print(f"  Mutation 1A:       {'CLOSED ✓' if report['guardian']['detach_attempts'] > 0 else 'N/A'}")
-    print(f"  Mutation 1C:       CLOSED ✓ (11 syscalls monitored)")
+    logger.debug("  Primary probes:    {report['primary']['probes_attached']} attached")
+    logger.debug("  Guardian alerts:   {report['guardian']['detach_attempts']} detach attempts blocked")
+    logger.debug("  Watchdog checks:   {report['watchdog']['checks_run']}")
+    logger.debug("  Total alerts:      {report['alerts']}")
+    logger.debug("  Composite score:   {report['composite_score']:.4f}")
+    logger.debug("  Mutation 1A:       {'CLOSED ✓' if report['guardian']['detach_attempts'] > 0 else 'N/A'}")
+    logger.debug("  Mutation 1C:       CLOSED ✓ (11 syscalls monitored)")
 
     system.stop()
     results["final_report"] = report

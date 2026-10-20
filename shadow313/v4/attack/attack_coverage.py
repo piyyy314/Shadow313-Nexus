@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.attack.attack_coverage
 ──────────────────────────────────────
@@ -15,12 +16,14 @@ Coverage levels:
 
 Exports ATT&CK Navigator layer JSON for import into the UI.
 """
-from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -332,17 +335,17 @@ def export_navigator_layer(output_path: str = "shadow313_attack_layer.json") -> 
 if __name__ == "__main__":
     stats = get_stats()
     print(f"Shadow313 ATT&CK Coverage:")
-    print(f"  Total techniques: {stats['total']}")
-    print(f"  Detected/Blocked: {stats['detected']} ({stats['detection_pct']}%)")
-    print(f"  Monitored:        {stats['monitored']}")
-    print(f"  Partial:          {stats['partial']}")
-    print(f"  Gaps:             {stats['gaps']}")
-    print(f"  Overall coverage: {stats['coverage_pct']}%")
+    logger.debug("  Total techniques: {stats['total']}")
+    logger.debug("  Detected/Blocked: {stats['detected']} ({stats['detection_pct']}%)")
+    logger.debug("  Monitored:        {stats['monitored']}")
+    logger.debug("  Partial:          {stats['partial']}")
+    logger.debug("  Gaps:             {stats['gaps']}")
+    logger.debug("  Overall coverage: {stats['coverage_pct']}%")
     print()
     print("By tactic:")
     for tactic, counts in stats["by_tactic"].items():
         det = counts.get("detected", 0)
         tot = counts["total"]
-        print(f"  {tactic:<30} {det}/{tot} detected")
+        logger.debug("  {tactic:<30} {det}/{tot} detected")
     path = export_navigator_layer("shadow313_attack_layer.json")
     print(f"\nNavigator layer exported: {path}")

@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 shadow313.v4.workflow.workflow_engine  — NEXUS Complete
 DAG-based workflow orchestrator with YAML bindings, DLQ, idempotency.
 """
-from __future__ import annotations
 import hashlib
 import hmac
 import json

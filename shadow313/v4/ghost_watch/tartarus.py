@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.ghost_watch.tartarus
 ───────────────────────────────────
@@ -13,7 +14,6 @@ Architecture:
   - Generates infinite stream to exhaust attacker resources
   - Logs all interception events to 313-BIND audit chain
 """
-from __future__ import annotations
 
 import hashlib
 import logging

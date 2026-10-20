@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.benchmarks.benchmark_suite  — NEXUS Complete
 Performance benchmark suite for Shadow313 NEXUS.
@@ -14,7 +15,6 @@ Benchmarks:
   - Concurrent load testing
   - Security scan throughput
 """
-from __future__ import annotations
 import json
 import statistics
 import time

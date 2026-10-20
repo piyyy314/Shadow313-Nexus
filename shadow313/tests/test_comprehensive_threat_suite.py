@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313 v4 — Comprehensive Threat Detection Test Suite
 Testing 42 threats across all ATT&CK tactics.
@@ -7,7 +8,6 @@ Run:
     python3 shadow313/tests/test_comprehensive_threat_suite.py
     python3 shadow313/tests/test_comprehensive_threat_suite.py --json
 """
-from __future__ import annotations
 
 import json
 import sys

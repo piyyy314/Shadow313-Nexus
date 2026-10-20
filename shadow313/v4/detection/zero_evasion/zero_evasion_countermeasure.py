@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Shadow313 v3 — Zero-Evasion Countermeasure Layer
 =================================================
@@ -42,7 +43,6 @@ References:
   - DKOM detection: "Detecting Kernel-Level Rootkits" (Rutkowska 2006)
 """
 
-from __future__ import annotations
 import hmac
 
 import hashlib
@@ -56,6 +56,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 COUNTERMEASURE_REPORT = Path("/tmp/shadow313_zero_evasion.json")
 
@@ -700,8 +703,8 @@ def simulate_zero_evasion_detection():
         )
         all_events.append(ev)
         result = detector.process_event(ev)
-        print(f"  → HAMI fires: {hami_token} (EPT violation on EPROCESS list)")
-        print(f"    Score so far: {detector._score_sequence([ev.token_id], [], 0.99):.4f}")
+        logger.debug("  → HAMI fires: {hami_token} (EPT violation on EPROCESS list)")
+        logger.debug("    Score so far: {detector._score_sequence([ev.token_id], [], 0.99):.4f}")
 
     # Step 2: KLA detects EPROCESS list modification
     print("\n  [KLA] Attestation daemon detects EPROCESS list hash mismatch...")
@@ -716,7 +719,7 @@ def simulate_zero_evasion_detection():
         )
         all_events.append(ev)
         result = detector.process_event(ev)
-        print(f"  → KLA fires: {kla_token} (EPROCESS hash mismatch)")
+        logger.debug("  → KLA fires: {kla_token} (EPROCESS hash mismatch)")
 
     print("\n  PHASE 2: Attacker dumps LSASS via direct syscall (Hell's Gate)")
     print("  ─────────────────────────────────────────────────────────────")
@@ -736,9 +739,9 @@ def simulate_zero_evasion_detection():
         )
         all_events.append(ev)
         result = detector.process_event(ev)
-        print(f"  → eBPF fires: {ebpf_token} (direct syscall intercepted at kernel)")
-        print(f"    Note: ntdll was bypassed — Sysmon Event 10 did NOT fire")
-        print(f"    eBPF fires anyway because it hooks the KERNEL function, not ntdll")
+        logger.debug("  → eBPF fires: {ebpf_token} (direct syscall intercepted at kernel)")
+        logger.debug("    Note: ntdll was bypassed — Sysmon Event 10 did NOT fire")
+        logger.debug("    eBPF fires anyway because it hooks the KERNEL function, not ntdll")
 
     # Step 4: eBPF catches high-rate NtReadVirtualMemory
     print("\n  [eBPF] PMU counter: 150 NtReadVirtualMemory calls in 1 second...")
@@ -756,7 +759,7 @@ def simulate_zero_evasion_detection():
         )
         all_events.append(ev)
         result = detector.process_event(ev)
-        print(f"  → PMU fires: {rate_token} (150 reads/s > threshold 10/s)")
+        logger.debug("  → PMU fires: {rate_token} (150 reads/s > threshold 10/s)")
 
     # Step 5: Hypervisor catches direct syscall via MSR monitoring
     print("\n  [HAMI] Hypervisor intercepts SYSCALL instruction targeting lsass...")
@@ -771,7 +774,7 @@ def simulate_zero_evasion_detection():
         )
         all_events.append(ev)
         result = detector.process_event(ev)
-        print(f"  → HAMI fires: {hyp_token} (syscall intercepted at hypervisor)")
+        logger.debug("  → HAMI fires: {hyp_token} (syscall intercepted at hypervisor)")
 
     # Step 6: Network outbound (C2 exfiltration)
     print("\n  [eBPF] Outbound connection from hidden process to C2...")
@@ -786,16 +789,16 @@ def simulate_zero_evasion_detection():
     result = detector.process_event(ev)
     if result:
         print(f"\n  ✓ DETECTION FIRED!")
-        print(f"    Chain:   {result.chain_name}")
-        print(f"    Score:   {result.score:.4f}  (threshold: {detector.SCORE_THRESHOLD})")
-        print(f"    MITRE:   {result.mitre}")
-        print(f"    Layers:  {result.layers_fired}")
+        logger.debug("    Chain:   {result.chain_name}")
+        logger.debug("    Score:   {result.score:.4f}  (threshold: {detector.SCORE_THRESHOLD})")
+        logger.debug("    MITRE:   {result.mitre}")
+        logger.debug("    Layers:  {result.layers_fired}")
 
     # Final score summary
     print(f"\n  {'─'*60}")
-    print(f"  SCORE PROGRESSION:")
-    print(f"  {'─'*60}")
-    print(f"  Before zero-evasion layer:  0.0000  (complete evasion)")
+    logger.debug("  SCORE PROGRESSION:")
+    logger.debug("  {'─'*60}")
+    logger.debug("  Before zero-evasion layer:  0.0000  (complete evasion)")
 
     # Compute final score
     tokens = [e.token_id for e in all_events]
@@ -806,11 +809,11 @@ def simulate_zero_evasion_detection():
     avg_conf = sum(e.confidence for e in all_events) / len(all_events)
     final_score = detector._score_sequence(tokens, chain_tokens, avg_conf)
 
-    print(f"  After eBPF layer only:      {detector._score_sequence(tokens[:2], chain_tokens, avg_conf):.4f}")
-    print(f"  After eBPF + KLA:           {detector._score_sequence(tokens[:3], chain_tokens, avg_conf):.4f}")
-    print(f"  After eBPF + KLA + HAMI:    {final_score:.4f}  ✓ ABOVE THRESHOLD")
+    logger.debug("  After eBPF layer only:      {detector._score_sequence(tokens[:2], chain_tokens, avg_conf):.4f}")
+    logger.debug("  After eBPF + KLA:           {detector._score_sequence(tokens[:3], chain_tokens, avg_conf):.4f}")
+    logger.debug("  After eBPF + KLA + HAMI:    {final_score:.4f}  ✓ ABOVE THRESHOLD")
     print(f"\n  Evasion floor raised from:  'signed driver' → 'hypervisor exploit'")
-    print(f"  Required attacker capability: Nation-state 0-day")
+    logger.debug("  Required attacker capability: Nation-state 0-day")
 
     return {
         "previous_score": 0.0,
@@ -915,15 +918,15 @@ def main():
     results = simulate_zero_evasion_detection()
 
     print(f"\n{'='*70}")
-    print(f"  FINAL RESULTS")
+    logger.debug("  FINAL RESULTS")
     print(f"{'='*70}")
-    print(f"  Previous score (no countermeasure): 0.0000")
-    print(f"  Final score (all 3 layers):         {results['final_score']:.4f}")
-    print(f"  Threshold:                          {results['threshold']}")
-    print(f"  Detected:                           {results['detected']}")
-    print(f"  Layers fired:                       {results['layers_fired']}")
-    print(f"  VM exits logged:                    {results['vm_exits']}")
-    print(f"  Evasion floor raised to:            Hypervisor exploit required")
+    logger.debug("  Previous score (no countermeasure): 0.0000")
+    logger.debug("  Final score (all 3 layers):         {results['final_score']:.4f}")
+    logger.debug("  Threshold:                          {results['threshold']}")
+    logger.debug("  Detected:                           {results['detected']}")
+    logger.debug("  Layers fired:                       {results['layers_fired']}")
+    logger.debug("  VM exits logged:                    {results['vm_exits']}")
+    logger.debug("  Evasion floor raised to:            Hypervisor exploit required")
 
     report = {
         "timestamp": datetime.now(timezone.utc).isoformat(),

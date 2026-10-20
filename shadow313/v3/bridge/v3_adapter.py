@@ -1,3 +1,5 @@
+from __future__ import annotations
+import os
 """
 Shadow313 v3 → v1 Bridge Adapter
 ==================================
@@ -36,7 +38,6 @@ GAP 6 — Thread safety
   Bridge: asyncio.run_in_executor wraps blocking v3 calls
 """
 
-from __future__ import annotations
 
 import asyncio
 import hashlib
@@ -574,7 +575,7 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
         technique      = technique,
         technique_name = kwargs.get("technique_name", technique),
         source_host    = host,
-        source_ip      = kwargs.get("ip", "0.0.0.0"),
+        source_ip      = kwargs.get("ip", os.environ.get("SHADOW313_BIND_HOST", "127.0.0.1")),
         source_user    = kwargs.get("user", "unknown"),
         event_sequence = [],
         timestamp      = datetime.now(timezone.utc).isoformat(),

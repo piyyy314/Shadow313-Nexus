@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — QE-BIM (Quantum Entanglement-Bound Integrity Monitor)
 No-Cloning Theorem enforcement for tamper detection on quantum payloads.
 """
-from __future__ import annotations
 from typing import Dict, List, Tuple
 
 BENIGN_BASELINE = {"00": 0.245, "01": 0.253, "10": 0.243, "11": 0.257}

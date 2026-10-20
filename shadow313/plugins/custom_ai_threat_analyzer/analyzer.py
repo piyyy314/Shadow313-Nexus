@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.plugins.custom-ai-threat-analyzer.analyzer
 =====================================================
@@ -23,7 +24,6 @@ Output:
 Plugin metadata: plugin.json
 Signing: HMAC-SHA256 via shadow313.v2.plugin_signing.plugin_signer
 """
-from __future__ import annotations
 
 import hashlib
 import hmac

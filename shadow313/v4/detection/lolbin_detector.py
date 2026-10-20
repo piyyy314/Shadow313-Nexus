@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.lolbin_detector
 LOLBin (Living-off-the-Land Binary) Detector — T1218
@@ -9,7 +10,6 @@ Detects abuse of legitimate Windows binaries to execute malicious code:
 
 ATT&CK: T1218 (System Binary Proxy Execution) and sub-techniques
 """
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

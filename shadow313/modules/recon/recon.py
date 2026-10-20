@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.modules.recon
 Passive + active reconnaissance — DNS, subdomain, port scan, WHOIS,
 web fingerprinting, OSINT aggregation, AI target profiling.
 """
-from __future__ import annotations
 import asyncio
 import json
 import socket

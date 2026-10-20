@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 shadow313.v4.stix.stix_handler  — v4
 STIX 2.1 bundle import/export, IOC extraction, ATT&CK STIX integration.
 """
-from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone

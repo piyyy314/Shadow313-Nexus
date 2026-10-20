@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.graph.intel_graph
 Feature #11 — Intelligence Graph
 NetworkX-based graph of hosts/services/CVEs/certs/actors.
 Supports query engine, path analysis, export to JSON/GraphML/GexF.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path

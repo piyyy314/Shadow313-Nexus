@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.ai_native.behavioralgraphengine
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Behavioral graph construction and anomaly detection engine
 Category: Ai Native
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

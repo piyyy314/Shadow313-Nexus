@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 shadow313.modules.plugins  — v4
 Plugin system: YAML manifests, sandboxed subprocess execution, JSON-IPC.
 """
-from __future__ import annotations
 import json
 import os
 import subprocess

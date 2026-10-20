@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.lif_detector — NEXUS Complete
 Leaky Integrate-and-Fire (LIF) Neuromorphic Detector for Low-and-Slow APT Detection
@@ -30,13 +31,15 @@ ATT&CK techniques detected:
   T1046      Network Scanning (slow port scan)
   T1074.001  Data Staging (gradual file access accumulation)
 """
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from typing import Optional
 import math
+import logging
+logger = logging.getLogger(__name__)
+
 
 try:
     import numpy as np
@@ -557,24 +560,24 @@ def demo_lif_detector() -> None:
     print("\n[1] ORIGINAL PARAMETERS (threshold=0.8, leak=0.85) — BUG DEMO")
     original = LIFNeuron(threshold=0.8, leak_rate=0.85)
     spikes_orig, _ = original.process_weights(traffic)
-    print(f"    Spikes: {len(spikes_orig)} — {'NEVER FIRES (calibration bug)' if not spikes_orig else spikes_orig}")
+    logger.debug("    Spikes: {len(spikes_orig)} — {'NEVER FIRES (calibration bug)' if not spikes_orig else spikes_orig}")
 
     print("\n[2] CALIBRATED: balanced profile (threshold=0.6, leak=0.85)")
     balanced = LIFNeuron(profile="balanced")
     spikes_bal, v_bal = balanced.process_weights(list(traffic))
-    print(f"    Spikes at hours: {spikes_bal}")
+    logger.debug("    Spikes at hours: {spikes_bal}")
     if spikes_bal:
-        print(f"    First detection: hour {spikes_bal[0]} (beacon 3 of 4)")
-        print(f"    Voltage at spike: {max(v_bal[:spikes_bal[0]+1]):.4f}")
+        logger.debug("    First detection: hour {spikes_bal[0]} (beacon 3 of 4)")
+        logger.debug("    Voltage at spike: {max(v_bal[:spikes_bal[0]+1]):.4f}")
 
     print("\n[3] CALIBRATED: precise profile (threshold=0.8, leak=0.90)")
     precise = LIFNeuron(profile="precise")
     spikes_prec, _ = precise.process_weights(list(traffic))
-    print(f"    Spikes at hours: {spikes_prec}")
+    logger.debug("    Spikes at hours: {spikes_prec}")
 
     print("\n[4] STANDARD SIEM (single-event threshold=0.5)")
     siem_alerts = [t for t, w in enumerate(traffic) if w >= 0.5]
-    print(f"    Alerts: {len(siem_alerts)} — {'MISSED (all beacons below 0.5)' if not siem_alerts else siem_alerts}")
+    logger.debug("    Alerts: {len(siem_alerts)} — {'MISSED (all beacons below 0.5)' if not siem_alerts else siem_alerts}")
 
     print("\n[5] SHADOW313 INTEGRATION — LIFThreatDetector")
     detector = LIFThreatDetector(profile="balanced")
@@ -582,12 +585,12 @@ def demo_lif_detector() -> None:
         etype = "dns_query_txt_record" if w >= 0.25 else "anomaly_low"
         alert = detector.ingest(etype, weight=w, detail=f"hour_{t}")
         if alert:
-            print(f"    ALERT at hour {t}: {alert.get('description', '')[:80]}...")
+            logger.debug("    ALERT at hour {t}: {alert.get('description', '')[:80]}...")
 
     status = detector.get_current_threat_level()
     print(f"\n    Final threat level: {status['threat_level']}")
-    print(f"    Events ingested:    {status['events_ingested']}")
-    print(f"    Total alerts:       {status['alert_count']}")
+    logger.debug("    Events ingested:    {status['events_ingested']}")
+    logger.debug("    Total alerts:       {status['alert_count']}")
 
 
 if __name__ == "__main__":

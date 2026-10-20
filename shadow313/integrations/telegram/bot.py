@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.telegram.bot
 ────────────────────────────────────
@@ -19,9 +20,9 @@ Quick start:
   3. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
   4. docker compose --profile telegram up -d telegram-bot
 """
-from __future__ import annotations
 
 import asyncio
+import html
 import json
 import logging
 import os
@@ -35,9 +36,11 @@ logger = logging.getLogger("shadow313.telegram")
 
 BOT_TOKEN       = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID         = os.getenv("TELEGRAM_CHAT_ID", "")
-API_URL         = os.getenv("SHADOW313_API_URL", "http://shadow313-api:8000")
+API_URL         = os.getenv("SHADOW313_API_URL", "")
+OLLAMA_URL      = os.getenv("OLLAMA_URL", "http://ollama:11434")
+OLLAMA_MODEL    = os.getenv("OLLAMA_MODEL", "matarmohamad313/shadow313-nexus")
 MIN_SEVERITY    = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
-POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "10"))
+POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
 
 SEVERITY_ORDER  = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}
 SEVERITY_EMOJI  = {"LOW": "🔵", "MEDIUM": "🟡", "HIGH": "🟠", "CRITICAL": "🔴"}
@@ -64,12 +67,78 @@ def _tg_request(method: str, payload: dict) -> Optional[dict]:
         return None
 
 
-def send_message(text: str, parse_mode: str = "HTML") -> Optional[dict]:
-    if not CHAT_ID:
-        logger.warning("TELEGRAM_CHAT_ID not set")
+def _ollama_generate(prompt: str) -> str:
+    payload = json.dumps({
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False,
+    }).encode()
+    req = urllib.request.Request(
+        f"{OLLAMA_URL.rstrip('/')}/api/generate",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data = json.loads(resp.read())
+    return str(data.get("response", "No response from Ollama.")).strip()
+
+
+def _authorized(chat_id: object) -> bool:
+    return str(chat_id) == str(CHAT_ID)
+
+
+def _send_command_reply(chat_id: object, text: str) -> None:
+    result = send_message(text, chat_id=chat_id)
+    if not result or not result.get("ok"):
+        logger.warning("Failed to reply to Telegram command")
+
+
+def _handle_update(update: dict) -> None:
+    message = update.get("message") or update.get("edited_message") or {}
+    chat = message.get("chat", {})
+    chat_id = chat.get("id")
+    text = str(message.get("text", "")).strip()
+    if not text or not _authorized(chat_id):
+        return
+
+    if text == "/help":
+        _send_command_reply(chat_id, "<b>SATExpert commands</b>\n/help — show commands\n/status — check Ollama\n/ask &lt;question&gt; — ask the local model")
+    elif text == "/status":
+        try:
+            with urllib.request.urlopen(f"{OLLAMA_URL.rstrip('/')}/api/tags", timeout=10) as resp:
+                data = json.loads(resp.read())
+            models = ", ".join(m.get("name", "unknown") for m in data.get("models", [])) or "none"
+            _send_command_reply(chat_id, f"Ollama online. Models: <code>{html.escape(models)}</code>")
+        except Exception as exc:
+            _send_command_reply(chat_id, f"Ollama unavailable: <code>{html.escape(str(exc))}</code>")
+    elif text.startswith("/ask "):
+        question = text[5:].strip()
+        if not question:
+            _send_command_reply(chat_id, "Usage: /ask &lt;question&gt;")
+            return
+        try:
+            answer = _ollama_generate(
+                "You are SATExpert, a defensive satellite and VSAT security assistant. "
+                "Give concise, evidence-based guidance and flag uncertainty.\n\n" + question
+            )
+            _send_command_reply(chat_id, html.escape(answer[:3900]))
+        except Exception as exc:
+            _send_command_reply(chat_id, f"SATExpert request failed: <code>{html.escape(str(exc))}</code>")
+    elif text.startswith("/"):
+        _send_command_reply(chat_id, "Unknown command. Use /help.")
+
+
+def _fetch_updates(offset: int) -> list[dict]:
+    result = _tg_request("getUpdates", {"offset": offset, "timeout": 1, "allowed_updates": ["message"]})
+    return result.get("result", []) if result and result.get("ok") else []
+def send_message(text: str, parse_mode: str = "HTML", chat_id: object = None) -> Optional[dict]:
+    destination = CHAT_ID if chat_id is None else chat_id
+    if not destination:
+        logger.warning("Telegram chat ID not set")
         return None
     return _tg_request("sendMessage", {
-        "chat_id": CHAT_ID,
+        "chat_id": destination,
         "text": text,
         "parse_mode": parse_mode,
         "disable_web_page_preview": True,
@@ -89,23 +158,25 @@ def send_alert(event: dict) -> None:
         f"{emoji} <b>Shadow313 NEXUS — {severity}</b>",
         f"<code>[{str(ts)[:19]}]</code>",
         "",
-        f"<b>Source:</b> {source}",
-        f"<b>Alert:</b> {message}",
+        f"<b>Source:</b> {html.escape(str(source))}",
+        f"<b>Alert:</b> {html.escape(str(message))}",
     ]
     if technique:
-        lines.append(f"<b>ATT&amp;CK:</b> <code>{technique}</code>")
+        lines.append(f"<b>ATT&amp;CK:</b> <code>{html.escape(str(technique))}</code>")
     if bind_id:
-        lines.append(f"<b>313-BIND:</b> <code>{bind_id}</code>")
+        lines.append(f"<b>313-BIND:</b> <code>{html.escape(str(bind_id))}</code>")
 
     result = send_message("\n".join(lines))
     if result and result.get("ok"):
-        logger.info("Alert sent: %s — %s", severity, message[:60])
+        logger.info("Alert sent: %s — %s", severity, str(message)[:60])
     else:
-        logger.warning("Failed to send alert: %s", message[:60])
+        logger.warning("Failed to send alert: %s", str(message)[:60])
 
 
 def _fetch_events(since_ts: float) -> list:
-    url = f"{API_URL}/api/events?since={since_ts}&limit=50"
+    if not API_URL:
+        return []
+    url = f"{API_URL.rstrip('/')}/api/events?since={since_ts}&limit=50"
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
@@ -149,10 +220,14 @@ async def run_bot() -> None:
                 MIN_SEVERITY, POLL_INTERVAL)
     send_startup_message()
     since_ts = time.time()
+    update_offset = 0
 
     while True:
         try:
-            events = _fetch_events(since_ts)
+            for update in _fetch_updates(update_offset):
+                update_offset = max(update_offset, int(update.get("update_id", 0)) + 1)
+                _handle_update(update)
+            events = _fetch_events(since_ts) if API_URL else []
             for event in events:
                 if _severity_passes(event):
                     send_alert(event)

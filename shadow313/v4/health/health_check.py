@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.health.health_check  — NEXUS Complete
 System health check and self-diagnostic module (doctor).
@@ -13,7 +14,6 @@ Checks:
   - Performance baseline check
   - Security configuration audit
 """
-from __future__ import annotations
 import importlib
 import json
 import os

@@ -1,8 +1,8 @@
+from __future__ import annotations
 """
 Shadow313 NEXUS — CHRONOS
 Temporal snapshot reversion engine with 313-BIND integrity.
 """
-from __future__ import annotations
 import hashlib, json, time, uuid
 from datetime import datetime, timezone
 from typing import Dict, List, Optional

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v3.bridge.phantomscan
 ─────────────────────────────────
@@ -12,7 +13,6 @@ Features:
 
 Used by the AEGIS NEXUS ground segment sweep and red team modules.
 """
-from __future__ import annotations
 
 import asyncio
 import random

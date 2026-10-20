@@ -1,3 +1,5 @@
+from __future__ import annotations
+import os
 """
 shadow313.v4.satellite.cwmp_hardening
 ───────────────────────────────────────
@@ -11,7 +13,6 @@ Implements all immediate mitigations for unsigned CWMP provisioning:
   5. Sigma rule export for anomalous ACS connection detection
   6. TR-369 USP migration readiness checker
 """
-from __future__ import annotations
 
 import hashlib
 import hmac
@@ -21,6 +22,9 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def _now_iso() -> str:
@@ -459,20 +463,20 @@ def run_cwmp_hardening_assessment(
         print("=" * 65)
         for c in checks:
             status = "✓" if c.passed else "✗"
-            print(f"  [{status}] {c.check:<40} {c.severity}")
+            logger.debug("  [{status}] {c.check:<40} {c.severity}")
             if not c.passed:
-                print(f"      Detail:      {c.detail}")
-                print(f"      Remediation: {c.remediation[:80]}...")
+                logger.debug("      Detail:      {c.detail}")
+                logger.debug("      Remediation: {c.remediation[:80]}...")
         print()
-        print(f"  Passed: {passed}/{len(checks)} | Critical failures: {critical}")
+        logger.debug("  Passed: {passed}/{len(checks)} | Critical failures: {critical}")
         print()
         print("  Immediate iptables lockdown:")
         for rule in iptables["immediate"]:
-            print(f"    {rule}")
+            logger.debug("    {rule}")
         print()
-        print(f"  Sigma rules generated: {len(sigma)}")
+        logger.debug("  Sigma rules generated: {len(sigma)}")
         for name in sigma:
-            print(f"    - {name}.yml")
+            logger.debug("    - {name}.yml")
 
     return {
         "config":         config.__dict__,

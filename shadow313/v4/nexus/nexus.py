@@ -1,9 +1,9 @@
+from __future__ import annotations
 """
 shadow313.v4.nexus.nexus  — v4 NEXUS
 NEXUS orchestration layer: verifiable security intelligence platform.
 Integrates 313 Temporal Binding with all modules for cryptographic provenance.
 """
-from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path

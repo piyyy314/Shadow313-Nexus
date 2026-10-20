@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.agent.agent
 Feature #3 — Agentic Auto-Chain Loop
 State machine that chains modules autonomously (recon → vuln → exploit-check → report)
 with human-in-the-loop approval gates, step logging, and rollback capability.
 """
-from __future__ import annotations
 import json
 import time
 import uuid
@@ -13,6 +13,9 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ---------------------------------------------------------------------------
@@ -141,10 +144,10 @@ class ApprovalGate:
     def request_approval(self, step: AgentStep, plan: AgentPlan) -> bool:
         """Returns True = approved, False = skip this step."""
         print(f"\n[AGENT GATE] Step '{step.name}' requires approval.")
-        print(f"  Module:     {step.module}")
-        print(f"  Action:     {step.action}")
-        print(f"  Risk:       {step.risk_level.upper()}")
-        print(f"  Params:     {json.dumps(step.params)}")
+        logger.debug("  Module:     {step.module}")
+        logger.debug("  Action:     {step.action}")
+        logger.debug("  Risk:       {step.risk_level.upper()}")
+        logger.debug("  Params:     {json.dumps(step.params)}")
         try:
             ans = input("  Approve? [y/N/abort]: ").strip().lower()
         except (EOFError, KeyboardInterrupt):

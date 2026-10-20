@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.detection.nextgen_hardening
 ─────────────────────────────────────────
@@ -11,7 +12,6 @@ Closes gaps discovered by the zero-day evasion simulation:
   FIX-20: AdvancedSessionGuard        — T1539/T1557 24h window + concurrent + geo
   FIX-21: AttachmentDeepInspector     — T1566.001 DDE + LNK/ISO + HTML smuggling + indirect chain
 """
-from __future__ import annotations
 
 import hashlib
 import math

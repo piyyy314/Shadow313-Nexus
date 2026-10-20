@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.v2.network_upgrades.ml_anomaly
 Feature #7 — ML Anomaly Detection
 Isolation Forest + ONNX runtime for network flow anomaly detection.
 Replaces v1 heuristic rules with trained ML model.
 """
-from __future__ import annotations
 import json
 import math
 import os

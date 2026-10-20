@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.demo.roi_calculator
 ───────────────────────────────
@@ -12,7 +13,6 @@ Calculates return on investment based on:
 
 Based on IBM Cost of a Data Breach Report 2024 and Ponemon Institute data.
 """
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Optional

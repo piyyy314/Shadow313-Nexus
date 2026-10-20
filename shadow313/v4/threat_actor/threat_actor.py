@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.threat_actor.threat_actor  — NEXUS Complete
 Threat Actor Profiling: ATT&CK Group correlation, campaign attribution scoring,
@@ -11,7 +12,6 @@ Features:
   - Threat actor timeline reconstruction
   - Integration with STIX 2.1 for intelligence sharing
 """
-from __future__ import annotations
 import json
 import statistics
 from dataclasses import dataclass, field, asdict

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.v4.ghost_watch.ghost_watch  — NEXUS Complete
 Ghost-Watch: Deception platform with WE-FORGE watermarking, BSAU behavioral
@@ -16,7 +17,6 @@ Features:
   AETHER:   Targeted decoy hub deployment — honeypot infrastructure
   CADL:     Integration with Aegis for escalation
 """
-from __future__ import annotations
 import hashlib
 import random
 import json
@@ -637,7 +637,7 @@ class C2BriefGenerator:
         for trace in brief.get("detected_traces", []):
             lines.extend([
                 f"TARGET-ID: {trace.get('trace_id', 'TRC-0000')}",
-                f" - Target IP: {trace.get('target_ip', '0.0.0.0')}",
+                f" - Target IP: {trace.get('target_ip', os.environ.get('SHADOW313_BIND_HOST', '0.0.0.0'))}",
                 f" - Frequency: {trace.get('frequency_mhz', 0)} MHz",
                 f" - Status: {trace.get('status', 'QUEUED')}",
                 "",
@@ -677,9 +677,9 @@ class ThreatIntelIndex:
                 "severity":    ind.get("severity", "HIGH"),
                 "category":    "detection",
                 "title":       f"TI Feed Auto-Trigger: {ind.get('threat_type', 'Unknown')}",
-                "message":     f"Source: {ind.get('source_ip', '0.0.0.0')} | Confidence: {ind.get('confidence', 50)}%",
+                "message":     f"Source: {ind.get('source_ip', os.environ.get("SHADOW313_BIND_HOST", "0.0.0.0"))} | Confidence: {ind.get('confidence', 50)}%",
                 "mitre":       ind.get("mitre", "T1000"),
-                "host":        ind.get("source_ip", "0.0.0.0"),
+                "host":        ind.get("source_ip", os.environ.get("SHADOW313_BIND_HOST", "0.0.0.0")),
                 "action_taken":"IOC added to blocklist",
                 "timestamp":   _now_iso(),
             })
@@ -853,7 +853,7 @@ class GhostWatchModule:
             ti_data    = self.session.read("threat_intel.json") or {}
             indicators = ti_data.get("indicators", [])
             traces     = [
-                {"trace_id": f"TRC-{i+1000}", "target_ip": ind.get("source_ip","0.0.0.0"),
+                {"trace_id": f"TRC-{i+1000}", "target_ip": ind.get("source_ip",os.environ.get("SHADOW313_BIND_HOST", "0.0.0.0")),
                  "frequency_mhz": 1420.44 + i * 400, "status": "TRACE_COMPLETE"}
                 for i, ind in enumerate(indicators[:3])
             ]

@@ -9,7 +9,7 @@
 #   - Added --no-install-recommends everywhere for smaller layers
 #   - Added ARG HTTP_PROXY / HTTPS_PROXY for corporate/WSL2 builds
 #   - Added apt-get retry logic for flaky network environments
-#   - python:3.14-slim → python:3.12-slim (3.14 is pre-release)
+#   - python:3.12-slim → python:3.12-slim (3.14 is pre-release)
 #
 
 # ── Build-time proxy args (pass with --build-arg if behind proxy) ──
@@ -18,7 +18,7 @@ ARG HTTPS_PROXY=""
 ARG NO_PROXY="localhost,127.0.0.1"
 
 # ── Stage 1: Builder ──────────────────────────────────────────────
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -32,7 +32,7 @@ RUN apt-get update -o Acquire::Retries=3 \
         gcc g++ libssl-dev libffi-dev git \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml setup.py ./
+COPY pyproject.toml ./
 COPY shadow313/ ./shadow313/
 
 RUN pip install --upgrade pip wheel \
@@ -41,7 +41,7 @@ RUN pip install --upgrade pip wheel \
 
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
-FROM python:3.12-slim AS production
+FROM python:3.14-slim AS production
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY

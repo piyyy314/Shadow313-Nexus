@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.tools.purple_team.threatreplay
 ──────────────────────────────────────────────────
@@ -6,7 +7,6 @@ Historical threat campaign replay engine for detection testing
 Category: Purple Team
 Version:  6.0.0
 """
-from __future__ import annotations
 from typing import Any, Optional
 
 try:

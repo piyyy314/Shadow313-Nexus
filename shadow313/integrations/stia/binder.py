@@ -1,10 +1,10 @@
+from __future__ import annotations
 """
 shadow313.integrations.stia.binder
 ────────────────────────────────────
 Binds STIA scan results with 313 Temporal Binding receipts
 and feeds findings into the Shadow313 NEXUS detection pipeline.
 """
-from __future__ import annotations
 
 import json
 import logging

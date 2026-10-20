@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.parser
 ─────────────────────────────────────────
@@ -8,7 +9,6 @@ Parses PQC (Post-Quantum Cryptography) audit results from multiple formats:
 
 Produces PQCAuditResult objects for binding and reporting.
 """
-from __future__ import annotations
 
 import json
 import re
