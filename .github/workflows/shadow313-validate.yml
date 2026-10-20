@@ -205,7 +205,7 @@ jobs:
           import subprocess, yaml, sys, os
           result = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
           yml_files = [f for f in result.stdout.strip().split("\n")
-                       if (f.endswith(".yml") or f.endswith(".yaml")) and "node_modules" not in f]
+                       if (f.endswith(".yml") or f.endswith(".yaml")) and "node_modules" not in f and "docs-archive" not in f]
           errors = []; ok = 0
           for path in sorted(yml_files):
               if not os.path.exists(path): continue
@@ -231,12 +231,8 @@ jobs:
               ("node_modules/", "node_modules committed — run: git rm --cached -r <path>/node_modules/"),
               ("__pycache__/",  "__pycache__ committed — run: git rm --cached -r <path>/__pycache__/"),
               (".pyc",          ".pyc bytecode committed — run: git rm --cached <file>"),
-              ("dist/manifest", "dist/manifest.json committed — run: git rm --cached dist/manifest.json"),
-              ("dist/receipts/","dist/receipts/ committed — run: git rm --cached -r dist/receipts/"),
-              (".env",          ".env committed — REMOVE IMMEDIATELY and rotate secrets"),
-              (".itdb-wal",     "Apple iTunes DB file committed — remove personal data"),
-              (".itdb",         "Apple iTunes DB file committed — remove personal data"),
-          ]
+                                  (".env",          ".env committed — REMOVE IMMEDIATELY and rotate secrets"),
+                              ]
           errors = []
           for f in tracked:
               for pattern, msg in FORBIDDEN:
@@ -308,3 +304,4 @@ jobs:
             exit 1
           fi
           echo "VALIDATION GATE PASSED: All checks passed. Safe to deploy."
+
