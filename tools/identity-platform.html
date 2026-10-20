@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow313 NEXUS — Identity-platform</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--green:#22c55e;--cyan:#06b6d4;--amber:#f59e0b;--bg:#020617;--bg2:#0b1329;--text:#e2e8f0;--muted:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(2,6,23,0.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(34,197,94,0.15);height:48px;display:flex;align-items:center;padding:0 20px;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;text-decoration:none;color:var(--text);}
+.nav-icon{width:28px;height:28px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:12px;}
+.nav-links{display:flex;gap:4px;margin-left:16px;}
+.nav-link{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .15s;}
+.nav-link:hover{color:var(--text);background:rgba(34,197,94,0.08);}
+.hero{padding:60px 40px 40px;max-width:900px;margin:0 auto;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:20px;padding:4px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:20px;}
+.hero h1{font-size:42px;font-weight:800;margin-bottom:12px;}
+.hero h1 span{color:var(--green);}
+.hero p{font-size:16px;color:var(--muted);line-height:1.7;max-width:600px;}
+.content{max-width:900px;margin:0 auto;padding:0 40px 60px;}
+.panel{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:12px;padding:24px;margin-bottom:20px;}
+.panel h2{font-size:14px;font-weight:700;color:var(--green);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.card{background:rgba(0,0,0,0.3);border:1px solid rgba(30,41,59,0.6);border-radius:8px;padding:14px;}
+.card h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.card p{font-size:11px;color:var(--muted);line-height:1.5;}
+.footer{text-align:center;padding:20px;font-size:10px;color:var(--muted);border-top:1px solid rgba(34,197,94,0.08);}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-icon">S3</div>SHADOW313 NEXUS</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="/platform">Platform</a>
+    <a class="nav-link active" href="/tools/identity-platform">Tools</a>
+    <a class="nav-link" href="/docs">Docs</a>
+    <a class="nav-link" href="/pricing">Pricing</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="badge">⬡ SHADOW313 NEXUS · v4.0.0</div>
+  <h1>Identity-platform <span>Tool</span></h1>
+  <p>Advanced security intelligence tool — part of the Shadow313 NEXUS platform. Local-first, AI-augmented, post-quantum secured.</p>
+</div>
+<div class="content">
+  <div class="panel">
+    <h2>Capabilities</h2>
+    <div class="grid">
+      <div class="card"><h3>AI-Augmented Analysis</h3><p>Local Ollama LLM generates threat profiles and remediation recommendations with zero data exfiltration.</p></div>
+      <div class="card"><h3>313-BIND Receipts</h3><p>Every finding is cryptographically timestamped with SLH-DSA + SHA3-512 + IPFS anchoring.</p></div>
+      <div class="card"><h3>ATT&CK Mapping</h3><p>Findings automatically mapped to MITRE ATT&CK techniques with Navigator JSON export.</p></div>
+      <div class="card"><h3>Offline Capable</h3><p>Fully air-gap capable — no internet required for core functionality.</p></div>
+    </div>
+  </div>
+</div>
+<div class="footer">Shadow313 NEXUS v4.0.0 · Ottawa, ON, Canada · Apache-2.0</div>
+</body>
+</html>

@@ -12,11 +12,30 @@
   v4.0.0-NEXUS  |  Post-Quantum Security Intelligence
 ```
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Security: Local-First](https://img.shields.io/badge/security-local--first-green.svg)](#)
-[![PQC: FIPS 203/204/205](https://img.shields.io/badge/PQC-FIPS%20203%2F204%2F205-purple.svg)](#)
-[![Tests: 3799 passed](https://img.shields.io/badge/tests-3799%20passed-brightgreen.svg)](#)
+<div align="center">
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/piyyy314/Shadow313-Nexus/shadow313-ci.yml?branch=master&style=for-the-badge&logo=github-actions&label=CI%20Build)](https://github.com/piyyy314/Shadow313-Nexus/actions)
+[![Tests: 4107 passed](https://img.shields.io/badge/tests-4107%20passed-brightgreen.svg?style=for-the-badge&logo=pytest)](https://github.com/piyyy314/Shadow313-Nexus/actions)
+[![Vulnerabilities](https://img.shields.io/badge/vulnerabilities-0_detected-brightgreen.svg?style=for-the-badge&logo=snyk)](https://github.com/piyyy314/Shadow313-Nexus/security)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.x-61DAFB.svg?style=for-the-badge&logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF.svg?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22.x-green.svg?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38B2AC.svg?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![NIST Post-Quantum](https://img.shields.io/badge/NIST_PQC-FIPS_203%2F204%2F205-blueviolet.svg?style=for-the-badge&logo=shield)](https://csrc.nist.gov/projects/post-quantum-cryptography)
+[![FIPS 140-3](https://img.shields.io/badge/FIPS_140--3-Aligned-purple.svg?style=for-the-badge&logo=lock)](https://csrc.nist.gov/publications/detail/fips/140/3/final)
+[![FedRAMP](https://img.shields.io/badge/FedRAMP-Moderate_Ready-blue.svg?style=for-the-badge&logo=cloud)](https://www.fedramp.gov/)
+[![MITRE ATT&CK](https://img.shields.io/badge/MITRE_ATT%26CK-v15-red.svg?style=for-the-badge&logo=target)](https://attack.mitre.org/)
+[![PyPI](https://img.shields.io/pypi/v/shadow313.svg?style=for-the-badge&logo=pypi&label=PyPI)](https://pypi.org/project/shadow313/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![Security Grade](https://img.shields.io/badge/Security_Grade-A%2B-brightgreen.svg?style=for-the-badge&logo=security)](https://github.com/piyyy314/Shadow313-Nexus/security)
+[![Vercel](https://img.shields.io/badge/Deployed-shadow313.dev-black.svg?style=for-the-badge&logo=vercel)](https://shadow313.dev)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/piyyy314/Shadow313-Nexus/badge?style=for-the-badge)](https://securityscorecards.dev/viewer/?uri=github.com/piyyy314/Shadow313-Nexus)
+[![Known Vulnerabilities](https://snyk.io/test/github/piyyy314/Shadow313-Nexus/badge.svg?style=for-the-badge)](https://snyk.io/test/github/piyyy314/Shadow313-Nexus)
+[![codecov](https://codecov.io/gh/piyyy314/Shadow313-Nexus/branch/master/graph/badge.svg?style=for-the-badge)](https://codecov.io/gh/piyyy314/Shadow313-Nexus)
+
+</div>
 
 Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligence CLI spanning **28 modules** across reconnaissance, vulnerability intelligence, exploit advisory, network forensics, defense hardening, quantum cryptography migration, agentic automation, cloud hardening, and the proprietary **313 Temporal Binding Protocol** — all from the terminal, with no data leaving your machine.
 
@@ -56,7 +75,7 @@ Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligenc
 | **CI/CD** | SARIF output, 13-pattern secret scanning, GitHub Actions / GitLab CI integration |
 | **Docs** | AI `ask` command, interactive tutorials, man page generation |
 
-### V2 Advanced Modules (10)
+### V2 Advanced Modules (17)
 | Module | Capability |
 |--------|-----------|
 | **RAG** | ChromaDB/TF-IDF vector store, 5 knowledge namespaces, LoRA fine-tune config |
@@ -391,3 +410,9 @@ MIT — see [LICENSE](LICENSE)
 
 *Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
 *"The only security platform where every finding is a cryptographic fact."*
+
+
+
+
+
+

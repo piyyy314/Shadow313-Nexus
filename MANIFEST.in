@@ -1,0 +1,15 @@
+include README.md
+include CHANGELOG.md
+include SECURITY.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+recursive-include shadow313 *.py
+recursive-include docs *.html *.md
+recursive-include sigma *.yml *.yaml
+global-exclude __pycache__
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .DS_Store
+global-exclude .env
+global-exclude .env.*

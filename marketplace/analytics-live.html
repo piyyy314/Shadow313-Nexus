@@ -24,7 +24,7 @@
 <div style="padding:12px;font-family:JetBrains Mono,monospace;font-size:11px;line-height:1.8;height:300px;overflow-y:auto" id="tb"></div>
 </div></div>
 <script>
-const EVS=[{t:'install',m:'shadow313-recon-spider v2.3.1 installed',c:'#22c55e'},{t:'download',m:'pqc-audit-scanner v1.5.0 downloaded (12.4 MB)',c:'#06b6d4'},{t:'review',m:'shodan-censys-bridge rated ⭐⭐⭐⭐⭐',c:'#f59e0b'},{t:'install',m:'ai-threat-narrator v1.1.0 installed',c:'#22c55e'},{t:'publish',m:'NEW: quantum-noise-detector v0.9.0 published',c:'#a78bfa'},{t:'download',m:'vsat-rf-monitor v2.0.0 downloaded (8.2 MB)',c:'#06b6d4'}];
+const EVS=[{t:'install',m:'shadow313-recon-spider v4.0.0 installed',c:'#22c55e'},{t:'download',m:'pqc-audit-scanner v4.0.0 downloaded (12.4 MB)',c:'#06b6d4'},{t:'review',m:'shodan-censys-bridge rated ⭐⭐⭐⭐⭐',c:'#f59e0b'},{t:'install',m:'ai-threat-narrator v4.0.0 installed',c:'#22c55e'},{t:'publish',m:'NEW: quantum-noise-detector v0.9.0 published',c:'#a78bfa'},{t:'download',m:'vsat-rf-monitor v4.0.0 downloaded (8.2 MB)',c:'#06b6d4'}];
 const CNT={install:0,download:0,review:0,publish:0};let idx=0;
 function add(){const e=EVS[idx%EVS.length];idx++;CNT[e.t]=(CNT[e.t]||0)+1;const b=document.getElementById('tb');const ts=new Date().toISOString().slice(11,19);const d=document.createElement('div');d.style.color=e.c;d.textContent=`[${ts}] [${e.t.toUpperCase()}] ${e.m}`;b.appendChild(d);while(b.children.length>100)b.removeChild(b.firstChild);b.scrollTop=b.scrollHeight;document.getElementById('c1').textContent=CNT.install;document.getElementById('c2').textContent=CNT.download;document.getElementById('c3').textContent=CNT.review;document.getElementById('c4').textContent=CNT.publish;}
 setInterval(add,1800);add();

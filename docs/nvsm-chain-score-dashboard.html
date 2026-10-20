@@ -122,6 +122,38 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 </style>
 </head>
 <body>
+<nav id="s313-nav" style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:8px 20px;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:9999;flex-wrap:wrap;">
+<a href="/" style="color:#22c55e;font-weight:800;font-size:13px;text-decoration:none;">⬡ S313 NEXUS</a>
+<span style="color:#334155;">|</span>
+<a href="/dashboard" style="color:#94a3b8;font-size:11px;text-decoration:none;">Dashboard</a>
+<a href="/threat-board" style="color:#94a3b8;font-size:11px;text-decoration:none;">Threats</a>
+<a href="/attck" style="color:#94a3b8;font-size:11px;text-decoration:none;">ATT&amp;CK</a>
+<a href="/aegis-nexus" style="color:#94a3b8;font-size:11px;text-decoration:none;">Aegis</a>
+<a href="/vsat" style="color:#94a3b8;font-size:11px;text-decoration:none;">VSAT</a>
+<a href="/pqc" style="color:#94a3b8;font-size:11px;text-decoration:none;">PQC</a>
+<a href="/ghost-watch" style="color:#94a3b8;font-size:11px;text-decoration:none;">Ghost Watch</a>
+<a href="/quantum-lab" style="color:#94a3b8;font-size:11px;text-decoration:none;">Quantum</a>
+<a href="/pricing" style="color:#94a3b8;font-size:11px;text-decoration:none;">Pricing</a>
+<a href="/docs" style="color:#94a3b8;font-size:11px;text-decoration:none;">Docs</a>
+<a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:11px;text-decoration:none;">GitHub ↗</a>
+<span style="margin-left:auto;color:#22c55e;font-size:9px;font-family:monospace;" id="s313-clk"></span>
+<script>setInterval(()=>{var e=document.getElementById("s313-clk");if(e)e.textContent=new Date().toISOString().replace("T"," ").slice(0,19)+" UTC"},1000)</script>
+</nav>
+<nav style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:10px 20px;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:100;flex-wrap:wrap;">
+  <a href="/" style="color:#22c55e;font-weight:800;font-size:14px;text-decoration:none;">⬡ S313</a>
+  <a href="/dashboard" style="color:#94a3b8;font-size:12px;text-decoration:none;">Dashboard</a>
+  <a href="/threat-board" style="color:#94a3b8;font-size:12px;text-decoration:none;">Threats</a>
+  <a href="/attck" style="color:#94a3b8;font-size:12px;text-decoration:none;">ATT&CK</a>
+  <a href="/aegis-nexus" style="color:#94a3b8;font-size:12px;text-decoration:none;">Aegis</a>
+  <a href="/vsat" style="color:#94a3b8;font-size:12px;text-decoration:none;">VSAT</a>
+  <a href="/pqc" style="color:#94a3b8;font-size:12px;text-decoration:none;">PQC</a>
+  <a href="/ghost-watch" style="color:#94a3b8;font-size:12px;text-decoration:none;">Ghost Watch</a>
+  <a href="/pricing" style="color:#94a3b8;font-size:12px;text-decoration:none;">Pricing</a>
+  <a href="/docs" style="color:#94a3b8;font-size:12px;text-decoration:none;">Docs</a>
+  <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:12px;text-decoration:none;">GitHub</a>
+  <span style="margin-left:auto;color:#22c55e;font-size:10px;font-family:monospace;" id="nav-clock"></span>
+  <script>setInterval(()=>{document.getElementById('nav-clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'},1000)</script>
+</nav>
 
 <!-- STICKY TOP BAR WITH DOWNLOAD -->
 <div class="top-bar">
@@ -498,3 +530,5 @@ function downloadPage() {
 
 </body>
 </html>
+
+

@@ -12,13 +12,64 @@ body{background:#000;color:#e2e8f0;font-family:'Space Grotesk',sans-serif;displa
 .sub{color:#64748b;font-size:14px;margin-bottom:24px;}
 a{color:#22c55e;text-decoration:none;font-weight:700;}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020617;--bg2:#0b1329;--green:#22c55e;--cyan:#06b6d4;--amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;--text:#e2e8f0;--muted:#64748b;--dim:#334155;}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;margin:0;}
+.mono{font-family:'JetBrains Mono',monospace;}
+</style>
 </head>
 <body>
+<nav id="s313-nav" style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:8px 20px;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:9999;flex-wrap:wrap;">
+<a href="/" style="color:#22c55e;font-weight:800;font-size:13px;text-decoration:none;">⬡ S313 NEXUS</a>
+<span style="color:#334155;">|</span>
+<a href="/dashboard" style="color:#94a3b8;font-size:11px;text-decoration:none;">Dashboard</a>
+<a href="/threat-board" style="color:#94a3b8;font-size:11px;text-decoration:none;">Threats</a>
+<a href="/attck" style="color:#94a3b8;font-size:11px;text-decoration:none;">ATT&amp;CK</a>
+<a href="/aegis-nexus" style="color:#94a3b8;font-size:11px;text-decoration:none;">Aegis</a>
+<a href="/vsat" style="color:#94a3b8;font-size:11px;text-decoration:none;">VSAT</a>
+<a href="/pqc" style="color:#94a3b8;font-size:11px;text-decoration:none;">PQC</a>
+<a href="/ghost-watch" style="color:#94a3b8;font-size:11px;text-decoration:none;">Ghost Watch</a>
+<a href="/quantum-lab" style="color:#94a3b8;font-size:11px;text-decoration:none;">Quantum</a>
+<a href="/pricing" style="color:#94a3b8;font-size:11px;text-decoration:none;">Pricing</a>
+<a href="/docs" style="color:#94a3b8;font-size:11px;text-decoration:none;">Docs</a>
+<a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:11px;text-decoration:none;">GitHub ↗</a>
+<span style="margin-left:auto;color:#22c55e;font-size:9px;font-family:monospace;" id="s313-clk"></span>
+<script>setInterval(()=>{var e=document.getElementById("s313-clk");if(e)e.textContent=new Date().toISOString().replace("T"," ").slice(0,19)+" UTC"},1000)</script>
+</nav>
+<nav style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:10px 20px;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:100;flex-wrap:wrap;">
+  <a href="/" style="color:#22c55e;font-weight:800;font-size:14px;text-decoration:none;">⬡ S313</a>
+  <a href="/dashboard" style="color:#94a3b8;font-size:12px;text-decoration:none;">Dashboard</a>
+  <a href="/threat-board" style="color:#94a3b8;font-size:12px;text-decoration:none;">Threats</a>
+  <a href="/attck" style="color:#94a3b8;font-size:12px;text-decoration:none;">ATT&CK</a>
+  <a href="/aegis-nexus" style="color:#94a3b8;font-size:12px;text-decoration:none;">Aegis</a>
+  <a href="/vsat" style="color:#94a3b8;font-size:12px;text-decoration:none;">VSAT</a>
+  <a href="/pqc" style="color:#94a3b8;font-size:12px;text-decoration:none;">PQC</a>
+  <a href="/ghost-watch" style="color:#94a3b8;font-size:12px;text-decoration:none;">Ghost Watch</a>
+  <a href="/pricing" style="color:#94a3b8;font-size:12px;text-decoration:none;">Pricing</a>
+  <a href="/docs" style="color:#94a3b8;font-size:12px;text-decoration:none;">Docs</a>
+  <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:12px;text-decoration:none;">GitHub</a>
+  <span style="margin-left:auto;color:#22c55e;font-size:10px;font-family:monospace;" id="nav-clock"></span>
+  <script>setInterval(()=>{document.getElementById('nav-clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'},1000)</script>
+</nav>
 <div class="box">
   <div class="logo">⬡ SHADOW313 NEXUS</div>
   <div class="title">detection engineering gametheory</div>
   <div class="sub">This dashboard is available on the live platform.</div>
   <a href="https://shadow313.dev">← Back to shadow313.dev</a>
 </div>
+<footer style="background:#020617;border-top:1px solid rgba(34,197,94,0.1);padding:16px 24px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:10px;color:#334155;margin-top:40px;">
+<span style="color:#22c55e;font-weight:700;">⬡ Shadow313 NEXUS</span> v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
+<a href="mailto:matarmohamad313@duck.com" style="color:#475569;text-decoration:none;">matarmohamad313@duck.com</a> &nbsp;·&nbsp;
+<a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:#475569;text-decoration:none;">GitHub</a> &nbsp;·&nbsp;
+<a href="/pricing" style="color:#475569;text-decoration:none;">Pricing</a> &nbsp;·&nbsp;
+<a href="/privacy" style="color:#475569;text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
+<a href="/terms" style="color:#475569;text-decoration:none;">Terms</a> &nbsp;·&nbsp;
+MIT License &nbsp;·&nbsp; <span style="color:#22c55e;">4,107 tests GREEN</span> &nbsp;·&nbsp; <span style="color:#a78bfa;">FIPS 203/204/205</span>
+</footer>
 </body>
 </html>
+
+
