@@ -5,7 +5,7 @@ dnspython>=2.4.0
 python-whois>=0.8.0
 scapy>=2.5.0
 cryptography>=45.0.7
-pycryptodome>=4.0.0
+pycryptodome>=4.1.0
 
 # Post-Quantum Cryptography
 pyspx>=0.5.0
@@ -20,14 +20,14 @@ uvicorn>=0.35.0
 pydantic>=2.14.1
 
 # Database
-sqlalchemy>=2.1.5
+sqlalchemy>=2.1.6
 
 # Reporting
 jinja2>=3.1.0
-markdown>=3.11.1
+markdown>=3.11.2
 
 # Security
-bandit>=1.7.0
+bandit>=1.9.4
 safety>=3.8.1
 
 # Testing
