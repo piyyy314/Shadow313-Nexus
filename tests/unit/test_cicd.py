@@ -43,7 +43,7 @@ class TestSecretScanner:
         diff = (
             "--- a/config.py\n+++ b/config.py\n"
             "@@ -1 +1 @@\n"
-            '+API_KEY = "AIzaSyAbcdefghijklmnopqrstuvwxyz1234567"\n'
+            '+API_KEY = "AIzaSy_FAKE_TEST_KEY_NOT_REAL_0000000000"\n'
         )
         scanner  = SecretScanner()
         findings = scanner.scan_diff(diff)

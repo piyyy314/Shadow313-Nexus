@@ -45,7 +45,7 @@ class TestSecretScanning:
         test_strings = [
             "ghp_1234567890abcdefghijklmnopqrstuvwxyz",  # Should match
             "normal_variable_name",                        # Should not match
-            "AKIA1234567890ABCDEF",                        # AWS key
+            "AKIAIOSFODNN7EXAMPLE",                        # AWS key
         ]
         github_pat = re.compile(r"ghp_[a-zA-Z0-9]{36}")
         aws_key = re.compile(r"AKIA[0-9A-Z]{16}")
