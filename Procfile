@@ -1,0 +1,1 @@
+web: uvicorn shadow313.api.server:app --host 0.0.0.0 --port $PORT
