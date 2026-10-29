@@ -1,7 +1,10 @@
 openapi: "3.1.0"
 info:
   title: Shadow313 NEXUS API
-  description: Local-First AI-Powered Security Intelligence REST API
+  description: >-
+    Local-First AI-Powered Security Intelligence REST API. This contract describes
+    the separately hosted backend, not the static website. The website currently
+    exposes only health/status; backend-dependent routes return HTTP 503.
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team
@@ -12,8 +15,6 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
 
 servers:
-  - url: https://shadow313.dev/api
-    description: Production
   - url: http://localhost:8313/api
     description: Local development
 
