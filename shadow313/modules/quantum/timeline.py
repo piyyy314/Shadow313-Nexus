@@ -4,6 +4,12 @@ from .quantum_data import classify_algorithm
 
 
 def estimate_threat_timeline(algorithms: list[str]) -> dict:
+    """Return heuristic migration risk, bundled timeline text, and vulnerable algorithms.
+
+    RSA/ECC name matches select CRITICAL; recognized weak symmetric names
+    select HIGH; other inputs select LOW. Timeline text is fixed reference
+    data, not a live forecast.
+    """
     has_rsa      = any("RSA" in a.upper() for a in algorithms)
     has_ecc      = any(k in " ".join(algorithms).upper()
                        for k in ("ECDH", "ECDSA", "ED25519", "P-256", "P-384"))

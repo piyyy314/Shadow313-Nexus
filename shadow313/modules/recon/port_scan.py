@@ -13,12 +13,22 @@ class AsyncPortScanner:
 
     def __init__(self, host: str, ports: list[int] | None = None,
                  timeout: float = 1.0, stealth: bool = False) -> None:
+        """Configure TCP probes with a connection timeout in seconds.
+
+        Falsy ports uses COMMON_PORTS. Stealth mode probes sequentially with
+        a 0.3-second pause after each probe.
+        """
         self.host    = host
         self.ports   = ports or self.COMMON_PORTS
         self.timeout = timeout
         self.stealth = stealth
 
     async def _probe(self, port: int) -> dict | None:
+        """Return an open-port record, or None on connection timeout, refusal, or OS error.
+
+        Read up to 1,024 banner bytes with a separate two-second timeout;
+        banner failures leave it empty and returned text is capped at 200 characters.
+        """
         try:
             reader, writer = await asyncio.wait_for(
                 asyncio.open_connection(self.host, port), timeout=self.timeout
@@ -39,6 +49,11 @@ class AsyncPortScanner:
             return None
 
     async def scan_async(self) -> list[dict]:
+        """Return open-port records, probing concurrently unless stealth is enabled.
+
+        Concurrent probe exceptions are discarded; unexpected exceptions in
+        sequential stealth probes propagate.
+        """
         if self.stealth:
             results = []
             for p in self.ports:
@@ -52,6 +67,10 @@ class AsyncPortScanner:
         return [r for r in raw if isinstance(r, dict)]
 
     def scan(self) -> list[dict]:
+        """Return open-port records synchronously, using a worker if an event loop is running.
+
+        Errors not handled by the async scanner propagate.
+        """
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
@@ -65,6 +84,11 @@ class AsyncPortScanner:
 
     @staticmethod
     def parse_ports(ports_str: str) -> list[int]:
+        """Parse comma-separated ports and inclusive ranges, preserving order and duplicates.
+
+        Empty input returns COMMON_PORTS. Reversed ranges add no ports; values
+        are not bounded to valid TCP ports. Invalid integers raise ValueError.
+        """
         if not ports_str:
             return AsyncPortScanner.COMMON_PORTS
         result = []

@@ -4,10 +4,15 @@ from datetime import datetime, timezone
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
 def build_junit_xml(findings: list[dict], suite_name: str = "shadow313") -> str:
+    """Return JUnit XML text with one test case per finding.
+
+    Only high and critical severities count as failures, ignoring case.
+    """
     failures = [f for f in findings if f.get("severity", "").lower() in ("critical", "high")]
     total    = len(findings)
     lines = [

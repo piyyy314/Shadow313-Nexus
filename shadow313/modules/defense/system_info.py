@@ -5,6 +5,11 @@ from typing import Any
 
 
 def _run(cmd: list[str], timeout: int = 15) -> tuple[str, str, int]:
+    """Run a command with a timeout in seconds; return stdout, stderr, and exit code.
+
+    Missing commands return code 127; timeouts and other execution failures
+    return code 1 with an error string instead of raising.
+    """
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True,
                               timeout=timeout, errors="replace", check=False)
@@ -19,6 +24,7 @@ def _run(cmd: list[str], timeout: int = 15) -> tuple[str, str, int]:
 
 class SystemInfo:
     def collect(self) -> dict[str, Any]:
+        """Return OS, kernel, host, user, listener, and up to 50 package records."""
         return {
             "os":             self._os_info(),
             "kernel":         self._kernel(),
@@ -29,6 +35,7 @@ class SystemInfo:
         }
 
     def _os_info(self) -> str:
+        """Return PRETTY_NAME from os-release, or "Unknown" if unavailable."""
         out, _, _ = _run(["cat", "/etc/os-release"])
         for line in out.splitlines():
             if line.startswith("PRETTY_NAME="):
@@ -36,14 +43,17 @@ class SystemInfo:
         return "Unknown"
 
     def _kernel(self) -> str:
+        """Return the kernel release, or an empty string if the command produces no output."""
         out, _, _ = _run(["uname", "-r"])
         return out.strip()
 
     def _hostname(self) -> str:
+        """Return the hostname, or an empty string if the command produces no output."""
         out, _, _ = _run(["hostname"])
         return out.strip()
 
     def _users(self) -> list[dict]:
+        """Return passwd user records with a login-shell flag; unavailable output yields []."""
         out, _, _ = _run(["cat", "/etc/passwd"])
         users = []
         for line in out.splitlines():
@@ -60,6 +70,7 @@ class SystemInfo:
         return users
 
     def _listening_services(self) -> list[dict]:
+        """Return TCP listener records parsed from ss output, or [] when unavailable."""
         out, _, _ = _run(["ss", "-tlnp"])
         services = []
         for line in out.splitlines()[1:]:
@@ -72,6 +83,7 @@ class SystemInfo:
         return services
 
     def _installed_packages(self) -> list[str]:
+        """Return up to 100 package entries from the first successful package manager probe."""
         for cmd in (["dpkg", "--list"], ["rpm", "-qa"], ["brew", "list"]):
             out, _, rc = _run(cmd, timeout=10)
             if rc == 0 and out:

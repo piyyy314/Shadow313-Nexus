@@ -12,6 +12,7 @@ from .timeline      import estimate_threat_timeline
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -19,18 +20,27 @@ class QuantumModule:
     """shadow313.quantum — Post-quantum cryptography audit."""
 
     def __init__(self, kernel) -> None:
+        """Bind cryptography audits to kernel output, AI, and session services."""
         self.kernel  = kernel
         self.out     = kernel.out
         self.ai      = kernel.ai
         self.session = kernel.session
 
     def register(self, kernel) -> None:
+        """Register the quantum command with the supplied kernel."""
         kernel.register("quantum", self.run)
 
     def run(self, scan_host: str = "", audit_certs: str = "",
             scan_code: str = "", lang: str = "",
             report: bool = False, output: str = "rich",
             scan_cert: str = "") -> dict:
+        """Run requested crypto audits, request an AI roadmap, and save quantum_report.json.
+
+        scan_host accepts host[:port], using 443 for absent or nonnumeric ports.
+        audit_certs overrides scan_cert; certificate and code inputs may be files
+        or directories. report includes the bundled PQC reference data. output
+        is unused. Session writes and uncaught scan errors propagate.
+        """
         self.out.section("QUANTUM CRYPTOGRAPHY AUDIT")
         self.session.audit("quantum", "start")
 
@@ -138,6 +148,7 @@ class QuantumModule:
         return result
 
     def ai_context(self) -> dict:
+        """Summarize saved quantum findings and threat risk for AI requests."""
         data = self.session.read("quantum_report.json") or {}
         findings = data.get("findings", [])
         return {
@@ -148,6 +159,7 @@ class QuantumModule:
         }
 
     def _build_pqc_mapping(self, findings: list[dict]) -> list[dict]:
+        """Return one replacement mapping per algorithm with a nonempty recommendation."""
         mapping = []
         seen    = set()
         priority_map = {"VULNERABLE": "IMMEDIATE", "WEAKENED": "SHORT-TERM", "UNKNOWN": "ASSESS"}
@@ -171,6 +183,7 @@ class QuantumModule:
         return mapping
 
     def _ai_roadmap(self, data: dict) -> str:
+        """Request an AI migration roadmap using findings, replacement mappings, and risk data."""
         vuln_count = sum(1 for f in data.get("findings", []) if f.get("quantum") == "VULNERABLE")
         ctx = {
             "vulnerable_algorithms": list({f.get("algorithm", "") for f in data.get("findings", [])

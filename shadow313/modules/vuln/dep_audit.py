@@ -17,9 +17,16 @@ class DependencyAuditor:
     }
 
     def __init__(self, db: CVEDatabase) -> None:
+        """Use the supplied local CVE database for package-name searches."""
         self.db = db
 
     def audit_file(self, path: str) -> list[dict]:
+        """Return CVE keyword matches for dependencies, ranked by descending CVSS score.
+
+        Match package names without checking affected version ranges. Missing
+        or unsupported files return an error record; file read and database
+        errors propagate.
+        """
         p = Path(path)
         if not p.exists():
             return [{"error": f"File not found: {path}"}]
@@ -38,6 +45,7 @@ class DependencyAuditor:
         return sorted(findings, key=lambda x: x.get("cvss_v3", 0), reverse=True)
 
     def _parse_requirements(self, text: str) -> dict[str, str]:
+        """Extract lowercased package names and version text from lines with version operators."""
         pkgs = {}
         for line in text.splitlines():
             line = line.strip()
@@ -49,6 +57,7 @@ class DependencyAuditor:
         return pkgs
 
     def _parse_package_json(self, text: str) -> dict[str, str]:
+        """Extract dependencies and devDependencies by lowercase name, or {} on parsing failure."""
         try:
             data = json.loads(text)
             pkgs = {}
@@ -59,6 +68,7 @@ class DependencyAuditor:
             return {}
 
     def _parse_go_mod(self, text: str) -> dict[str, str]:
+        """Extract final package path components and versions from indented Go module lines."""
         pkgs = {}
         for line in text.splitlines():
             m = re.match(r"\s+(\S+)\s+v(\S+)", line)
@@ -67,6 +77,7 @@ class DependencyAuditor:
         return pkgs
 
     def _parse_gemfile(self, text: str) -> dict[str, str]:
+        """Extract lowercased gem names and parenthesized version text from indented lines."""
         pkgs = {}
         for line in text.splitlines():
             m = re.match(r"\s+(\w[\w\-]+)\s+\((.+)\)", line)
@@ -75,6 +86,7 @@ class DependencyAuditor:
         return pkgs
 
     def _parse_cargo(self, text: str) -> dict[str, str]:
+        """Extract lowercased names from quoted assignments without restricting TOML sections."""
         pkgs = {}
         for line in text.splitlines():
             m = re.match(r'(\w[\w\-]+)\s*=\s*"(.+)"', line)

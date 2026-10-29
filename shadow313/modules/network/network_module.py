@@ -14,6 +14,7 @@ from .topology     import TopologyMapper
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -21,6 +22,7 @@ class NetworkModule:
     """shadow313.network — Traffic analysis, anomaly detection, topology."""
 
     def __init__(self, kernel) -> None:
+        """Bind traffic analysis to kernel configuration and session services."""
         self.kernel  = kernel
         self.config  = kernel.config.get("network", default={})
         self.out     = kernel.out
@@ -28,6 +30,7 @@ class NetworkModule:
         self.session = kernel.session
 
     def register(self, kernel) -> None:
+        """Register the network command with the supplied kernel."""
         kernel.register("network", self.run)
 
     def run(self, capture: str = "", duration: int = 30,
@@ -35,6 +38,14 @@ class NetworkModule:
             topo: bool = False, topo_range: str = "",
             bpf_filter: str = "", interface: str = "",
             capture_filter: str = "") -> dict:
+        """Capture or analyze traffic, optionally map topology, and save session results.
+
+        capture overrides interface and a live capture overrides analyze.
+        duration is in seconds. Store up to 100 flows plus alerts and network
+        summaries; request AI analysis only when ai_score and PCAP input are set.
+        Capture PermissionError returns the timestamp-only result; other capture,
+        parsing, and session I/O errors propagate.
+        """
         self.out.section("NETWORK INTELLIGENCE")
         self.session.audit("network", "start")
 
@@ -121,6 +132,7 @@ class NetworkModule:
         return result
 
     def ai_context(self) -> dict:
+        """Summarize the saved packet, flow, and alert counts for AI requests."""
         data = self.session.read("network.json") or {}
         return {
             "module":       "network",
@@ -131,6 +143,12 @@ class NetworkModule:
         }
 
     def _live_capture(self, interface: str, duration: int, bpf_filter: str) -> str:
+        """Run tcpdump and return its intended /tmp output path.
+
+        duration is in seconds. Require effective UID zero or raise
+        PermissionError. Timeouts are ignored and nonzero exit codes are not
+        checked, so the returned path may not exist. Other process errors propagate.
+        """
         if os.geteuid() != 0:
             raise PermissionError(
                 "Packet capture requires root or CAP_NET_RAW. "
@@ -148,6 +166,7 @@ class NetworkModule:
         return out_path
 
     def _ai_analysis(self, data: dict) -> str:
+        """Request an AI assessment of alerts and selected traffic records."""
         ctx = {
             "packet_count": data.get("packet_count"),
             "flow_count":   data.get("flow_count"),

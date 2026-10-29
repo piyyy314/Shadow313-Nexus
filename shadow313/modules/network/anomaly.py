@@ -10,9 +10,11 @@ class AnomalyDetector:
     SUSPICIOUS_PORTS    = {4444, 1337, 31337, 12345, 6666, 9001, 9050}
 
     def __init__(self, flows: list[dict]) -> None:
+        """Retain directional flow records for heuristic analysis."""
         self.flows = flows
 
     def detect(self) -> list[dict]:
+        """Return beaconing, port-scan, exfiltration, and suspicious-port alerts."""
         alerts = []
         alerts.extend(self._check_beaconing())
         alerts.extend(self._check_port_scan())
@@ -21,6 +23,7 @@ class AnomalyDetector:
         return alerts
 
     def _check_beaconing(self) -> list[dict]:
+        """Alert when a nonprivate destination reaches the flow-count threshold."""
         dst_counts: dict[str, int] = defaultdict(int)
         for f in self.flows:
             dst_counts[f["dst_ip"]] += 1
@@ -37,6 +40,7 @@ class AnomalyDetector:
         return alerts
 
     def _check_port_scan(self) -> list[dict]:
+        """Alert when a source reaches the distinct destination-port threshold."""
         src_ports: dict[str, set] = defaultdict(set)
         for f in self.flows:
             src_ports[f["src_ip"]].add(f["dport"])
@@ -53,6 +57,7 @@ class AnomalyDetector:
         return alerts
 
     def _check_exfiltration(self) -> list[dict]:
+        """Alert when summed bytes to a nonprivate destination reach EXFIL_BYTES."""
         dst_bytes: dict[str, int] = defaultdict(int)
         for f in self.flows:
             if not self._is_private(f["dst_ip"]):
@@ -70,6 +75,7 @@ class AnomalyDetector:
         return alerts
 
     def _check_suspicious_ports(self) -> list[dict]:
+        """Return alerts for suspicious destination ports, falling back to source if falsy."""
         alerts = []
         for f in self.flows:
             port = f.get("dport") or f.get("sport")
@@ -84,6 +90,7 @@ class AnomalyDetector:
 
     @staticmethod
     def _is_private(ip: str) -> bool:
+        """Recognize IPv4 prefixes 10/8, 172.16/12, 192.168/16, and 127/8; else return False."""
         try:
             parts = [int(x) for x in ip.split(".")]
             if parts[0] == 10:

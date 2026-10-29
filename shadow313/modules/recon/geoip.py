@@ -9,9 +9,11 @@ class GeoIPEnricher:
     API_URL = "http://ip-api.com/json/{ip}?fields=status,country,regionName,city,isp,org,as,query"
 
     def __init__(self) -> None:
+        """Initialize an empty instance-local GeoIP result cache."""
         self._cache: dict[str, dict] = {}
 
     def lookup(self, ip: str) -> dict:
+        """Return a cached or fetched GeoIP result, caching failures as well as successes."""
         if ip in self._cache:
             return self._cache[ip]
         result = self._fetch(ip)
@@ -19,6 +21,10 @@ class GeoIPEnricher:
         return result
 
     def lookup_bulk(self, ips: list[str], delay: float = 0.15) -> list[dict]:
+        """Look up at most 20 IPs, sleeping delay seconds after each, including cache hits.
+
+        Invalid sleep durations raise ValueError.
+        """
         results = []
         for ip in ips[:20]:
             results.append(self.lookup(ip))
@@ -26,6 +32,7 @@ class GeoIPEnricher:
         return results
 
     def _fetch(self, ip: str) -> dict:
+        """Query ip-api.com, returning an error mapping on request or JSON decoding failure."""
         url = self.API_URL.format(ip=ip)
         try:
             req = urlreq.Request(url, headers={"User-Agent": "shadow313/2.0"})
@@ -36,6 +43,7 @@ class GeoIPEnricher:
 
     @staticmethod
     def is_private(ip: str) -> bool:
+        """Recognize IPv4 prefixes 10/8, 172.16/12, 192.168/16, and 127/8; else return False."""
         try:
             parts = [int(x) for x in ip.split(".")]
             if parts[0] == 10:

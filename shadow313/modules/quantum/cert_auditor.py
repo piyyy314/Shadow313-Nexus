@@ -7,6 +7,11 @@ from .quantum_data import classify_algorithm
 
 class CertificateAuditor:
     def audit_file(self, cert_path: str) -> dict:
+        """Audit a PEM certificate, falling back to openssl if cryptography is unavailable.
+
+        File, parse, and analysis failures return an error mapping. The extension
+        does not select a different certificate encoding.
+        """
         try:
             from cryptography import x509
             from cryptography.hazmat.backends import default_backend
@@ -20,6 +25,11 @@ class CertificateAuditor:
             return {"error": str(exc), "path": cert_path}
 
     def _analyse_crypto_cert(self, cert) -> dict:
+        """Return certificate identity, validity, key metadata, and crypto findings.
+
+        Signature-hash analysis errors are ignored; other certificate access
+        errors propagate to the caller.
+        """
         pub_key  = cert.public_key()
         key_type = type(pub_key).__name__
         key_size = getattr(pub_key, "key_size", None)
@@ -53,6 +63,7 @@ class CertificateAuditor:
         }
 
     def _openssl_audit(self, cert_path: str) -> dict:
+        """Audit selected algorithm names in openssl output, returning errors as a mapping."""
         try:
             out = subprocess.check_output(
                 ["openssl", "x509", "-in", cert_path, "-noout", "-text"],
@@ -71,6 +82,10 @@ class CertificateAuditor:
             return {"error": str(exc)}
 
     def audit_directory(self, dir_path: str) -> list[dict]:
+        """Recursively audit .pem, .crt, .cer, and .der paths and include each path in its result.
+
+        Individual audit failures remain error records; traversal errors may propagate.
+        """
         results = []
         p = Path(dir_path)
         for ext in ("*.pem", "*.crt", "*.cer", "*.der"):

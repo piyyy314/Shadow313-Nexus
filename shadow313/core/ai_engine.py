@@ -36,6 +36,12 @@ class AIEngine:
     }
 
     def __init__(self, config: dict) -> None:
+        """Configure the backend, endpoint, request timeout, and context limit.
+
+        ``timeout`` is in seconds; ``context_window`` sets Ollama's context
+        size or the OpenAI-compatible response token limit. Invalid numeric
+        settings raise ValueError or TypeError; rejected endpoints raise ValueError.
+        """
         self.backend:  str = config.get("backend", "ollama")
         self.model:    str = config.get("model", "mistral:7b")
         raw_endpoint       = config.get("endpoint", "http://localhost:11434").rstrip("/")
@@ -44,7 +50,11 @@ class AIEngine:
         self.ctx_win:  int = int(config.get("context_window", 8192))
 
     def _validate_endpoint(self, endpoint: str) -> str:
-        """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
+        """Return the endpoint after scheme and host checks (S313-CVE-2026-002).
+
+        Raise ValueError for unsupported schemes, blocked hosts, reserved host
+        prefixes, or URL parsing errors reported as ValueError.
+        """
         from urllib.parse import urlparse
         try:
             parsed = urlparse(endpoint)
@@ -75,7 +85,12 @@ class AIEngine:
     def chat(self, user_prompt: str,
              system_prompt: str | None = None,
              context: dict | None = None) -> str:
-        """Send a prompt and return the full response string."""
+        """Return a backend response, or a status/error message on handled failures.
+
+        A truthy context is serialized as JSON and prepended to the user prompt.
+        A missing or empty system prompt uses SYSTEM_PROMPT. Context serialization
+        and request-construction errors propagate.
+        """
         if self.backend == "disabled":
             return "[AI disabled — set backend in config.yaml]"
 
@@ -91,14 +106,20 @@ class AIEngine:
 
     def stream(self, user_prompt: str,
                system_prompt: str | None = None) -> Generator[str, None, None]:
-        """Stream response tokens (generator). Ollama only."""
+        """Yield Ollama response chunks, or one full chat response for other backends.
+
+        Ollama stream failures yield an error message after any received chunks.
+        """
         if self.backend != "ollama":
             yield self.chat(user_prompt, system_prompt)
             return
         yield from self._ollama_stream(system_prompt or self.SYSTEM_PROMPT, user_prompt)
 
     def is_available(self) -> bool:
-        """Probe the AI backend to check connectivity."""
+        """Probe Ollama connectivity, returning False on probe failure or disabled mode.
+
+        Other backend names return True without a connectivity check.
+        """
         if self.backend == "disabled":
             return False
         try:
@@ -111,7 +132,7 @@ class AIEngine:
             return False
 
     def list_models(self) -> list[str]:
-        """Return available model names (Ollama only)."""
+        """Return Ollama model names, or an empty list for other backends or errors."""
         if self.backend != "ollama":
             return []
         try:
@@ -124,6 +145,11 @@ class AIEngine:
 
     # ── Ollama backend ────────────────────────────────────────────────────────
     def _ollama_chat(self, system: str, user: str) -> str:
+        """Request an Ollama response and strip its surrounding whitespace.
+
+        Request execution and response parsing failures return error messages.
+        Errors constructing the request propagate to the caller.
+        """
         payload = {
             "model": self.model,
             "messages": [
@@ -150,6 +176,11 @@ class AIEngine:
             return f"[AI error: {exc}]"
 
     def _ollama_stream(self, system: str, user: str) -> Generator[str, None, None]:
+        """Yield Ollama content chunks, skipping lines that are not valid JSON.
+
+        Stream failures yield an error message; request construction errors
+        propagate when iteration begins.
+        """
         payload = {
             "model": self.model,
             "messages": [
@@ -186,6 +217,11 @@ class AIEngine:
 
     # ── OpenAI-compatible backend ─────────────────────────────────────────────
     def _openai_chat(self, system: str, user: str) -> str:
+        """Request a response using OPENAI_API_KEY from the environment.
+
+        A missing key, request execution failure, or response parsing failure
+        returns an error message. Request construction errors propagate.
+        """
         import os
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:

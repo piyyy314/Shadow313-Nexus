@@ -18,6 +18,7 @@ PROTO_ICMP    = 1
 
 
 def _ip_str(packed: bytes) -> str:
+    """Convert four packed IPv4 bytes to dotted notation; invalid lengths raise OSError."""
     return socket.inet_ntoa(packed)
 
 
@@ -25,11 +26,19 @@ class PCAPParser:
     """Pure-Python PCAP reader — zero external dependencies."""
 
     def __init__(self, path: str) -> None:
+        """Select a capture file and initialize empty packet and flow collections."""
         self.path    = path
         self.flows:   dict[tuple, dict] = {}
         self.packets: list[dict] = []
 
     def parse(self) -> list[dict]:
+        """Read classic PCAP records into the retained packet and directional flow state.
+
+        Header fields are decoded as little-endian with microsecond timestamps.
+        A short global header returns []; invalid magic returns an error record.
+        Stop at truncated packet records and retain earlier packets. Repeated
+        calls append to existing state. File and decoding errors propagate.
+        """
         with open(self.path, "rb") as fh:
             hdr = fh.read(24)
             if len(hdr) < 24:
@@ -52,6 +61,10 @@ class PCAPParser:
         return self.packets
 
     def _decode_ethernet(self, raw: bytes, ts: float) -> dict | None:
+        """Return Ethernet fields and available IPv4/transport fields, or None below 14 bytes.
+
+        ts is the capture timestamp in epoch seconds.
+        """
         if len(raw) < 14:
             return None
         dst, src, etype = ETH_HEADER.unpack(raw[:14])
@@ -68,6 +81,7 @@ class PCAPParser:
         return pkt
 
     def _decode_ip(self, raw: bytes) -> dict:
+        """Return IPv4 and available TCP/UDP fields, or {} below 20 bytes."""
         if len(raw) < 20:
             return {}
         iph    = IP_HEADER.unpack(raw[:20])
@@ -90,6 +104,10 @@ class PCAPParser:
         return info
 
     def _decode_tcp(self, raw: bytes) -> dict:
+        """Return TCP ports, flags, and up to 80 payload bytes decoded with replacement.
+
+        Fewer than 20 header bytes raise struct.error.
+        """
         t    = TCP_HEADER.unpack(raw[:20])
         data = raw[(t[4] >> 4) * 4:]
         info = {"sport": t[0], "dport": t[1], "flags": t[5]}
@@ -98,6 +116,10 @@ class PCAPParser:
         return info
 
     def _decode_udp(self, raw: bytes) -> dict:
+        """Return UDP ports and up to 80 payload bytes decoded with replacement.
+
+        Fewer than eight header bytes raise struct.error.
+        """
         u    = UDP_HEADER.unpack(raw[:8])
         data = raw[8:]
         info = {"sport": u[0], "dport": u[1]}
@@ -106,6 +128,7 @@ class PCAPParser:
         return info
 
     def _track_flow(self, pkt: dict) -> None:
+        """Accumulate a packet into its directional flow, ignoring packets without src_ip."""
         if not pkt.get("src_ip"):
             return
         key = (pkt.get("src_ip", ""), pkt.get("dst_ip", ""),
@@ -119,6 +142,7 @@ class PCAPParser:
         self.flows[key]["last"]     = pkt["ts"]
 
     def get_flows(self) -> list[dict]:
+        """Return flows sorted by descending bytes, with duration in seconds."""
         results = []
         for (src_ip, dst_ip, sport, dport, proto), stats in self.flows.items():
             results.append({
@@ -132,12 +156,14 @@ class PCAPParser:
         return sorted(results, key=lambda x: x["bytes"], reverse=True)
 
     def extract_dns_queries(self) -> list[str]:
+        """Return up to 50 preview characters per port-53 packet, without DNS decoding."""
         return [pkt.get("payload_preview", "")[:50]
                 for pkt in self.packets
                 if pkt.get("dport") == 53 or pkt.get("sport") == 53
                 if pkt.get("payload_preview")]
 
     def extract_http_hosts(self) -> list[str]:
+        """Return unique Host: header lines found in previews sent to ports 80, 8080, or 8000."""
         hosts = []
         for pkt in self.packets:
             if pkt.get("dport") in (80, 8080, 8000):

@@ -15,6 +15,7 @@ class CVSSScorer:
 
     @staticmethod
     def severity_from_score(score: float) -> str:
+        """Classify scores at cutoffs 9, 7, 4, and greater than zero; otherwise return NONE."""
         if score >= 9.0:
             return "CRITICAL"
         if score >= 7.0:
@@ -29,7 +30,11 @@ class CVSSScorer:
     def contextual_score(cvss: float, has_exploit: bool = False,
                          is_internet_facing: bool = False,
                          has_kev: bool = False) -> float:
-        """Adjust CVSS with contextual factors."""
+        """Adjust CVSS with contextual factors and round to one decimal place.
+
+        KEV forces 10. Otherwise exploit availability multiplies by 1.3 and
+        internet exposure by 1.1, each capped at 10. Inputs are not validated.
+        """
         score = cvss
         if has_kev:
             score = 10.0  # KEV always critical
@@ -42,10 +47,11 @@ class CVSSScorer:
 
     @staticmethod
     def epss_composite(cvss: float, epss: float) -> float:
-        """Combined CVSS × EPSS composite risk score (0-10)."""
+        """Return CVSS × (1 + EPSS), rounded to one decimal without a cap or input validation."""
         return round(cvss * (1 + epss), 1)
 
     @staticmethod
     def score_in_range(score: float, severity: str) -> bool:
+        """Check inclusive severity bounds, defaulting unknown labels to the range 0 through 10."""
         lo, hi = SEVERITY_MAP.get(severity.upper(), (0.0, 10.0))
         return lo <= score <= hi

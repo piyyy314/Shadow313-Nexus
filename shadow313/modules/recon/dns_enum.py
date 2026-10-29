@@ -8,9 +8,11 @@ class DNSEnumerator:
     RECORD_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA"]
 
     def __init__(self, domain: str) -> None:
+        """Select a domain for DNS enumeration."""
         self.domain = domain
 
     def resolve(self) -> dict[str, list[str]]:
+        """Return nonempty DNS record results, omitting failed or empty lookups."""
         results: dict[str, list[str]] = {}
         for rtype in self.RECORD_TYPES:
             records = self._query(rtype)
@@ -19,6 +21,11 @@ class DNSEnumerator:
         return results
 
     def _query(self, rtype: str) -> list[str]:
+        """Resolve one record type, returning [] on lookup failures.
+
+        A/AAAA use the system resolver; other types return an installation
+        notice in a list when dnspython is unavailable.
+        """
         if rtype == "A":
             try:
                 info = socket.getaddrinfo(self.domain, None, socket.AF_INET)

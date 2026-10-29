@@ -15,9 +15,17 @@ class PluginRunner:
     """Runs a plugin entry script in an isolated subprocess via JSON-over-stdin/stdout."""
 
     def __init__(self, manifest: PluginManifest) -> None:
+        """Select the plugin manifest to execute or install requirements for."""
         self.manifest = manifest
 
     def execute(self, context: dict) -> dict:
+        """Run the entry script with filtered JSON input and return its decoded JSON output.
+
+        The subprocess inherits the environment with plugin-specific overrides
+        and has a 30-second timeout. Process failures, timeouts, and invalid or
+        absent output return status records. Input serialization errors occur
+        before execution and propagate; valid JSON output is returned as-is.
+        """
         scoped_ctx = self._build_scoped_context(context)
         input_json = json.dumps(scoped_ctx)
         try:
@@ -53,6 +61,7 @@ class PluginRunner:
 
     @staticmethod
     def _build_scoped_context(context: dict) -> dict:
+        """Return only allowed top-level context keys, retaining their original values."""
         ALLOWED_KEYS = {
             "session_id", "target", "module", "hook",
             "module_output", "timestamp", "plugin_config",
@@ -60,6 +69,11 @@ class PluginRunner:
         return {k: v for k, v in context.items() if k in ALLOWED_KEYS}
 
     def install_requirements(self) -> tuple[bool, str]:
+        """Install declared requirements into the current Python environment using pip.
+
+        Return (success, message), converting process errors and the 120-second
+        timeout into failure results. No declared requirements succeeds immediately.
+        """
         if not self.manifest.requires:
             return True, "No requirements"
         try:

@@ -6,9 +6,11 @@ import subprocess
 
 class TopologyMapper:
     def __init__(self, cidr: str) -> None:
+        """Store a network range for host discovery."""
         self.cidr = cidr
 
     def sweep(self) -> list[dict]:
+        """Probe at most 254 hosts and return responding IPs with reverse-DNS names."""
         hosts  = list(self._cidr_hosts())
         alive  = []
         for ip in hosts[:254]:
@@ -18,6 +20,7 @@ class TopologyMapper:
         return alive
 
     def ascii_graph(self, hosts: list[dict]) -> str:
+        """Render supplied hosts below a placeholder gateway in a text tree."""
         lines = ["Network Topology", "=" * 40, "  [Gateway]", "      |"]
         for h in hosts:
             label = h["ip"]
@@ -27,6 +30,7 @@ class TopologyMapper:
         return "\n".join(lines)
 
     def _ping(self, ip: str) -> bool:
+        """Return whether the TCP port-80 fallback connects within 0.5 seconds."""
         try:
             
             return res.returncode == 0
@@ -39,12 +43,18 @@ class TopologyMapper:
 
     @staticmethod
     def _reverse_dns(ip: str) -> str:
+        """Return a reverse-DNS hostname, or the original IP if lookup fails."""
         try:
             return socket.gethostbyaddr(ip)[0]
         except Exception:
             return ip
 
     def _cidr_hosts(self):
+        """Yield host addresses for the configured network.
+
+        On network parsing failure, yield suffixes 1 through 254 using the
+        first three dot-separated components as a prefix.
+        """
         try:
             import ipaddress
             net = ipaddress.ip_network(self.cidr, strict=False)
@@ -81,15 +91,21 @@ class RoutingTableMonitor:
         snapshot_path: _Path | None = None,
         alert_callback=None,
     ) -> None:
+        """Configure snapshot storage and a callback receiving newly observed route strings."""
         self.snapshot_path = snapshot_path or self.SNAPSHOT_PATH
         self.alert_callback = alert_callback or self._default_alert
 
     def _default_alert(self, new_routes: list[str]) -> None:
+        """Print each newly observed route to stdout."""
         for r in new_routes:
             print(f"[SHADOW313-NB-01] NEW ROUTE DETECTED (T1599 risk): {r}")
 
     def _get_routes(self) -> list[str]:
-        """Return current routing table as sorted list of route strings."""
+        """Return sorted route strings from ip route, falling back to netstat -rn.
+
+        Missing tools and unsuccessful probes can yield []. Timeouts and other
+        process errors propagate.
+        """
         routes: list[str] = []
         # Linux: ip route show
         try:
@@ -116,6 +132,7 @@ class RoutingTableMonitor:
         return routes
 
     def _load_snapshot(self) -> list[str]:
+        """Return saved routes, or [] if the snapshot is absent, unreadable, or invalid."""
         if self.snapshot_path.exists():
             try:
                 data = _json.loads(self.snapshot_path.read_text(encoding="utf-8"))
@@ -125,6 +142,7 @@ class RoutingTableMonitor:
         return []
 
     def _save_snapshot(self, routes: list[str]) -> None:
+        """Replace the snapshot with routes, a timestamp, and their hash; I/O errors propagate."""
         self.snapshot_path.parent.mkdir(parents=True, exist_ok=True)
         self.snapshot_path.write_text(
             _json.dumps({
@@ -136,10 +154,11 @@ class RoutingTableMonitor:
         )
 
     def check(self) -> dict:
-        """Compare current routing table against last snapshot.
+        """Compare routes, alert on additions, and replace the stored snapshot.
 
-        Returns:
-            dict with keys: new_routes, removed_routes, unchanged, alerted
+        An absent or unreadable snapshot treats all current routes as new.
+        Return sorted new/removed routes, unchanged and total counts, and an
+        alerted flag. Probe, callback, and snapshot-write errors propagate.
         """
         current = self._get_routes()
         previous = self._load_snapshot()
@@ -167,7 +186,10 @@ class RoutingTableMonitor:
         }
 
     def baseline(self) -> dict:
-        """Capture current routing table as the trusted baseline."""
+        """Save current routes and return their count and snapshot path without alerting.
+
+        Probe and snapshot-write errors propagate.
+        """
         routes = self._get_routes()
         self._save_snapshot(routes)
         return {"baselined": len(routes), "path": str(self.snapshot_path)}

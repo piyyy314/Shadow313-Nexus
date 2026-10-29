@@ -31,6 +31,7 @@ IGNORE_DIRS = {".git", "node_modules", "__pycache__", ".venv",
 
 
 def _shannon_entropy(s: str) -> float:
+    """Return character entropy in bits, or zero for an empty string."""
     if not s:
         return 0.0
     freq = {}
@@ -41,6 +42,12 @@ def _shannon_entropy(s: str) -> float:
 
 class SecretScanner:
     def scan_directory(self, path: str, max_file_size: int = 1_000_000) -> list[dict]:
+        """Return secret findings from eligible files recursively below path.
+
+        Skip ignored directories, extensions, and files larger than
+        max_file_size bytes. File read failures yield no findings; filesystem
+        errors during traversal or size checks can propagate.
+        """
         findings = []
         base = Path(path)
         for fpath in base.rglob("*"):
@@ -55,6 +62,11 @@ class SecretScanner:
         return findings
 
     def scan_diff(self, diff_text: str) -> list[dict]:
+        """Return pattern and entropy findings from added lines in a unified diff.
+
+        Line numbers refer to the diff text, starting at one. Finding content
+        is truncated and partially redacted, so it may still contain secrets.
+        """
         findings = []
         lines    = diff_text.splitlines()
         current_file = ""
@@ -85,6 +97,10 @@ class SecretScanner:
         return findings
 
     def _scan_file(self, path: Path) -> list[dict]:
+        """Return findings with one-based source line numbers, or [] on read failure.
+
+        Content is truncated and partially redacted; some secrets may remain.
+        """
         findings = []
         try:
             text  = path.read_text(encoding="utf-8", errors="replace")
@@ -114,6 +130,7 @@ class SecretScanner:
 
     @staticmethod
     def _redact(text: str) -> str:
+        """Mask supported AWS keys, GitHub tokens, and quoted assignments in text."""
         patterns = [
             (r"(AKIA[0-9A-Z]{4})[0-9A-Z]{12}", r"\1************"),
             (r"(ghp_[A-Za-z0-9]{6})[A-Za-z0-9]{30}", r"\1****...****"),

@@ -80,6 +80,7 @@ exit 0
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -89,12 +90,14 @@ class CICDModule:
     SEVERITY_ORDER = {"critical": 4, "high": 3, "medium": 2, "low": 1, "info": 0}
 
     def __init__(self, kernel) -> None:
+        """Bind pipeline checks to the kernel and its session services."""
         self.kernel  = kernel
         self.out     = kernel.out
         self.ai      = kernel.ai
         self.session = kernel.session
 
     def register(self, kernel) -> None:
+        """Register the cicd command with the supplied kernel."""
         kernel.register("cicd", self.run)
 
     def run(self, scan: bool = False, threshold: str = "high",
@@ -106,6 +109,16 @@ class CICDModule:
             scan_secrets: str = "", scan_diff: str = "",
             output_sarif: str = "", output_junit: bool = False,
             gen_workflow: str = "", severity_threshold: str = "") -> dict:
+        """Run selected security checks and return the pipeline gate result.
+
+        The v2 aliases override their corresponding v1 options. Secret diff
+        input may be a filename, literal diff, or "-" for stdin; it is scanned
+        only when secret scanning is enabled. Unknown thresholds use medium.
+        A template request writes the template and returns before scanning.
+
+        Reports are printed or written to output_sarif. A failed severity gate
+        raises SystemExit(1) after report generation. File I/O errors propagate.
+        """
         if not quiet:
             self.out.section("CI/CD SECURITY INTEGRATION")
         self.session.audit("cicd", "start")
@@ -193,9 +206,15 @@ class CICDModule:
         return result
 
     def ai_context(self) -> dict:
+        """Return the pipeline security context for AI requests."""
         return {"module": "cicd", "mode": "pipeline_security"}
 
     def _run_vuln_scan(self, path: str) -> list[dict]:
+        """Audit up to three dependency files below path using the vuln module.
+
+        Return collected findings; absent modules and individual audit failures
+        contribute no findings.
+        """
         findings = []
         base = Path(path)
         dep_files = (list(base.rglob("requirements.txt")) +
@@ -217,6 +236,7 @@ class CICDModule:
         return findings
 
     def _build_sarif(self, findings: list[dict]) -> dict:
+        """Convert findings to a SARIF report; invalid numeric line values propagate."""
         builder = SARIFBuilder()
         for f in findings:
             builder.add_finding(
@@ -230,6 +250,10 @@ class CICDModule:
         return builder.build()
 
     def _generate_template(self, target: str) -> None:
+        """Write the selected CI template, creating parents and replacing any file.
+
+        Unknown targets return without writing. File I/O errors propagate.
+        """
         templates = {
             "github-actions": (".github/workflows/shadow313.yml", GITHUB_ACTIONS_WORKFLOW),
             "github":         (".github/workflows/shadow313.yml", GITHUB_ACTIONS_WORKFLOW),
@@ -247,6 +271,7 @@ class CICDModule:
         self.out.success(f"Generated → {filename}")
 
     def _ai_pr_summary(self, data: dict, from_file: str = "") -> str:
+        """Return an AI security summary of the findings; from_file is unused."""
         ctx = {
             "total_findings": len(data.get("findings", [])),
             "secrets_found":  len(data.get("secret_hits", [])),
@@ -263,6 +288,7 @@ class CICDModule:
 
     @staticmethod
     def _read_stdin() -> str:
+        """Read stdin, returning an empty string if reading fails."""
         try:
             return sys.stdin.read()
         except Exception:
