@@ -33,7 +33,7 @@ IGNORE_DIRS = {".git", "node_modules", "__pycache__", ".venv",
 def _shannon_entropy(s: str) -> float:
     if not s:
         return 0.0
-    freq = {}
+    freq: dict[str, int] = {}
     for c in s:
         freq[c] = freq.get(c, 0) + 1
     return -sum((f / len(s)) * math.log2(f / len(s)) for f in freq.values())

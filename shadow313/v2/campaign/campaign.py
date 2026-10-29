@@ -68,13 +68,15 @@ class CampaignManager:
     def run_campaign(self, campaign: Campaign) -> dict:
         """Entry point — runs asyncio event loop."""
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                return asyncio.run(self._execute(campaign))
+            else:
                 import concurrent.futures
                 with concurrent.futures.ThreadPoolExecutor() as pool:
                     future = pool.submit(asyncio.run, self._execute(campaign))
                     return future.result()
-            return asyncio.run(self._execute(campaign))
         except Exception as exc:
             return {"error": str(exc), "campaign_id": campaign.campaign_id}
 

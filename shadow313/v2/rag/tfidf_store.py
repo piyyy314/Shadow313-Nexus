@@ -67,7 +67,7 @@ class TFIDFVectorStore:
         if not self._docs:
             return []
         q_tokens = _tokenize(text)
-        q_vec    = {}
+        q_vec: dict[str, float] = {}
         for term in q_tokens:
             q_vec[term] = q_vec.get(term, 0) + 1
         scores = [(i, _cosine(q_vec, v)) for i, v in enumerate(self._vectors)]

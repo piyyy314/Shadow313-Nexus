@@ -22,13 +22,13 @@ class DNSEnumerator:
         if rtype == "A":
             try:
                 info = socket.getaddrinfo(self.domain, None, socket.AF_INET)
-                return list({i[4][0] for i in info})
+                return list({str(i[4][0]) for i in info})
             except Exception:
                 return []
         if rtype == "AAAA":
             try:
                 info = socket.getaddrinfo(self.domain, None, socket.AF_INET6)
-                return list({i[4][0] for i in info})
+                return list({str(i[4][0]) for i in info})
             except Exception:
                 return []
         try:

@@ -12,12 +12,13 @@ NVD_API     = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 class CVEDatabase:
     def __init__(self, db_path: Path = CVE_DB_PATH) -> None:
         self.db_path = db_path
-        self._conn = None
+        self._conn: sqlite3.Connection | None = None
         self._init_db()
 
-    def _get_conn(self):
+    def _get_conn(self) -> sqlite3.Connection:
         if self._conn is None:
             self._init_db()
+        assert self._conn is not None
         return self._conn
 
     def _init_db(self) -> None:
@@ -44,7 +45,7 @@ class CVEDatabase:
         self._conn.commit()
 
     def search_by_keyword(self, keyword: str, limit: int = 20) -> list[dict]:
-        cur = self._conn.execute(
+        cur = self._get_conn().execute(
             "SELECT id, description, cvss_v3, severity, published FROM cves "
             "WHERE description LIKE ? OR id LIKE ? ORDER BY cvss_v3 DESC LIMIT ?",
             (f"%{keyword}%", f"%{keyword}%", limit),
@@ -54,7 +55,7 @@ class CVEDatabase:
                 for r in cur.fetchall()]
 
     def search_by_cpe(self, cpe: str, limit: int = 20) -> list[dict]:
-        cur = self._conn.execute(
+        cur = self._get_conn().execute(
             "SELECT c.id, c.description, c.cvss_v3, c.severity FROM cves c "
             "JOIN cpe_cve m ON c.id = m.cve WHERE m.cpe LIKE ? "
             "ORDER BY c.cvss_v3 DESC LIMIT ?",
@@ -65,7 +66,7 @@ class CVEDatabase:
                 for r in cur.fetchall()]
 
     def get_cve(self, cve_id: str) -> dict | None:
-        cur = self._conn.execute(
+        cur = self._get_conn().execute(
             "SELECT id, description, cvss_v3, severity, published, modified, "
             "cpe, ref_urls FROM cves WHERE id = ?", (cve_id,)
         )
@@ -77,7 +78,7 @@ class CVEDatabase:
                 "cpe": row[6], "references": row[7]}
 
     def insert_cve(self, cve: dict) -> None:
-        self._conn.execute("""
+        self._get_conn().execute("""
             INSERT OR REPLACE INTO cves
             (id, description, cvss_v3, severity, published, modified, cpe, ref_urls)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -88,10 +89,10 @@ class CVEDatabase:
             json.dumps(cve.get("cpe", [])),
             json.dumps(cve.get("references", [])),
         ))
-        self._conn.commit()
+        self._get_conn().commit()
 
     def record_count(self) -> int:
-        cur = self._conn.execute("SELECT COUNT(*) FROM cves")
+        cur = self._get_conn().execute("SELECT COUNT(*) FROM cves")
         return cur.fetchone()[0]
 
     def update_from_nvd(self, keyword: str = "critical", api_key: str = "") -> list[dict]:

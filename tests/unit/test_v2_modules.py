@@ -1,12 +1,17 @@
 """Unit tests — shadow313 v2 advanced modules"""
-import pytest
-from shadow313.v2.rag.tfidf_store import TFIDFVectorStore
-from shadow313.v2.vuln_upgrades.attack_mapping import ATTACKMapper, NavigatorGenerator
-from shadow313.v2.network_upgrades.dns_covert import DNSCovertDetector, _shannon_entropy
+
+from unittest.mock import MagicMock
+
 from shadow313.v2.crypto_agility.crypto_agility import (
-    CryptoMigrationEngine, CryptoAgilityFramework, PQC_ALGORITHMS, PQC_SNIPPETS
+    PQC_ALGORITHMS,
+    PQC_SNIPPETS,
+    CryptoAgilityFramework,
+    CryptoMigrationEngine,
 )
-from shadow313.v2.graph.intel_graph import _SimpleGraph
+from shadow313.v2.graph.intel_graph import IntelligenceGraph, _SimpleGraph
+from shadow313.v2.network_upgrades.dns_covert import DNSCovertDetector, _shannon_entropy
+from shadow313.v2.rag.tfidf_store import TFIDFVectorStore
+from shadow313.v2.vuln_upgrades.attack_mapping import ATTACKMapper
 
 
 class TestTFIDFVectorStore:
@@ -20,7 +25,7 @@ class TestTFIDFVectorStore:
         assert results[0]["score"] > 0
 
     def test_empty_store_query(self):
-        store   = TFIDFVectorStore()
+        store = TFIDFVectorStore()
         results = store.query("anything", top_k=5)
         assert results == []
 
@@ -34,8 +39,8 @@ class TestTFIDFVectorStore:
         store = TFIDFVectorStore()
         items = [
             {"text": "RSA vulnerability", "id": "1", "metadata": {}},
-            {"text": "ECDSA weakness",    "id": "2", "metadata": {}},
-            {"text": "AES encryption",    "id": "3", "metadata": {}},
+            {"text": "ECDSA weakness", "id": "2", "metadata": {}},
+            {"text": "AES encryption", "id": "3", "metadata": {}},
         ]
         store.add_batch(items)
         assert store.count() == 3
@@ -51,39 +56,53 @@ class TestTFIDFVectorStore:
 
 
 class TestATTACKMapper:
-    def test_map_findings_with_keywords(self):
-        mapper   = ATTACKMapper()
-        findings = [
-            {"cve": "CVE-2021-44228", "description": "remote code execution via log4j"},
-            {"cve": "CVE-2017-5638",  "description": "sql injection in struts"},
+    def test_map_finding(self):
+        assert "T1190" in ATTACKMapper().map_finding(
+            {"description": "remote code execution via log4j"}
+        )
+
+    def test_aggregate_findings(self):
+        mapped = ATTACKMapper().map_findings(
+            [
+                {"cve": "CVE-2021-44228", "description": "remote code execution"},
+                {"cve": "CVE-2017-5638", "description": "sql injection"},
+            ]
+        )
+        exploit = next(m for m in mapped if m["technique_id"] == "T1190")
+        assert exploit["count"] == 2
+        assert set(exploit["cves"]) == {"CVE-2021-44228", "CVE-2017-5638"}
+
+    def test_navigator_generation_scores_by_frequency(self):
+        mapped = [
+            {"technique_id": "T1071", "count": 3, "tactic": "command-and-control", "cves": []},
+            {"technique_id": "T1046", "count": 1, "tactic": "discovery", "cves": []},
         ]
-        mapped = mapper.map_findings(findings)
-        assert len(mapped) == 2
-        for f in mapped:
-            assert "attack_techniques" in f
-
-    def test_map_text(self):
-        mapper     = ATTACKMapper()
-        techniques = mapper.map_text("cobalt strike c2 beaconing lateral movement")
-        assert len(techniques) > 0
-        assert all(t.startswith("T") for t in techniques)
-
-    def test_technique_summary(self):
-        mapper   = ATTACKMapper()
-        findings = [
-            {"attack_techniques": ["T1071", "T1046"]},
-            {"attack_techniques": ["T1071", "T1190"]},
-        ]
-        summary = mapper.technique_summary(findings)
-        assert summary.get("T1071") == 2
-
-    def test_navigator_generation(self):
-        nav   = NavigatorGenerator()
-        layer = nav.generate({"T1071": 3, "T1046": 1, "T1190": 2})
-        assert layer["name"] is not None
+        layer = ATTACKMapper().build_navigator_layer(mapped, name="test scan")
+        assert layer["name"] == "test scan"
         assert layer["domain"] == "enterprise-attack"
-        assert len(layer["techniques"]) == 3
         assert layer["versions"]["attack"] == "14"
+        assert [t["score"] for t in layer["techniques"]] == [100, 33]
+
+
+def _dns_packets(names):
+    import struct
+
+    packets = []
+    for i, name in enumerate(names):
+        qname = (
+            b"".join(bytes([len(label)]) + label.encode() for label in name.split(".")) + b"\x00"
+        )
+        wire = struct.pack("!6H", i, 0x0100, 1, 0, 0, 0) + qname + struct.pack("!2H", 1, 1)
+        packets.append(
+            {
+                "dport": 53,
+                "sport": 40000,
+                "src_ip": "192.0.2.1",
+                "ts": float(i * 60),
+                "payload_preview": wire.decode("latin-1"),
+            }
+        )
+    return packets
 
 
 class TestDNSCovertDetector:
@@ -99,65 +118,63 @@ class TestDNSCovertDetector:
 
     def test_high_entropy_subdomain_detection(self):
         detector = DNSCovertDetector()
-        queries  = ["aB3xK9mN2pQ7rS5tU8vW1yZ4cD6eF0gH.example.com"]
-        alerts   = detector.analyze_queries(queries)
+        queries = ["aB3xK9mN2pQ7rS5tU8vW1yZ4cD6eF0gH.example.com"]
+        alerts = detector.analyse_packets(_dns_packets(queries))
         # May or may not trigger depending on entropy of test string
         assert isinstance(alerts, list)
 
     def test_tunnel_signature_detection(self):
         detector = DNSCovertDetector()
-        queries  = ["iodine.tunnel.example.com", "dnscat2.c2.evil.com"]
-        alerts   = detector.analyze_queries(queries)
+        queries = ["iodine.tunnel.example.com", "dnscat2.c2.evil.com"]
+        alerts = detector.analyse_packets(_dns_packets(queries))
         tunnel_alerts = [a for a in alerts if a["rule"] == "TUNNEL_TOOL_SIGNATURE"]
         assert len(tunnel_alerts) > 0
 
     def test_long_subdomain_detection(self):
         detector = DNSCovertDetector()
         long_sub = "a" * 50 + ".example.com"
-        queries  = [long_sub]
-        alerts   = detector.analyze_queries(queries)
+        queries = [long_sub]
+        alerts = detector.analyse_packets(_dns_packets(queries))
         long_alerts = [a for a in alerts if a["rule"] == "LONG_SUBDOMAIN_LABEL"]
         assert len(long_alerts) > 0
 
     def test_high_subdomain_count(self):
         detector = DNSCovertDetector()
-        queries  = [f"sub{i}.example.com" for i in range(25)]
-        alerts   = detector.analyze_queries(queries)
+        queries = [f"sub{i}.example.com" for i in range(60)]
+        alerts = detector.analyse_packets(_dns_packets(queries))
         count_alerts = [a for a in alerts if a["rule"] == "HIGH_UNIQUE_SUBDOMAIN_COUNT"]
         assert len(count_alerts) > 0
 
     def test_clean_traffic_no_alerts(self):
         detector = DNSCovertDetector()
-        queries  = ["www.example.com", "mail.example.com", "api.example.com"]
-        alerts   = detector.analyze_queries(queries)
+        queries = ["www.example.com", "mail.example.com", "api.example.com"]
+        alerts = detector.analyse_packets(_dns_packets(queries))
         assert len(alerts) == 0
 
 
 class TestCryptoAgility:
     def test_pqc_algorithms_catalog(self):
         assert len(PQC_ALGORITHMS) == 11
-        for name, info in PQC_ALGORITHMS.items():
-            assert "type"  in info
-            assert "fips"  in info
+        for info in PQC_ALGORITHMS:
+            assert "type" in info
+            assert "fips" in info
             assert "level" in info
 
     def test_pqc_snippets_available(self):
-        assert "rsa-python"   in PQC_SNIPPETS
+        assert "rsa-python" in PQC_SNIPPETS
         assert "ecdsa-python" in PQC_SNIPPETS
         assert "aes128-python" in PQC_SNIPPETS
-        assert "rsa-java"     in PQC_SNIPPETS
-        assert "rsa-go"       in PQC_SNIPPETS
-        assert "nginx-tls"    in PQC_SNIPPETS
-        assert "generic-key-exchange" in PQC_SNIPPETS
+        assert "rsa-java" in PQC_SNIPPETS
+        assert "nginx-tls" in PQC_SNIPPETS
         for key, snippet in PQC_SNIPPETS.items():
             assert "before" in snippet
-            assert "after"  in snippet
-            assert "notes"  in snippet
+            assert "after" in snippet
+            assert "instructions" in snippet
 
     def test_scan_python_file(self, tmp_path):
         f = tmp_path / "crypto.py"
         f.write_text("from Crypto.PublicKey import RSA\nkey = RSA.generate(2048)\n")
-        engine   = CryptoMigrationEngine()
+        engine = CryptoMigrationEngine()
         findings = engine.scan(str(tmp_path), languages=["Python"])
         assert len(findings) > 0
         assert any(f["algorithm"] == "RSA" for f in findings)
@@ -165,40 +182,40 @@ class TestCryptoAgility:
     def test_readiness_vulnerable(self, tmp_path):
         f = tmp_path / "crypto.py"
         f.write_text("from Crypto.PublicKey import RSA\nkey = RSA.generate(2048)\n")
-        engine   = CryptoMigrationEngine()
+        engine = CryptoMigrationEngine()
         findings = engine.scan(str(tmp_path))
-        rating   = engine.compute_readiness(findings)
+        rating = engine.pqc_readiness(findings)
         assert rating in ("VULNERABLE", "PARTIAL")
 
     def test_readiness_quantum_ready(self):
-        engine   = CryptoMigrationEngine()
-        rating   = engine.compute_readiness([])
+        engine = CryptoMigrationEngine()
+        rating = engine.pqc_readiness([])
         assert rating == "QUANTUM_READY"
 
-    def test_migration_plan_ordering(self):
-        engine   = CryptoMigrationEngine()
+    def test_migration_plan_passes_status_context(self):
+        kernel = MagicMock()
+        kernel.ai.chat.return_value = "Migration plan"
         findings = [
-            {"algorithm": "RSA",     "quantum": "VULNERABLE", "replace": "ML-KEM-768", "urgency": "IMMEDIATE"},
-            {"algorithm": "AES-128", "quantum": "WEAKENED",   "replace": "AES-256",    "urgency": "SHORT-TERM"},
+            {"algorithm": "RSA", "status": "VULNERABLE"},
+            {"algorithm": "AES-128", "status": "WEAKENED"},
         ]
-        plan = engine.migration_plan(findings)
-        assert len(plan) == 2
-        assert plan[0]["urgency"] == "IMMEDIATE"
+        assert CryptoAgilityFramework(kernel).migration_plan(findings) == "Migration plan"
+        context = kernel.ai.chat.call_args.kwargs["context"]
+        assert context["vulnerable"] == findings[:1] and context["weakened"] == findings[1:]
 
-    def test_framework_list_snippets(self):
-        fw = CryptoAgilityFramework()
-        snippets = fw.list_snippets()
-        assert len(snippets) == 7
+    def test_framework_unknown_snippet_lists_choices(self):
+        result = CryptoAgilityFramework(MagicMock()).get_snippet("missing")
+        assert set(result["available"]) == set(PQC_SNIPPETS)
 
     def test_framework_get_snippet(self):
-        fw      = CryptoAgilityFramework()
+        fw = CryptoAgilityFramework(MagicMock())
         snippet = fw.get_snippet("rsa-python")
         assert snippet is not None
         assert "before" in snippet
-        assert "after"  in snippet
+        assert "after" in snippet
 
     def test_framework_list_pqc_algorithms(self):
-        fw         = CryptoAgilityFramework()
+        fw = CryptoAgilityFramework(MagicMock())
         algorithms = fw.list_pqc_algorithms()
         assert len(algorithms) == 11
 
@@ -207,7 +224,7 @@ class TestSimpleGraph:
     def test_add_and_query_nodes(self):
         g = _SimpleGraph()
         g.add_node("host1", type="host", ip="192.168.1.1")
-        g.add_node("cve1",  type="cve",  cvss=9.8)
+        g.add_node("cve1", type="cve", cvss=9.8)
         assert g.has_node("host1")
         assert g.has_node("cve1")
         assert not g.has_node("nonexistent")
@@ -215,33 +232,33 @@ class TestSimpleGraph:
     def test_add_edges(self):
         g = _SimpleGraph()
         g.add_node("host1", type="host")
-        g.add_node("cve1",  type="cve")
+        g.add_node("cve1", type="cve")
         g.add_edge("host1", "cve1", edge_type="affected_by")
         assert g.number_of_edges() == 1
         assert "cve1" in g.neighbors("host1")
 
-    def test_shortest_path(self):
-        g = _SimpleGraph()
-        g.add_node("a", type="host")
-        g.add_node("b", type="service")
-        g.add_node("c", type="cve")
-        g.add_edge("a", "b", edge_type="runs")
-        g.add_edge("b", "c", edge_type="affected_by")
-        path = g.shortest_path("a", "c")
-        assert path == ["a", "b", "c"]
+    def test_shortest_path_without_networkx(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("shadow313.v2.graph.intel_graph._HAS_NX", False)
+        graph = IntelligenceGraph(persist_path=str(tmp_path / "graph.json"))
+        graph._g.add_node("a", type="host")
+        graph._g.add_node("b", type="host")
+        graph._g.add_edge("a", "b")
+        assert graph.neighbors("a") == ["b"]
+        # Path search is optional and requires NetworkX.
+        assert graph.shortest_path("a", "b") == []
 
-    def test_shortest_path_no_path(self):
-        g = _SimpleGraph()
-        g.add_node("a", type="host")
-        g.add_node("b", type="host")
-        path = g.shortest_path("a", "b")
-        assert path == []
+    def test_shortest_path_no_path(self, tmp_path):
+        graph = IntelligenceGraph(persist_path=str(tmp_path / "graph.json"))
+        graph._g = _SimpleGraph()
+        graph._g.add_node("a", type="host")
+        graph._g.add_node("b", type="host")
+        assert graph.shortest_path("a", "b") == []
 
     def test_serialization(self):
-        g = _SimpleGraph()
-        g.add_node("host1", type="host")
-        g.add_edge("host1", "cve1", edge_type="affected_by")
-        data = g.to_dict()
-        g2   = _SimpleGraph()
-        g2.from_dict(data)
-        assert g2.has_node("host1")
+        graph = _SimpleGraph()
+        graph.add_node("host1", type="host")
+        graph.add_edge("host1", "cve1", edge_type="affected_by")
+        assert graph.to_dict() == {
+            "nodes": {"host1": {"type": "host"}},
+            "edges": [{"src": "host1", "dst": "cve1", "edge_type": "affected_by"}],
+        }

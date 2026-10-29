@@ -1,27 +1,31 @@
 """Unit tests — shadow313.core (v2)"""
-import json
+
 import pytest
-from pathlib import Path
-from shadow313.core.config  import Config, DEFAULT_CONFIG
-from shadow313.core.session import Session
-from shadow313.core.output  import OutputEngine
+
 from shadow313.core.ai_engine import AIEngine
+from shadow313.core.config import Config
+from shadow313.core.output import OutputFormatter
+from shadow313.core.session import Session
+
+
+@pytest.fixture(autouse=True)
+def isolate_ai_environment(monkeypatch):
+    for key in ("SHADOW313_AI_BACKEND", "SHADOW313_AI_MODEL", "SHADOW313_AI_ENDPOINT"):
+        monkeypatch.delenv(key, raising=False)
 
 
 class TestConfig:
     def test_defaults_loaded(self, tmp_path):
         cfg = Config(config_path=str(tmp_path / "config.yaml"))
         assert cfg.get("ai", "backend") == "ollama"
-        assert cfg.get("ai", "model")   == "mistral:7b"
+        assert cfg.get("ai", "model") == "mistral:7b"
         assert cfg.get("output", "format") == "rich"
 
     def test_deep_merge(self, tmp_path):
         config_file = tmp_path / "config.yaml"
-        config_file.write_text(
-            "shadow313:\n  ai:\n    model: llama3:8b\n    backend: ollama\n"
-        )
+        config_file.write_text("shadow313:\n  ai:\n    model: llama3:8b\n    backend: ollama\n")
         cfg = Config(config_path=str(config_file))
-        assert cfg.get("ai", "model")   == "llama3:8b"
+        assert cfg.get("ai", "model") == "llama3:8b"
         assert cfg.get("ai", "backend") == "ollama"
         assert cfg.get("ai", "context_window") == 8192
 
@@ -32,7 +36,7 @@ class TestConfig:
 
     def test_set_and_get(self, tmp_path):
         cfg = Config(config_path=str(tmp_path / "config.yaml"))
-        cfg.set("gpt-4o", "ai", "model")
+        cfg.set("ai", "model", "gpt-4o")
         assert cfg.get("ai", "model") == "gpt-4o"
 
     def test_get_default(self, tmp_path):
@@ -59,11 +63,11 @@ class TestSession:
     def test_resume_session(self, tmp_path):
         s1 = Session(sessions_dir=str(tmp_path))
         sid = s1.id
-        s2  = Session.resume(sid, sessions_dir=str(tmp_path))
+        s2 = Session.resume(sid, sessions_dir=str(tmp_path))
         assert s2.id == sid
 
     def test_write_and_read_json(self, tmp_path):
-        s    = Session(sessions_dir=str(tmp_path))
+        s = Session(sessions_dir=str(tmp_path))
         data = {"test": True, "value": 42, "list": [1, 2, 3]}
         s.write("test.json", data)
         loaded = s.read("test.json")
@@ -99,19 +103,19 @@ class TestSession:
         assert s2.id in ids
 
 
-class TestOutputEngine:
+class TestOutputFormatter:
     def test_instantiation(self):
-        out = OutputEngine(fmt="json", color=False)
+        out = OutputFormatter(fmt="json", color=False)
         assert out.fmt == "json"
 
-    def test_quiet_mode(self, capsys):
-        out = OutputEngine(quiet=True)
+    def test_json_mode_suppresses_info(self, capsys):
+        out = OutputFormatter(fmt="json", color=False)
         out.info("should not print")
         captured = capsys.readouterr()
         assert captured.out == ""
 
     def test_error_always_prints(self, capsys):
-        out = OutputEngine(quiet=True)
+        out = OutputFormatter(fmt="json", color=False)
         out.error("this should print")
         captured = capsys.readouterr()
         assert "this should print" in captured.err

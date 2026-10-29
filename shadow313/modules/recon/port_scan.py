@@ -67,7 +67,7 @@ class AsyncPortScanner:
     def parse_ports(ports_str: str) -> list[int]:
         if not ports_str:
             return AsyncPortScanner.COMMON_PORTS
-        result = []
+        result: list[int] = []
         for part in ports_str.split(","):
             part = part.strip()
             if "-" in part:

@@ -28,14 +28,10 @@ class TopologyMapper:
 
     def _ping(self, ip: str) -> bool:
         try:
-            
-            return res.returncode == 0
+            with socket.create_connection((ip, 80), timeout=0.5):
+                return True
         except Exception:
-            try:
-                with socket.create_connection((ip, 80), timeout=0.5):
-                    return True
-            except Exception:
-                return False
+            return False
 
     @staticmethod
     def _reverse_dns(ip: str) -> str:
