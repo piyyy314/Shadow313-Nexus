@@ -4,6 +4,10 @@ from urllib import request as urlreq
 
 
 def _http_get(url: str, timeout: int = 10) -> dict:
+    """Fetch response status, decoded body, and headers with timeout in seconds.
+
+    Request failures return status zero, empty body/headers, and an error string.
+    """
     try:
         req = urlreq.Request(url, headers={"User-Agent": "shadow313/2.0 (security-research)"})
         with urlreq.urlopen(req, timeout=timeout) as resp:
@@ -50,9 +54,14 @@ class WebFingerprinter:
     ]
 
     def __init__(self, url: str) -> None:
+        """Select a URL, prepending https:// unless it starts with "http"."""
         self.url = url if url.startswith("http") else f"https://{url}"
 
     def fingerprint(self) -> dict:
+        """Return technology matches from response headers and the first 50,000 body characters.
+
+        Empty body and headers return an error result with no technology matches.
+        """
         res = _http_get(self.url)
         if not res.get("body") and not res.get("headers"):
             return {"url": self.url, "error": res.get("error", "unreachable"), "tech": []}
@@ -74,6 +83,10 @@ class WebFingerprinter:
         }
 
     def check_security_headers(self) -> dict[str, str]:
+        """Fetch the URL and return configured header values, using MISSING for absent headers.
+
+        Failed requests therefore report all headers as missing.
+        """
         res = _http_get(self.url)
         headers = res.get("headers", {})
         return {h: headers.get(h, "MISSING") for h in self.SECURITY_HEADERS}

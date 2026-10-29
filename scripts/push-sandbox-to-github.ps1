@@ -51,12 +51,42 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # ── Colours ───────────────────────────────────────────────────────────────────
-function Write-Step { param($n,$msg) Write-Host "`n[$n] $msg" -ForegroundColor Cyan }
-function Write-Ok   { param($msg) Write-Host "  OK  $msg" -ForegroundColor Green }
-function Write-Warn { param($msg) Write-Host "  WARN $msg" -ForegroundColor Yellow }
-function Write-Fail { param($msg) Write-Host "  FAIL $msg" -ForegroundColor Red; exit 1 }
-function Write-Info { param($msg) Write-Host "       $msg" -ForegroundColor Gray }
-function Write-Dry  { param($msg) Write-Host "  DRY  $msg" -ForegroundColor Magenta }
+function Write-Step {
+    <#
+    .SYNOPSIS
+        Display a numbered progress step on the host.
+    #>
+    param($n,$msg) Write-Host "`n[$n] $msg" -ForegroundColor Cyan }
+function Write-Ok   {
+    <#
+    .SYNOPSIS
+        Display a success message on the host.
+    #>
+    param($msg) Write-Host "  OK  $msg" -ForegroundColor Green }
+function Write-Warn {
+    <#
+    .SYNOPSIS
+        Display a warning message on the host.
+    #>
+    param($msg) Write-Host "  WARN $msg" -ForegroundColor Yellow }
+function Write-Fail {
+    <#
+    .SYNOPSIS
+        Display a failure message on the host and exit the script with code 1.
+    #>
+    param($msg) Write-Host "  FAIL $msg" -ForegroundColor Red; exit 1 }
+function Write-Info {
+    <#
+    .SYNOPSIS
+        Display an informational message on the host.
+    #>
+    param($msg) Write-Host "       $msg" -ForegroundColor Gray }
+function Write-Dry  {
+    <#
+    .SYNOPSIS
+        Display a proposed dry-run action on the host.
+    #>
+    param($msg) Write-Host "  DRY  $msg" -ForegroundColor Magenta }
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 $REPO_OWNER  = "piyyy314"

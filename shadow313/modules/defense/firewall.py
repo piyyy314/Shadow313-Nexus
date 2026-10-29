@@ -5,6 +5,7 @@ from .system_info import _run
 
 class FirewallAnalyzer:
     def analyse_iptables(self) -> dict:
+        """Return iptables rule excerpts and detected issues, or an error on probe failure."""
         out, _, rc = _run(["iptables", "-L", "-n", "-v", "--line-numbers"])
         if rc != 0:
             return {"error": "iptables not available or requires root"}
@@ -16,6 +17,7 @@ class FirewallAnalyzer:
         return {"tool": "iptables", "rules": out[:3000], "issues": issues}
 
     def analyse_ufw(self) -> dict:
+        """Return UFW rule excerpts and inactivity findings, or an error on probe failure."""
         out, _, rc = _run(["ufw", "status", "verbose"])
         if rc != 0:
             return {"error": "ufw not available"}
@@ -25,12 +27,17 @@ class FirewallAnalyzer:
         return {"tool": "ufw", "rules": out[:2000], "issues": issues}
 
     def analyse_nftables(self) -> dict:
+        """Return an nftables rule excerpt with no issue analysis, or an error on probe failure."""
         out, _, rc = _run(["nft", "list", "ruleset"])
         if rc != 0:
             return {"error": "nftables not available"}
         return {"tool": "nftables", "rules": out[:3000], "issues": []}
 
     def analyse(self, tool: str = "auto") -> dict:
+        """Return the selected firewall analysis or an error result.
+
+        "auto" tries UFW, iptables, then nftables until a probe succeeds.
+        """
         if tool in ("auto", "ufw"):
             res = self.analyse_ufw()
             if "error" not in res:

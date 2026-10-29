@@ -12,6 +12,7 @@ from .geoip        import GeoIPEnricher
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -19,6 +20,7 @@ class ReconModule:
     """shadow313.recon — Passive + active reconnaissance."""
 
     def __init__(self, kernel) -> None:
+        """Bind reconnaissance tools and a GeoIP cache to kernel services."""
         self.kernel  = kernel
         self.config  = kernel.config.get("recon", default={})
         self.out     = kernel.out
@@ -27,11 +29,19 @@ class ReconModule:
         self._geoip  = GeoIPEnricher()
 
     def register(self, kernel) -> None:
+        """Register the recon command with the supplied kernel."""
         kernel.register("recon", self.run)
 
     def run(self, target: str, mode: str = "full", ports: str = "",
             stealth: bool = False, wordlist: list[str] | None = None,
             output: str = "rich") -> dict:
+        """Collect reconnaissance, request an AI profile, and save recon.json and target.json.
+
+        WHOIS and DNS run in every mode. Full/passive mode discovers subdomains
+        using CT and DNS; full/active mode probes ports. A URL target can trigger
+        web requests in any mode. output is unused. Port parsing errors and
+        uncaught lookup or session I/O errors propagate.
+        """
         self.out.section(f"RECON  ▸  {target}")
         self.session.audit("recon", "start", target)
         self.session.set_target(target)
@@ -97,6 +107,7 @@ class ReconModule:
         return result
 
     def ai_context(self) -> dict:
+        """Return selected saved reconnaissance fields for AI requests."""
         data = self.session.read("recon.json") or {}
         return {
             "module":    "recon",
@@ -108,9 +119,11 @@ class ReconModule:
         }
 
     def _parse_host(self, target: str) -> str:
+        """Extract the host portion of a domain or URL by stripping scheme, path, and port."""
         return target.split("://")[-1].split("/")[0].split(":")[0]
 
     def _print_ports(self, ports: list[dict]) -> None:
+        """Display open ports and abbreviated banners, or a message when none were found."""
         if not ports:
             self.out.warn("No open ports found.")
             return
@@ -118,6 +131,7 @@ class ReconModule:
         self.out.table(["Port", "State", "Banner"], rows, title="Open Ports")
 
     def _ai_profile(self, data: dict) -> str:
+        """Request an AI target profile using the collected reconnaissance data."""
         ctx = {
             "target":     data.get("target"),
             "dns":        data.get("dns"),

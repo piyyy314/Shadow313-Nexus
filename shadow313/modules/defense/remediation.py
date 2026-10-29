@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -41,6 +42,7 @@ FIX_MAP = {
 
 class RemediationGenerator:
     def bash_script(self, findings: list[dict]) -> str:
+        """Return Bash commands for supported FAIL/WARN findings without executing them."""
         lines = [
             "#!/usr/bin/env bash",
             "# Shadow313 v2 Auto-Remediation Script",
@@ -59,6 +61,10 @@ class RemediationGenerator:
         return "\n".join(lines)
 
     def ansible_playbook(self, findings: list[dict]) -> str:
+        """Return an Ansible playbook for supported FAIL/WARN findings without applying it.
+
+        Use JSON text when PyYAML is unavailable.
+        """
         tasks = []
         for f in findings:
             if f.get("status") not in ("FAIL", "WARN"):
@@ -119,6 +125,12 @@ class FileEncryptionRateMonitor:
         poll_interval_s: float = 2.0,
         alert_callback=None,
     ) -> None:
+        """Configure polling of recently modified paths without starting the monitor.
+
+        Rates count observations per second, including repeated observations of
+        the same path. Window and polling intervals are in seconds. A falsy
+        watch_dirs uses home and /tmp. The callback receives (rate, sample_path).
+        """
         self.watch_dirs = [_Path(d) for d in (watch_dirs or [str(_Path.home()), "/tmp"])]
         self.threshold_per_s = threshold_per_s
         self.window_s = window_s
@@ -130,13 +142,19 @@ class FileEncryptionRateMonitor:
         self._lock = threading.Lock()
 
     def _default_alert(self, rate: float, sample_path: str) -> None:
+        """Print the observed event rate and a sample path to stdout."""
         print(
             f"[SHADOW313-RW-01] RANSOMWARE ALERT: {rate:.1f} file events/sec "
             f"(threshold={self.threshold_per_s}). Sample: {sample_path}"
         )
 
     def _scan(self) -> list[tuple[float, str]]:
-        """Return list of (mtime, path) for recently modified files."""
+        """Return (observation time, path) pairs for recently modified entries.
+
+        Include entries modified within twice the polling interval, including
+        directories. Timestamps are epoch seconds at observation, not mtimes.
+        Skip stat errors and permission failures while walking directories.
+        """
         events = []
         cutoff = _time.time() - self.poll_interval_s * 2
         for d in self.watch_dirs:
@@ -155,6 +173,10 @@ class FileEncryptionRateMonitor:
         return events
 
     def _monitor_loop(self) -> None:
+        """Poll paths and invoke the callback when the window rate reaches the threshold.
+
+        Callback errors are not caught and end the monitoring thread.
+        """
         while self._running:
             new_events = self._scan()
             now = _time.time()
@@ -181,7 +203,7 @@ class FileEncryptionRateMonitor:
         self._thread.start()
 
     def stop(self) -> None:
-        """Stop background monitoring thread."""
+        """Request monitoring to stop and wait up to five seconds for the thread."""
         self._running = False
         if self._thread:
             self._thread.join(timeout=5)

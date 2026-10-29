@@ -10,11 +10,17 @@ from .quantum_data import QUANTUM_VULN_TABLE, TLS_CIPHER_PATTERNS, classify_algo
 
 class TLSScanner:
     def __init__(self, host: str, port: int = 443, timeout: int = 10) -> None:
+        """Select a TLS endpoint and connection timeout in seconds."""
         self.host    = host
         self.port    = port
         self.timeout = timeout
 
     def scan(self) -> dict:
+        """Connect to the endpoint and return TLS, certificate, and cipher findings.
+
+        Disable hostname checks while retaining certificate-chain verification.
+        Connection, TLS, and analysis errors are captured in the result's error field.
+        """
         result: dict[str, Any] = {
             "host": self.host, "port": self.port,
             "tls_version": "", "cipher_suite": "", "cert_info": {}, "findings": [],
@@ -45,6 +51,11 @@ class TLSScanner:
         return result
 
     def _parse_cert(self, cert: dict | None) -> dict:
+        """Summarize peer certificate names, expiry, and up to ten SAN entries.
+
+        Return {} for an absent certificate. days_left is whole days until
+        expiry, or -1 when the expiry cannot be parsed.
+        """
         if not cert:
             return {}
         subject  = dict(x[0] for x in cert.get("subject", []))
@@ -67,6 +78,7 @@ class TLSScanner:
         }
 
     def _analyse_cipher(self, cipher: str, tls_ver: str) -> list[dict]:
+        """Return findings for deprecated TLS versions and cipher patterns not classified SAFE."""
         findings = []
         if tls_ver in ("TLSv1", "TLSv1.1", "SSLv3", "SSLv2"):
             findings.append({

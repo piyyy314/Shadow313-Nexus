@@ -10,6 +10,7 @@ from .cvss         import CVSSScorer
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -26,6 +27,7 @@ class VulnModule:
     """shadow313.vuln — CVE correlation, risk scoring, AI triage."""
 
     def __init__(self, kernel) -> None:
+        """Initialize CVE storage, scoring, and exploit lookups using kernel services."""
         self.kernel  = kernel
         self.out     = kernel.out
         self.ai      = kernel.ai
@@ -35,12 +37,21 @@ class VulnModule:
         self.checker = ExploitChecker()
 
     def register(self, kernel) -> None:
+        """Register the vuln command with the supplied kernel."""
         kernel.register("vuln", self.run)
 
     def run(self, from_session: str = "", target: str = "",
             audit_deps: str = "", quick: bool = False,
             internet_facing: bool = False, epss: bool = False,
             kev: bool = False, attack_map: bool = False) -> dict:
+        """Correlate recon or target keywords with CVEs and save findings and risk summaries.
+
+        audit_deps results are returned separately in dep_audit. quick skips
+        PoC lookups and contextual scoring; otherwise check at most ten findings.
+        target is searched only without recon data. epss, kev, and attack_map
+        are unused. Invalid session IDs, database errors, and file I/O errors
+        propagate. An AI triage response is requested before results are saved.
+        """
         self.out.section("VULNERABILITY ANALYSIS")
         self.session.audit("vuln", "start")
 
@@ -98,11 +109,13 @@ class VulnModule:
         return result
 
     def update_cve_db(self, keyword: str = "critical", api_key: str = "") -> None:
+        """Update the local database from one NVD search page and display record counts."""
         self.out.info(f"Updating CVE DB for keyword '{keyword}' …")
         records = self.db.update_from_nvd(keyword, api_key)
         self.out.success(f"Fetched {len(records)} records. DB total: {self.db.record_count():,}")
 
     def ai_context(self) -> dict:
+        """Summarize saved vulnerability counts and leading CVEs for AI requests."""
         data = self.session.read("findings.json") or {}
         findings = data.get("findings", [])
         return {
@@ -114,6 +127,11 @@ class VulnModule:
         }
 
     def _load_recon(self, from_session: str) -> dict | None:
+        """Read recon.json from the requested or current session.
+
+        Return None if absent. Invalid session IDs raise ValueError; session
+        creation errors propagate.
+        """
         if from_session:
             from shadow313.core.session import Session
             s = Session.resume(from_session)
@@ -121,6 +139,7 @@ class VulnModule:
         return self.session.read("recon.json")
 
     def _map_services(self, ports: list[dict]) -> list[dict]:
+        """Return deduplicated CVE banner-keyword matches, sorted by descending CVSS score."""
         all_findings: list[dict] = []
         seen: set[str] = set()
         for svc in ports:
@@ -140,6 +159,7 @@ class VulnModule:
         return sorted(all_findings, key=lambda x: x.get("cvss_v3", 0), reverse=True)
 
     def _build_risk_matrix(self, findings: list[dict]) -> list[dict]:
+        """Return risk summaries sorted by contextual score, falling back to base CVSS."""
         matrix = []
         for f in findings:
             cvss = f.get("cvss_v3", 0.0)
@@ -154,6 +174,7 @@ class VulnModule:
         return sorted(matrix, key=lambda x: x["risk_score"], reverse=True)
 
     def _print_findings(self, findings: list[dict]) -> None:
+        """Display at most 20 CVE findings, or a message if none matched."""
         if not findings:
             self.out.warn("No CVE findings matched.")
             return
@@ -163,6 +184,7 @@ class VulnModule:
                        title=f"Vulnerabilities ({len(findings)} found)")
 
     def _print_dep_audit(self, findings: list[dict]) -> None:
+        """Display at most 20 dependency findings, or a message when the list is empty."""
         if not findings:
             self.out.success("No known vulnerabilities in dependencies.")
             return
@@ -172,6 +194,7 @@ class VulnModule:
                        title="Dependency Vulnerabilities")
 
     def _ai_triage(self, data: dict) -> str:
+        """Request AI triage using the top 15 CVSS findings and first ten dependency findings."""
         top = sorted(data.get("findings", []),
                      key=lambda x: x.get("cvss_v3", 0), reverse=True)[:15]
         ctx = {

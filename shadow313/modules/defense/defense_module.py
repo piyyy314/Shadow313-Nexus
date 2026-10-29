@@ -10,6 +10,7 @@ from .remediation  import RemediationGenerator
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -17,6 +18,7 @@ class DefenseModule:
     """shadow313.defense — System hardening audit and AI remediation."""
 
     def __init__(self, kernel) -> None:
+        """Bind hardening audits to the kernel configuration and session services."""
         self.kernel  = kernel
         self.config  = kernel.config.get("defense", default={})
         self.out     = kernel.out
@@ -24,6 +26,7 @@ class DefenseModule:
         self.session = kernel.session
 
     def register(self, kernel) -> None:
+        """Register the defense command with the supplied kernel."""
         kernel.register("defense", self.run)
 
     def run(self, audit: bool = False, profile: str = "cis-level1",
@@ -32,6 +35,14 @@ class DefenseModule:
             # v1 compat aliases
             firewall: bool = False, remediate: bool = False,
             output_fmt: str = "bash") -> dict:
+        """Collect system information, run requested audits, and save compliance.json.
+
+        Profiles containing "level2" select the extended CIS checks. Failed or
+        warning checks may write a remediation script; "ansible" selects YAML
+        and other formats select Bash. The script is generated without execution;
+        apply_fixes is unused. An AI plan is requested on every completed run.
+        File I/O errors propagate.
+        """
         self.out.section("DEFENSIVE HARDENING AUDIT")
         self.session.audit("defense", "start", profile)
 
@@ -104,6 +115,7 @@ class DefenseModule:
         return result
 
     def ai_context(self) -> dict:
+        """Summarize saved compliance findings for AI requests."""
         data = self.session.read("compliance.json") or {}
         findings = data.get("findings", [])
         return {
@@ -115,6 +127,7 @@ class DefenseModule:
         }
 
     def _ai_plan(self, data: dict) -> str:
+        """Request an AI remediation plan using up to 20 failed or warning checks."""
         failed = [f for f in data.get("findings", [])
                   if f.get("status") in ("FAIL", "WARN")]
         ctx = {

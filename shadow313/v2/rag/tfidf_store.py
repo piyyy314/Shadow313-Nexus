@@ -13,6 +13,7 @@ def _tokenize(text: str) -> list[str]:
 
 
 def _tfidf(docs: list[list[str]]) -> list[dict[str, float]]:
+    """Return one smoothed TF-IDF vector per token list, with {} for empty documents."""
     N = len(docs)
     df: dict[str, int] = {}
     for doc in docs:
@@ -32,6 +33,7 @@ def _tfidf(docs: list[list[str]]) -> list[dict[str, float]]:
 
 
 def _cosine(a: dict[str, float], b: dict[str, float]) -> float:
+    """Return cosine similarity, or zero for disjoint terms or zero-length vectors."""
     common = set(a) & set(b)
     if not common:
         return 0.0
@@ -47,15 +49,18 @@ class TFIDFVectorStore:
     """Lightweight TF-IDF vector store — no external dependencies."""
 
     def __init__(self, store_path: str | None = None) -> None:
+        """Create an empty store with an optional JSON path for explicit save/load calls."""
         self._docs:     list[dict[str, Any]] = []
         self._vectors:  list[dict[str, float]] = []
         self._store_path = Path(store_path) if store_path else None
 
     def add(self, text: str, metadata: dict | None = None) -> None:
+        """Append a document with optional metadata and rebuild all search vectors."""
         self._docs.append({"text": text, "metadata": metadata or {}})
         self._rebuild()
 
     def add_batch(self, items: list[dict]) -> None:
+        """Append text/metadata records, defaulting missing text to "", then rebuild vectors."""
         for item in items:
             self._docs.append({
                 "text":     item.get("text", ""),
@@ -64,6 +69,12 @@ class TFIDFVectorStore:
         self._rebuild()
 
     def query(self, text: str, top_k: int = 5) -> list[dict]:
+        """Return matching documents ranked by descending cosine similarity.
+
+        Results contain text, metadata, and a score rounded to four decimals.
+        Only positive similarities are included. top_k slices the ranked list:
+        zero returns nothing and negative values omit entries from its end.
+        """
         if not self._docs:
             return []
         q_tokens = _tokenize(text)
@@ -83,20 +94,31 @@ class TFIDFVectorStore:
         return results
 
     def save(self) -> None:
+        """Write documents and metadata as JSON, creating parents and replacing the file.
+
+        Do nothing without a store path. I/O and serialization errors propagate.
+        """
         if self._store_path:
             self._store_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self._store_path, "w") as fh:
                 json.dump(self._docs, fh)
 
     def load(self) -> None:
+        """Replace documents from the configured JSON file and rebuild search vectors.
+
+        Do nothing if no path is configured or the file is absent. Read, JSON
+        decoding, and invalid document structure errors propagate.
+        """
         if self._store_path and self._store_path.exists():
             with open(self._store_path) as fh:
                 self._docs = json.load(fh)
             self._rebuild()
 
     def _rebuild(self) -> None:
+        """Recompute search vectors from the current documents."""
         tokenized    = [_tokenize(d["text"]) for d in self._docs]
         self._vectors = _tfidf(tokenized) if tokenized else []
 
     def count(self) -> int:
+        """Return the number of stored documents, including duplicates."""
         return len(self._docs)

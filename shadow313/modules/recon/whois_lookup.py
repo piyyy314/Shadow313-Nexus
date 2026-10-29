@@ -7,9 +7,14 @@ class WHOISLookup:
     WHOIS_SERVER = ("whois.iana.org", 43)
 
     def __init__(self, target: str) -> None:
+        """Select a target for WHOIS lookup."""
         self.target = target
 
     def lookup(self) -> dict:
+        """Return parsed WHOIS data, using a raw IANA query if python-whois is unavailable.
+
+        Lookup failures return an error mapping.
+        """
         try:
             import whois as python_whois
             w = python_whois.whois(self.target)
@@ -30,6 +35,7 @@ class WHOISLookup:
             return {"domain": self.target, "error": str(exc)}
 
     def _raw_whois(self) -> dict:
+        """Return up to 3,000 characters from an IANA WHOIS response, or an error mapping."""
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(10)

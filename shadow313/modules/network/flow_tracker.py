@@ -7,9 +7,15 @@ class FlowTracker:
     """Maintains 5-tuple flow table with per-flow statistics."""
 
     def __init__(self) -> None:
+        """Initialize an empty directional flow table."""
         self._flows: dict[tuple, dict] = {}
 
     def update(self, pkt: dict) -> None:
+        """Accumulate packet count, length in bytes, and timestamps for a directional flow.
+
+        Ignore packets without src_ip. ts is in seconds; the last timestamp is
+        the most recently processed packet's timestamp, not the maximum.
+        """
         if not pkt.get("src_ip"):
             return
         key = (pkt.get("src_ip", ""), pkt.get("dst_ip", ""),
@@ -23,6 +29,11 @@ class FlowTracker:
         self._flows[key]["last"]     = ts
 
     def get_flows(self) -> list[dict]:
+        """Return flow statistics sorted by descending byte count.
+
+        Duration is in seconds with a 0.001-second floor; rates are packets and
+        bytes per second. Returned records are separate from the stored counters.
+        """
         results = []
         for (src_ip, dst_ip, sport, dport, proto), stats in self._flows.items():
             duration = max(stats["last"] - stats["first"], 0.001)
@@ -39,6 +50,7 @@ class FlowTracker:
         return sorted(results, key=lambda x: x["bytes"], reverse=True)
 
     def from_packets(self, packets: list[dict]) -> list[dict]:
+        """Accumulate packets into the existing table and return all flow statistics."""
         for pkt in packets:
             self.update(pkt)
         return self.get_flows()
@@ -77,6 +89,11 @@ class OutboundVolumeMonitor:
         approved_domains: set[str] | None = None,
         alert_callback=None,
     ) -> None:
+        """Configure per-source/destination byte thresholds over a window in seconds.
+
+        A falsy approved_domains uses the default allowlist. The callback
+        receives (src_ip, dest_domain, total_bytes) when a record triggers it.
+        """
         self.threshold_bytes = threshold_bytes
         self.window_s = window_s
         self.approved_domains = approved_domains or self.APPROVED_DOMAINS
@@ -85,6 +102,7 @@ class OutboundVolumeMonitor:
         self._events: dict[tuple[str, str], list[tuple[float, int]]] = _defaultdict(list)
 
     def _default_alert(self, src_ip: str, dest_domain: str, total_bytes: int) -> None:
+        """Print the source, destination, and window byte total expressed in MiB."""
         mb = total_bytes / 1_048_576
         print(
             f"[SHADOW313-GAP9] EXFIL ALERT: {src_ip} → {dest_domain} "
@@ -92,14 +110,16 @@ class OutboundVolumeMonitor:
         )
 
     def _is_approved(self, domain: str) -> bool:
+        """Match a lowercased domain or its subdomain against the configured allowlist."""
         domain = domain.lower()
         return any(domain == d or domain.endswith("." + d) for d in self.approved_domains)
 
     def record(self, src_ip: str, dest_domain: str, bytes_sent: int) -> bool:
-        """Record an outbound transfer event.
+        """Record bytes for an unapproved source/destination pair in the current window.
 
-        Returns:
-            True if alert was triggered, False otherwise.
+        Approved destinations are ignored. Invoke the callback on each record
+        whose cumulative total reaches or exceeds threshold_bytes. Return True
+        after a successful callback, otherwise False; callback errors propagate.
         """
         if self._is_approved(dest_domain):
             return False
@@ -119,7 +139,11 @@ class OutboundVolumeMonitor:
         return False
 
     def stats(self) -> list[dict]:
-        """Return current per-endpoint outbound volume stats."""
+        """Return active source/destination totals, sorted by descending bytes.
+
+        total_mb uses MiB (1,048,576 bytes). alert includes equality with the
+        threshold. This method does not invoke alert callbacks.
+        """
         now = _datetime.now(_timezone.utc).timestamp()
         cutoff = now - self.window_s
         results = []
@@ -160,6 +184,12 @@ class UserFileAccessMonitor:
         min_baseline: int = 100,
         alert_callback=None,
     ) -> None:
+        """Configure daily access-count alerts against each user's recent baseline.
+
+        alert_multiplier scales the average count; min_baseline suppresses
+        alerts below that average. The callback receives (username, count,
+        baseline). Days advance only through end_of_day calls.
+        """
         self.alert_multiplier = alert_multiplier
         self.min_baseline = min_baseline
         self.alert_callback = alert_callback or self._default_alert
@@ -168,16 +198,19 @@ class UserFileAccessMonitor:
         self._today: dict[str, int] = _defaultdict(int)
 
     def _default_alert(self, username: str, count: int, baseline: float) -> None:
+        """Print the user access count, baseline, and scaled alert threshold."""
         print(
             f"[SHADOW313-GAP8] UEBA ALERT: {username} accessed {count} files "
             f"(baseline={baseline:.0f}, threshold={baseline * self.alert_multiplier:.0f})"
         )
 
     def record_access(self, username: str, file_path: str = "") -> bool:
-        """Record a file access event for a user.
+        """Increment today's user count and return whether an alert callback completed.
 
-        Returns:
-            True if alert was triggered, False otherwise.
+        Require at least seven history entries and an average at least
+        min_baseline. Alert on every count at or above the scaled average of
+        the last 30 entries. file_path is unused; repeated accesses count again.
+        Callback exceptions propagate.
         """
         self._today[username] += 1
         count = self._today[username]

@@ -96,6 +96,7 @@ MODULE_DOCS: dict[str, dict] = {
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -103,18 +104,25 @@ class DocsModule:
     """shadow313.docs — Documentation, AI ask, tutorials, man pages."""
 
     def __init__(self, kernel) -> None:
+        """Bind documentation commands to kernel output, AI, and session services."""
         self.kernel  = kernel
         self.out     = kernel.out
         self.ai      = kernel.ai
         self.session = kernel.session
 
     def register(self, kernel) -> None:
+        """Register the docs, ask, and learn commands with the supplied kernel."""
         kernel.register("docs",  self.show_docs)
         kernel.register("ask",   self.ask)
         kernel.register("learn", self.learn)
 
     def show_docs(self, topic: str = "", glossary: bool = False,
                   man: bool = False, output_dir: str = ".") -> dict:
+        """Display documentation and return glossary, topic data, or available module names.
+
+        Glossary and topic requests take precedence over man page generation.
+        Otherwise man=True writes pages under output_dir/man; I/O errors propagate.
+        """
         self.out.section("SHADOW313 DOCUMENTATION")
         if glossary:
             self._print_glossary()
@@ -133,6 +141,10 @@ class DocsModule:
         return {"modules": list(MODULE_DOCS.keys())}
 
     def ask(self, question: str = "", stream: bool = True) -> dict:
+        """Display an AI answer and return the question and assembled answer.
+
+        stream prints chunks as they arrive. An empty question returns {}.
+        """
         if not question:
             self.out.info("Usage: shadow313 ask 'your security question'")
             return {}
@@ -158,6 +170,11 @@ class DocsModule:
         return {"question": question, "answer": answer}
 
     def learn(self, module: str = "", interactive: bool = False, step: int = 0) -> dict:
+        """Display a module tutorial and return its module name and step count.
+
+        A nonzero step selects that numbered step and returns {}, taking
+        precedence over interactive mode. Missing or unknown modules return {}.
+        """
         if not module:
             self.out.info("Available tutorials: " + ", ".join(TUTORIALS.keys()))
             return {}
@@ -179,9 +196,11 @@ class DocsModule:
         return {"module": module, "steps": len(steps)}
 
     def ai_context(self) -> dict:
+        """Return the available documentation module names for AI requests."""
         return {"module": "docs", "available_modules": list(MODULE_DOCS.keys())}
 
     def _show_module_docs(self, topic: str) -> dict:
+        """Display a topic and return its documentation, or {} for an unknown topic."""
         doc = MODULE_DOCS.get(topic.lower())
         if not doc:
             self.out.error(f"Module '{topic}' not found. Available: {', '.join(MODULE_DOCS)}")
@@ -199,16 +218,19 @@ class DocsModule:
         return doc
 
     def _print_glossary(self) -> None:
+        """Display glossary terms alphabetically with abbreviated definitions."""
         self.out.section("SECURITY GLOSSARY")
         rows = [[term, definition[:80]] for term, definition in sorted(GLOSSARY.items())]
         self.out.table(["Term", "Definition"], rows, "Glossary")
 
     def _print_step(self, step: dict, total: int) -> None:
+        """Display one tutorial step and its position in the tutorial."""
         self.out.section(f"Step {step['step']}/{total}: {step['title']}")
         print(step["content"])
         print()
 
     def _run_interactive(self, steps: list[dict], module: str) -> None:
+        """Display steps with prompts between them; q, EOF, or interruption ends the tutorial."""
         total = len(steps)
         for step in steps:
             self._print_step(step, total)

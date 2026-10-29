@@ -159,6 +159,11 @@ def classify_algorithm(name: str) -> dict:
       2. Longest substring match (e.g. 'SLH-DSA-SHAKE-128s' beats 'DSA')
     This prevents short keys like 'DSA' from matching 'SLH-DSA' queries,
     and prevents 'ML-DSA' from matching a bare 'DSA' query.
+
+    Hyphens and underscores are ignored during matching. Substring matching works
+    in either direction, with equal-length ties resolved in table order. Return a
+    copy of the table fields plus algorithm; unmatched names return UNKNOWN with
+    an empty replacement. An empty name matches the longest normalized table key.
     """
     name_upper = name.upper().replace("-", "").replace("_", "")
 

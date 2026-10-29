@@ -13,11 +13,13 @@ SEVERITY_TO_SARIF = {
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
 class SARIFBuilder:
     def __init__(self, tool_name: str = "shadow313", tool_version: str = "2.0.0") -> None:
+        """Initialize an empty report with the given tool identity."""
         self.tool_name    = tool_name
         self.tool_version = tool_version
         self._rules: list[dict]   = []
@@ -27,6 +29,11 @@ class SARIFBuilder:
     def add_finding(self, rule_id: str, message: str, level: str,
                     file_path: str = "", line: int = 0,
                     cve: str = "", help_uri: str = "") -> None:
+        """Append a result and register its rule on the first use of rule_id.
+
+        level is a finding severity; unknown values map to warning. A positive
+        line is a one-based location and is included only with file_path.
+        """
         if rule_id not in self._rule_ids:
             self._rule_ids.add(rule_id)
             rule: dict = {
@@ -52,6 +59,7 @@ class SARIFBuilder:
         self._results.append(result)
 
     def build(self) -> dict:
+        """Return a SARIF 2.1.0 report sharing the stored rule and result lists."""
         return {
             "$schema": SARIF_SCHEMA,
             "version": SARIF_VERSION,
@@ -68,4 +76,5 @@ class SARIFBuilder:
         }
 
     def to_json(self) -> str:
+        """Serialize the current report as indented JSON."""
         return json.dumps(self.build(), indent=2)

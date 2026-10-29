@@ -5,6 +5,10 @@ from pathlib import Path
 
 
 def generate_man_page(module: str, doc: dict) -> str:
+    """Return troff source for a module's manual page using its documentation mapping.
+
+    Include flags and at most five command examples.
+    """
     date = datetime.now(timezone.utc).strftime("%B %Y")
     lines = [
         f'.TH "SHADOW313-{module.upper()}" "1" "{date}" "shadow313 2.0.0" "Shadow313 Manual"',
@@ -26,6 +30,10 @@ def generate_man_page(module: str, doc: dict) -> str:
 
 
 def write_man_pages(module_docs: dict, output_dir: str = ".") -> list[str]:
+    """Write section-1 pages under output_dir/man and return their path strings.
+
+    Create directories and replace existing pages. File I/O errors propagate.
+    """
     base = Path(output_dir) / "man"
     base.mkdir(parents=True, exist_ok=True)
     written = []

@@ -17,6 +17,11 @@ class SubdomainDiscoverer:
 
     def __init__(self, domain: str, wordlist: list[str] | None = None,
                  stealth: bool = False, rate_rps: int = 10) -> None:
+        """Configure discovery using a supplied or default wordlist.
+
+        A falsy wordlist uses DEFAULT_WORDLIST. In stealth mode, pause after
+        each DNS candidate by 1/max(rate_rps, 1) seconds.
+        """
         self.domain   = domain
         self.wordlist = wordlist or self.DEFAULT_WORDLIST
         self.stealth  = stealth
@@ -24,6 +29,10 @@ class SubdomainDiscoverer:
         self.found: list[str] = []
 
     def from_ct_logs(self) -> list[str]:
+        """Fetch CT names, append matches to found, and return them without DNS verification.
+
+        Network and response-processing failures return [].
+        """
         url = self.CT_LOG_URL.format(domain=f"%.{self.domain}")
         try:
             req = urlreq.Request(url, headers={"User-Agent": "shadow313/2.0"})
@@ -41,6 +50,10 @@ class SubdomainDiscoverer:
             return []
 
     def from_wordlist(self) -> list[str]:
+        """Resolve wordlist candidates, append successful names to found, and return them.
+
+        Ignore DNS address lookup errors; other resolver or sleep errors propagate.
+        """
         found = []
         for word in self.wordlist:
             candidate = f"{word}.{self.domain}"
@@ -55,6 +68,7 @@ class SubdomainDiscoverer:
         return found
 
     def scan(self) -> list[str]:
+        """Combine CT and wordlist results into found, deduplicating without preserving order."""
         ct = self.from_ct_logs()
         wl = self.from_wordlist()
         unique = list({*ct, *wl})

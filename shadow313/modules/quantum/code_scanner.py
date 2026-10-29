@@ -7,9 +7,11 @@ from .quantum_data import CODE_CRYPTO_PATTERNS, LANG_EXTENSIONS, classify_algori
 
 class SourceCodeScanner:
     def __init__(self, lang: str | None = None) -> None:
+        """Select an optional case-insensitive language filter for directory scans."""
         self.lang = lang
 
     def scan_directory(self, dir_path: str) -> list[dict]:
+        """Return crypto findings from recognized source extensions below dir_path."""
         findings = []
         p = Path(dir_path)
         for lang, exts in LANG_EXTENSIONS.items():
@@ -21,11 +23,16 @@ class SourceCodeScanner:
         return findings
 
     def scan_file(self, file_path: str) -> list[dict]:
+        """Return crypto findings using the file extension, regardless of the directory filter."""
         p    = Path(file_path)
         lang = self._detect_lang(p)
         return self._scan_file(p, lang)
 
     def _scan_file(self, path: Path, lang: str) -> list[dict]:
+        """Return crypto findings with one-based line numbers, deduplicated by file/line/algorithm.
+
+        Unreadable files yield []; generic patterns also apply to unknown languages.
+        """
         try:
             text  = path.read_text(encoding="utf-8", errors="replace")
             lines = text.splitlines()
@@ -75,6 +82,7 @@ class SourceCodeScanner:
 
     @staticmethod
     def _detect_lang(path: Path) -> str:
+        """Return the language for an exact extension match, or "Unknown"."""
         for lang, exts in LANG_EXTENSIONS.items():
             if path.suffix in exts:
                 return lang

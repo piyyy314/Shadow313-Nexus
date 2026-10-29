@@ -8,6 +8,7 @@ from .system_info import _run
 
 
 def _sev(critical=False, high=False, medium=False, low=False) -> str:
+    """Return the highest enabled severity, defaulting to INFO."""
     if critical: return "CRITICAL"
     if high:     return "HIGH"
     if medium:   return "MEDIUM"
@@ -17,9 +18,11 @@ def _sev(critical=False, high=False, medium=False, low=False) -> str:
 
 class CISBenchmarkChecker:
     def __init__(self, level: int = 1) -> None:
+        """Select base checks, adding the extended checks when level is at least two."""
         self.level = level
 
     def run_all(self) -> list[dict]:
+        """Return results for the selected checks, converting exceptions to ERROR results."""
         checks = [
             self.check_ssh_config, self.check_password_policy,
             self.check_firewall, self.check_suid_sgid,
@@ -44,6 +47,10 @@ class CISBenchmarkChecker:
         return results
 
     def check_ssh_config(self) -> dict:
+        """Return SSH setting findings, or SKIP when sshd_config is absent.
+
+        Missing required settings count as issues. File read errors propagate.
+        """
         sshd_path = Path("/etc/ssh/sshd_config")
         if not sshd_path.exists():
             return {"check": "SSH Config", "status": "SKIP",
@@ -51,6 +58,7 @@ class CISBenchmarkChecker:
         text = sshd_path.read_text(errors="replace")
         issues = []
         def _get_val(key):
+            """Return the first matching SSH option value in lowercase, or "" if absent."""
             m = re.search(rf"^\s*{key}\s+(\S+)", text, re.MULTILINE | re.IGNORECASE)
             return m.group(1).lower() if m else ""
         if _get_val("PermitRootLogin") not in ("no", "prohibit-password", "forced-commands-only"):
@@ -67,6 +75,11 @@ class CISBenchmarkChecker:
                 "issues": issues, "cis_id": "5.2"}
 
     def check_password_policy(self) -> dict:
+        """Return password policy findings from pwquality.conf and login.defs.
+
+        Require a minlen entry and flag missing or excessive PASS_MAX_DAYS and
+        PASS_MIN_DAYS values against limits of 90 and 7. Read errors propagate.
+        """
         issues = []
         pwqual  = Path("/etc/security/pwquality.conf")
         logindf = Path("/etc/login.defs")
@@ -88,6 +101,7 @@ class CISBenchmarkChecker:
                 "cis_id": "5.4"}
 
     def check_firewall(self) -> dict:
+        """Return the first successful firewall probe's status, or FAIL if none succeeds."""
         for cmd, name in [
             (["ufw", "status"], "UFW"),
             (["firewall-cmd", "--state"], "firewalld"),
@@ -105,6 +119,7 @@ class CISBenchmarkChecker:
                 "detail": "No firewall tool found", "cis_id": "3.6"}
 
     def check_suid_sgid(self) -> dict:
+        """Return unexpected privileged binary findings, including at most 20 paths."""
         out, _, _ = _run(["find", "/", "-perm", "-4000", "-o", "-perm", "-2000",
                            "-not", "-path", "/proc/*", "-not", "-path", "/sys/*"], timeout=30)
         binaries = [l.strip() for l in out.splitlines() if l.strip()]
@@ -119,6 +134,7 @@ class CISBenchmarkChecker:
                 "unexpected": unexpected[:20], "cis_id": "6.1.13"}
 
     def check_world_writable(self) -> dict:
+        """Return world-writable file findings on the root filesystem, listing up to 20 paths."""
         out, _, _ = _run(["find", "/", "-xdev", "-type", "f", "-perm", "-0002",
                            "-not", "-path", "/proc/*", "-not", "-path", "/sys/*"], timeout=30)
         files = [l.strip() for l in out.splitlines() if l.strip()]
@@ -129,6 +145,7 @@ class CISBenchmarkChecker:
                 "files": files[:20], "cis_id": "6.1.11"}
 
     def check_no_empty_passwords(self) -> dict:
+        """Return a critical failure for empty password fields reported from /etc/shadow."""
         out, _, _ = _run(["awk", "-F:", '($2 == "" ) {print}', "/etc/shadow"])
         empty = [l.strip() for l in out.splitlines() if l.strip()]
         return {"check": "Empty Passwords",
@@ -138,6 +155,7 @@ class CISBenchmarkChecker:
                 "cis_id": "6.2.1"}
 
     def check_root_path(self) -> dict:
+        """Return findings for empty, dot, or dot-dot entries in the current PATH."""
         path_val  = os.environ.get("PATH", "")
         dangerous = [p for p in path_val.split(":") if p in (".", "", "..")]
         return {"check": "Root PATH Integrity",
@@ -147,6 +165,7 @@ class CISBenchmarkChecker:
                 "cis_id": "6.2.6"}
 
     def check_sticky_bit(self) -> dict:
+        """Return findings for directories lacking the sticky bit under temporary directories."""
         out, _, _ = _run(["find", "/tmp", "/var/tmp", "/dev/shm", "-type", "d",
                            "-not", "-perm", "-1000"], timeout=10)
         dirs = [l.strip() for l in out.splitlines() if l.strip()]
@@ -157,6 +176,7 @@ class CISBenchmarkChecker:
                 "cis_id": "1.1.18"}
 
     def check_cron_permissions(self) -> dict:
+        """Return findings for group/world-writable cron paths; stat errors propagate."""
         issues = []
         for path in ["/etc/crontab", "/etc/cron.d", "/etc/cron.hourly",
                      "/etc/cron.daily", "/etc/cron.weekly", "/etc/cron.monthly"]:
@@ -172,6 +192,7 @@ class CISBenchmarkChecker:
                 "cis_id": "5.1"}
 
     def check_core_dumps(self) -> dict:
+        """Return core-dump status from ulimit or limits.conf; file read errors propagate."""
         out, _, _ = _run(["ulimit", "-c"])
         disabled  = out.strip() == "0"
         limits_file = Path("/etc/security/limits.conf")
@@ -186,6 +207,7 @@ class CISBenchmarkChecker:
                 "cis_id": "1.6.1"}
 
     def check_yama_ptrace(self) -> dict:
+        """Return ptrace restriction status, or SKIP if unavailable; read errors propagate."""
         scope_file = Path("/proc/sys/kernel/yama/ptrace_scope")
         if not scope_file.exists():
             return {"check": "Yama ptrace_scope", "status": "SKIP",
@@ -199,6 +221,10 @@ class CISBenchmarkChecker:
                 "cis_id": "1.6.3"}
 
     def check_randomize_va(self) -> dict:
+        """Return PASS only for ASLR value 2; an absent setting is treated as zero.
+
+        File read errors propagate.
+        """
         aslr_file = Path("/proc/sys/kernel/randomize_va_space")
         val = aslr_file.read_text().strip() if aslr_file.exists() else "0"
         ok  = val == "2"
@@ -209,6 +235,7 @@ class CISBenchmarkChecker:
                 "cis_id": "1.6.2"}
 
     def check_no_rsh_services(self) -> dict:
+        """Return findings for enabled rsh, rlogin, rexec, telnet, and ftp services."""
         issues = []
         for svc in ["rsh", "rlogin", "rexec", "telnet", "ftp"]:
             out, _, rc = _run(["systemctl", "is-enabled", svc], timeout=5)
@@ -221,6 +248,7 @@ class CISBenchmarkChecker:
                 "cis_id": "2.1"}
 
     def check_unused_filesystems(self) -> dict:
+        """Return warnings for filesystem modules not reported as disabled or missing."""
         issues = []
         for fs in ["cramfs", "freevxfs", "jffs2", "hfs", "hfsplus", "udf"]:
             out, _, _ = _run(["modprobe", "-n", "-v", fs], timeout=5)
@@ -233,6 +261,7 @@ class CISBenchmarkChecker:
                 "cis_id": "1.1"}
 
     def check_auditd(self) -> dict:
+        """Return auditd status from the systemctl probe."""
         out, _, rc = _run(["systemctl", "is-active", "auditd"])
         active = rc == 0 and "active" in out
         return {"check": "Auditd Service",
@@ -242,6 +271,7 @@ class CISBenchmarkChecker:
                 "cis_id": "4.1"}
 
     def check_apparmor_selinux(self) -> dict:
+        """Return status from the first available MAC tool, or FAIL if neither responds."""
         for mac, cmd in [("AppArmor", ["aa-status"]), ("SELinux", ["sestatus"])]:
             out, _, rc = _run(cmd, timeout=5)
             if rc == 0 and out:
@@ -255,6 +285,7 @@ class CISBenchmarkChecker:
                 "detail": "Neither AppArmor nor SELinux found active", "cis_id": "1.7"}
 
     def check_umask(self) -> dict:
+        """Return PASS for a reported mask of 027 or 077, otherwise WARN."""
         out, _, _ = _run(["umask"])
         mask = out.strip()
         ok   = mask in ("0027", "0077", "027", "077")
@@ -265,6 +296,7 @@ class CISBenchmarkChecker:
                 "cis_id": "5.4.4"}
 
     def check_login_banners(self) -> dict:
+        """Return warnings for missing/empty login banners; file read errors propagate."""
         issues = []
         for f in ["/etc/issue", "/etc/issue.net", "/etc/motd"]:
             if not Path(f).exists() or not Path(f).read_text().strip():

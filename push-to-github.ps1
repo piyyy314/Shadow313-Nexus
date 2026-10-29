@@ -46,12 +46,42 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # ── Colour helpers ────────────────────────────────────────────────────────────
-function Write-Step   { param($msg) Write-Host "`n[STEP] $msg" -ForegroundColor Cyan }
-function Write-Ok     { param($msg) Write-Host "  [OK] $msg"   -ForegroundColor Green }
-function Write-Warn   { param($msg) Write-Host "  [WARN] $msg" -ForegroundColor Yellow }
-function Write-Fail   { param($msg) Write-Host "  [FAIL] $msg" -ForegroundColor Red }
-function Write-Info   { param($msg) Write-Host "  [INFO] $msg" -ForegroundColor Gray }
-function Write-Dry    { param($msg) Write-Host "  [DRY-RUN] $msg" -ForegroundColor Magenta }
+function Write-Step   {
+    <#
+    .SYNOPSIS
+        Display a progress step on the host.
+    #>
+    param($msg) Write-Host "`n[STEP] $msg" -ForegroundColor Cyan }
+function Write-Ok     {
+    <#
+    .SYNOPSIS
+        Display a success message on the host.
+    #>
+    param($msg) Write-Host "  [OK] $msg"   -ForegroundColor Green }
+function Write-Warn   {
+    <#
+    .SYNOPSIS
+        Display a warning message on the host.
+    #>
+    param($msg) Write-Host "  [WARN] $msg" -ForegroundColor Yellow }
+function Write-Fail   {
+    <#
+    .SYNOPSIS
+        Display a failure message on the host.
+    #>
+    param($msg) Write-Host "  [FAIL] $msg" -ForegroundColor Red }
+function Write-Info   {
+    <#
+    .SYNOPSIS
+        Display an informational message on the host.
+    #>
+    param($msg) Write-Host "  [INFO] $msg" -ForegroundColor Gray }
+function Write-Dry    {
+    <#
+    .SYNOPSIS
+        Display a proposed dry-run action on the host.
+    #>
+    param($msg) Write-Host "  [DRY-RUN] $msg" -ForegroundColor Magenta }
 
 # ── Banner ────────────────────────────────────────────────────────────────────
 Write-Host ""

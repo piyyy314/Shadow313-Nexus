@@ -47,11 +47,17 @@ if __name__ == "__main__":
 
 class PluginManifest:
     def __init__(self, path: Path) -> None:
+        """Load a manifest from the plugin directory; missing files and parsing errors propagate."""
         self.path = path
         self._data: dict[str, Any] = {}
         self._load()
 
     def _load(self) -> None:
+        """Load plugin.yaml, falling back to manifest.yaml only when the first is absent.
+
+        Without PyYAML, use the minimal parser. Raise FileNotFoundError if both
+        files are absent; read and YAML parsing errors propagate.
+        """
         for name in ("plugin.yaml", "manifest.yaml"):
             manifest_file = self.path / name
             if manifest_file.exists():
@@ -65,6 +71,7 @@ class PluginManifest:
 
     @staticmethod
     def _minimal_parse(text: str) -> dict:
+        """Parse simple key/value lines and indented lists without full YAML semantics."""
         data: dict[str, Any] = {}
         current_list = None
         for line in text.splitlines():
@@ -86,37 +93,46 @@ class PluginManifest:
 
     @property
     def name(self) -> str:
+        """Return the declared name, defaulting to the plugin directory name."""
         return self._data.get("name", self.path.name)
 
     @property
     def version(self) -> str:
+        """Return the declared version as text, defaulting to "0.0.0"."""
         return str(self._data.get("version", "0.0.0"))
 
     @property
     def description(self) -> str:
+        """Return the declared description, defaulting to an empty string."""
         return self._data.get("description", "")
 
     @property
     def author(self) -> str:
+        """Return the declared author, defaulting to "unknown"."""
         return self._data.get("author", "unknown")
 
     @property
     def hooks(self) -> list[str]:
+        """Return declared hooks, defaulting to an empty list."""
         return self._data.get("hooks", [])
 
     @property
     def entry(self) -> str:
+        """Return the declared entry script, defaulting to "plugin.py"."""
         return self._data.get("entry", "plugin.py")
 
     @property
     def requires(self) -> list[str]:
+        """Return declared package requirements, defaulting to an empty list."""
         return self._data.get("requires", [])
 
     @property
     def entry_path(self) -> Path:
+        """Join the declared entry to the plugin directory without containment checks."""
         return self.path / self.entry
 
     def validate(self) -> list[str]:
+        """Return errors for an empty name, absent entry file, or unsupported hook."""
         errors = []
         if not self.name:
             errors.append("Missing 'name' field")
@@ -128,6 +144,7 @@ class PluginManifest:
         return errors
 
     def to_dict(self) -> dict:
+        """Return manifest metadata with the plugin directory represented as a string."""
         return {
             "name": self.name, "version": self.version,
             "description": self.description, "author": self.author,

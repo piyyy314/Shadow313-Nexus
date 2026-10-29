@@ -7,6 +7,7 @@ from .manager import PluginRegistry, HookDispatcher, PluginScaffolder
 
 
 def _now() -> str:
+    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -14,6 +15,10 @@ class PluginManager:
     """shadow313.plugins — Plugin lifecycle management."""
 
     def __init__(self, kernel) -> None:
+        """Initialize plugin services, create their directory, and enable configured plugins.
+
+        Directory creation errors propagate.
+        """
         self.kernel     = kernel
         cfg             = kernel.config.get("plugins", default={})
         plugins_dir     = cfg.get("dir", "~/.shadow313/plugins")
@@ -27,12 +32,19 @@ class PluginManager:
             self.registry.enable(name)
 
     def register(self, kernel) -> None:
+        """Register the plugins command with the supplied kernel."""
         kernel.register("plugins", self.run)
 
     def run(self, list_plugins: bool = False,
             install: str = "", enable: str = "", disable: str = "",
             remove: str = "", new: str = "", hook: str = "",
             new_author: str = "") -> dict:
+        """Perform selected plugin operations and return listing, install, or scaffold details.
+
+        With no action, list plugins. Enable/disable state lasts for this
+        registry instance. Installation/removal/scaffolding may replace or
+        delete files; filesystem errors propagate.
+        """
         self.out.section("PLUGIN MANAGER")
         result: dict[str, Any] = {"timestamp": _now()}
 
@@ -83,9 +95,11 @@ class PluginManager:
 
     def fire_hook(self, hook: str, module: str,
                   output: Any = None, target: str = "") -> list[dict]:
+        """Execute enabled plugins for a hook and return their runner results."""
         return self.dispatcher.fire(hook, module, output, target)
 
     def ai_context(self) -> dict:
+        """Discover plugins and return installed and enabled counts for AI requests."""
         plugins = self.registry.list_all()
         return {
             "module":          "plugins",
