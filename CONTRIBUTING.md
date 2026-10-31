@@ -11,7 +11,7 @@ pytest tests/ -q --ignore=tests/integration
 ## Workflow
 1. Fork the repository
 2. Create a branch: `git checkout -b feat/your-feature`
-3. Write tests first — we maintain 4,107+ tests GREEN
+3. Write focused tests first; report measured results for the commit under review
 4. Implement your feature
 5. Run: `pytest tests/ -q`
 6. Commit: `feat: add X module`

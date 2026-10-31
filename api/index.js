@@ -1,3 +1,4 @@
+const forms = require('../server/forms.cjs').createForms();
 // This static website does not run the Python security backend.
 // Do not return fabricated detection results, receipts, or queued scans.
 const backendRoutes = [
@@ -10,6 +11,7 @@ const backendRoutes = [
 
 function handler(req, res) {
   const path = req.url.split('?', 1)[0].replace(/\/$/, '');
+  if (['/api/forms/config', '/api/contact', '/api/waitlist'].includes(path)) return forms(req, res, path);
   const method = req.method === 'HEAD' ? 'GET' : req.method;
   const health = path === '/api/health';
   const status = path === '/api/status';
