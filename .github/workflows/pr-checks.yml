@@ -123,7 +123,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@44c470ffa3e3e9f1cf3e1dc0c3d9843f68e56cc0 # v2.3.7
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_ENABLE_SUMMARY: true
@@ -146,7 +146,7 @@ jobs:
         run: |
           pip install -e ".[dev]"
           pip-audit --desc --format json -o pip-audit-report.json || true
-          pip-audit --desc --severity high
+          pip-audit --desc
 
       - name: Run Safety check
         run: safety check --full-report || true

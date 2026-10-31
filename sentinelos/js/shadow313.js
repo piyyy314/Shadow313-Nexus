@@ -404,21 +404,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const fetchCircuitQasm = async (circuitName) => {
-        try {
-            // Attempt to dynamically fetch OpenQASM file from tracked assets
-            const response = await fetch(`/shadow313/assets/circuits/${circuitName}.qasm`);
-            if (response.ok) {
-                const qasmText = await response.text();
-                circuitCodes[circuitName].qasm = qasmText;
-                updateCodeExporterUI();
-                console.log(`Successfully fetched dynamic QASM asset: ${circuitName}.qasm`);
-            }
-        } catch (err) {
-            console.warn(`Dynamic QASM fetch failed, using local fallback:`, err);
-        }
-    };
-
     // Tabs logic for code exporter
     const btnTabQiskit = document.getElementById('btn-tab-qiskit');
     const btnTabQasm = document.getElementById('btn-tab-qasm');
@@ -475,11 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
         animate('s313-prof-2q', 's313-prof-2q-val', profile.q2);
     };
 
-    // Load initial code exporter values and trigger fetch
+    // Load the embedded code exporter examples.
     updateCodeExporterUI();
-    fetchCircuitQasm('bell_state');
-    fetchCircuitQasm('shors_15');
-    fetchCircuitQasm('grovers_search');
+    // Use the embedded QASM examples; no circuit assets are deployed.
 
     // ========================================================================
     // 6. QUANTUM CHAT TERMINAL — Thought Engine

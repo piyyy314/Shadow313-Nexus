@@ -796,7 +796,7 @@ body {
 .cta-box p { font-size: 18px; color: var(--text-muted); max-width: 540px; margin: 0 auto 40px; }
 .waitlist-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto; }
 .waitlist-input {
-    flex: 1; padding: 14px 20px;
+    flex: 1; min-width: 0; padding: 14px 20px;
     background: var(--bg-glass); border: 1px solid var(--border);
     border-radius: var(--radius-md); color: var(--text);
     font-size: 14px; outline: none; transition: var(--transition);
@@ -822,7 +822,7 @@ footer {
 .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
 .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
 .footer-links a:hover { color: var(--text); }
-.footer-copy { font-size: 12px; color: var(--text-dim); }
+.footer-copy { font-size: 12px; color: var(--text-muted); }
 
 /* ============================================================
    RESPONSIVE
@@ -833,7 +833,8 @@ footer {
     .terminal-layout, .qte-layout, .binding-layout { grid-template-columns: 1fr; }
     .pricing-grid { grid-template-columns: 1fr; }
     .arch-row { flex-direction: column; }
-    .roadmap-phase { grid-template-columns: 0 40px 1fr; }
+    .roadmap-phase { grid-template-columns: 40px minmax(0, 1fr); }
+    .rp-content { min-width: 0; overflow-wrap: anywhere; }
     .rp-phase-label { display: none; }
 }
 @media (max-width: 600px) {
@@ -841,6 +842,10 @@ footer {
     .bento-grid { grid-template-columns: 1fr; }
     .bento-card.span2, .bento-card.full { grid-column: span 1; }
     .hero-title { letter-spacing: -1px; }
+    .cta-box { padding: 48px 16px; }
+    .cta-box h2 { overflow-wrap: anywhere; }
+    .waitlist-form { flex-direction: column; }
+    .waitlist-input, .waitlist-btn { width: 100%; }
     .stats-strip { flex-direction: column; }
     .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
 }

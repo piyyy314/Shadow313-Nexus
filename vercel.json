@@ -1,7 +1,14 @@
 {
   "version": 2,
+  "git": {
+    "deploymentEnabled": false
+  },
   "name": "shadow313-nexus",
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
+    },
     {
       "source": "/",
       "has": [
