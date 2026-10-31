@@ -53,3 +53,6 @@ class IntelligenceGraph(_IntelligenceGraphV4):
         if not actors:
             return []
         return self.get_neighbors(actors[0].node_id)
+
+# Compatibility alias
+IntelGraph = IntelligenceGraph

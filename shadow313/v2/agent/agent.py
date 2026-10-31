@@ -83,7 +83,7 @@ class AgentPlan:
 # Built-in chain templates
 # ---------------------------------------------------------------------------
 
-CHAIN_TEMPLATES: dict[str, list[dict]] = {
+BUILTIN_PLANS: dict[str, list[dict]] = {
     "full_pentest": [
         {"name": "Passive Recon",       "module": "recon",   "action": "run",
          "params": {"mode": "passive"}, "risk_level": "low"},
@@ -134,6 +134,8 @@ CHAIN_TEMPLATES: dict[str, list[dict]] = {
 # ---------------------------------------------------------------------------
 # ApprovalGate — pluggable UI hook
 # ---------------------------------------------------------------------------
+
+CHAIN_TEMPLATES = BUILTIN_PLANS  # backward-compatible alias
 
 class ApprovalGate:
     """

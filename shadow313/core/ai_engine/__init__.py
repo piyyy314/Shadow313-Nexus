@@ -41,13 +41,61 @@ class AIEngine:
     # Maximum characters of context JSON to include in a prompt
     _MAX_CTX_CHARS = 12_000
 
+    # SSRF prevention (S313-CVE-2026-002)
+    _ALLOWED_SCHEMES = {"http", "https"}
+    _BLOCKED_HOSTS   = {
+        "169.254.169.254",       # AWS/GCP/Azure instance metadata
+        "metadata.google.internal",
+        "169.254.170.2",         # ECS task metadata
+        "100.100.100.200",       # Alibaba Cloud metadata
+    }
+
     def __init__(self, config: dict) -> None:
         self.backend:  str = config.get("backend", "ollama")
         self.model:    str = config.get("model", "mistral:7b")
-        self.endpoint: str = config.get("endpoint", "http://localhost:11434").rstrip("/")
+        raw_endpoint       = config.get("endpoint", "http://localhost:11434").rstrip("/")
+        self.endpoint: str = self._validate_endpoint(raw_endpoint)
         self.timeout:  int = int(config.get("timeout", 120))
         self.ctx_win:  int = int(config.get("context_window", 8192))
         self._api_key: str = config.get("openai_api_key", "") or os.environ.get("OPENAI_API_KEY", "")
+
+    def _validate_endpoint(self, endpoint: str) -> str:
+        """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
+        from urllib.parse import urlparse
+        try:
+            parsed = urlparse(endpoint)
+            scheme = parsed.scheme.lower()
+            host   = parsed.hostname or ""
+            if scheme not in self._ALLOWED_SCHEMES:
+                raise ValueError(
+                    f"AI endpoint scheme '{scheme}' is not allowed. Use http or https."
+                )
+            if host in self._BLOCKED_HOSTS:
+                raise ValueError(
+                    f"AI endpoint host '{host}' is blocked to prevent SSRF attacks."
+                )
+            # Normalize IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254)
+            normalized_host = host
+            try:
+                from ipaddress import IPv6Address
+                ipv6 = IPv6Address(host)
+                if ipv6.ipv4_mapped:
+                    normalized_host = str(ipv6.ipv4_mapped)
+            except Exception:
+                pass
+            if normalized_host in self._BLOCKED_HOSTS:
+                raise ValueError(
+                    f"AI endpoint host '{host}' is blocked (IPv4-mapped) to prevent SSRF attacks."
+                )
+            if normalized_host.startswith("169.254.") or host.startswith("169.254.") or host.startswith("fd00:"):
+                raise ValueError(
+                    f"AI endpoint host '{host}' is in a reserved/link-local range."
+                )
+        except ValueError:
+            raise
+        except Exception:
+            pass  # Malformed URL — let the actual request fail naturally
+        return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
     def chat(

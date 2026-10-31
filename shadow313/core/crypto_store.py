@@ -232,3 +232,78 @@ class EncryptedSessionStore:
     @property
     def is_encrypted(self) -> bool:
         return self._cipher is not None
+
+
+# ── SLHDSASigner — pyspx signatures with an explicit symmetric fallback ──────
+import hashlib as _hashlib
+import hmac as _hmac
+
+
+class SLHDSASigner:
+    """Legacy signer API backed by SPHINCS+ or a local-only HMAC fallback.
+
+    pyspx exposes SPHINCS+, not the standardized FIPS 205 SLH-DSA interface.
+    Receipts name the actual algorithm; HMAC receipts have no public key and
+    can only be verified by a holder of the same secret.
+    """
+
+    def __init__(self, private_key: bytes | None = None) -> None:
+        """Load a pyspx secret key, or generate a new key for the active backend."""
+        try:
+            import pyspx.shake_128f as backend
+        except ImportError:
+            backend = None
+        self._backend = backend
+        if backend is None:
+            self._private_key = private_key if private_key is not None else os.urandom(32)
+            self._public_key = None
+            self.ALGORITHM = "HMAC-SHA3-256"
+        else:
+            if private_key is None:
+                self._public_key, self._private_key = backend.generate_keypair(
+                    os.urandom(backend.crypto_sign_SEEDBYTES)
+                )
+            else:
+                if len(private_key) != backend.crypto_sign_SECRETKEYBYTES:
+                    raise ValueError(
+                        f"SPHINCS+ private key must be {backend.crypto_sign_SECRETKEYBYTES} bytes"
+                    )
+                self._private_key = private_key
+                # pyspx secret keys contain SK_SEED || SK_PRF || PUB_SEED || root.
+                self._public_key = private_key[-backend.crypto_sign_PUBLICKEYBYTES:]
+            self.ALGORITHM = "SPHINCS+-SHAKE-128f"
+        self.algorithm_name = self.ALGORITHM
+
+    @property
+    def available(self) -> bool:
+        """Whether this instance uses public-key signatures rather than HMAC."""
+        return self._backend is not None
+
+    @classmethod
+    def generate(cls) -> "SLHDSASigner":
+        return cls()
+
+    @property
+    def public_key(self) -> bytes | None:
+        return self._public_key
+
+    def sign(self, message: bytes) -> bytes:
+        if self._backend is not None:
+            # Backend/key failures must not silently downgrade a signature to HMAC.
+            return self._backend.sign(message, self._private_key)
+        return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
+
+    def verify(self, message: bytes, signature: bytes) -> bool:
+        if self._backend is not None:
+            if len(signature) != self._backend.crypto_sign_BYTES:
+                return False
+            return self._backend.verify(message, signature, self._public_key)
+        expected = _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
+        return _hmac.compare_digest(signature, expected)
+
+    def sign_receipt(self, receipt_data: dict) -> dict:
+        payload = json.dumps(receipt_data, sort_keys=True).encode()
+        sig = self.sign(payload)
+        return {**receipt_data, "signature": sig.hex(),
+                "algorithm": self.ALGORITHM,
+                "public_key": self._public_key.hex() if self._public_key is not None else None}
