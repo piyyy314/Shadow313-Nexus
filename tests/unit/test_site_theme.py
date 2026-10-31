@@ -18,6 +18,12 @@ class SiteThemeTests(unittest.TestCase):
                 self.assertRegex(text, r'<body[^>]*class="[^"]*site-page')
                 self.assertEqual(len(re.findall('id="site-nav"', text)), 1)
 
+    def test_homepage_has_no_lifetime_discount_or_fake_scarcity(self):
+        text = (ROOT / 'index.html').read_text()
+        self.assertNotIn('founder-banner', text)
+        self.assertNotIn('147 spots remaining', text)
+        self.assertNotIn('50% off Pro', text)
+
     def test_homepage_is_shared_by_both_domains(self):
         routes = json.loads((ROOT / 'vercel.json').read_text())['rewrites']
         home = [r for r in routes if r['source'] == '/']
