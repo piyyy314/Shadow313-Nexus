@@ -66,6 +66,7 @@ jobs:
           image-ref: "shadow313-scan:nightly"
           severity: "CRITICAL,HIGH"
           format: "sarif"
+          limit-severities-for-sarif: true
           output: "trivy-container.sarif"
           exit-code: "1"
 
