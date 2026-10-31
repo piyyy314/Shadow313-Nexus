@@ -674,6 +674,62 @@
     {
       "source": "/analysis",
       "destination": "/docs/shadow313-analysis.html"
+    },
+    {
+      "source": "/docs",
+      "destination": "/docs/index.html"
+    },
+    {
+      "source": "/docs/",
+      "destination": "/docs/index.html"
+    },
+    {
+      "source": "/dashboards",
+      "destination": "/docs/dashboards.html"
+    },
+    {
+      "source": "/tools/aegis-nexus",
+      "destination": "/tools/aegis-nexus.html"
+    },
+    {
+      "source": "/tools/blue-team-soc",
+      "destination": "/tools/blue-team-soc.html"
+    },
+    {
+      "source": "/tools/ghost-watch",
+      "destination": "/tools/ghost-watch.html"
+    },
+    {
+      "source": "/tools/identity-platform",
+      "destination": "/tools/identity-platform.html"
+    },
+    {
+      "source": "/tools/plugin-studio",
+      "destination": "/tools/plugin-studio.html"
+    },
+    {
+      "source": "/tools/purple-team",
+      "destination": "/tools/purple-team.html"
+    },
+    {
+      "source": "/tools/quantum-lab",
+      "destination": "/tools/quantum-lab.html"
+    },
+    {
+      "source": "/tools/red-team",
+      "destination": "/tools/red-team.html"
+    },
+    {
+      "source": "/tools/soar-builder",
+      "destination": "/tools/soar-builder.html"
+    },
+    {
+      "source": "/tools/threat-predictor",
+      "destination": "/tools/threat-predictor.html"
+    },
+    {
+      "source": "/tools/vsat-tactical-suite",
+      "destination": "/tools/vsat-tactical-suite.html"
     }
   ],
   "headers": [

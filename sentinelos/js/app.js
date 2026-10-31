@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1500);
 
     // 2. Navigation Routing & View Switching
-    const navItems = document.querySelectorAll('.nav-item');
+    const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewPanes = document.querySelectorAll('.view-pane');
 
     navItems.forEach(item => {

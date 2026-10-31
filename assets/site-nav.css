@@ -1,0 +1,37 @@
+/* Scoped to the shared header so dashboard and application styles stay intact. */
+#site-nav {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  width: 100%;
+  height: auto;
+  min-height: 60px;
+  padding: 14px 24px;
+  margin: 0;
+  background: #020617;
+  border-bottom: 1px solid #214035;
+  color: #e2e8f0;
+  font: 500 14px/1.5 system-ui, sans-serif;
+}
+#site-nav .site-brand { color: #4ade80; font-weight: 800; white-space: nowrap; }
+#site-nav .site-links { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+#site-nav a { color: #cbd5e1; text-decoration: none; padding: 4px 0; }
+#site-nav a:hover { color: #4ade80; }
+#site-nav a:focus-visible { outline: 2px solid #4ade80; outline-offset: 4px; border-radius: 2px; }
+@media (max-width: 600px) {
+  #site-nav { padding: 12px 16px; gap: 8px; }
+  #site-nav .site-links { width: 100%; gap: 6px 16px; }
+}
+
+/* Documentation reference pages: keep the sidebar usable on narrow screens. */
+.docs-content { min-width: 0; }
+@media (max-width: 700px) {
+  .docs-layout { flex-direction: column; }
+  .docs-layout .docs-sidebar { width: 100% !important; min-height: 0 !important; }
+  .docs-layout .docs-content { padding: 24px 16px !important; max-width: 100%; }
+}

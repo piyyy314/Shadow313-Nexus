@@ -838,7 +838,9 @@ footer {
     .rp-phase-label { display: none; }
 }
 @media (max-width: 600px) {
-    .nav-links { display: none; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .nav-inner { flex-wrap: wrap; padding: 12px 16px; }
+    .nav { height: auto; }
     .bento-grid { grid-template-columns: 1fr; }
     .bento-card.span2, .bento-card.full { grid-column: span 1; }
     .hero-title { letter-spacing: -1px; }
@@ -902,6 +904,8 @@ footer {
             <span class="brand-name">SHADOW<span class="brand-313">313</span></span>
         </a>
         <div class="nav-links">
+            <a href="/docs/">Docs</a>
+            <a href="/dashboards">Dashboards</a>
             <a href="#architecture">Architecture</a>
             <a href="#features">Features</a>
             <a href="#terminal-demo">Terminal</a>

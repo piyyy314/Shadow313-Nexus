@@ -12,25 +12,23 @@
 body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;margin:0;}
 .mono{font-family:'JetBrains Mono',monospace;}
 </style>
+<link rel="stylesheet" href="/assets/site-nav.css">
 </head>
 <body>
-<nav id="s313-nav" style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:8px 20px;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:9999;flex-wrap:wrap;">
-<a href="/" style="color:#22c55e;font-weight:800;font-size:13px;text-decoration:none;">⬡ S313 NEXUS</a>
-<span style="color:#334155;">|</span>
-<a href="/dashboard" style="color:#94a3b8;font-size:11px;text-decoration:none;">Dashboard</a>
-<a href="/threat-board" style="color:#94a3b8;font-size:11px;text-decoration:none;">Threats</a>
-<a href="/attck" style="color:#94a3b8;font-size:11px;text-decoration:none;">ATT&amp;CK</a>
-<a href="/aegis-nexus" style="color:#94a3b8;font-size:11px;text-decoration:none;">Aegis</a>
-<a href="/vsat" style="color:#94a3b8;font-size:11px;text-decoration:none;">VSAT</a>
-<a href="/pqc" style="color:#94a3b8;font-size:11px;text-decoration:none;">PQC</a>
-<a href="/ghost-watch" style="color:#94a3b8;font-size:11px;text-decoration:none;">Ghost Watch</a>
-<a href="/quantum-lab" style="color:#94a3b8;font-size:11px;text-decoration:none;">Quantum</a>
-<a href="/pricing" style="color:#94a3b8;font-size:11px;text-decoration:none;">Pricing</a>
-<a href="/docs" style="color:#94a3b8;font-size:11px;text-decoration:none;">Docs</a>
-<a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:11px;text-decoration:none;">GitHub ↗</a>
-<span style="margin-left:auto;color:#22c55e;font-size:9px;font-family:monospace;" id="s313-clk"></span>
-<script>setInterval(()=>{var e=document.getElementById("s313-clk");if(e)e.textContent=new Date().toISOString().replace("T"," ").slice(0,19)+" UTC"},1000)</script>
+<!-- Shared navigation: edit assets/site-nav.html, then run scripts/render-site-nav.py. -->
+<nav id="site-nav" aria-label="Primary navigation">
+  <a class="site-brand" href="/">⬡ SHADOW313 NEXUS</a>
+  <div class="site-links">
+    <a href="/platform">Platform</a>
+    <a href="/dashboards">Dashboards</a>
+    <a href="/tools">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+  </div>
 </nav>
+
 <p>Redirecting to <a href="/dashboard">Shadow313 NEXUS Dashboard</a>...</p>
 <footer style="background:#020617;border-top:1px solid rgba(34,197,94,0.1);padding:16px 24px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:10px;color:#334155;margin-top:40px;">
 <span style="color:#22c55e;font-weight:700;">⬡ Shadow313 NEXUS</span> v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;

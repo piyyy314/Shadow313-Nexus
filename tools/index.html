@@ -53,22 +53,19 @@
   .row:last-child{border-bottom:none;}
   @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr;}}
   @media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}.nav-links{display:none;}}
-</style></head><body>
-<nav class="nav">
-  <div class="nav-hex">S3</div>
-  <div class="nav-brand">SHADOW<span>313</span> NEXUS</div>
-  <div class="nav-links">
-    <a class="nav-link" href="/">Home</a>
-    <a class="nav-link" href="/platform">Platform</a>
-    <a class="nav-link" href="/tools" class="nav-link active">Tools</a>
-    <a class="nav-link" href="/marketplace">Marketplace</a>
-    <a class="nav-link" href="/pricing">Pricing</a>
-    <a class="nav-link" href="/docs">Docs</a>
-    <a class="nav-link" href="/about">About</a>
-  </div>
-  <div class="nav-right">
-    <a class="nav-link" href="/blog">Blog</a>
-    <a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a>
+</style><link rel="stylesheet" href="/assets/site-nav.css">
+</head><body>
+<!-- Shared navigation: edit assets/site-nav.html, then run scripts/render-site-nav.py. -->
+<nav id="site-nav" aria-label="Primary navigation">
+  <a class="site-brand" href="/">⬡ SHADOW313 NEXUS</a>
+  <div class="site-links">
+    <a href="/platform">Platform</a>
+    <a href="/dashboards">Dashboards</a>
+    <a href="/tools">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
 
