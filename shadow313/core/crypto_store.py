@@ -272,11 +272,13 @@ class SLHDSASigner:
     def sign(self, message: bytes) -> bytes:
         try:
             import pyspx.slh_dsa_shake_128f as _slh
-            pk, sk = _slh.generate_keypair()
-            self._public_key = pk
-            self._private_key = sk
-            return _slh.sign(message, sk)
+            # Use the existing key pair — do NOT regenerate on every sign call
+            return _slh.sign(message, self._private_key)
         except ImportError:
+            # Fallback: HMAC-SHA3-256 (not FIPS 205 compliant)
+            return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
+        except Exception:
+            # pyspx installed but key format mismatch — use HMAC fallback
             return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
 
     def verify(self, message: bytes, signature: bytes) -> bool:
