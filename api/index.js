@@ -9,7 +9,7 @@ const backendRoutes = [
 ];
 
 function handler(req, res) {
-  const path = new URL(req.url, 'http://localhost').pathname.replace(/\/$/, '');
+  const path = req.url.split('?', 1)[0].replace(/\/$/, '');
   const method = req.method === 'HEAD' ? 'GET' : req.method;
   const health = path === '/api/health';
   const status = path === '/api/status';

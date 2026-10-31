@@ -51,3 +51,33 @@ test('unknown paths return JSON 404 and known paths reject incorrect methods', a
   assert.match(response.headers.get('allow'), /GET/);
   assert.equal((await request('/api/health', 'HEAD')).status, 200);
 });
+
+// Use node:http rather than fetch: WHATWG URL parsing rewrites these targets.
+test('malformed request targets return JSON and leave the server healthy', async () => {
+  const server = http.createServer(handler);
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const rawRequest = path => new Promise((resolve, reject) => {
+    const req = http.request({ hostname: '127.0.0.1', port: server.address().port, path }, res => {
+      let body = '';
+      res.setEncoding('utf8');
+      res.on('data', chunk => { body += chunk; });
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: JSON.parse(body) }));
+    });
+    req.setTimeout(2000, () => req.destroy(new Error('HTTP regression request timed out')));
+    req.on('error', reject);
+    req.end();
+  });
+  try {
+    for (const path of ['//[', '//[?probe=1', '/api/unknown?url=//[']) {
+      const response = await rawRequest(path);
+      assert.equal(response.status, 404);
+      assert.equal(response.body.error, 'not_found');
+      assert.match(response.headers['content-type'], /application\/json/);
+    }
+    const health = await rawRequest('/api/health?probe=//[');
+    assert.equal(health.status, 200);
+    assert.equal(health.body.status, 'ok');
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+  }
+});

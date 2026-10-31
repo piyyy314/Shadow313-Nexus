@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/deploy.yml b/.github/workflows/deploy.yml
-index 1cc3b9d..24f9305 100644
+index 1cc3b9d..d56eeec 100644
 --- a/.github/workflows/deploy.yml
 +++ b/.github/workflows/deploy.yml
-@@ -1,6 +1,14 @@
+@@ -1,15 +1,23 @@
  name: Shadow313 NEXUS — Deploy to Vercel
  
  on:
@@ -17,6 +17,18 @@ index 1cc3b9d..24f9305 100644
    push:
      branches: [master]
    pull_request:
+     branches: [master]
+ 
+-# Cancel in-progress runs on the same branch
++# Keep manual deployments separate from CI; never cancel them mid-publication
+ concurrency:
+-  group: ${{ github.workflow }}-${{ github.ref }}
+-  cancel-in-progress: true
++  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
++  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+ 
+ env:
+   DEFAULT_BRANCH:   master
 @@ -27,6 +35,24 @@ jobs:
        - name: Checkout code
          uses: actions/checkout@v7
@@ -37,7 +49,7 @@ index 1cc3b9d..24f9305 100644
 +      - name: Test manual deployment controls and static routing
 +        run: |
 +          python -m pip install pytest pytest-timeout pyyaml
-+          python -m pytest tests/unit/test_manual_deployment_and_layout.py tests/unit/test_static_homepage.py tests/unit/test_domain_split.py tests/unit/test_deploy_workflow_config.py -q
++          python -m pytest tests/unit/test_manual_deployment_and_layout.py tests/unit/test_static_homepage.py tests/unit/test_domain_split.py tests/unit/test_deploy_workflow_config.py tests/unit/test_manual_workflow.py tests/unit/test_manual_workflow_patch.py -q
 +
        - name: Verify required files exist
          run: |
@@ -148,6 +160,15 @@ index 1cc3b9d..24f9305 100644
      steps:
        - name: Post failure summary
          uses: actions/github-script@v9
+@@ -367,7 +349,7 @@ jobs:
+               `**Run:** [View logs](${runUrl})`,
+               '',
+               'The production deployment to `shadow313.dev` failed.',
+-              'The previous deployment remains live. Check the logs above for details.',
++              'The newly deployed version may be live. Review the logs and deployment before an explicit rollback.',
+             ].join('\n');
+ 
+             // Create a commit comment with failure details
 diff --git a/tests/unit/test_deploy_workflow_config.py b/tests/unit/test_deploy_workflow_config.py
 index 310764c..276b1f1 100644
 --- a/tests/unit/test_deploy_workflow_config.py
@@ -174,10 +195,12 @@ index 310764c..276b1f1 100644
      smoke_step = next(step for step in production_steps if step.get("name") == "Smoke test production deployment")
 diff --git a/tests/unit/test_manual_workflow.py b/tests/unit/test_manual_workflow.py
 new file mode 100644
+index 0000000..ebd8c24
 --- /dev/null
 +++ b/tests/unit/test_manual_workflow.py
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,27 @@
 +"""Regression check installed with the manual workflow patch."""
++
 +from pathlib import Path
 +
 +import yaml
@@ -187,12 +210,19 @@ new file mode 100644
 +
 +def test_workflow_deploys_only_on_explicit_manual_request():
 +    # YAML 1.1 interprets the GitHub Actions `on` key as boolean True.
-+    workflow = yaml.safe_load((ROOT / '.github/workflows/deploy.yml').read_text())
-+    triggers = workflow.get('on', workflow.get(True))
-+    assert 'push' in triggers and 'pull_request' in triggers
-+    assert triggers['workflow_dispatch']['inputs']['target']['default'] == 'preview'
-+    for job in ('preview', 'production'):
-+        gate = workflow['jobs'][job]['if']
++    workflow = yaml.safe_load((ROOT / ".github/workflows/deploy.yml").read_text(encoding="utf-8"))
++    triggers = workflow.get("on", workflow.get(True))
++    assert "push" in triggers and "pull_request" in triggers
++    assert triggers["workflow_dispatch"]["inputs"]["target"]["default"] == "preview"
++    for job in ("preview", "production"):
++        gate = workflow["jobs"][job]["if"]
 +        assert "github.event_name == 'workflow_dispatch'" in gate
 +        assert f"inputs.target == '{job}'" in gate
-+    assert "refs/heads/" in workflow['jobs']['production']['if']
++    assert "refs/heads/" in workflow["jobs"]["production"]["if"]
++
++
++def test_manual_deployments_cannot_be_canceled_by_ci():
++    workflow = yaml.safe_load((ROOT / ".github/workflows/deploy.yml").read_text(encoding="utf-8"))
++    concurrency = workflow["concurrency"]
++    assert "github.event_name" in concurrency["group"]
++    assert concurrency["cancel-in-progress"] == "${{ github.event_name != 'workflow_dispatch' }}"

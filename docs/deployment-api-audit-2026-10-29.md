@@ -47,7 +47,7 @@ The API/layout tests below were run locally, not by CI. Do not merge before this
    content track and safe word wrapping fix the cause.
 3. **Signup form clips off-screen.** At 320px the form was 192px wide but its contents extended
    to x=429px. The input can now shrink and the form stacks on narrow screens. Footer copy
-   also uses a more legible text color on mobile. Both homepages are valid UTF-8; no replacement
+   also uses a more legible text color at every width. Both homepages are valid UTF-8; no replacement
    characters or common mojibake markers were found in their source.
 4. **Nested website API routes lack an explicit shared-handler rewrite.** The single function
    is `api/index.js`; this PR routes `/api/:path*` to that entry point without changing domain
@@ -122,3 +122,25 @@ To publish deliberately, manually dispatch **Shadow313 NEXUS — Deploy to Verce
 `target: preview` first; use `target: production` on `master` only after verification. That
 workflow continues to rely on the repository's existing Vercel secrets; their availability and
 project association were not inspected. No workflow was dispatched during this work.
+
+## PR #88 review follow-up — 2026-10-31
+
+All six CodeRabbit findings were addressed in source or the manual handoff patch:
+
+- Request-target parsing now strips the query string without interpreting an authority or
+  throwing on targets such as `//[`. A native HTTP regression checks JSON 404 responses and
+  verifies that the same server still answers health checks afterward.
+- Footer contrast uses the readable color in the base rule, not just below 600px.
+- Layout test file reads explicitly use UTF-8 for Windows portability.
+- The handoff patch separates workflow concurrency by event, with cancellation disabled for
+  manual runs. Push/PR CI cannot cancel a manual deployment after publication.
+- The patched quality step includes the manual-only deployment-gate tests. Additional patch
+  regressions validate applicability and the safety controls before installation, and validate
+  the active workflow after installation.
+- Failure notifications no longer assert that the previous production version is live. They
+  warn that the new version may be live and requires review before an explicit rollback.
+
+These changes do not apply the workflow patch, merge the PR, dispatch a workflow, or deploy.
+The earlier production-state observations above are historical, not a claim about today's live
+site. The existing manual handoff remains required; CI is intentionally skipped until it is
+installed. Deployed visual and API verification of this follow-up remains pending.
