@@ -91,7 +91,7 @@ if ($readme) {
 [![FIPS 140-3](https://img.shields.io/badge/FIPS_140--3-Aligned-purple.svg?style=for-the-badge&logo=lock)](https://csrc.nist.gov/publications/detail/fips/140/3/final)
 [![FedRAMP](https://img.shields.io/badge/FedRAMP-Moderate_Ready-blue.svg?style=for-the-badge&logo=cloud)](https://www.fedramp.gov/)
 [![MITRE ATT&CK](https://img.shields.io/badge/MITRE_ATT%26CK-v15-red.svg?style=for-the-badge&logo=target)](https://attack.mitre.org/)
-[![PyPI](https://img.shields.io/pypi/v/shadow313.svg?style=for-the-badge&logo=pypi&label=PyPI)](https://pypi.org/project/shadow313/)
+[![PyPI](https://img.shields.io/pypi/v/shadow313-nexus.svg?style=for-the-badge&logo=pypi&label=PyPI)](https://pypi.org/project/shadow313-nexus/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![Security Grade](https://img.shields.io/badge/Security_Grade-A%2B-brightgreen.svg?style=for-the-badge&logo=security)](https://github.com/piyyy314/Shadow313-Nexus/security)
 [![Vercel](https://img.shields.io/badge/Deployed-shadow313.dev-black.svg?style=for-the-badge&logo=vercel)](https://shadow313.dev)

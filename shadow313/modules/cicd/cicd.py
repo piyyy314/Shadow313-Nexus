@@ -282,7 +282,7 @@ jobs:
 
       - name: Install Shadow313
         run: |
-          pip install shadow313
+          pip install shadow313-nexus
           shadow313 --version
 
       - name: Run Dependency Vulnerability Audit
@@ -325,7 +325,7 @@ shadow313-security:
   stage: test
   image: python:3.11-slim
   before_script:
-    - pip install shadow313
+    - pip install shadow313-nexus
   script:
     - shadow313 vuln --audit-deps requirements.txt --output json > gl-vuln.json || true
     - shadow313 cicd --scan --threshold high --output sarif > gl-results.sarif

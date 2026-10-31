@@ -1,3 +1,9 @@
+> **Distribution rename:** the intended PyPI install name is `shadow313-nexus`.
+> The CLI command remains `shadow313`, and Python imports remain `shadow313`.
+> This repository change does not publish or reserve a PyPI name. Do not install
+> an unrelated package named `shadow313` expecting this project's code.
+> See [release instructions](docs/distribution-rename.md).
+
 > **Runtime/release status:** The public website is static documentation and browser
 > demonstrations, not a running Python scanner, quantum computer, or automatic
 > connection to your local Ollama. Older feature tables, test counters, receipts,
@@ -34,7 +40,7 @@
 [![FIPS 140-3](https://img.shields.io/badge/FIPS_140--3-Aligned-purple.svg?style=for-the-badge&logo=lock)](https://csrc.nist.gov/publications/detail/fips/140/3/final)
 [![FedRAMP](https://img.shields.io/badge/FedRAMP-Moderate_Ready-blue.svg?style=for-the-badge&logo=cloud)](https://www.fedramp.gov/)
 [![MITRE ATT&CK](https://img.shields.io/badge/MITRE_ATT%26CK-v15-red.svg?style=for-the-badge&logo=target)](https://attack.mitre.org/)
-[![PyPI](https://img.shields.io/pypi/v/shadow313.svg?style=for-the-badge&logo=pypi&label=PyPI)](https://pypi.org/project/shadow313/)
+[![PyPI](https://img.shields.io/pypi/v/shadow313-nexus.svg?style=for-the-badge&logo=pypi&label=PyPI)](https://pypi.org/project/shadow313-nexus/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![Security Grade](https://img.shields.io/badge/Security_Grade-A%2B-brightgreen.svg?style=for-the-badge&logo=security)](https://github.com/piyyy314/Shadow313-Nexus/security)
 [![Vercel](https://img.shields.io/badge/Deployed-shadow313.dev-black.svg?style=for-the-badge&logo=vercel)](https://shadow313.dev)
@@ -128,12 +134,12 @@ Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligenc
 
 ### Install (PyPI)
 ```bash
-pip install shadow313
+pip install shadow313-nexus
 ```
 
 ### Install (full NEXUS edition)
 ```bash
-pip install "shadow313[full]"
+pip install "shadow313-nexus[full]"
 ```
 
 ### Install (from source)

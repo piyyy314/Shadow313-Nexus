@@ -35,7 +35,7 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install Shadow313
-        run: pip install shadow313
+        run: pip install shadow313-nexus
       - name: Run Secret Scan
         run: git diff HEAD~1 | shadow313 cicd --scan-secrets - --output-sarif secrets.sarif || true
       - name: Run Full Security Scan
@@ -52,7 +52,7 @@ shadow313-security:
   stage: test
   image: python:3.11-slim
   before_script:
-    - pip install shadow313
+    - pip install shadow313-nexus
   script:
     - shadow313 cicd --scan-secrets ./ --severity-threshold high --output-sarif gl-results.sarif
   artifacts:

@@ -3,7 +3,7 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name            = "shadow313"
+name            = "shadow313-nexus"
 version         = "4.0.0"
 description     = "Shadow313 NEXUS — Local-First AI-Powered Security Intelligence CLI"
 readme          = "README.md"
