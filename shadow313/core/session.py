@@ -234,7 +234,7 @@ class Session:
         receipt = {
             "receipt_id": receipt_id,
             "module": module,
-            "session_id": getattr(self, "session_id", "unknown"),
+            "session_id": getattr(self, "id", getattr(self, "session_id", "unknown")),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "metadata": metadata or {},
         }
