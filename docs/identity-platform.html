@@ -33,53 +33,24 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid #a855f722;font-family:'JetBrains Mono',monospace;margin-top:20px;}
 @media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 </style>
+<link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
-<nav id="s313-nav" style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:8px 20px;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:9999;flex-wrap:wrap;">
-<a href="/" style="color:#22c55e;font-weight:800;font-size:13px;text-decoration:none;">⬡ S313 NEXUS</a>
-<span style="color:#334155;">|</span>
-<a href="/dashboard" style="color:#94a3b8;font-size:11px;text-decoration:none;">Dashboard</a>
-<a href="/threat-board" style="color:#94a3b8;font-size:11px;text-decoration:none;">Threats</a>
-<a href="/attck" style="color:#94a3b8;font-size:11px;text-decoration:none;">ATT&amp;CK</a>
-<a href="/aegis-nexus" style="color:#94a3b8;font-size:11px;text-decoration:none;">Aegis</a>
-<a href="/vsat" style="color:#94a3b8;font-size:11px;text-decoration:none;">VSAT</a>
-<a href="/pqc" style="color:#94a3b8;font-size:11px;text-decoration:none;">PQC</a>
-<a href="/ghost-watch" style="color:#94a3b8;font-size:11px;text-decoration:none;">Ghost Watch</a>
-<a href="/quantum-lab" style="color:#94a3b8;font-size:11px;text-decoration:none;">Quantum</a>
-<a href="/pricing" style="color:#94a3b8;font-size:11px;text-decoration:none;">Pricing</a>
-<a href="/docs" style="color:#94a3b8;font-size:11px;text-decoration:none;">Docs</a>
-<a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:11px;text-decoration:none;">GitHub ↗</a>
-<span style="margin-left:auto;color:#22c55e;font-size:9px;font-family:monospace;" id="s313-clk"></span>
-<script>setInterval(()=>{var e=document.getElementById("s313-clk");if(e)e.textContent=new Date().toISOString().replace("T"," ").slice(0,19)+" UTC"},1000)</script>
-</nav>
-<nav style="background:#020617;border-bottom:1px solid rgba(34,197,94,0.2);padding:10px 20px;display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;position:sticky;top:0;z-index:100;flex-wrap:wrap;">
-  <a href="/" style="color:#22c55e;font-weight:800;font-size:14px;text-decoration:none;">⬡ S313</a>
-  <a href="/dashboard" style="color:#94a3b8;font-size:12px;text-decoration:none;">Dashboard</a>
-  <a href="/threat-board" style="color:#94a3b8;font-size:12px;text-decoration:none;">Threats</a>
-  <a href="/attck" style="color:#94a3b8;font-size:12px;text-decoration:none;">ATT&CK</a>
-  <a href="/aegis-nexus" style="color:#94a3b8;font-size:12px;text-decoration:none;">Aegis</a>
-  <a href="/vsat" style="color:#94a3b8;font-size:12px;text-decoration:none;">VSAT</a>
-  <a href="/pqc" style="color:#94a3b8;font-size:12px;text-decoration:none;">PQC</a>
-  <a href="/ghost-watch" style="color:#94a3b8;font-size:12px;text-decoration:none;">Ghost Watch</a>
-  <a href="/pricing" style="color:#94a3b8;font-size:12px;text-decoration:none;">Pricing</a>
-  <a href="/docs" style="color:#94a3b8;font-size:12px;text-decoration:none;">Docs</a>
-  <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" style="color:#94a3b8;font-size:12px;text-decoration:none;">GitHub</a>
-  <span style="margin-left:auto;color:#22c55e;font-size:10px;font-family:monospace;" id="nav-clock"></span>
-  <script>setInterval(()=>{document.getElementById('nav-clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'},1000)</script>
-</nav>
-<nav class="nav">
-  <div class="nav-hex">S3</div>
-  <span style="font-size:14px;font-weight:800;">SHADOW313 <span style="color:#a855f7;">NEXUS</span></span>
-  <div class="nav-links">
-    <a class="nav-link" href="/dashboard">Dashboard</a>
-    <a class="nav-link" href="/attck">ATT&amp;CK</a>
-    <a class="nav-link" href="/ghost-watch">Ghost-Watch</a>
-    <a class="nav-link" href="/vsat">VSAT</a>
-    <a class="nav-link" href="/pqc">PQC</a>
-    <a class="nav-link" href="/roadmap">Roadmap</a>
+<body class="site-page">
+<!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
+<nav id="site-nav" aria-label="Primary navigation">
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
+  <div class="site-links">
+    <a href="/platform">Platform</a>
+    <a href="/dashboards">Dashboards</a>
+    <a href="/tools">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
-  <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">shadow313.dev</div>
 </nav>
+
 <div class="main" role="main" aria-label="Shadow313 NEXUS Dashboard">
 <div class="page-title">Identity Platform</div>
 <div class="page-sub">Zero-trust identity controls — IDENTITY-1 through IDENTITY-8, MFA, hardware tokens, behavioral biometrics | Shadow313 NEXUS</div>

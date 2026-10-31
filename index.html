@@ -838,7 +838,9 @@ footer {
     .rp-phase-label { display: none; }
 }
 @media (max-width: 600px) {
-    .nav-links { display: none; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .nav-inner { flex-wrap: wrap; padding: 12px 16px; }
+    .nav { height: auto; }
     .bento-grid { grid-template-columns: 1fr; }
     .bento-card.span2, .bento-card.full { grid-column: span 1; }
     .hero-title { letter-spacing: -1px; }
@@ -874,8 +876,10 @@ footer {
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast i { color: var(--green); }
 </style>
+<link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
+<body class="site-page">
 
 <!-- Ambient FX -->
 <canvas id="ambient-canvas"></canvas>
@@ -895,26 +899,18 @@ footer {
 </div>
 
 <!-- Nav -->
-<nav class="nav">
-    <div class="nav-inner">
-        <a href="#" class="nav-brand">
-            <span class="brand-hex">⬡</span>
-            <span class="brand-name">SHADOW<span class="brand-313">313</span></span>
-        </a>
-        <div class="nav-links">
-            <a href="#architecture">Architecture</a>
-            <a href="#features">Features</a>
-            <a href="#terminal-demo">Terminal</a>
-            <a href="#binding-demo">313 Binding</a>
-            <a href="#algo-library">Algorithms</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#roadmap">Roadmap</a>
-            <a href="https://github.com/piyyy314/Shadow313-Nexus" class="nav-gh" target="_blank">
-                <i class="fa-brands fa-github"></i> GitHub
-            </a>
-            <a href="#cta-footer" class="nav-cta-btn">Get Early Access</a>
-        </div>
-    </div>
+<!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
+<nav id="site-nav" aria-label="Primary navigation">
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
+  <div class="site-links">
+    <a href="/platform">Platform</a>
+    <a href="/dashboards">Dashboards</a>
+    <a href="/tools">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+  </div>
 </nav>
 
 <!-- ============================================================ HERO -->
@@ -2159,7 +2155,7 @@ document.getElementById('waitlist-btn').addEventListener('click', () => {
 
 // Nav scroll highlight
 window.addEventListener('scroll', () => {
-    const nav = document.querySelector('.nav');
+    const nav = document.getElementById('site-nav');
     nav.style.borderBottomColor = window.scrollY > 40 ? 'rgba(100,140,255,0.18)' : 'rgba(100,140,255,0.1)';
 });
 

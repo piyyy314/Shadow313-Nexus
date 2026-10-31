@@ -1,4 +1,4 @@
-"""Regression checks for the original domain-specific static entrypoints."""
+"""Regression checks for the shared homepage and preserved SentinelOS entrypoint."""
 import json
 import unittest
 from html.parser import HTMLParser
@@ -30,9 +30,11 @@ class DomainSplitTests(unittest.TestCase):
                 return rule['destination']
 
     def test_original_domain_roots(self):
-        self.assertEqual(self.destination('shadow313.dev', '/'), '/sentinelos/index.html')
-        for host in ('shadow313.com', 'www.shadow313.com', 'preview.vercel.app'):
+        for host in ('shadow313.com', 'www.shadow313.com', 'shadow313.dev', 'www.shadow313.dev', 'preview.vercel.app'):
             self.assertEqual(self.destination(host, '/'), '/index.html')
+
+    def test_sentinelos_still_has_explicit_entrypoint(self):
+        self.assertEqual(self.destination('shadow313.dev', '/sentinelos'), '/sentinelos/index.html')
 
     def test_shared_dashboard_routes_preserved(self):
         for host in ('shadow313.dev', 'shadow313.com'):
