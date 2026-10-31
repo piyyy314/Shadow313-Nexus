@@ -15,10 +15,10 @@ Uses asyncio queues internally; FastAPI WebSocket for external consumers.
 
 import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Optional
+from uuid import uuid4
 
 logger = logging.getLogger("shadow313.event_bus")
 
@@ -30,7 +30,7 @@ class Event:
     payload:    Any
     source:     str = ""
     timestamp:  str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    event_id:   str = field(default_factory=lambda: f"evt-{int(time.time_ns())}")
+    event_id:   str = field(default_factory=lambda: f"evt-{uuid4().hex}")
     priority:   int = 5   # 1=highest, 10=lowest
 
 

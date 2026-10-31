@@ -138,11 +138,12 @@ class VectorStore:
     def upsert(self, doc_id: str, text: str, metadata: dict = None, namespace: str = 'default') -> None:
         meta = metadata or {}
         if self._backend == "chromadb":
-            self._col.upsert(
-                ids=[doc_id],
-                documents=[text],
-                metadatas=[meta],
-            )
+            # Chroma rejects empty metadata dictionaries. Omit the optional
+            # argument rather than invent a field in the user's metadata.
+            kwargs: dict[str, Any] = {"ids": [doc_id], "documents": [text]}
+            if meta:
+                kwargs["metadatas"] = [meta]
+            self._col.upsert(**kwargs)
         else:
             self._fallback.add(doc_id, text, meta)
 
@@ -163,7 +164,7 @@ class VectorStore:
                     out.append({
                         "id":       res["ids"][0][i],
                         "text":     doc,
-                        "metadata": res["metadatas"][0][i],
+                        "metadata": res["metadatas"][0][i] or {},
                         "score":    1 - res["distances"][0][i],  # convert distance→similarity
                     })
                 return out
@@ -202,6 +203,10 @@ class SecurityKnowledgeBase:
     NAMESPACES = ["cve", "mitre", "owasp", "session", "general"]
 
     def __init__(self, persist_dir: str = "~/.shadow313/vectordb", chroma_path: str = None) -> None:
+        # Honor the existing constructor alias instead of accidentally writing
+        # tests/callers using chroma_path into the default home directory.
+        if chroma_path is not None:
+            persist_dir = chroma_path
         self._stores: dict[str, VectorStore] = {
             ns: VectorStore(namespace=ns, persist_dir=persist_dir)
             for ns in self.NAMESPACES
