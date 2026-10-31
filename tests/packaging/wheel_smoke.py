@@ -79,6 +79,14 @@ class InstalledWheelChecks(unittest.TestCase):
         self.assertEqual(receipt.signature_algorithm, expected)
         self.assertTrue(binder.verify(BindReceipt(**receipt.to_dict()), payload)["valid"])
         self.assertFalse(binder.verify(replace(receipt, signature="00"), payload)["valid"])
+        # Corrupt a valid hex nibble without changing the signature's shape.
+        flipped = "0" if receipt.signature[0] != "0" else "1"
+        tampered_signature = flipped + receipt.signature[1:]
+        self.assertEqual(len(tampered_signature), len(receipt.signature))
+        self.assertNotEqual(tampered_signature, receipt.signature)
+        self.assertFalse(
+            binder.verify(replace(receipt, signature=tampered_signature), payload)["valid"]
+        )
         self.assertFalse(binder.verify(receipt, {"fixture": False})["valid"])
 
     @unittest.skipUnless(PROFILE == "api", "API extra not selected for this job")
