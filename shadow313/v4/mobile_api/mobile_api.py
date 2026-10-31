@@ -29,23 +29,19 @@ class MobileAPIModule:
         return {"host": host, "port": port}
 
     def _start(self, host: str, port: int, token: str) -> None:
-        from fastapi import FastAPI, HTTPException, Depends
+        from fastapi import FastAPI, Depends, Request
+        from shadow313.api.access import authorize, install_limits
         from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
         import uvicorn
 
-        app    = FastAPI(title="Shadow313 Mobile API", version="4.0.0")
+        async def verify_token(request: Request) -> None:
+            authorize(request, token)
+
+        verify_token.__annotations__["request"] = Request
+        app = FastAPI(title="Shadow313 Mobile API", version="4.0.0",
+                      dependencies=[Depends(verify_token)])
+        install_limits(app)
         kernel = self.kernel
-        bearer = HTTPBearer(auto_error=False)
-
-        async def verify_token(
-            creds: HTTPAuthorizationCredentials = Depends(bearer),
-        ) -> None:
-            if token and (not creds or not hmac.compare_digest(
-                creds.credentials.encode() if isinstance(creds.credentials, str) else creds.credentials,
-                token.encode() if isinstance(token, str) else token,
-            )):
-                raise HTTPException(status_code=401, detail="Unauthorized")
-
 
         @app.get("/api/v1/status")
         async def status():

@@ -1,3 +1,6 @@
+# Retired unsafe multi-purpose machine migration. No registry/container changes run.
+throw "Do not run this broad migration. Follow docs/audit-repair-handoff.md for scoped diagnostics."
+
 <#
 .SYNOPSIS
     Shadow313 — Fix All Issues Found in System Report

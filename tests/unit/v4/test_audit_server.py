@@ -81,7 +81,7 @@ class TestAuditChain:
     def test_receipt_has_signature_algorithm(self):
         receipt = _add_to_chain({"type": "test"})
         assert "signature_algorithm" in receipt
-        assert "SLH-DSA" in receipt["signature_algorithm"]
+        assert receipt["signature_algorithm"] == "UNSIGNED-SHA3-512-DEMO"
 
 
 # ── Link budget tests ─────────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ class TestAuditServerApp:
         try:
             from fastapi.testclient import TestClient
             app = create_app()
-            return TestClient(app)
+            return TestClient(app, client=("127.0.0.1", 123))
         except ImportError:
             pytest.skip("FastAPI/httpx not available")
 
@@ -252,9 +252,10 @@ class TestAuditServerApp:
         resp = client.get("/api/public-key")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["algorithm"] == "SLH-DSA-SHAKE-128f"
-        assert data["standard"] == "NIST FIPS 205"
-        assert "fingerprint" in data
+        assert data["available"] is False
+        assert data["public_key"] is None
+        assert data["algorithm"] == "UNSIGNED-SHA3-512-DEMO"
+        assert "fingerprint" not in data
 
     def test_chain_valid_after_multiple_audits(self, client):
         _audit_chain.clear()

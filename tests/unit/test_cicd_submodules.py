@@ -161,11 +161,6 @@ def test_junit_counts_case_insensitive_failures_and_escapes_messages():
     assert len(ElementTree.fromstring(build_junit_xml([]))) == 0  # noqa: S314 - fixture XML
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=ElementTree.ParseError,
-    reason="PR #86 JUnit builder does not escape XML attributes/content",
-)
 def test_junit_round_trips_quotes_and_xml_content():
     root = ElementTree.fromstring(  # noqa: S314 - fixture XML
         build_junit_xml(

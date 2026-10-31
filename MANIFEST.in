@@ -5,7 +5,6 @@ include LICENSE
 include requirements.txt
 include pyproject.toml
 recursive-include shadow313 *.py
-recursive-include docs *.html *.md
 recursive-include sigma *.yml *.yaml
 global-exclude __pycache__
 global-exclude *.pyc
@@ -13,3 +12,10 @@ global-exclude *.pyo
 global-exclude .DS_Store
 global-exclude .env
 global-exclude .env.*
+
+# Website/research archives are not part of the Python source distribution.
+prune docs
+prune docs-archive
+prune local_bundle
+prune notes
+prune audit-results

@@ -1,3 +1,10 @@
+> **Runtime/release status:** The public website is static documentation and browser
+> demonstrations, not a running Python scanner, quantum computer, or automatic
+> connection to your local Ollama. Older feature tables, test counters, receipts,
+> and certification-like badges below are historical claims, not current proof.
+> Read [the repair handoff](docs/audit-repair-handoff.md) before remote exposure or
+> publishing a release. Local CLI integrations can make network requests.
+
 # Shadow313 NEXUS v4.0.0
 
 > **Local-First AI-Powered Security Intelligence CLI — NEXUS Edition**

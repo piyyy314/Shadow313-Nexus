@@ -24,95 +24,13 @@ import time
 from datetime import UTC, datetime
 from typing import Any
 
-import os
-import time
-import hmac
-import hashlib
-from functools import wraps
-from fastapi import HTTPException, Request, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
-# ── Simple API Key Auth (replace with JWT in production) ──────────────────
-_API_KEY = os.environ.get("SHADOW313_API_KEY", "shadow313-local-dev-key")
-_security = HTTPBearer(auto_error=False)
-
-# ── Rate limiting (simple in-memory) ─────────────────────────────────────
-_rate_store: dict = {}
-
-# Global rate limit — prevents IP rotation attacks
-_global_rate_store: dict = {}
-_GLOBAL_RATE_LIMIT = 1000  # total requests per minute across all IPs
-
-def _check_global_rate_limit() -> None:
-    """Secondary global rate limit to prevent IP rotation bypass."""
-    now = time.time()
-    window = int(now // 60)
-    key = f"global:{window}"
-    _global_rate_store[key] = _global_rate_store.get(key, 0) + 1
-    old_keys = [k for k in list(_global_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
-    for k in old_keys:
-        del _global_rate_store[k]
-    if _global_rate_store[key] > _GLOBAL_RATE_LIMIT:
-        raise HTTPException(status_code=429, detail="Global rate limit exceeded")
-
-_RATE_LIMIT = 100  # requests per minute
-
-_MAX_STORE_SIZE = 10000   # cap memory growth from IP rotation attacks
-_MAX_KEY_LENGTH = 256     # prevent DoS via huge API keys
-
-def _check_rate_limit(client_ip: str) -> None:
-    now = time.time()
-    window = int(now // 60)
-    key = f"{client_ip}:{window}"
-    _rate_store[key] = _rate_store.get(key, 0) + 1
-    # Clean old keys
-    old_keys = [k for k in list(_rate_store.keys()) if int(k.split(":")[-1]) < window - 1]
-    for k in old_keys:
-        del _rate_store[k]
-    # Cap store size to prevent memory exhaustion from IP rotation attacks
-    if len(_rate_store) > _MAX_STORE_SIZE:
-        # Remove oldest half
-        sorted_keys = sorted(_rate_store.keys(), key=lambda k: int(k.split(":")[-1]))
-        for k in sorted_keys[:len(sorted_keys)//2]:
-            _rate_store.pop(k, None)
-    if _rate_store[key] > _RATE_LIMIT:
-        raise HTTPException(status_code=429, detail="Rate limit exceeded (100 req/min)")
-
-async def verify_api_key(
-    request: Request,
-    credentials: HTTPAuthorizationCredentials = Depends(_security)
-) -> str:
-    """Verify API key from Authorization: Bearer <key> header."""
-    client_ip = request.client.host if request.client else "127.0.0.1"
-    _check_rate_limit(client_ip)
-    
-    dev_mode = os.environ.get("SHADOW313_DEV_MODE", "true").lower() == "true"
-    if dev_mode and client_ip in ("127.0.0.1", "::1", "localhost"):
-        return "dev"
-    
-    if not credentials:
-        raise HTTPException(status_code=401, detail="API key required")
-    
-    provided = credentials.credentials
-    
-    # Prevent DoS via extremely long keys
-    if len(provided) > _MAX_KEY_LENGTH:
-        raise HTTPException(status_code=400, detail="API key too long")
-    
-    # Constant-time comparison prevents timing attacks
-    expected = _API_KEY
-    if not hmac.compare_digest(provided.encode(), expected.encode()):
-        raise HTTPException(status_code=403, detail="Invalid API key")
-    
-    return provided
-
-
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 HAS_FASTAPI = True
 
+from shadow313.api.access import authorize, install_limits
 from shadow313 import __version__
 import logging
 logger = logging.getLogger(__name__)
@@ -194,10 +112,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     _receipts: dict[str, dict] = {}
 
     # ── Auth dependency ───────────────────────────────────────────
-    def verify_api_key(x_api_key: str | None = Header(None)):
-        if api_key and x_api_key != api_key:
-            raise HTTPException(status_code=401, detail="Invalid API key")
-        return x_api_key
+    def verify_api_key(request: Request):
+        authorize(request, api_key)
+
+    install_limits(app)
 
     # ── Routes ────────────────────────────────────────────────────
 
@@ -260,15 +178,17 @@ def create_app(api_key: str | None = None) -> FastAPI:
             try:
                 from shadow313.v4.detection.lolbin_detector import LOLBinDetector
                 det = LOLBinDetector()
-                result = det.score_event(req.event)
+                alert = det.analyze_event(req.event)
                 results["lolbin"] = {
-                    "score":    round(result, 4),
-                    "detected": result >= 0.65,
+                    "score":    alert.risk_score if alert else 0.0,
+                    "detected": alert is not None,
                     "technique": "T1218",
                 }
             except Exception as e:
                 results["lolbin"] = {"error": str(e)}
 
+        if any("error" in value for value in results.values()):
+            raise HTTPException(503, detail={"status": "detector_unavailable", "results": results})
         return {
             "event":     req.event,
             "results":   results,
@@ -310,7 +230,9 @@ def create_app(api_key: str | None = None) -> FastAPI:
 
     @app.post("/api/bind/create")
     async def bind_create(req: BindCreateRequest, _: str = Depends(verify_api_key)):
-        # Simulated 313-BIND receipt (real SLH-DSA when liboqs available)
+        if len(_receipts) >= 1000:
+            raise HTTPException(503, "Receipt store is full; configure persistent storage")
+        # Explicit unsigned simulation; installing a library does not wire a signer.
         ts = time.time_ns()
         ts = int(str(ts)[:-3] + "313")  # nudge to end in ...313
 
@@ -334,7 +256,7 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "payload_hash":        payload_hash,
             "chain_hash":          chain_hash,
             "prev_chain_hash":     prev_hash,
-            "signature_algorithm": "SHA3-512 (simulated — install liboqs for SLH-DSA)",
+            "signature_algorithm": "UNSIGNED-SHA3-512-DEMO",
             "ipfs_cid":            None,
             "ipfs_anchored":       False,
             "metadata":            req.metadata or {},
@@ -357,41 +279,23 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "receipts": list(_receipts.values()),
         }
 
-    # ── Mobile API endpoints ──────────────────────────────────────────────────────
-    @app.get("/api/mobile/status")
-    async def mobile_status():
-        return {"status": "ok", "version": "4.0.0", "platform": "mobile", "timestamp": __import__('time').time()}
+    # Do not fabricate queued jobs, events, or verified audit-chain health.
+    @app.post("/api/scan/recon", dependencies=[Depends(verify_api_key)])
+    @app.post("/api/scan/vuln", dependencies=[Depends(verify_api_key)])
+    @app.post("/api/mobile/scan", dependencies=[Depends(verify_api_key)])
+    async def scan_unavailable():
+        raise HTTPException(503, "No remote scan worker is connected. Use the local CLI.")
 
-    @app.post("/api/mobile/scan")
-    async def mobile_scan(request: Request):
-        body = await request.json()
-        return {"scan_id": __import__('uuid').uuid4().hex[:8].upper(), "target": body.get('target', ''), "status": "queued"}
-
-    @app.get("/api/mobile/alerts")
-    async def mobile_alerts():
-        return {"alerts": [], "count": 0, "timestamp": __import__('time').time()}
-
-    @app.get("/api/mobile/findings")
-    async def mobile_findings():
-        return {"findings": [], "count": 0, "timestamp": __import__('time').time()}
-
-    @app.get("/api/mobile/sessions")
-    async def mobile_sessions():
-        return {"sessions": [], "count": 0}
-
-    @app.get("/api/audit")
-    async def audit_log():
-        return {"entries": [], "count": 0, "timestamp": __import__('time').time()}
-
-    @app.get("/api/audit/chain")
-    async def audit_chain():
-        return {"chain_intact": True, "bind_count": 0, "timestamp": __import__('time').time()}
-
-    @app.get("/api/stream")
-    async def stream_status():
-        return {"streaming": False, "events": 0, "timestamp": __import__('time').time()}
-
-
+    @app.get("/api/mobile/status", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/mobile/alerts", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/mobile/findings", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/mobile/sessions", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/audit", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/audit/chain", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/stream", dependencies=[Depends(verify_api_key)])
+    @app.get("/api/events", dependencies=[Depends(verify_api_key)])
+    async def data_unavailable():
+        raise HTTPException(503, "No persisted audit, event, or mobile backend is connected.")
 
     return app
 

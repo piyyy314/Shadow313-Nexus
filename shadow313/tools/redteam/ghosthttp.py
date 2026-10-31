@@ -162,7 +162,7 @@ class GhostHTTP(BaseTool):
         async with httpx.AsyncClient(
             timeout=10,
             follow_redirects=True,
-            verify=False,
+            verify=True,
             headers={"User-Agent": "Mozilla/5.0 (compatible; Shadow313/2.0)"},
         ) as client:
 

@@ -177,7 +177,11 @@ def _fetch_events(since_ts: float) -> list:
     if not API_URL:
         return []
     url = f"{API_URL.rstrip('/')}/api/events?since={since_ts}&limit=50"
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    key = os.environ.get("SHADOW313_API_KEY", "")
+    if not key:
+        logger.warning("Event polling disabled: configure SHADOW313_API_KEY and an event provider")
+        return []
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "X-API-Key": key})
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read())

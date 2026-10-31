@@ -18,6 +18,7 @@ from importlib.util import find_spec
 import json
 import logging
 import math
+import os
 import time
 from datetime import UTC, datetime
 from typing import Any
@@ -26,9 +27,9 @@ logger = logging.getLogger("shadow313.api.audit_server")
 
 # ── Optional FastAPI ──────────────────────────────────────────────────────────
 try:
-    from fastapi import FastAPI
+    from fastapi import FastAPI, Depends, Request, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
+    from pydantic import BaseModel, Field, ConfigDict
     HAS_FASTAPI = True
 except ImportError:
     HAS_FASTAPI = False
@@ -43,6 +44,8 @@ _audit_chain: list[dict[str, Any]] = []
 
 def _add_to_chain(payload: dict[str, Any], bind_id: str | None = None) -> dict[str, Any]:
     """Add a receipt to the in-memory 313-BIND audit chain."""
+    if len(_audit_chain) >= 1000:
+        raise RuntimeError("Audit store full; configure persistent storage")
     ts = time.time_ns()
     ts = int(str(ts)[:-3] + "313")
 
@@ -61,7 +64,7 @@ def _add_to_chain(payload: dict[str, Any], bind_id: str | None = None) -> dict[s
         "timestamp_iso": datetime.now(UTC).isoformat(),
         "payload_hash": payload_hash,
         "chain_hash": chain_hash,
-        "signature_algorithm": "SLH-DSA-SHAKE-128f (FIPS 205) — simulated",
+        "signature_algorithm": "UNSIGNED-SHA3-512-DEMO",
         "ipfs_anchored": False,
         "ipfs_cid": None,
     }
@@ -110,13 +113,14 @@ if HAS_FASTAPI:
         depth: str = "tactical"
 
     class LinkBudgetRequest(BaseModel):
-        frequency_ghz: float = 11.7
-        distance_km: float = 38500.0
+        model_config = ConfigDict(allow_inf_nan=False)
+        frequency_ghz: float = Field(11.7, gt=0, le=1000)
+        distance_km: float = Field(38500.0, gt=0, le=1e9)
         tx_power_dbw: float = 10.0
         tx_gain_dbi: float = 45.0
         rx_gain_dbi: float = 32.0
         noise_figure_db: float = 1.5
-        bandwidth_mhz: float = 36.0
+        bandwidth_mhz: float = Field(36.0, gt=0, le=1e6)
         satellite: str = "GEO"
 
 
@@ -126,15 +130,23 @@ def create_app() -> Any:
     if not HAS_FASTAPI:
         raise RuntimeError("FastAPI not installed. pip install fastapi uvicorn")
 
+    from shadow313.api.access import authorize, install_limits
+
+    def verify_access(request: Request):
+        authorize(request, os.environ.get("SHADOW313_API_KEY"))
+
     app = FastAPI(
+        dependencies=[Depends(verify_access)],
         title="Shadow313 NEXUS Audit Server",
         description="313-BIND audit chain, PQC code auditing, VSAT link budget",
         version="4.0.0",
     )
 
+    install_limits(app)
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["http://localhost:3000", "http://localhost:7313"],
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -217,7 +229,8 @@ def create_app() -> Any:
             "total_receipts": len(_audit_chain),
             "returned": len(chain),
             "chain_valid": valid,
-            "algorithm": "SHA3-512 + SLH-DSA-SHAKE-128f (FIPS 205)",
+            "algorithm": "UNSIGNED-SHA3-512-DEMO",
+            "cryptographically_verified": False,
         }
 
     @app.post("/api/link-budget")
@@ -270,17 +283,9 @@ def create_app() -> Any:
     async def get_public_key():
         """Return the SLH-DSA public key for receipt verification."""
         return {
-            "algorithm": "SLH-DSA-SHAKE-128f",
-            "standard": "NIST FIPS 205",
-            "key_size_bytes": 32,
-            "note": (
-                "Production key stored in HSM. "
-                "Contact security@shadow313.dev for verification."
-            ),
-            "fingerprint": (
-                "313-PK-"
-                + hashlib.sha3_256(b"shadow313-nexus-pubkey").hexdigest()[:16].upper()
-            ),
+            "available": False, "public_key": None,
+            "algorithm": "UNSIGNED-SHA3-512-DEMO",
+            "note": "This demo audit service does not have a signing key or HSM connection.",
         }
 
     @app.get("/api/health")
