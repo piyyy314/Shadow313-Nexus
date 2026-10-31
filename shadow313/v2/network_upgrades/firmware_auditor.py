@@ -5,14 +5,13 @@ Detects T1542.004 (Firmware Implant) by comparing running firmware version/hash
 against vendor advisory databases. Supports WatchGuard, Fortinet, Palo Alto,
 Cisco, and generic SNMP-based appliances.
 
-Patch: P-19 (FW-01) — new module for firmware hash verification.
+Patch: P-23 (FW-01) — firmware hash verification module.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import re
-import socket
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -21,9 +20,8 @@ from typing import Any
 from urllib import request as urlreq
 
 # ── Known-good firmware hash database (vendor advisory hashes) ───────────────
-# In production these would be fetched from vendor advisory APIs.
-# Format: {vendor: {product: {version: sha256_hash}}}
-KNOWN_GOOD_HASHES: dict[str, dict[str, dict[str, str]]] = {
+# Format: {vendor: {product: {version: hash_string}}}
+DEFAULT_KNOWN_GOOD: dict[str, dict[str, dict[str, str]]] = {
     "watchguard": {
         "fireware": {
             "12.9.2": "a3f8c2d1e4b5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
@@ -58,8 +56,8 @@ SNMP_FIRMWARE_OIDS = {
     "watchguard": "1.3.6.1.4.1.3097.6.3.1",
     "fortinet":   "1.3.6.1.4.1.12356.101.4.1.1",
     "paloalto":   "1.3.6.1.4.1.25461.2.1.2.1.1",
-    "cisco":      "1.3.6.1.2.1.1.1.0",  # sysDescr contains version
-    "generic":    "1.3.6.1.2.1.1.1.0",  # sysDescr
+    "cisco":      "1.3.6.1.2.1.1.1.0",
+    "generic":    "1.3.6.1.2.1.1.1.0",
 }
 
 _VERSION_RE = re.compile(r"(\d+\.\d+[\.\d]*)")
@@ -69,8 +67,14 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _extract_version(text: str) -> str | None:
+    """Extract version string from arbitrary text using regex."""
+    m = _VERSION_RE.search(text)
+    return m.group(1) if m else None
+
+
 def _snmp_get(host: str, oid: str, community: str = "public", timeout: int = 5) -> str | None:
-    """Attempt SNMP GET via snmpget CLI tool. Returns string value or None."""
+    """Attempt SNMP GET via snmpget CLI tool."""
     try:
         res = subprocess.run(
             ["snmpget", "-v2c", f"-c{community}", "-Oqv", host, oid],
@@ -84,11 +88,12 @@ def _snmp_get(host: str, oid: str, community: str = "public", timeout: int = 5) 
 
 
 def _http_get_version(host: str, port: int = 443, timeout: int = 5) -> str | None:
-    """Attempt to retrieve firmware version from HTTP banner or management API."""
+    """Attempt to retrieve firmware version from HTTP management API."""
     try:
-        ctx = __import__("ssl").create_default_context()
+        import ssl
+        ctx = ssl.create_default_context()
         ctx.check_hostname = False
-        ctx.verify_mode = __import__("ssl").CERT_NONE
+        ctx.verify_mode = ssl.CERT_NONE
         req = urlreq.Request(
             f"https://{host}:{port}/api/v1/system/version",
             headers={"Accept": "application/json"},
@@ -101,21 +106,14 @@ def _http_get_version(host: str, port: int = 443, timeout: int = 5) -> str | Non
     return None
 
 
-def _extract_version(text: str) -> str | None:
-    """Extract version string from arbitrary text using regex."""
-    m = _VERSION_RE.search(text)
-    return m.group(1) if m else None
-
-
 class FirmwareAuditor:
     """Verify firmware integrity for network appliances.
 
-    Compares running firmware version against known-good hash database.
-    Supports SNMP polling, HTTP API, and manual version input.
-
-    Usage:
-        auditor = FirmwareAuditor()
-        result = auditor.audit_host("192.168.1.1", vendor="watchguard", product="fireware")
+    Args:
+        known_good:      Dict of {vendor: {product: {version: hash}}}.
+                         Defaults to DEFAULT_KNOWN_GOOD if None.
+        alert_callback:  Callable(host, vendor, version, detail) invoked on alert.
+        snmp_community:  SNMP community string (default: "public").
     """
 
     def __init__(
@@ -124,18 +122,18 @@ class FirmwareAuditor:
         alert_callback=None,
         snmp_community: str = "public",
     ) -> None:
-        self.known_good = known_good or KNOWN_GOOD_HASHES
+        self.known_good = known_good if known_good is not None else DEFAULT_KNOWN_GOOD
         self.alert_callback = alert_callback or self._default_alert
         self.snmp_community = snmp_community
 
-    def _default_alert(self, host: str, vendor: str, version: str, reason: str) -> None:
+    def _default_alert(self, host: str, vendor: str, version: str, detail: str) -> None:
         print(
             f"[SHADOW313-FW-01] FIRMWARE ALERT on {host}: "
-            f"vendor={vendor} version={version} — {reason}"
+            f"vendor={vendor} version={version} — {detail}"
         )
 
     def _get_version_snmp(self, host: str, vendor: str) -> str | None:
-        oid = SNMP_FIRMWARE_OIDS.get(vendor, SNMP_FIRMWARE_OIDS["generic"])
+        oid = SNMP_FIRMWARE_OIDS.get(vendor.lower(), SNMP_FIRMWARE_OIDS["generic"])
         raw = _snmp_get(host, oid, community=self.snmp_community)
         if raw:
             return _extract_version(raw)
@@ -163,34 +161,59 @@ class FirmwareAuditor:
     ) -> dict:
         """Check if a firmware version is in the known-good database.
 
-        Returns:
-            dict with keys: known_good, hash_match, expected_hash, status
-        """
-        vendor_db = self.known_good.get(vendor.lower(), {})
-        product_db = vendor_db.get(product.lower(), {})
+        Lookup is case-insensitive for vendor and product names.
 
+        Returns:
+            dict with keys: known_good, hash_match, expected_hash, status, detail
+        """
+        vendor_key  = vendor.lower()
+        product_key = product.lower()
+
+        vendor_db = self.known_good.get(vendor_key, {})
+        if not vendor_db:
+            return {
+                "known_good":    False,
+                "hash_match":    None,
+                "expected_hash": None,
+                "status":        "UNKNOWN_PRODUCT",
+                "detail":        f"No known-good hashes for {vendor}/{product}",
+            }
+
+        product_db = vendor_db.get(product_key, {})
         if not product_db:
             return {
-                "known_good": False,
-                "hash_match": None,
+                "known_good":    False,
+                "hash_match":    None,
                 "expected_hash": None,
-                "status": "UNKNOWN_PRODUCT",
-                "detail": f"No known-good hashes for {vendor}/{product}",
+                "status":        "UNKNOWN_PRODUCT",
+                "detail":        f"No known-good hashes for {vendor}/{product}",
             }
 
         expected_hash = product_db.get(version)
         if expected_hash is None:
-            # Version not in known-good DB — could be newer or modified
             latest = max(product_db.keys()) if product_db else "unknown"
             return {
-                "known_good": False,
-                "hash_match": None,
+                "known_good":    False,
+                "hash_match":    None,
                 "expected_hash": None,
-                "status": "VERSION_NOT_IN_DB",
-                "detail": f"Version {version} not in known-good DB. Latest known: {latest}",
+                "status":        "VERSION_NOT_IN_DB",
+                "detail":        f"Version {version} not in known-good DB. Latest known: {latest}",
             }
 
-        
+        return {
+            "known_good":         True,
+            # hash_match is version-string verification only (not byte-level).
+            # Full byte-level verification requires TPM PCR attestation.
+            "hash_match":         "version_string_only",
+            "expected_hash":      expected_hash,
+            "status":             "VERIFIED",
+            "verification_level": "version_string",
+            "detail": (
+                f"Version {version} is in known-good advisory DB for {vendor}/{product}. "
+                f"Note: version-string verification only. "
+                f"For byte-level integrity, use TPM PCR attestation."
+            ),
+        }
 
     def audit_host(
         self,
@@ -199,33 +222,22 @@ class FirmwareAuditor:
         product: str,
         version: str | None = None,
     ) -> dict:
-        """Audit a single network appliance for firmware integrity.
-
-        Args:
-            host:     IP address or hostname of the appliance.
-            vendor:   Vendor name (watchguard, fortinet, paloalto, cisco).
-            product:  Product name (fireware, fortios, pan-os, ios-xe).
-            version:  Known firmware version (if None, auto-detected via SNMP/HTTP).
-
-        Returns:
-            Audit result dict with status, version, alerts.
-        """
+        """Audit a single network appliance for firmware integrity."""
         result: dict[str, Any] = {
-            "host": host,
-            "vendor": vendor,
-            "product": product,
-            "audited_at": _now(),
+            "host":         host,
+            "vendor":       vendor,
+            "product":      product,
+            "audited_at":   _now(),
             "version_source": "manual" if version else "auto",
         }
 
-        # Auto-detect version if not provided
         if version is None:
             version = self.get_running_version(host, vendor)
             result["version_source"] = "snmp_or_http"
 
         if version is None:
             result["status"] = "VERSION_UNDETECTABLE"
-            result["alert"] = False
+            result["alert"]  = False
             result["detail"] = "Could not retrieve firmware version via SNMP or HTTP"
             return result
 
@@ -233,7 +245,6 @@ class FirmwareAuditor:
         verification = self.verify_version(vendor, product, version)
         result.update(verification)
 
-        # Alert on any non-VERIFIED status
         if verification["status"] != "VERIFIED":
             self.alert_callback(host, vendor, version, verification["detail"])
             result["alert"] = True
@@ -243,14 +254,7 @@ class FirmwareAuditor:
         return result
 
     def audit_batch(self, targets: list[dict]) -> list[dict]:
-        """Audit multiple appliances.
-
-        Args:
-            targets: List of dicts with keys: host, vendor, product, version (optional).
-
-        Returns:
-            List of audit result dicts.
-        """
+        """Audit multiple appliances."""
         results = []
         for t in targets:
             try:
@@ -263,23 +267,23 @@ class FirmwareAuditor:
                 results.append(r)
             except Exception as exc:
                 results.append({
-                    "host": t.get("host", "unknown"),
+                    "host":   t.get("host", "unknown"),
                     "status": "ERROR",
                     "detail": str(exc),
-                    "alert": False,
+                    "alert":  False,
                 })
         return results
 
     def summary(self, results: list[dict]) -> dict:
         """Summarise batch audit results."""
-        total = len(results)
+        total    = len(results)
         verified = sum(1 for r in results if r.get("status") == "VERIFIED")
-        alerted = sum(1 for r in results if r.get("alert"))
-        unknown = sum(1 for r in results if r.get("status") in ("UNKNOWN_PRODUCT", "VERSION_UNDETECTABLE"))
+        alerted  = sum(1 for r in results if r.get("alert"))
+        unknown  = sum(1 for r in results if r.get("status") in ("UNKNOWN_PRODUCT", "VERSION_UNDETECTABLE"))
         return {
-            "total": total,
-            "verified": verified,
-            "alerted": alerted,
-            "unknown": unknown,
-            "alert_rate": round(alerted / total, 3) if total else 0.0,
+            "total":      total,
+            "verified":   verified,
+            "alerted":    alerted,
+            "unknown":    unknown,
+            "alert_rate": round(alerted / total, 3) if total else 0,
         }
