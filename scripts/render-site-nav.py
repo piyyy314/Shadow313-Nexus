@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    template = (ROOT / 'assets/site-nav.html').read_text()
+    template = (ROOT / 'assets/site-nav.html.template').read_text()
     stale = []
     for folder in FOLDERS:
         for path in sorted((ROOT / folder).glob('*.html')):
