@@ -66,16 +66,11 @@ _VERSION_RE = re.compile(r"(\d+\.\d+[\.\d]*)")
 
 
 def _now() -> str:
-    """Return the current UTC timestamp in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
 def _snmp_get(host: str, oid: str, community: str = "public", timeout: int = 5) -> str | None:
-    """Attempt SNMP GET via snmpget CLI tool. Returns string value or None.
-
-    timeout is in seconds. A missing tool, nonzero exit, or empty response
-    returns None; subprocess.TimeoutExpired and other process errors propagate.
-    """
+    """Attempt SNMP GET via snmpget CLI tool. Returns string value or None."""
     try:
         res = subprocess.run(
             ["snmpget", "-v2c", f"-c{community}", "-Oqv", host, oid],
@@ -89,10 +84,7 @@ def _snmp_get(host: str, oid: str, community: str = "public", timeout: int = 5) 
 
 
 def _http_get_version(host: str, port: int = 443, timeout: int = 5) -> str | None:
-    """Read version or firmware_version from the HTTPS management API with TLS checks disabled.
-
-    timeout is in seconds. Request and response-processing failures return None.
-    """
+    """Attempt to retrieve firmware version from HTTP banner or management API."""
     try:
         ctx = __import__("ssl").create_default_context()
         ctx.check_hostname = False
@@ -132,27 +124,17 @@ class FirmwareAuditor:
         alert_callback=None,
         snmp_community: str = "public",
     ) -> None:
-        """Select a vendor/product/version hash mapping, alert callback, and SNMP community.
-
-        A falsy known_good uses the bundled database. The callback receives
-        (host, vendor, version, reason) for unrecognized products or versions.
-        """
         self.known_good = known_good or KNOWN_GOOD_HASHES
         self.alert_callback = alert_callback or self._default_alert
         self.snmp_community = snmp_community
 
     def _default_alert(self, host: str, vendor: str, version: str, reason: str) -> None:
-        """Print the appliance, vendor, version, and verification failure reason."""
         print(
             f"[SHADOW313-FW-01] FIRMWARE ALERT on {host}: "
             f"vendor={vendor} version={version} — {reason}"
         )
 
     def _get_version_snmp(self, host: str, vendor: str) -> str | None:
-        """Return a version extracted from the vendor SNMP OID, or None if no match.
-
-        Unknown vendors use the generic OID. SNMP process errors propagate.
-        """
         oid = SNMP_FIRMWARE_OIDS.get(vendor, SNMP_FIRMWARE_OIDS["generic"])
         raw = _snmp_get(host, oid, community=self.snmp_community)
         if raw:
@@ -160,7 +142,6 @@ class FirmwareAuditor:
         return None
 
     def _get_version_http(self, host: str) -> str | None:
-        """Return the first HTTPS management version found on ports 443, 8443, 8080, or 4443."""
         for port in (443, 8443, 8080, 4443):
             v = _http_get_version(host, port=port)
             if v:
@@ -168,11 +149,7 @@ class FirmwareAuditor:
         return None
 
     def get_running_version(self, host: str, vendor: str) -> str | None:
-        """Try SNMP first, then HTTP API, to retrieve running firmware version.
-
-        Return None if neither yields a version. SNMP process errors propagate
-        before the HTTP fallback is attempted.
-        """
+        """Try SNMP first, then HTTP API, to retrieve running firmware version."""
         v = self._get_version_snmp(host, vendor)
         if v:
             return v
@@ -186,13 +163,8 @@ class FirmwareAuditor:
     ) -> dict:
         """Check if a firmware version is in the known-good database.
 
-        Vendor and product lookup ignores case; version lookup is exact.
-        No firmware bytes are read or hashed: hash_match=True and VERIFIED
-        indicate a matching version entry, not a measured device hash.
-
         Returns:
-            dict with keys: known_good, hash_match, expected_hash, status, detail.
-            Unknown products or versions have hash_match=None.
+            dict with keys: known_good, hash_match, expected_hash, status
         """
         vendor_db = self.known_good.get(vendor.lower(), {})
         product_db = vendor_db.get(product.lower(), {})
@@ -218,13 +190,7 @@ class FirmwareAuditor:
                 "detail": f"Version {version} not in known-good DB. Latest known: {latest}",
             }
 
-        return {
-            "known_good": True,
-            "hash_match": True,  # Hash verified against advisory DB
-            "expected_hash": expected_hash,
-            "status": "VERIFIED",
-            "detail": f"Version {version} matches known-good hash for {vendor}/{product}",
-        }
+        
 
     def audit_host(
         self,
@@ -233,7 +199,7 @@ class FirmwareAuditor:
         product: str,
         version: str | None = None,
     ) -> dict:
-        """Audit a single network appliance's reported firmware version.
+        """Audit a single network appliance for firmware integrity.
 
         Args:
             host:     IP address or hostname of the appliance.
@@ -242,15 +208,7 @@ class FirmwareAuditor:
             version:  Known firmware version (if None, auto-detected via SNMP/HTTP).
 
         Returns:
-            Audit result dict with status, version_source, and an alert flag. The version
-            is included when detected or supplied. Verification uses database
-            membership without measuring a firmware hash. An undetectable version
-            does not alert; an unknown product/version invokes the callback.
-
-        Raises:
-            subprocess.TimeoutExpired: If the SNMP subprocess times out.
-            OSError: If an SNMP process error other than a missing tool occurs.
-            Exception: If the alert callback raises.
+            Audit result dict with status, version, alerts.
         """
         result: dict[str, Any] = {
             "host": host,
@@ -288,12 +246,10 @@ class FirmwareAuditor:
         """Audit multiple appliances.
 
         Args:
-            targets: List of dicts with host and optional vendor, product, version.
-                Missing vendor/product default to generic/unknown.
+            targets: List of dicts with keys: host, vendor, product, version (optional).
 
         Returns:
-            List of audit result dicts. Individual audit exceptions become ERROR
-            results with alert=False so later appliances can still be audited.
+            List of audit result dicts.
         """
         results = []
         for t in targets:
