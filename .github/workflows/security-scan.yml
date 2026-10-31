@@ -106,10 +106,9 @@ jobs:
           checkov -f docker-compose.yml \
             --framework dockerfile \
             --output cli \
-            --soft-fail
-
-      - name: Verify security hardening
-        run: |
+           
+           - name: Verify security hardening 
+           run: |
           python3 << 'PYEOF'
           import sys
           with open('docker-compose.yml') as f:
