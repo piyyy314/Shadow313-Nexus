@@ -16,10 +16,16 @@ from pathlib import Path
 
 
 def digest(path):
+    """Return the file's SHA-256 digest as hexadecimal; propagate read errors."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def write_manifest(directory):
+    """Write or replace SHA256SUMS.json for one wheel and one source archive.
+
+    Raise ValueError if the directory does not contain exactly one ``*.whl``
+    and one ``*.tar.gz``. File read and write errors propagate.
+    """
     artifacts = sorted([*directory.glob("*.whl"), *directory.glob("*.tar.gz")])
     if len(list(directory.glob("*.whl"))) != 1 or len(artifacts) != 2:
         raise ValueError("Expected exactly one wheel and one source archive in fresh output")
@@ -28,6 +34,12 @@ def write_manifest(directory):
 
 
 def validate_artifacts(directory):
+    """Validate the manifest, artifact hashes, and wheel distribution identity.
+
+    Return the wheel path and its metadata version (which may be None).
+    Raise ValueError for an artifact list, path, hash, metadata count, or
+    identity mismatch. File, JSON decoding, and ZIP errors propagate.
+    """
     manifest = json.loads((directory / "SHA256SUMS.json").read_text(encoding="utf-8"))
     wheels = list(directory.glob("*.whl"))
     if len(wheels) != 1:
@@ -50,6 +62,14 @@ def validate_artifacts(directory):
 
 
 def check(directory, profile):
+    """Install and smoke-test the validated wheel in a temporary environment.
+
+    ``profile`` selects core, api (dashboard and httpx), or pqc dependencies
+    and smoke checks. Print a JSON summary on success and remove the temporary
+    environment on exit. Validation, environment, and subprocess errors
+    propagate; subprocess failures and timeouts are not converted to results.
+    An unknown profile raises KeyError after artifact validation.
+    """
     wheel, version = validate_artifacts(directory)
     # No inherited project path or global packages; each run gets a unique directory.
     with tempfile.TemporaryDirectory(prefix="shadow313-wheel-ci-") as temp:
