@@ -88,14 +88,20 @@ _PUBLIC_KEY  = hashlib.sha256(_SIGNING_KEY).hexdigest()  # nosec — simulation 
 
 
 def _wait_for_313(max_wait_ms: int = 2000) -> int:
-    """Wait for a nanosecond timestamp ending in ...313."""
-    deadline = time.time() + (max_wait_ms / 1000)
-    while time.time() < deadline:
+    """Return a simulation timestamp with a ...313 formatting marker.
+
+    A coarse wall clock may never produce that suffix. Poll briefly against a
+    monotonic deadline, then format the same synthetic marker used by the old
+    timeout path. This is not entropy, trusted time, or a security guarantee.
+    max_wait_ms is an upper budget, not a requirement to stall for that duration.
+    """
+    budget = min(max(0, max_wait_ms), 10) / 1000
+    deadline = time.monotonic() + budget
+    while time.monotonic() < deadline:
         ts = time.time_ns()
         if ts % 1000 == 313:
             return ts
-        time.sleep(0.0001)
-    # Fallback: force ...313
+        time.sleep(min(0.0001, max(0, deadline - time.monotonic())))
     ts = time.time_ns()
     return (ts // 1000) * 1000 + 313
 

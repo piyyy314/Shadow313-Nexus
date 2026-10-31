@@ -58,7 +58,7 @@ def test_public_output_is_exact_explicit_allowlist():
     subprocess.run(["node", "scripts/build-public-site.cjs"], cwd=ROOT, check=True)
     out = ROOT / "public-site"
     expected = set(json.loads((ROOT / "site/public-files.json").read_text())) | {".nojekyll"}
-    actual = {str(p.relative_to(out)) for p in out.rglob("*") if p.is_file()}
+    actual = {p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()}
     assert actual == expected
     for excluded in (
         "README.md",

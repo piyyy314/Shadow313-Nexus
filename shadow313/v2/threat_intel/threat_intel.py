@@ -83,6 +83,16 @@ class ThreatIntelDB:
         self._conn = sqlite3.connect(str(db_path))
         self._init_schema()
 
+    def close(self) -> None:
+        """Release SQLite handles deterministically (required before Windows unlink)."""
+        self._conn.close()
+
+    def __enter__(self) -> "ThreatIntelDB":
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.close()
+
     def _init_schema(self) -> None:
         self._conn.executescript("""
             CREATE TABLE IF NOT EXISTS ioc_ip (

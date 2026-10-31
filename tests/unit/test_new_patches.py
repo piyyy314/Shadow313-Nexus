@@ -542,8 +542,8 @@ class TestThreatIntelSQLGuard(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
             db_path = Path(f.name)
         try:
-            db = ThreatIntelDB(db_path)
-            stats = db.stats()
+            with ThreatIntelDB(db_path) as db:
+                stats = db.stats()
             # Repo v4 returns richer stats; check core IOC keys are present
             self.assertIn("ioc_ip", stats)
             self.assertIn("ioc_domain", stats)
@@ -558,8 +558,8 @@ class TestThreatIntelSQLGuard(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
             db_path = Path(f.name)
         try:
-            db = ThreatIntelDB(db_path)
-            stats = db.stats()
+            with ThreatIntelDB(db_path) as db:
+                stats = db.stats()
             # Check the 4 core IOC counts are zero on empty DB
             for key in ("ioc_ip", "ioc_domain", "ioc_url", "ioc_hash"):
                 self.assertEqual(stats.get(key, 0), 0)
