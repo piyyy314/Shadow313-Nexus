@@ -79,6 +79,3 @@ dist/*.json
 !dist/manifest.json
 node_modules/
 scan_results.json
-
-# Allowlisted website artifact
-site-dist/

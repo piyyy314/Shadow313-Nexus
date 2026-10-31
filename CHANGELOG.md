@@ -1,7 +1,3 @@
-> Historical release notes, not current verification evidence. Dates, feature
-> descriptions, test counts, dependency claims, and cryptographic guarantees
-> below have not all been revalidated. See README.md and current test output.
-
 # Shadow313 CHANGELOG
 
 ## [4.0.0-NEXUS] — 2026-08-12
