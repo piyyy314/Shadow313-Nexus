@@ -81,3 +81,11 @@ body.site-page {
 @media (prefers-reduced-motion: reduce) {
   .site-page *, .site-page *::before, .site-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Email requests must retain visible status, consent, and unavailable states. */
+.site-page .waitlist-form > label,
+.site-page .waitlist-form > [role="status"],
+.site-page .waitlist-form > .form-verification,
+.site-page .waitlist-form > noscript { flex-basis:100%; text-align:left; }
+.site-page button:disabled { opacity:.55; cursor:not-allowed; }
+.site-page [role="status"] { font-size:14px; line-height:1.6; color:var(--text-secondary); }

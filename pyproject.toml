@@ -12,7 +12,7 @@ requires-python = ">=3.11"
 authors         = [{name = "Shadow313 Core Team / mohamad", email = "ops@shadow313.dev"}]
 keywords        = ["security","pentest","cli","ai","vulnerability","recon","quantum","nexus","pqc"]
 classifiers     = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Information Technology",
     "Programming Language :: Python :: 3.11",
@@ -99,5 +99,10 @@ show_missing = true
 
 [tool.setuptools.packages.find]
 where   = ["."]
-include = ["shadow313*"]
+include = ["shadow313*", "nexus_toolkit*"]
 exclude = ["tests*", "uploaded_files*", "data*", "tmp*"]
+
+[tool.setuptools.package-data]
+"shadow313.plugins.custom_ai_threat_analyzer" = ["plugin.json", "plugin.shadow313sig"]
+"shadow313.v4.satellite" = ["data/*.json"]
+"shadow313.v4.pqc_js" = ["*.js", "package.json", "package-lock.json"]

@@ -1,0 +1,1123 @@
+path,classification,disposition
+.dockerignore,development-or-metadata,repository-only; no automatic deletion
+.env.example,development-or-metadata,repository-only; no automatic deletion
+.gitattributes,development-or-metadata,repository-only; no automatic deletion
+.github/ISSUE_TEMPLATE/bug_report.md,development-or-metadata,repository-only; no automatic deletion
+.github/dependabot.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/build-release.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/deliver.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/deploy.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/github-pages.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/pr-checks.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/security-scan.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/shadow313-api-validate.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/shadow313-ci.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/shadow313-validate.yml,development-or-metadata,repository-only; no automatic deletion
+.github/workflows/vault-secrets.yml,development-or-metadata,repository-only; no automatic deletion
+.gitignore,development-or-metadata,repository-only; no automatic deletion
+.gitleaks.toml,development-or-metadata,repository-only; no automatic deletion
+.nojekyll,development-or-metadata,repository-only; no automatic deletion
+.pre-commit-config.yaml,development-or-metadata,repository-only; no automatic deletion
+.yamllint.yml,development-or-metadata,repository-only; no automatic deletion
+404.html,public-website,publish-only-through-allowlist
+CHANGELOG.md,development-or-metadata,repository-only; no automatic deletion
+CHECKLIST.md,development-or-metadata,repository-only; no automatic deletion
+CITATION.cff,development-or-metadata,repository-only; no automatic deletion
+CODE_OF_CONDUCT.md,development-or-metadata,repository-only; no automatic deletion
+CONTRIBUTING.md,development-or-metadata,repository-only; no automatic deletion
+Dockerfile,development-or-metadata,repository-only; no automatic deletion
+LICENSE,development-or-metadata,repository-only; no automatic deletion
+MANIFEST.in,development-or-metadata,repository-only; no automatic deletion
+Procfile,development-or-metadata,repository-only; no automatic deletion
+README.md,development-or-metadata,repository-only; no automatic deletion
+SECURITY.md,development-or-metadata,repository-only; no automatic deletion
+about/index.html,public-website,publish-only-through-allowlist
+api/index.js,server-source,keep server-side; never publish as static files
+api/openapi.yaml,server-source,keep server-side; never publish as static files
+assets/forms.js,public-website,publish-only-through-allowlist
+assets/site-nav.css,public-website,publish-only-through-allowlist
+assets/site-nav.html.template,development-or-metadata,repository-only; no automatic deletion
+assets/site-theme.css,public-website,publish-only-through-allowlist
+audit-results/api-endpoints.csv,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+audit-results/cli-surfaces.csv,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+audit-results/findings.csv,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+audit-results/module-inventory.csv,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+audit-results/remediation-report.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+audit-results/repository-audit.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+blog/index.html,public-website,publish-only-through-allowlist
+blog/sha3-bypass.html,public-website,publish-only-through-allowlist
+conftest.py,development-or-metadata,repository-only; no automatic deletion
+cyber_lab/01_Projects/README.md,development-or-metadata,repository-only; no automatic deletion
+cyber_lab/02_Offline_Docs/README.md,development-or-metadata,repository-only; no automatic deletion
+cyber_lab/03_Tool_Installers/README.md,development-or-metadata,repository-only; no automatic deletion
+cyber_lab/04_Jupyter_Notebooks/README.md,development-or-metadata,repository-only; no automatic deletion
+deploy_live.ps1,development-or-metadata,repository-only; no automatic deletion
+deploy_to_laptop.ps1,development-or-metadata,repository-only; no automatic deletion
+docker-compose.yml,development-or-metadata,repository-only; no automatic deletion
+docker/nginx/gen-ssl.sh,development-or-metadata,repository-only; no automatic deletion
+docker/ollama/init.sh,development-or-metadata,repository-only; no automatic deletion
+docker/openwebui/config.json,development-or-metadata,repository-only; no automatic deletion
+docs-archive/_old-versions/.gitkeep,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/onedrive-rescue/.gitkeep,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/.skill-lock.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/KILLCHAIN_REPORT_1778016073671.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/README.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-CVE-Blog-SHA3-Bypass-2026.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-GAP-ANALYSIS-2026-001.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-Industry-Benchmark-Comparison-2026.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-Nexus-Dashboard-v3.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-Production-Readiness-Gap-Analysis-2026.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-Project-Genesis-Chat-History.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-SOC2-Type2-Readiness-Plan-2026.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-SSP-2026-001.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-SSP-Dashboard.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/S313-Security-Coverage-Remediation-Roadmap.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/SHADOW313 NEXUS — Domain Evolution Roadmap (1).md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/SHADOW313 — Advanced Quantum-Ready CLI Platform.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/STIA_HOTFIX_sat-03_smart_com.sh,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+"docs-archive/rescued-from-pictures/Security Advisories, Notices and Resources _ Dell Canada.html",historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Shadow313 NEXUS v4 — CRQC Attack Surface Analysis.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Shadow313 NEXUS — Deployment Guide.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Shadow313 NEXUS — Install & Activation Guide.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Shadow313 NEXUS — Proprietary Signature Feature Analysis.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Shadow313_v3_Cyber_Operations_Dashboard (1).html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/Simulated 3PAO ConMon Audit Session — Shadow313  VANGUARD-313.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/TSI_INTEL_VAULT_2026-05-17T04-48-39-582Z.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/TSI_INTEL_VAULT_2026-09-23T03-57-33-344Z.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/TSI_MISSION_BRIEF_Telstar_11N_1778111391243.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/WAR_GAMES_REPORT_1784986000899.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/YARA_SCAN_VSAT_Firmware_Backdoor.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis-honeypot-forensics-1790134410259.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_airspace_telemetry_1790132195467.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_ast_heuristics_report_1790137448355.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_crypto_dh_session_1790137265373.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_ebpf_telemetry_history_1790137423457.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1782414208714.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1783475582883.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1790137509910.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1790137534168.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1790137556723.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_entropy_profile_1790137581507.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_forensics_dump_2026-07-18.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_forensics_dump_2026-09-23 (1).json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_forensics_dump_2026-09-23.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_nexus.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_pe_analyzer_crypt_untrusted_loader_exe.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_pe_analyzer_svchost_exe.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_pe_analyzer_untrusted_dropper_bin.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_persisted_threat_vault_1790137685038.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_signature_detections_1783475815951.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/aegis_signature_detections_1790137209317.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/alerts.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/api_security_fuzzing_suite_1787970666415.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/attack_chain_mapping.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/audit_report.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/auto_firewall.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/cachedResources.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/canary_listener.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/cloud_monitor.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/cloud_response.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/command_center.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/create_image_trap.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/crqc_attack_surface_analysis.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/d3fend_gap_closure_plan.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/d3fend_mapping.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/deep-research-report.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/evasion_technique_analysis.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/fetch_top_coins.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/fortress_config.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/fortress_config.txt.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/fortress_monitor.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/ghostwatch_adb_forensic_ledger_1790132038488.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/github_workflows_build_Version2.yml,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/github_workflows_build_Version3.yml,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/gorgon_antitamper_audit_1790132796027.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/honeypot.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/jest.config.ts,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/log.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/log_util.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/main.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/master_dashboard (1).html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/nexus_chat_history_1782427759414-STIMULATION REPORT.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/nexus_sigint_eavesdropping_report_1787964112641.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/pq_threat_landscape_slhdsa_evolution.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/process_sentinel.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/reflexive_defense.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/response_controller.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/scenario.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/self_update.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/shadow313-ai-stack-map (1).html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/shadow313-nexus-architecture.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/shadow_observer.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/stealth_tarpit.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/tarpit.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/test_support.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/tests.yml,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/v1_defensive_package_example.py,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/vsat-tactical-suite.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/vsat_blue_team_toolkit.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued-from-pictures/vsat_hacking_and_defensive_toolkit.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs-archive/rescued/.gitkeep,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/313-bind-verification-portal.html,public-website,publish-only-through-allowlist
+docs/BADGE_STRATEGY.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/CyberShield-Suite.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/FEDRAMP_HIGH_ROADMAP.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/INSTALL.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/PUSH_TO_CI_GUIDE.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-Attack-Surface-Blind-Spot-Analysis.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-CVE-Blog-SHA3-Bypass-2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-Deployment-Guide-shadow313dev.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-GAP-ANALYSIS-2026-001.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-Industry-Benchmark-Comparison-2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-Nexus-Dashboard-v3.html,public-website,publish-only-through-allowlist
+docs/S313-Production-Readiness-Gap-Analysis-2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-Project-Genesis-Chat-History.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-SOC2-Type2-Readiness-Plan-2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-SSP-2026-001.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-SSP-Dashboard.html,public-website,publish-only-through-allowlist
+docs/S313-Security-Coverage-Remediation-Roadmap.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/S313-ZTAS-Architecture-Spec.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/SHA-6-docker-openwebui-setup.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/adversarial-adaptation.html,public-website,publish-only-through-allowlist
+docs/adversarial-pivot-analysis.html,public-website,publish-only-through-allowlist
+docs/adversarial-pivot-dashboard.html,public-website,publish-only-through-allowlist
+docs/aegis_nexus.html,public-website,publish-only-through-allowlist
+docs/api.html,public-website,publish-only-through-allowlist
+docs/apt-simulation-69167.html,public-website,publish-only-through-allowlist
+docs/arch-e-stress-test.html,public-website,publish-only-through-allowlist
+docs/archetype-deception-erosion.html,public-website,publish-only-through-allowlist
+docs/asymmetric-cost-gametheory.html,public-website,publish-only-through-allowlist
+docs/attack-chain-cvss-epss.html,public-website,publish-only-through-allowlist
+docs/attack_chain_mapping.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/attck-coverage-graph.html,public-website,publish-only-through-allowlist
+docs/attck-drilldown.json,public-website,publish-only-through-allowlist
+docs/attck.html,public-website,publish-only-through-allowlist
+docs/blackcat-lateral-mitigation.html,public-website,publish-only-through-allowlist
+docs/blue-team-soc.html,public-website,publish-only-through-allowlist
+docs/braid-ep-countermeasures.html,public-website,publish-only-through-allowlist
+docs/byovd-ebpf-machtrap.html,public-website,publish-only-through-allowlist
+docs/careers.html,public-website,publish-only-through-allowlist
+docs/case-studies.html,public-website,publish-only-through-allowlist
+docs/changelog.html,public-website,publish-only-through-allowlist
+docs/chronos-sentinel.html,public-website,publish-only-through-allowlist
+docs/ci-validation-fixes.patch,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/3PAO-Audit-Simulation-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/3PAO-ConMon-Simulation-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/AT-Policy-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/AT-Training-Records-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/CA-Readiness-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/IR-Plan-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/PS-AUA-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cmmc_wave1/PS-Policy-S313.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/competitive-analysis.html,public-website,publish-only-through-allowlist
+docs/compliance.html,public-website,publish-only-through-allowlist
+docs/contact.html,public-website,publish-only-through-allowlist
+docs/coverage_matrix.html,public-website,publish-only-through-allowlist
+docs/crqc001_exploit_simulation.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/crqc_attack_surface_analysis.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/cve-intelligence.html,public-website,publish-only-through-allowlist
+docs/cve-submission-report.html,public-website,publish-only-through-allowlist
+docs/cvss-deprecation-nvsm.html,public-website,publish-only-through-allowlist
+docs/d3fend_gap_closure_plan.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/d3fend_mapping.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/dark-web-demystifier.html,public-website,publish-only-through-allowlist
+docs/dark-web-monitor.html,public-website,publish-only-through-allowlist
+docs/dashboards.html,public-website,publish-only-through-allowlist
+docs/data/attck-drilldown.js,public-website,publish-only-through-allowlist
+docs/deception-vs-architectural.html,public-website,publish-only-through-allowlist
+docs/deployment-api-audit-2026-10-29.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/detection-engineering-gametheory.html,public-website,publish-only-through-allowlist
+docs/detection-tripwire-analysis.html,public-website,publish-only-through-allowlist
+docs/evasion_technique_analysis.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/federated-mesh-graph.html,public-website,publish-only-through-allowlist
+docs/federated-mesh.html,public-website,publish-only-through-allowlist
+docs/fep-dwell-time-analysis.html,public-website,publish-only-through-allowlist
+docs/fix-sla-validator.patch,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/framework_comparison_313bind_slsa_ssdf.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/ghost-watch-c2.html,public-website,publish-only-through-allowlist
+docs/ghost-watch-threatmap.html,public-website,publish-only-through-allowlist
+docs/ghost-watch.html,public-website,publish-only-through-allowlist
+docs/ghost-watch/S313-Advanced-Canary-Trap-System-Design.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/honeypot-network.html,public-website,publish-only-through-allowlist
+docs/i2p-browser-deepdive.html,public-website,publish-only-through-allowlist
+docs/identity-platform.html,public-website,publish-only-through-allowlist
+docs/identity/identity-platform-blueprint.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/index.html,public-website,publish-only-through-allowlist
+docs/install.html,public-website,publish-only-through-allowlist
+docs/ir-playbook-attck-map.html,public-website,publish-only-through-allowlist
+docs/kernel-detection-comparison.html,public-website,publish-only-through-allowlist
+docs/kill-chain-graph.html,public-website,publish-only-through-allowlist
+docs/lateral-movement-analysis.html,public-website,publish-only-through-allowlist
+docs/launch-checklist.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/live-operations.html,public-website,publish-only-through-allowlist
+docs/lotl-killchain-hardening.html,public-website,publish-only-through-allowlist
+docs/manual-vercel-workflow.patch,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/ml-threat-predictor.html,public-website,publish-only-through-allowlist
+docs/module-design-doc.html,public-website,publish-only-through-allowlist
+docs/modules.html,public-website,publish-only-through-allowlist
+docs/nsa-tor-deanon-simulation.html,public-website,publish-only-through-allowlist
+docs/nvsm-4cve-chain.html,public-website,publish-only-through-allowlist
+docs/nvsm-4cve-model.html,public-website,publish-only-through-allowlist
+docs/nvsm-asymptotic-model.html,public-website,publish-only-through-allowlist
+docs/nvsm-chain-comparison.html,public-website,publish-only-through-allowlist
+docs/nvsm-chain-score-dashboard.html,public-website,publish-only-through-allowlist
+docs/nvsm-chain-score.html,public-website,publish-only-through-allowlist
+docs/nvsm-temporal-decay.html,public-website,publish-only-through-allowlist
+docs/p0-attck-mitigation-mapping.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/partners.html,public-website,publish-only-through-allowlist
+docs/performance-report.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/pipeline-security-analysis.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/plugin-studio.html,public-website,publish-only-through-allowlist
+docs/post-exploitation-60min.html,public-website,publish-only-through-allowlist
+docs/pq_threat_landscape_slhdsa_evolution.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/pqc-migration-graph.html,public-website,publish-only-through-allowlist
+docs/pqc.html,public-website,publish-only-through-allowlist
+docs/pricing.html,public-website,publish-only-through-allowlist
+docs/privacy.html,public-website,publish-only-through-allowlist
+docs/project-roadmap.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/publication-and-email-setup.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/purple-team.html,public-website,publish-only-through-allowlist
+docs/quantum-lab.html,public-website,publish-only-through-allowlist
+docs/quickstart.html,public-website,publish-only-through-allowlist
+docs/race-condition-ids-comparison.html,public-website,publish-only-through-allowlist
+docs/recon.html,public-website,publish-only-through-allowlist
+docs/red-team-ops.html,public-website,publish-only-through-allowlist
+docs/roi-calculator.html,public-website,publish-only-through-allowlist
+docs/s313-apt-simulation.html,public-website,publish-only-through-allowlist
+docs/s313-command-center-v6.html,public-website,publish-only-through-allowlist
+docs/s313-threat-board.html,public-website,publish-only-through-allowlist
+docs/satexpert_tsi_v7.html,public-website,publish-only-through-allowlist
+docs/security-gap-analysis.html,public-website,publish-only-through-allowlist
+docs/security-policy.html,public-website,publish-only-through-allowlist
+docs/session-exports/campaign-CAMP-003-results.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/session-exports/crystals_pqc_sbom.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/session-exports/cybersuite_session_audit_2026-09-24.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/session-exports/hyperion_exascale_results.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/session-exports/s313-nexus-export-2026-09-25.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/session-exports/shadow313-stix-bundle.json,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+docs/shadow313-ai-stack-map.html,public-website,publish-only-through-allowlist
+docs/shadow313-analysis.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/shadow313-download-portal.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/shadow313-file-portal.html,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/shadow313-nexus-architecture.html,public-website,publish-only-through-allowlist
+docs/shadow313-nexus-dashboard.html,public-website,publish-only-through-allowlist
+docs/soar-playbook-builder.html,public-website,publish-only-through-allowlist
+docs/soc-analyst-cognitive-load.html,public-website,publish-only-through-allowlist
+docs/soc-response-byovd.html,public-website,publish-only-through-allowlist
+docs/soc-staffing-roi.html,public-website,publish-only-through-allowlist
+docs/swift-cascade-topology.html,public-website,publish-only-through-allowlist
+docs/swift-choke-point-hardening.html,public-website,publish-only-through-allowlist
+docs/technical-deep-dive.html,public-website,publish-only-through-allowlist
+docs/temporal-attack-roi.html,public-website,publish-only-through-allowlist
+docs/terms.html,public-website,publish-only-through-allowlist
+docs/threat-actor-map.html,public-website,publish-only-through-allowlist
+docs/threat-intel-feed.html,public-website,publish-only-through-allowlist
+docs/threat-landscape-graph.html,public-website,publish-only-through-allowlist
+docs/tor-i2p-vpn-analysis.html,public-website,publish-only-through-allowlist
+docs/tor-vpn-proxy-comparison.html,public-website,publish-only-through-allowlist
+docs/vendor-scorecard.html,public-website,publish-only-through-allowlist
+docs/vsat-intelligence.html,public-website,publish-only-through-allowlist
+docs/vsat-tactical-suite.html,public-website,publish-only-through-allowlist
+docs/vsat/RF_Jamming_Analysis_2026-09-24.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/SIGINT_Eavesdropping_Report_2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/VSAT_Hardening_Checklist.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/VSAT_TSI_EVENT_LOG_2026-09-24.txt,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/WAR_GAMES_REPORT_2026.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/YARA_SCAN_VSAT_Firmware_Backdoor.json,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/advisories.json,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/satexpert_intel_report_2026-09-24.txt,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/vsat/satexpert_tactical_intel_2026-09-24.txt,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/web3_security_explorer.html,public-website,publish-only-through-allowlist
+docs/workstation_setup/advanced_vpn_server.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/workstation_setup/apt_breach_simulation.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/workstation_setup/blind_spot_mitigations.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/workstation_setup/dell_driver_update.ps1,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/workstation_setup/professional_security_workstation.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/workstation_setup/vps_advanced_hardening.md,reference-or-internal-document,repository-only unless explicitly allowlisted
+docs/xkeyscore-nh-analysis.html,public-website,publish-only-through-allowlist
+docs/zeroday-halflife-forensics.html,public-website,publish-only-through-allowlist
+final_push.ps1,development-or-metadata,repository-only; no automatic deletion
+fix_ci_final.ps1,development-or-metadata,repository-only; no automatic deletion
+fix_html_architecture.ps1,retired-migration,"disabled entrypoint; retain for history, do not run"
+ghost-watch-terminal/__init__.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_advanced.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_aegis.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_apex.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_app.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_terminal/__init__.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/ghost_watch_vanguard.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/agent/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/core/__init__.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/core/engine.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/core/hardware_bind.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/core/pqc_lib.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/deception/__init__.py,development-or-metadata,repository-only; no automatic deletion
+ghost-watch-terminal/src/deception/canary_factory.py,development-or-metadata,repository-only; no automatic deletion
+html_redesign.ps1,retired-migration,"disabled entrypoint; retain for history, do not run"
+index.html,public-website,publish-only-through-allowlist
+infra/hetzner/README.md,development-or-metadata,repository-only; no automatic deletion
+infra/hetzner/bootstrap.sh,development-or-metadata,repository-only; no automatic deletion
+infra/hetzner/create_vps.sh,development-or-metadata,repository-only; no automatic deletion
+infra/hetzner/provision.sh,development-or-metadata,repository-only; no automatic deletion
+infra/hetzner/setup_wireguard_client.sh,development-or-metadata,repository-only; no automatic deletion
+local_bundle/README.txt,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/about.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/aegis-nexus.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/ai-stack.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/apt-simulation.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/architecture.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/blog-sha3.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/blog.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/chronos.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/command-center.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/coverage.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/dashboard-v3.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/dashboard.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-api.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-attck.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-install.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-modules.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-pqc.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs-quickstart.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/docs.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/federated-mesh.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/index.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/marketplace-analytics.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/marketplace-live.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/marketplace.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-cicd.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-defense.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-docs.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-exploit.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-network.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-plugins.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-quantum.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-recon.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform-vuln.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/platform.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/pricing.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/roi-calculator.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/sovereign-shield.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/ssp.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/threat-board.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/tools.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/vendor-scorecard.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+local_bundle/vsat-tactical-suite.html,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+marketplace/analytics-live.html,public-website,publish-only-through-allowlist
+marketplace/analytics.html,public-website,publish-only-through-allowlist
+marketplace/index.html,public-website,publish-only-through-allowlist
+nexus_toolkit/__init__.py,python-source,keep; verify package/resource tests
+nexus_toolkit/core/__init__.py,python-source,keep; verify package/resource tests
+nexus_toolkit/core/log_parser.py,python-source,keep; verify package/resource tests
+nexus_toolkit/core/ml_engine.py,python-source,keep; verify package/resource tests
+nexus_toolkit/engine.py,python-source,keep; verify package/resource tests
+nexus_toolkit/engine_v2.py,python-source,keep; verify package/resource tests
+nexus_toolkit/shadow313_bridge/__init__.py,python-source,keep; verify package/resource tests
+nexus_toolkit/shadow313_bridge/aegis_nexus_integration.py,python-source,keep; verify package/resource tests
+nexus_toolkit/shadow313_bridge/bridge.py,python-source,keep; verify package/resource tests
+nexus_toolkit/soar/.gitkeep,python-source,keep; verify package/resource tests
+nexus_toolkit/soar/actions.py,python-source,keep; verify package/resource tests
+nexus_toolkit/soar/playbook_engine.py,python-source,keep; verify package/resource tests
+nginx.conf,development-or-metadata,repository-only; no automatic deletion
+notes/README.md,historical-or-local,repository-only; review content/licensing/PII before archival or removal
+ollama/Modelfile,development-or-metadata,repository-only; no automatic deletion
+ollama/deploy_shadow313_model.sh,development-or-metadata,repository-only; no automatic deletion
+ollama/shadow313_ollama_config.env,development-or-metadata,repository-only; no automatic deletion
+ollama/test_shadow313_model.py,development-or-metadata,repository-only; no automatic deletion
+platform/cicd.html,public-website,publish-only-through-allowlist
+platform/defense.html,public-website,publish-only-through-allowlist
+platform/docs.html,public-website,publish-only-through-allowlist
+platform/exploit.html,public-website,publish-only-through-allowlist
+platform/index.html,public-website,publish-only-through-allowlist
+platform/network.html,public-website,publish-only-through-allowlist
+platform/plugins.html,public-website,publish-only-through-allowlist
+platform/quantum.html,public-website,publish-only-through-allowlist
+platform/recon.html,public-website,publish-only-through-allowlist
+platform/vuln.html,public-website,publish-only-through-allowlist
+policies/conftest/policy/deny_latest.rego,development-or-metadata,repository-only; no automatic deletion
+policies/conftest/policy/no_new_privileges.rego,development-or-metadata,repository-only; no automatic deletion
+policies/conftest/policy/no_privileged.rego,development-or-metadata,repository-only; no automatic deletion
+policies/conftest/policy/readonly_rootfs.rego,development-or-metadata,repository-only; no automatic deletion
+policies/conftest/policy/require_limits.rego,development-or-metadata,repository-only; no automatic deletion
+pricing/index.html,public-website,publish-only-through-allowlist
+push-to-github.ps1,development-or-metadata,repository-only; no automatic deletion
+push-to-github.sh,development-or-metadata,repository-only; no automatic deletion
+push_all.ps1,development-or-metadata,repository-only; no automatic deletion
+pyproject.toml,development-or-metadata,repository-only; no automatic deletion
+railway.json,development-or-metadata,repository-only; no automatic deletion
+render.yaml,development-or-metadata,repository-only; no automatic deletion
+requirements.txt,development-or-metadata,repository-only; no automatic deletion
+robots.txt,public-website,publish-only-through-allowlist
+run_tests.py,development-or-metadata,repository-only; no automatic deletion
+scripts/apply-sandbox-fixes.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/build-site.cjs,development-or-metadata,repository-only; no automatic deletion
+scripts/check-secrets.py,development-or-metadata,repository-only; no automatic deletion
+scripts/collect_and_zip.py,development-or-metadata,repository-only; no automatic deletion
+scripts/delivery/daemon.py,development-or-metadata,repository-only; no automatic deletion
+scripts/delivery/daemon_hardened.py,development-or-metadata,repository-only; no automatic deletion
+scripts/delivery/p1_hardening.py,development-or-metadata,repository-only; no automatic deletion
+scripts/delivery/pipeline.py,development-or-metadata,repository-only; no automatic deletion
+scripts/fix-all-issues.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/fix-git-hooks.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/fix-wsl-docker-dns.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/full-system-check.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/full_system_audit.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/generate-ts-client.py,development-or-metadata,repository-only; no automatic deletion
+scripts/nextgen_threat_analysis.py,development-or-metadata,repository-only; no automatic deletion
+scripts/open_dashboards.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/push-everything.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/push-sandbox-to-github.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/push-sandbox-to-github.sh,development-or-metadata,repository-only; no automatic deletion
+scripts/push_to_github.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/render-site-nav.py,development-or-metadata,repository-only; no automatic deletion
+scripts/repository-inventory.py,development-or-metadata,repository-only; no automatic deletion
+scripts/repository_completeness_audit.py,development-or-metadata,repository-only; no automatic deletion
+scripts/route-guardian.py,development-or-metadata,repository-only; no automatic deletion
+scripts/secret-fixtures.json,development-or-metadata,repository-only; no automatic deletion
+scripts/security_simulations.py,development-or-metadata,repository-only; no automatic deletion
+scripts/serve_files.py,development-or-metadata,repository-only; no automatic deletion
+scripts/setup-git-workflow.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-appdata-analyzer.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-consolidator.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-file-scanner.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-full-system-scan.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-html-auditor.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-one-shot-setup.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-onedrive-complete-fix.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-onedrive-fix.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-quick-scan.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-repo-rebuild.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-scanner-v2.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313-version-resolver.ps1,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313_posture_scanner.py,development-or-metadata,repository-only; no automatic deletion
+scripts/shadow313_regression_detector.py,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/data/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/data/aegis_simulation_report.json,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/data/blockchain_ledger.json,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/data/threat_intel.json,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/images/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/models/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/payloads/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/payloads/sandbox_payload.json,development-or-metadata,repository-only; no automatic deletion
+sentinelos/assets/samples/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+sentinelos/index.html,public-website,publish-only-through-allowlist
+sentinelos/js/advanced-tools.js,public-website,publish-only-through-allowlist
+sentinelos/js/app.js,public-website,publish-only-through-allowlist
+sentinelos/js/blockchain.js,public-website,publish-only-through-allowlist
+sentinelos/js/chaos.js,public-website,publish-only-through-allowlist
+sentinelos/js/darkweb.js,public-website,publish-only-through-allowlist
+sentinelos/js/deception.js,public-website,publish-only-through-allowlist
+sentinelos/js/incident.js,public-website,publish-only-through-allowlist
+sentinelos/js/quantum.js,public-website,publish-only-through-allowlist
+sentinelos/js/sandbox.js,public-website,publish-only-through-allowlist
+sentinelos/js/shadow313.js,public-website,publish-only-through-allowlist
+sentinelos/js/threat.js,public-website,publish-only-through-allowlist
+sentinelos/js/vuln.js,public-website,publish-only-through-allowlist
+sentinelos/js/workspace.js,public-website,publish-only-through-allowlist
+sentinelos/js/zkp.js,public-website,publish-only-through-allowlist
+sentinelos/styles.css,public-website,publish-only-through-allowlist
+server/forms.cjs,server-source,keep server-side; never publish as static files
+shadow313/__init__.py,python-source,keep; verify package/resource tests
+shadow313/api/__init__.py,python-source,keep; verify package/resource tests
+shadow313/api/audit_server.py,python-source,keep; verify package/resource tests
+shadow313/api/middleware.py,python-source,keep; verify package/resource tests
+shadow313/api/server.py,python-source,keep; verify package/resource tests
+shadow313/cli/__init__.py,python-source,keep; verify package/resource tests
+shadow313/cli/main.py,python-source,keep; verify package/resource tests
+shadow313/core/__init__.py,python-source,keep; verify package/resource tests
+shadow313/core/ai_engine.py,python-source,keep; verify package/resource tests
+shadow313/core/ai_engine/.gitkeep,python-source,keep; verify package/resource tests
+shadow313/core/ai_engine/__init__.py,python-source,keep; verify package/resource tests
+shadow313/core/binding_sdk/__init__.py,python-source,keep; verify package/resource tests
+shadow313/core/binding_sdk/binder.py,python-source,keep; verify package/resource tests
+shadow313/core/binding_sdk/registry.py,python-source,keep; verify package/resource tests
+shadow313/core/config.py,python-source,keep; verify package/resource tests
+shadow313/core/crypto_store.py,python-source,keep; verify package/resource tests
+shadow313/core/intelligence_graph.py,python-source,keep; verify package/resource tests
+shadow313/core/kernel.py,python-source,keep; verify package/resource tests
+shadow313/core/output.py,python-source,keep; verify package/resource tests
+shadow313/core/plugin_manager.py,python-source,keep; verify package/resource tests
+shadow313/core/session.py,python-source,keep; verify package/resource tests
+shadow313/core/session_store.py,python-source,keep; verify package/resource tests
+shadow313/demo/__init__.py,python-source,keep; verify package/resource tests
+shadow313/demo/attack_simulator.py,python-source,keep; verify package/resource tests
+shadow313/demo/roi_calculator.py,python-source,keep; verify package/resource tests
+shadow313/integrations/__init__.py,python-source,keep; verify package/resource tests
+shadow313/integrations/aegis_pqc/__init__.py,python-source,keep; verify package/resource tests
+shadow313/integrations/aegis_pqc/binder.py,python-source,keep; verify package/resource tests
+shadow313/integrations/aegis_pqc/parser.py,python-source,keep; verify package/resource tests
+shadow313/integrations/aegis_pqc/report.py,python-source,keep; verify package/resource tests
+shadow313/integrations/satexpert/.gitkeep,python-source,keep; verify package/resource tests
+shadow313/integrations/satexpert/__init__.py,python-source,keep; verify package/resource tests
+shadow313/integrations/satexpert/link_budget.py,python-source,keep; verify package/resource tests
+shadow313/integrations/satexpert/spoof_tracer.py,python-source,keep; verify package/resource tests
+shadow313/integrations/satexpert/yara_scanner.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/__init__.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/alerting.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/binder.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/parser.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/report.py,python-source,keep; verify package/resource tests
+shadow313/integrations/stia/zeroday_analyzer.py,python-source,keep; verify package/resource tests
+shadow313/integrations/telegram/.gitkeep,python-source,keep; verify package/resource tests
+shadow313/integrations/telegram/__init__.py,python-source,keep; verify package/resource tests
+shadow313/integrations/telegram/bot.py,python-source,keep; verify package/resource tests
+shadow313/integrations/vsat/.gitkeep,python-source,keep; verify package/resource tests
+shadow313/integrations/vsat/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/cicd.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/cicd_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/junit_builder.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/pipeline.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/sarif_builder.py,python-source,keep; verify package/resource tests
+shadow313/modules/cicd/secret_scanner.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/cis_checker.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/defense.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/defense_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/firewall.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/remediation.py,python-source,keep; verify package/resource tests
+shadow313/modules/defense/system_info.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/ai_docs.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/docs.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/docs_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/glossary.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/man_page.py,python-source,keep; verify package/resource tests
+shadow313/modules/docs/tutorials.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/ctf_helper.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/exploit.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/exploit_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/exploitdb.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/payloads.py,python-source,keep; verify package/resource tests
+shadow313/modules/exploit/scope.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/anomaly.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/flow_tracker.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/network.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/network_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/pcap_parser.py,python-source,keep; verify package/resource tests
+shadow313/modules/network/topology.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/manager.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/manifest.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/plugins.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/plugins_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/plugins/runner.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/cert_auditor.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/code_scanner.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/quantum.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/quantum_data.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/quantum_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/timeline.py,python-source,keep; verify package/resource tests
+shadow313/modules/quantum/tls_scanner.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/dns_enum.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/fingerprint.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/geoip.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/port_scan.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/recon.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/recon_module.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/subdomain.py,python-source,keep; verify package/resource tests
+shadow313/modules/recon/whois_lookup.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/__init__.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/cve_db.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/cvss.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/dep_audit.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/exploit_check.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/vuln.py,python-source,keep; verify package/resource tests
+shadow313/modules/vuln/vuln_module.py,python-source,keep; verify package/resource tests
+shadow313/plugins/__init__.py,python-source,keep; verify package/resource tests
+shadow313/plugins/custom_ai_threat_analyzer/__init__.py,python-source,keep; verify package/resource tests
+shadow313/plugins/custom_ai_threat_analyzer/analyzer.py,python-source,keep; verify package/resource tests
+shadow313/plugins/custom_ai_threat_analyzer/plugin.json,python-source,keep; verify package/resource tests
+shadow313/plugins/custom_ai_threat_analyzer/plugin.shadow313sig,python-source,keep; verify package/resource tests
+shadow313/quantum_middleware.py,python-source,keep; verify package/resource tests
+shadow313/temporal313.py,python-source,keep; verify package/resource tests
+shadow313/tests/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tests/test_comprehensive_threat_suite.py,python-source,keep; verify package/resource tests
+shadow313/thought_engine.py,python-source,keep; verify package/resource tests
+shadow313/threat_intel/__init__.py,python-source,keep; verify package/resource tests
+shadow313/threat_intel/ioc_store.py,python-source,keep; verify package/resource tests
+shadow313/threat_intel/ti_feed.py,python-source,keep; verify package/resource tests
+shadow313/tools/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/adaptiveruleengine.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/aegishunter.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/behavioralgraphengine.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/explaincve.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/malwareanalyzer.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/memoryforensics.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/nexus_tools.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/nexusrag.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/palantirbridge.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/palantirbridge_full.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/quantumthreatscorer.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/rulesmith.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/threatdnaprofiler.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/threatintelligence.py,python-source,keep; verify package/resource tests
+shadow313/tools/ai/threatnarrator.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/cloudaudit.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/deceptionengine.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/forensictracer.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/honeywirenet.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/kernelintegritymonitor.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/logforge.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/sentinelbaseline.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/vaultscan.py,python-source,keep; verify package/resource tests
+shadow313/tools/blueteam/zerotrust.py,python-source,keep; verify package/resource tests
+shadow313/tools/deepstash/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/deepstash/patterns.py,python-source,keep; verify package/resource tests
+shadow313/tools/deepstash/scanner.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/adversaryemulator.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/atomicchain.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/coveragematrix.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/detectionforge.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/lateralmovementtracker.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/supplychainauditor.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/threathunter.py,python-source,keep; verify package/resource tests
+shadow313/tools/purpleteam/threatreplay.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/__init__.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/c2profiler.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/ghosthttp.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/nexusprobe.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/phantomscan.py,python-source,keep; verify package/resource tests
+shadow313/tools/redteam/shadowdns.py,python-source,keep; verify package/resource tests
+shadow313/utils/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/agent/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/agent/agent.py,python-source,keep; verify package/resource tests
+shadow313/v2/agent/approval.py,python-source,keep; verify package/resource tests
+shadow313/v2/campaign/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/campaign/campaign.py,python-source,keep; verify package/resource tests
+shadow313/v2/campaign/campaign_manager.py,python-source,keep; verify package/resource tests
+shadow313/v2/cloud_hardening/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/cloud_hardening/cloud_hardening.py,python-source,keep; verify package/resource tests
+shadow313/v2/crypto_agility/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/crypto_agility/crypto_agility.py,python-source,keep; verify package/resource tests
+shadow313/v2/dashboard/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/dashboard/app.py,python-source,keep; verify package/resource tests
+shadow313/v2/docker_sandbox/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/docker_sandbox/docker_sandbox.py,python-source,keep; verify package/resource tests
+shadow313/v2/graph/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/graph/intel_graph.py,python-source,keep; verify package/resource tests
+shadow313/v2/network_upgrades/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/network_upgrades/dns_covert.py,python-source,keep; verify package/resource tests
+shadow313/v2/network_upgrades/firmware_auditor.py,python-source,keep; verify package/resource tests
+shadow313/v2/network_upgrades/ja3_fingerprint.py,python-source,keep; verify package/resource tests
+shadow313/v2/network_upgrades/ml_anomaly.py,python-source,keep; verify package/resource tests
+shadow313/v2/plugin_signing/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/plugin_signing/plugin_signer.py,python-source,keep; verify package/resource tests
+shadow313/v2/rag/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/rag/rag_engine.py,python-source,keep; verify package/resource tests
+shadow313/v2/rag/tfidf_store.py,python-source,keep; verify package/resource tests
+shadow313/v2/reports/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/reports/pdf_report.py,python-source,keep; verify package/resource tests
+shadow313/v2/threat_intel/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/threat_intel/threat_intel.py,python-source,keep; verify package/resource tests
+shadow313/v2/vuln_upgrades/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v2/vuln_upgrades/attack_mapping.py,python-source,keep; verify package/resource tests
+shadow313/v2/vuln_upgrades/epss_kev.py,python-source,keep; verify package/resource tests
+shadow313/v2/vuln_upgrades/epss_kev_enhanced.py,python-source,keep; verify package/resource tests
+shadow313/v3/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/ad_auditor/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/ad_auditor/ad_auditor.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/beacon_detector.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/c2_attribution_analysis.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/event_rate_tracker.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/extended_c2_correlator.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/phantomscan.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/stress_test.py,python-source,keep; verify package/resource tests
+shadow313/v3/bridge/v3_adapter.py,python-source,keep; verify package/resource tests
+shadow313/v3/browser_recon/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/browser_recon/browser_recon.py,python-source,keep; verify package/resource tests
+shadow313/v3/collab/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/collab/collab.py,python-source,keep; verify package/resource tests
+shadow313/v3/container_scan/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/container_scan/container_scan.py,python-source,keep; verify package/resource tests
+shadow313/v3/countermeasures/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/countermeasures/continuous_eprocess_monitor.py,python-source,keep; verify package/resource tests
+shadow313/v3/countermeasures/ebpf_self_protection.py,python-source,keep; verify package/resource tests
+shadow313/v3/countermeasures/integration_test.py,python-source,keep; verify package/resource tests
+shadow313/v3/countermeasures/syscall_family_coverage.py,python-source,keep; verify package/resource tests
+shadow313/v3/lstm_trainer/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/lstm_trainer/lstm_trainer.py,python-source,keep; verify package/resource tests
+shadow313/v3/malware_sandbox/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/malware_sandbox/malware_sandbox.py,python-source,keep; verify package/resource tests
+shadow313/v3/siem/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/siem/siem.py,python-source,keep; verify package/resource tests
+shadow313/v3/threat_predictor/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v3/threat_predictor/predictor.py,python-source,keep; verify package/resource tests
+shadow313/v4/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegis/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegis/aegis.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegis/csbom_auditor.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegis/dns_intercept.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegis/pe_analyzer.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegisfortress/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/aegisfortress/aegisfortress_omnisec.py,python-source,keep; verify package/resource tests
+shadow313/v4/agent/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/agent/agent_runner.py,python-source,keep; verify package/resource tests
+shadow313/v4/agent/orchestrator.py,python-source,keep; verify package/resource tests
+shadow313/v4/attack/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/attack/attack_coverage.py,python-source,keep; verify package/resource tests
+shadow313/v4/benchmarks/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/benchmarks/benchmark_suite.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/audit_server.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/crypto_sbom.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/cyber_kg.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/event_bus.py,python-source,keep; verify package/resource tests
+shadow313/v4/core/intelligence_graph.py,python-source,keep; verify package/resource tests
+shadow313/v4/deployment/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/deployment/deployment_window.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/adaptive_cm_v2.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/adaptive_defense_loop.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/advanced_detection_layer.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/alternate_auth_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/cm_n_bayesian_patch.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/cm_r_ensemble_noise.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/cm_x_honeypot.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/crypto_hardening_audit.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/d3fend_coverage.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/enforcement.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/file_access_monitor.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/hndl_prioritizer.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/identity_controls.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/identity_layer.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/kernel_gap_hardening.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/lif_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/lolbin_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/mttd_optimizer.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/nextgen_hardening.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/quantum_threat_dna.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/sigma_rules/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/sigma_rules/rules.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/swift_process_monitor.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/temporal_correlation.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/threat_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/threat_hardening.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/threat_predictor.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/user_execution_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/webshell_detector.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/zero_evasion/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/detection/zero_evasion/zero_evasion_countermeasure.py,python-source,keep; verify package/resource tests
+shadow313/v4/dnssec/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/dnssec/dnssec_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/federated_mesh/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/federated_mesh/gossip.py,python-source,keep; verify package/resource tests
+shadow313/v4/federated_mesh/mesh.py,python-source,keep; verify package/resource tests
+shadow313/v4/federated_mesh/mesh_node.py,python-source,keep; verify package/resource tests
+shadow313/v4/finetune_ui/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/finetune_ui/finetune_ui.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/aether.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/cadl.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/cerberus.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/chronos.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/ghost_watch.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/hephaestus.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/nightshade.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/oracle.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/tartarus.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/valkyrie.py,python-source,keep; verify package/resource tests
+shadow313/v4/ghost_watch/we_forge.py,python-source,keep; verify package/resource tests
+shadow313/v4/health/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/health/health_check.py,python-source,keep; verify package/resource tests
+shadow313/v4/identity/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/identity/auth.py,python-source,keep; verify package/resource tests
+shadow313/v4/identity/identity_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/identity/mfa.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/evidence_envelope.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/global_threat_sim_v2.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/honeypot_analyzer.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/pe7_evasion_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/intelligence/secrets_manager.py,python-source,keep; verify package/resource tests
+shadow313/v4/ledger/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/ledger/ledger_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/mobile_api/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/mobile_api/mobile_api.py,python-source,keep; verify package/resource tests
+shadow313/v4/nexus/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/nexus/nexus.py,python-source,keep; verify package/resource tests
+shadow313/v4/nexus/nexus_platform_v31.py,python-source,keep; verify package/resource tests
+shadow313/v4/nexus_router/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/nexus_router/nexus_router.py,python-source,keep; verify package/resource tests
+shadow313/v4/pqc_js/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/pqc_js/package-lock.json,python-source,keep; verify package/resource tests
+shadow313/v4/pqc_js/package.json,python-source,keep; verify package/resource tests
+shadow313/v4/pqc_js/relay.js,python-source,keep; verify package/resource tests
+shadow313/v4/pqc_js/test_pqc.js,python-source,keep; verify package/resource tests
+shadow313/v4/qiskit_alert_classifier.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/aeon_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/ceqs_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/lif_snn.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/nvl72_telemetry.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/omega_purge.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/orbital_dsp.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/qebim_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/qiskit_classifier.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/qkd_bb84.py,python-source,keep; verify package/resource tests
+shadow313/v4/quantum_nexus/quantum_nexus.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/cwmp_hardening.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/data/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/data/advisories.json,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/firmware_backdoor.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/ground_segment_sweep.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/satellite.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/vsat_monitor.py,python-source,keep; verify package/resource tests
+shadow313/v4/satellite/vsat_scanner.py,python-source,keep; verify package/resource tests
+shadow313/v4/shadow313_master_os.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/adversary_emulation.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/apt_lateral_movement.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/arch_e_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/choke_point_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/detection_tripwire_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/full_technique_simulation.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/gen4_adversary_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/gen4_analysis.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/global_threat_simulation.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/lateral_movement_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/red_team_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/rf_countermeasures.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/simulation_harness.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/swift_cascade_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/simulation/zeroday_evasion_sim.py,python-source,keep; verify package/resource tests
+shadow313/v4/soar/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/soar/advanced_soar.py,python-source,keep; verify package/resource tests
+shadow313/v4/soar/soar_engine.py,python-source,keep; verify package/resource tests
+shadow313/v4/stix/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/stix/stix_handler.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/anchor_strategies.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/attack_simulation.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/cmmc_audit_package.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/hardened_binding.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/supply_chain_simulation.py,python-source,keep; verify package/resource tests
+shadow313/v4/temporal_binding/temporal_binding.py,python-source,keep; verify package/resource tests
+shadow313/v4/threat_actor/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/threat_actor/threat_actor.py,python-source,keep; verify package/resource tests
+shadow313/v4/threat_predictor/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/threat_predictor/predictor.py,python-source,keep; verify package/resource tests
+shadow313/v4/tools/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/tools/advanced_tools.py,python-source,keep; verify package/resource tests
+shadow313/v4/tools/blueteam/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/tools/blueteam/crypto_sbom.py,python-source,keep; verify package/resource tests
+shadow313/v4/tools/blueteam/tls_edge_cases.py,python-source,keep; verify package/resource tests
+shadow313/v4/update/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/update/updater.py,python-source,keep; verify package/resource tests
+shadow313/v4/vanguard/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/vanguard/vanguard.py,python-source,keep; verify package/resource tests
+shadow313/v4/workflow/__init__.py,python-source,keep; verify package/resource tests
+shadow313/v4/workflow/workflow_engine.py,python-source,keep; verify package/resource tests
+shadow313_platform/__init__.py,python-source,keep; verify package/resource tests
+shadow313_platform/event_bus.py,python-source,keep; verify package/resource tests
+shadow313_sdk/__init__.py,python-source,keep; verify package/resource tests
+shadow313_sdk/examples/__init__.py,python-source,keep; verify package/resource tests
+shadow313_sdk/examples/aws_key_detector.py,python-source,keep; verify package/resource tests
+shadow313_sdk/models.py,python-source,keep; verify package/resource tests
+shadow313_sdk/plugins.py,python-source,keep; verify package/resource tests
+shadow313_sdk/testing/__init__.py,python-source,keep; verify package/resource tests
+shadow313_sdk/testing/bus.py,python-source,keep; verify package/resource tests
+shadow313_sdk/testing/factories.py,python-source,keep; verify package/resource tests
+shadow313_sdk/testing/harness.py,python-source,keep; verify package/resource tests
+sigma/rules/shadow313_apt_detection.yml,development-or-metadata,repository-only; no automatic deletion
+sigma/rules/shadow313_webshell_detection.yml,development-or-metadata,repository-only; no automatic deletion
+site/github-pages-isolation.patch,development-or-metadata,repository-only; no automatic deletion
+site/public-files.json,development-or-metadata,repository-only; no automatic deletion
+site/repository-inventory.csv,development-or-metadata,repository-only; no automatic deletion
+sitemap.xml,public-website,publish-only-through-allowlist
+skills/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+skills/workflow-creator/scripts/create_workflow_schema.py,development-or-metadata,repository-only; no automatic deletion
+skills/workflow-creator/scripts/validate_workflow.py,development-or-metadata,repository-only; no automatic deletion
+tests/__init__.py,development-or-metadata,repository-only; no automatic deletion
+tests/forms.test.cjs,development-or-metadata,repository-only; no automatic deletion
+tests/integration/__init__.py,development-or-metadata,repository-only; no automatic deletion
+tests/integration/test_e2e_pipelines.py,development-or-metadata,repository-only; no automatic deletion
+tests/integration/test_smoke.py,development-or-metadata,repository-only; no automatic deletion
+tests/simulation/__init__.py,development-or-metadata,repository-only; no automatic deletion
+tests/simulation/test_simulations.py,development-or-metadata,repository-only; no automatic deletion
+tests/site-clocks.test.cjs,development-or-metadata,repository-only; no automatic deletion
+tests/unit/__init__.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_agent.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_ai_engine.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_ai_engine_protocol.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_approval_gates.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_campaign_manager.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_cicd.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_cicd_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_cloud_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_config.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_core.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_crypto_agility_extended.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_crypto_store.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_defense_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_deploy_workflow_config.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_docs.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_domain_split.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_exploit_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_explorer_repairs.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_firmware_auditor.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_intelligence_graph.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_kernel.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_manual_deployment_and_layout.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_manual_workflow.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_manual_workflow_patch.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_module_orchestrators.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_network.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_network_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_new_patches.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_output.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_plugin_lifecycle.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_publication_boundary.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_quantum.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_quantum_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_rag_defensive.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_rag_engine.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_recon_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_review_regressions.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_secret_scan_workflow.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_security_fixes.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_session.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_session_security.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_site_navigation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_site_theme.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_static_homepage.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_stix.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_temporal_binding.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_tfidf.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_tfidf_store.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_threat_intel.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_v2_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_vsat_navigation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_vuln.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/test_vuln_submodules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_cicd.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_defense.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_network.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_quantum.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_recon.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v1/test_v1_vuln.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v2/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v2/test_v2_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v3/.gitkeep,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v3/test_v3_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/__init__.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_adaptive_defense_loop.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_advanced_detection_layer.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_advanced_tools.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_adversary_emulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_aegis_pqc.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_agent.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_alternate_auth_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_anchor_strategies.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_apt_hardening_fixes.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_attack_coverage.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_attack_simulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_audit_server.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_beacon_detector_advanced.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_c2_attribution.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_cli_main.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_cmmc_audit_package.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_crypto_hardening_audit.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_cwmp_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_d3fend_coverage.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_deepstash.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_demo_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_deployment_window.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_detection_modules_full.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_dnssec.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_enforcement.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_evidence_envelope.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_federated_mesh.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_federated_mesh_node.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_finetune_ui.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_firmware_backdoor.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_full_technique_simulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_ghost_watch_full.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_ghost_watch_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_global_threat_simulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_ground_segment_sweep.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_hardened_binding.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_honeypot_and_global_threats.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_hyperion_core.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_identity.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_identity_layer.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_integration_bridges.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_integration_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_intelligence.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_kernel_gap_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_ledger.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_lif_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_lolbin_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_lstm_trainer.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_mobile_api.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_mttd_optimizer.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_new_detection_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_new_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_new_modules_coverage.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_nextgen_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_nexus_router.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_orchestrator.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_pe7_evidence_governance.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_platform_event_bus.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_plugin_analyzer.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_pyspx_fallback.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_quantum_nexus_full.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_quantum_nexus_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_real_output_formats.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_remaining_coverage.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_satexpert_integration.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_secrets_manager.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_sigma_rules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_simulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_simulation_full.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_simulation_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_soar.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_stia_integration.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_stix.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_supply_chain_simulation.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_threat_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_threat_hardening.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_threat_predictor.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_tls_edge_cases.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_tools_ai.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_tools_blueteam.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_tools_purpleteam.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_tools_redteam.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_untested_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_update.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_user_execution_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_v4_ghost_watch_complete.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_v4_new_modules.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_v4_quantum_nexus_complete.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_v4_simulation_complete.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_vanguard.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_webshell_detector.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_workflow.py,development-or-metadata,repository-only; no automatic deletion
+tests/unit/v4/test_zero_evasion.py,development-or-metadata,repository-only; no automatic deletion
+tests/vercel-api.test.cjs,development-or-metadata,repository-only; no automatic deletion
+tools/aegis-nexus.html,public-website,publish-only-through-allowlist
+tools/blue-team-soc.html,public-website,publish-only-through-allowlist
+tools/ghost-watch.html,public-website,publish-only-through-allowlist
+tools/identity-platform.html,public-website,publish-only-through-allowlist
+tools/index.html,public-website,publish-only-through-allowlist
+tools/plugin-studio.html,public-website,publish-only-through-allowlist
+tools/purple-team.html,public-website,publish-only-through-allowlist
+tools/quantum-lab.html,public-website,publish-only-through-allowlist
+tools/red-team.html,public-website,publish-only-through-allowlist
+tools/soar-builder.html,public-website,publish-only-through-allowlist
+tools/sovereign-shield.html,public-website,publish-only-through-allowlist
+tools/threat-predictor.html,public-website,publish-only-through-allowlist
+tools/vsat-tactical-suite.html,public-website,publish-only-through-allowlist
+vercel.json,development-or-metadata,repository-only; no automatic deletion
