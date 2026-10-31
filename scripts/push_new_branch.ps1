@@ -22,7 +22,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$RepoUrl = "https://${Token}@github.com/${RepoOwner}/${RepoName}.git"
+$RepoUrl = "https://github.com/${RepoOwner}/${RepoName}.git"
+$AuthBytes = [System.Text.Encoding]::UTF8.GetBytes("x-access-token:${Token}")
+$AuthHeader = "Authorization: Basic $([Convert]::ToBase64String($AuthBytes))"
 
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
@@ -50,7 +52,7 @@ Write-Host "[2/7] ✅ Git identity configured" -ForegroundColor Green
 
 # ── Step 3: Fetch latest master ────────────────────────────────────────────
 Write-Host "[3/7] Fetching latest from master..." -ForegroundColor Yellow
-git fetch origin master --quiet 2>$null
+git -c "http.extraHeader=$AuthHeader" fetch origin master --quiet 2>$null
 Write-Host "[3/7] ✅ Fetch complete" -ForegroundColor Green
 
 # ── Step 4: Create new branch ─────────────────────────────────────────────
@@ -242,7 +244,7 @@ Write-Host "[6/7] ✅ Committed" -ForegroundColor Green
 # ── Step 7: Push ──────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "[7/7] Pushing to GitHub..." -ForegroundColor Yellow
-git push origin $BranchName
+git -c "http.extraHeader=$AuthHeader" push origin $BranchName
 Write-Host "[7/7] ✅ Push complete!" -ForegroundColor Green
 
 # ── Done ──────────────────────────────────────────────────────────────────
