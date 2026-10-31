@@ -59,15 +59,11 @@ def test_deploy_workflow_targets_repo_root_static_site():
         assert stale_path not in required_paths
 
     preview_steps = workflow["jobs"]["preview"]["steps"]
-    preview_comment_step = next(
-        step for step in preview_steps if step.get("name") == "Comment preview URL on PR"
+    summary_step = next(
+        step for step in preview_steps if step.get("name") == "Summarize preview deployment"
     )
-    preview_section = preview_comment_step["with"]["script"]
-    for route in ("/docs", "/dashboard", "/dashboard-v3", "/ssp", "/architecture", "/ai-stack"):
-        assert f"${{url}}{route}" in preview_section
-
-    for stale_route in ("/tools", "/marketplace", "/analytics", "/about"):
-        assert f"${{url}}{stale_route}" not in preview_section
+    assert 'steps.deploy.outputs.preview_url' in summary_step['run']
+    assert 'GITHUB_STEP_SUMMARY' in summary_step['run']
 
     production_steps = workflow["jobs"]["production"]["steps"]
     smoke_step = next(step for step in production_steps if step.get("name") == "Smoke test production deployment")
