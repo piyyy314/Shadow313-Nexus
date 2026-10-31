@@ -36,6 +36,8 @@ class Kernel:
         session_id: str | None = None,
         output_fmt: str | None = None,
         verbose: bool = False,
+        load_v2: bool = True,   # v2 compatibility flag
+        **kwargs,               # absorb future keyword arguments
     ) -> None:
         self.config  = Config(config_path)
         self.session = Session(
@@ -54,6 +56,7 @@ class Kernel:
 
         # Module registry: namespace → handler callable
         self._registry: dict[str, Callable] = {}
+        self._load_errors: list[dict] = []  # populated during module loading
         self._modules:  dict[str, Any]      = {}
 
         # Auto-load all built-in modules
@@ -62,6 +65,15 @@ class Kernel:
     # ── Module registry ───────────────────────────────────────────────────────
     def register(self, namespace: str, handler: Callable) -> None:
         self._registry[namespace] = handler
+
+    def registered_commands(self) -> list:
+        """Return list of registered command namespaces (v2 compatibility)."""
+        return list(self._registry.keys())
+
+    @property
+    def load_errors(self) -> list:
+        """Return list of module load errors (v2 compatibility)."""
+        return list(getattr(self, '_load_errors', []))
 
     def dispatch(self, namespace: str, **kwargs) -> Any:
         if namespace not in self._registry:
@@ -151,16 +163,25 @@ class Kernel:
                 if hasattr(instance, "register"):
                     instance.register(self)
             except ModuleNotFoundError as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # Optional dependency missing — expected, log at verbose level
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' skipped (missing dep): {exc}"
                 )
             except ImportError as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # FIX: distinguish import errors from syntax/runtime errors
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' import error: {exc}"
                 )
             except Exception as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # Unexpected error — always log
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' init error: {type(exc).__name__}: {exc}"

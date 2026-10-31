@@ -361,3 +361,24 @@ class JA3Module:
 
         self.session.write("ja3_fingerprints.json", result)
         return result
+
+
+# ── Compatibility aliases for v2 test suite ──────────────────────────────────
+def compute_ja3(hello: dict) -> str:
+    """Compute JA3 hash from parsed ClientHello dict (v2 API)."""
+    return _ja3_hash(
+        ssl_version=hello.get("ssl_version", 0),
+        ciphers=hello.get("ciphers", []),
+        extensions=hello.get("extensions", []),
+        curves=hello.get("elliptic_curves", hello.get("curves", [])),
+        point_formats=hello.get("ec_point_formats", hello.get("point_formats", [])),
+    )
+
+
+def compute_ja3s(server_hello: dict) -> str:
+    """Compute JA3S hash from parsed ServerHello dict (v2 API)."""
+    return _ja3s_hash(
+        ssl_version=server_hello.get("ssl_version", 0),
+        cipher=server_hello.get("cipher", 0),
+        extensions=server_hello.get("extensions", []),
+    )

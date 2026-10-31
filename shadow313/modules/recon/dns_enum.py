@@ -1,0 +1,48 @@
+"""shadow313.modules.recon.dns_enum — DNS record enumeration."""
+from __future__ import annotations
+import socket
+from typing import Any
+
+
+class DNSEnumerator:
+    RECORD_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA"]
+
+    def __init__(self, domain: str) -> None:
+        """Select a domain for DNS enumeration."""
+        self.domain = domain
+
+    def resolve(self) -> dict[str, list[str]]:
+        """Return nonempty DNS record results, omitting failed or empty lookups."""
+        results: dict[str, list[str]] = {}
+        for rtype in self.RECORD_TYPES:
+            records = self._query(rtype)
+            if records:
+                results[rtype] = records
+        return results
+
+    def _query(self, rtype: str) -> list[str]:
+        """Resolve one record type, returning [] on lookup failures.
+
+        A/AAAA use the system resolver; other types return an installation
+        notice in a list when dnspython is unavailable.
+        """
+        if rtype == "A":
+            try:
+                info = socket.getaddrinfo(self.domain, None, socket.AF_INET)
+                return list({str(i[4][0]) for i in info})
+            except Exception:
+                return []
+        if rtype == "AAAA":
+            try:
+                info = socket.getaddrinfo(self.domain, None, socket.AF_INET6)
+                return list({str(i[4][0]) for i in info})
+            except Exception:
+                return []
+        try:
+            import dns.resolver
+            answers = dns.resolver.resolve(self.domain, rtype, lifetime=5)
+            return [r.to_text() for r in answers]
+        except ImportError:
+            return ["[dnspython not installed]"]
+        except Exception:
+            return []

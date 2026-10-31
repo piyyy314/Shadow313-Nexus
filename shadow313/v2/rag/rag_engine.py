@@ -518,7 +518,7 @@ export:
 def generate_finetune_config(base_model: str = "unsloth/mistral-7b-v0.3-bnb-4bit",
                               output_path: str = "~/.shadow313/finetune_config.yaml") -> str:
     """Generate a LoRA fine-tune config and write it to disk."""
-    config = LORA_CONFIG_TEMPLATE.format(base_model=base_model)
+    config = LORA_CONFIG_TEMPLATE.replace("{base_model}", base_model)
     path = Path(output_path).expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(config)

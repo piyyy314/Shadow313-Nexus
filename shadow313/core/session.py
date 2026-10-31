@@ -50,8 +50,11 @@ class Session:
             try:
                 from .crypto_store import EncryptedSessionStore
                 self._store = EncryptedSessionStore(self.session_dir)
-            except ImportError:
-                pass  # graceful fallback to plain I/O
+            except ImportError as exc:
+                raise RuntimeError(
+                    "encrypt=True requires the 'cryptography' package. "
+                    "Install it with: pip install cryptography"
+                ) from exc
 
     # ── Meta ──────────────────────────────────────────────────────────────────
     @property
@@ -226,3 +229,24 @@ class Session:
             shutil.rmtree(target)
             return True
         return False
+
+    # ── 313-BIND Receipt Methods (P-14) ──────────────────────────────────────
+    def attach_receipt(self, receipt_id: str, module: str, metadata: dict | None = None) -> dict:
+        """Attach a 313-BIND receipt to the session."""
+        from datetime import datetime, timezone
+        receipt = {
+            "receipt_id": receipt_id,
+            "module": module,
+            "session_id": getattr(self, "id", getattr(self, "session_id", "unknown")),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "metadata": metadata or {},
+        }
+        if not hasattr(self, "_receipts"):
+            self._receipts = []
+        self._receipts.append(receipt)
+        return receipt
+
+    def get_receipts(self) -> list:
+        """Return all 313-BIND receipts attached to this session."""
+        return list(getattr(self, "_receipts", []))
+

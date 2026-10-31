@@ -194,3 +194,68 @@ class EPSSKEVScorer:
         if not path.exists():
             return False
         return (time.time() - path.stat().st_mtime) < CACHE_TTL
+
+# ── Compatibility shims for v2 test suite ────────────────────────────────────
+EPSS_LABELS = [
+    (0.70, "CRITICAL"),
+    (0.40, "HIGH"),
+    (0.10, "MEDIUM"),
+    (0.01, "LOW"),
+]
+
+
+def epss_label(score: float) -> str:
+    """Return a human-readable risk label for an EPSS score."""
+    for threshold, label in EPSS_LABELS:
+        if score >= threshold:
+            return label
+    return "VERY_LOW"
+
+
+# ── Composite Z-Score Model (P-19) ───────────────────────────────────────────
+# Replaces the brittle CVSS hard-gate with a weighted multi-factor risk score.
+# Z = 0.4×EPSS + 0.3×(CVSS/10) + 0.2×KEV + 0.1×RCE
+# Include if Z >= INCLUSION_THRESHOLD (0.85)
+INCLUSION_THRESHOLD = 0.85
+
+
+def composite_z_score(
+    epss: float,
+    cvss: float,
+    kev: bool,
+    rce: bool,
+) -> float:
+    """Compute composite risk Z-score for a CVE.
+
+    Weights:
+        EPSS  40% — strongest empirical exploitation predictor
+        CVSS  30% — theoretical severity (normalised to [0,1])
+        KEV   20% — CISA confirmed exploitation (binary)
+        RCE   10% — remote code execution capability (binary)
+
+    Returns:
+        float in [0.0, 1.0]
+    """
+    return round(
+        0.4 * max(0.0, min(1.0, epss))
+        + 0.3 * max(0.0, min(10.0, cvss)) / 10.0
+        + 0.2 * (1.0 if kev else 0.0)
+        + 0.1 * (1.0 if rce else 0.0),
+        4,
+    )
+
+
+def should_include(cve: dict) -> bool:
+    """Return True if CVE meets the composite Z-score inclusion threshold.
+
+    Expects cve dict with keys: epss, cvss, kev_confirmed, rce_capable.
+    Mutates cve in-place to add 'z_score' field.
+    """
+    z = composite_z_score(
+        epss=float(cve.get("epss", 0.0)),
+        cvss=float(cve.get("cvss", 0.0)),
+        kev=bool(cve.get("kev_confirmed", False)),
+        rce=bool(cve.get("rce_capable", False)),
+    )
+    cve["z_score"] = z
+    return z >= INCLUSION_THRESHOLD
