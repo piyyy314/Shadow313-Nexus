@@ -147,7 +147,21 @@
 
     @media(max-width:900px) { .kpi-row,.hardening-grid{grid-template-columns:repeat(2,1fr);} .elements-grid{grid-template-columns:repeat(2,1fr);} .rf-metrics{grid-template-columns:repeat(2,1fr);} .layout{flex-direction:column;} .sidebar{width:100%;border-right:none;border-bottom:1px solid rgba(30,41,59,0.8);} }
     @media(max-width:600px) { .elements-grid{grid-template-columns:1fr;} .kpi-row{grid-template-columns:repeat(2,1fr);} }
-  </style>
+
+    /* Native navigation works without JavaScript, including keyboard/new-tab use. */
+    .sidebar-item { text-decoration:none; color:var(--text-secondary); }
+    .nav-detail { display:block; margin-top:4px; color:var(--muted); font-size:10px; line-height:1.5; }
+    a.element-card { display:block; text-decoration:none; color:var(--text); }
+    [id] { scroll-margin-top:24px; }
+    .sidebar { position:static; height:auto; overflow:visible; }
+    .layout > .main { min-width:0; }
+    @media(max-width:900px) {
+      .layout { flex-direction:column; }
+      .layout .sidebar { display:block; width:100%; box-sizing:border-box; border-right:none; }
+      .sidebar-section { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:4px; }
+      .sidebar-label { grid-column:1 / -1; color:var(--muted); }
+    }
+</style>
 <link rel="stylesheet" href="/assets/site-nav.css">
 <link rel="stylesheet" href="/assets/site-theme.css">
 </head>
@@ -186,8 +200,8 @@
 </div>
 
 <!-- Disclaimer -->
-<div class="disclaimer">
-  <strong>⚠ AUTHORIZED USE ONLY</strong> — This platform is an interactive simulation for authorized cybersecurity operations and training only. Unauthorized use is strictly prohibited. NSA-CISA Joint Directive compliant. All activities are logged and 313-BIND anchored.
+<div class="disclaimer" role="note">
+  <strong>SIMULATION ONLY — AUTHORIZED TRAINING</strong> — No live scans, RF capture, device hardening, or cryptographic receipt generation occur on this website. Metrics, findings, and action logs are sample data. Sidebar links open reference pages, module guides, or labeled demos; CLI tools must be run locally on authorized targets.
 </div>
 
 <div class="layout">
@@ -196,28 +210,28 @@
 <aside class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Mission Control</div>
-    <button class="sidebar-item active" onclick="showSection('dashboard')">📊 Operational Dashboard</button>
-    <button class="sidebar-item" onclick="showSection('intel')">🔍 VSAT Threat Intel</button>
-    <button class="sidebar-item" onclick="showSection('rf')">📡 RF Spectrum Analyzer</button>
-    <button class="sidebar-item" onclick="showSection('pqc')">🔐 PQC Audit</button>
-    <button class="sidebar-item" onclick="showSection('qkd')">⚛️ QKD BB84 Simulator</button>
+    <a class="sidebar-item" href="#vsat-dashboard"><span>📊 Operational Dashboard<small class="nav-detail">Demo overview</small></span></a>
+    <a class="sidebar-item" href="/vsat-intelligence"><span>🔍 VSAT Threat Intel<small class="nav-detail">Reference page</small></span></a>
+    <a class="sidebar-item" href="#rf-health"><span>📡 RF Link Health<small class="nav-detail">Telemetry demo — not a live analyzer</small></span></a>
+    <a class="sidebar-item" href="/docs/pqc"><span>🔐 PQC Audit<small class="nav-detail">PQC guide — runs locally via CLI</small></span></a>
+    <a class="sidebar-item" href="/aegis-nexus#qkd-status"><span>⚛️ QKD BB84 Reference<small class="nav-detail">No simulator available — sample status only</small></span></a>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">9 Ethical Hacking Elements</div>
-    <button class="sidebar-item" onclick="showSection('vuln')">🔍 Vulnerability Scanner <span class="item-num">01</span></button>
-    <button class="sidebar-item" onclick="showSection('pentest')">⚔️ Penetration Framework <span class="item-num">02</span></button>
-    <button class="sidebar-item" onclick="showSection('network')">🌐 Network Analysis <span class="item-num">03</span></button>
-    <button class="sidebar-item" onclick="showSection('exploit')">💥 Exploit Dev Kit <span class="item-num">04</span></button>
-    <button class="sidebar-item" onclick="showSection('firmware')">💾 Firmware Auditor <span class="item-num">05</span></button>
-    <button class="sidebar-item" onclick="showSection('rf2')">📻 RF Intercept <span class="item-num">06</span></button>
-    <button class="sidebar-item" onclick="showSection('ids')">🛡️ IDS Engine <span class="item-num">07</span></button>
-    <button class="sidebar-item" onclick="showSection('report')">📋 Auto Reporter <span class="item-num">08</span></button>
-    <button class="sidebar-item" onclick="showSection('hardening')">🔒 Hardening Suite <span class="item-num">09</span></button>
+    <a class="sidebar-item" href="/platform/vuln"><span>🔍 Vulnerability Scanner<small class="nav-detail">CLI module guide</small></span></a>
+    <a class="sidebar-item" href="/apt-simulation"><span>⚔️ Penetration Framework<small class="nav-detail">Attack-chain simulation</small></span></a>
+    <a class="sidebar-item" href="/platform/network"><span>🌐 Network Analysis<small class="nav-detail">CLI module guide</small></span></a>
+    <a class="sidebar-item" href="/platform/exploit"><span>💥 Exploit Dev Kit<small class="nav-detail">Advisory-only module guide</small></span></a>
+    <a class="sidebar-item" href="/aegis-nexus#firmware-finding"><span>💾 Firmware Auditor<small class="nav-detail">Sample firmware finding</small></span></a>
+    <a class="sidebar-item" href="#rf-health"><span>📻 RF Intercept<small class="nav-detail">Telemetry demo — no RF capture</small></span></a>
+    <a class="sidebar-item" href="/threat-board"><span>🛡️ IDS Engine<small class="nav-detail">Threat-board demo</small></span></a>
+    <a class="sidebar-item" href="#report-export"><span>📋 Auto Reporter<small class="nav-detail">Export sample report</small></span></a>
+    <a class="sidebar-item" href="#hardening-demo"><span>🔒 Hardening Suite<small class="nav-detail">Simulation — no device changes</small></span></a>
   </div>
 </aside>
 
 <!-- Main -->
-<main class="main">
+<main class="main" id="vsat-dashboard">
 
   <!-- KPI Row -->
   <div class="kpi-row">
@@ -245,14 +259,14 @@
 
   <!-- Action Row -->
   <div class="action-row">
-    <button class="action-btn btn-primary" onclick="runSweep()">▶ Run Ground Sweep</button>
-    <button class="action-btn btn-success" onclick="runHardening()">🔒 Quick Hardening</button>
+    <button class="action-btn btn-primary" onclick="runSweep()">▶ Simulate Ground Sweep</button>
+    <button class="action-btn btn-success" onclick="runHardening()">🔒 Simulate Hardening</button>
     <button class="action-btn btn-danger" onclick="runExploit()">⚔️ Exploit Simulation</button>
-    <button class="action-btn btn-secondary" onclick="exportReport()">⬇ Export Report</button>
+    <button class="action-btn btn-secondary" id="report-export" onclick="exportReport()">⬇ Export Sample Report</button>
   </div>
 
   <!-- RF Metrics -->
-  <div class="rf-panel">
+  <div class="rf-panel" id="rf-health">
     <div class="rf-header">
       <span class="rf-title">📡 RF Link Health — Telstar 11N (37.5°W) · Ku-band</span>
       <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--amber)">⚠ DEGRADED</span>
@@ -268,41 +282,41 @@
   <!-- 9 Elements Grid -->
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:14px">⬡ 9 Ethical Hacking Elements</div>
   <div class="elements-grid">
-    <div class="element-card active" onclick="activateElement(this,'vuln')">
+    <a class="element-card" href="/platform/vuln">
       <div class="element-header"><span class="element-icon">🔍</span><span class="element-num">01</span><span class="element-title">Vulnerability Scanner</span></div>
       <div class="element-desc">CVE-2026-3392 TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
-      <span class="element-badge badge-red">7 CRITICAL</span>
-    </div>
-    <div class="element-card" onclick="activateElement(this,'pentest')">
+      <span class="element-badge badge-cyan">CLI module guide</span>
+    </a>
+    <a class="element-card" href="/apt-simulation">
       <div class="element-header"><span class="element-icon">⚔️</span><span class="element-num">02</span><span class="element-title">Penetration Framework</span></div>
       <div class="element-desc">Authorized exploitation chains · HITL required · Lab-mode only</div>
-      <span class="element-badge badge-amber">LAB MODE</span>
-    </div>
-    <div class="element-card" onclick="activateElement(this,'network')">
+      <span class="element-badge badge-cyan">Attack-chain simulation</span>
+    </a>
+    <a class="element-card" href="/platform/network">
       <div class="element-header"><span class="element-icon">🌐</span><span class="element-num">03</span><span class="element-title">Network Analysis</span></div>
       <div class="element-desc">PCAP capture · JA3/JARM fingerprinting · Topology mapping</div>
-      <span class="element-badge badge-cyan">ACTIVE</span>
-    </div>
-    <div class="element-card" onclick="activateElement(this,'firmware')">
+      <span class="element-badge badge-cyan">CLI module guide</span>
+    </a>
+    <a class="element-card" href="/aegis-nexus#firmware-finding">
       <div class="element-header"><span class="element-icon">💾</span><span class="element-num">05</span><span class="element-title">Firmware Auditor</span></div>
       <div class="element-desc">Hash mismatch detection · YARA scan · Backdoor analysis</div>
-      <span class="element-badge badge-red">MISMATCH</span>
-    </div>
-    <div class="element-card" onclick="activateElement(this,'rf2')">
+      <span class="element-badge badge-cyan">Sample firmware finding</span>
+    </a>
+    <a class="element-card" href="#rf-health">
       <div class="element-header"><span class="element-icon">📻</span><span class="element-num">06</span><span class="element-title">RF Intercept</span></div>
       <div class="element-desc">Ku-band monitoring · GPS spoofing detection · ECCM analysis</div>
-      <span class="element-badge badge-amber">DEGRADED</span>
-    </div>
-    <div class="element-card" onclick="activateElement(this,'ids')">
+      <span class="element-badge badge-cyan">Telemetry demo — no RF capture</span>
+    </a>
+    <a class="element-card" href="/threat-board">
       <div class="element-header"><span class="element-icon">🛡️</span><span class="element-num">07</span><span class="element-title">IDS Engine</span></div>
       <div class="element-desc">Behavioral anomaly · Suricata EVE · Zeek protocol analysis</div>
-      <span class="element-badge badge-green">MONITORING</span>
-    </div>
+      <span class="element-badge badge-cyan">Threat-board demo</span>
+    </a>
   </div>
 
   <!-- Quick Hardening -->
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:14px">🔒 Quick Ground Station Hardening</div>
-  <div class="hardening-grid">
+  <div class="hardening-grid" id="hardening-demo">
     <div class="harden-card">
       <div class="harden-header"><span class="harden-icon">🔒</span><button class="harden-toggle on" onclick="toggleHarden(this)"></button></div>
       <div class="harden-title">Disable Telnet</div>
@@ -388,12 +402,6 @@ function toggleHarden(btn) {
   }
 }
 
-// Activate element
-function activateElement(card, type) {
-  document.querySelectorAll('.element-card').forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  addLog('info', `[*] Activating element: ${card.querySelector('.element-title').textContent}`);
-}
 
 // Add log entry
 function addLog(type, msg) {
@@ -442,21 +450,17 @@ function exportReport() {
       {sev:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', cve:'T1200'},
       {sev:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', cve:'T1565.001'},
     ],
-    bind_receipt: '313-VSAT-' + Math.random().toString(16).slice(2,10).toUpperCase(),
+    simulation: true,
+    bind_receipt: null,
   };
   const blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'vsat-report-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'vsat-demo-report-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
-  addLog('ok', '[+] Report exported with 313-BIND receipt');
+  addLog('ok', '[DEMO] Sample report exported — no cryptographic receipt generated');
 }
 
-function showSection(name) {
-  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  addLog('info', `[*] Loading section: ${name}`);
-}
 </script>
 <footer style="background:#020617;border-top:1px solid rgba(34,197,94,0.1);padding:16px 24px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:10px;color:#334155;margin-top:40px;">
 <span style="color:#22c55e;font-weight:700;">⬡ Shadow313 NEXUS</span> v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
