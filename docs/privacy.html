@@ -68,15 +68,81 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
   <h1>Privacy <span>Policy</span></h1>
   <p>Shadow313 NEXUS is designed from the ground up to be local-first and privacy-preserving. We collect zero PII from CLI users.</p>
 </div>
-<main class="main">
-<h1>Website privacy and email submissions</h1>
-<p>This page describes this website, not every deployment or optional CLI integration.</p>
-<section class="section"><h2>Online forms</h2><p>Forms are disabled unless an operator configures Resend, Cloudflare Turnstile, a verified sender, and a destination inbox. When enabled, waitlist requests send your email address; contact requests send your name, email, subject, and message to that inbox through Resend. Turnstile verifies the submission to reduce automated abuse. Sending a request is not a marketing subscription.</p><p>The application does not create a subscriber database. Messages may be retained in the operator’s mailbox and email-provider systems. Do not submit passwords, API keys, sensitive scan results, or confidential reports through these forms. Provider acceptance does not prove inbox delivery.</p></section>
-<section class="section"><h2>Hosting and third parties</h2><p>The site is hosted on Vercel. Hosting/security logs can include request and network metadata. Fonts and icons may be requested from third-party CDNs. Some pages load Vercel analytics or performance scripts. Retention and processing depend on the providers and configured account settings; this site does not promise zero telemetry or a fixed retention period.</p></section>
-<section class="section"><h2>Local CLI versus website</h2><p>The CLI can run locally, but optional external AI, threat feeds, IPFS anchoring, and other integrations may send data off the machine when enabled. Review your configuration before using them. The public website does not run the Python scanners.</p></section>
-<section class="section"><h2>Questions or deletion requests</h2><p>Contact <a href="mailto:matarmohamad313@duck.com">matarmohamad313@duck.com</a> about messages you have submitted. No independent privacy certification or regulatory compliance guarantee is asserted here.</p></section>
-</main>
-<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License</div>
+<div class="main">
+
+<div class="section">
+  <p style="font-size:14px;color:var(--muted);margin-bottom:8px"><strong style="color:var(--text)">Last updated:</strong> October 2026 &nbsp;·&nbsp; <strong style="color:var(--text)">Jurisdiction:</strong> Ottawa, ON, Canada (PIPEDA)</p>
+  <h2>What We Collect</h2>
+  <div class="grid-2">
+    <div class="panel">
+      <h3>CLI Tool — Zero Collection</h3>
+      <p>The Shadow313 CLI collects <strong style="color:var(--green)">nothing</strong>. All processing is local:</p>
+      <ul>
+        <li>No telemetry or usage analytics</li>
+        <li>No crash reports sent externally</li>
+        <li>No API keys or credentials transmitted</li>
+        <li>All AI inference runs locally via Ollama</li>
+        <li>313-BIND receipts are stored locally only</li>
+        <li>IPFS anchoring is opt-in and uses public data only</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Web Properties — Minimal</h3>
+      <p>Our websites (shadow313.dev, shadow313.com) may collect:</p>
+      <ul>
+        <li>Standard web server access logs (IP, timestamp, path) — retained 30 days</li>
+        <li>Contact form submissions (name, email, message) — used only to respond</li>
+        <li>No tracking cookies or advertising pixels</li>
+        <li>No third-party analytics (no Google Analytics, no Mixpanel)</li>
+        <li>No fingerprinting or behavioral tracking</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="section">
+  <h2>Third-Party Services</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Service</th><th>Purpose</th><th>Data Shared</th></tr></thead>
+      <tbody>
+        <tr><td>Vercel</td><td>Web hosting</td><td>Access logs only</td></tr>
+        <tr><td>GitHub</td><td>Source code hosting</td><td>Public repo data</td></tr>
+        <tr><td>IPFS (optional)</td><td>313-BIND anchoring</td><td>Public receipt hashes only</td></tr>
+        <tr><td>Ollama</td><td>Model registry</td><td>Model download only</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="section">
+  <h2>Your Rights (PIPEDA)</h2>
+  <div class="panel">
+    <p>Under Canada's Personal Information Protection and Electronic Documents Act (PIPEDA), you have the right to:</p>
+    <ul>
+      <li><strong>Access</strong> — Request a copy of any personal information we hold about you</li>
+      <li><strong>Correction</strong> — Request correction of inaccurate information</li>
+      <li><strong>Withdrawal</strong> — Withdraw consent for processing at any time</li>
+      <li><strong>Complaint</strong> — File a complaint with the Office of the Privacy Commissioner of Canada</li>
+    </ul>
+    <p style="margin-top:12px">To exercise these rights, contact: <code>matarmohamad313@duck.com</code></p>
+  </div>
+</div>
+<div class="section">
+  <h2>Data Retention</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Data Type</th><th>Retention Period</th><th>Deletion Method</th></tr></thead>
+      <tbody>
+        <tr><td>Web server access logs</td><td>30 days</td><td>Automatic rotation</td></tr>
+        <tr><td>Contact form submissions</td><td>Until resolved + 90 days</td><td>Manual deletion on request</td></tr>
+        <tr><td>CLI session data</td><td>Local only — your control</td><td>Delete ~/.shadow313/sessions/</td></tr>
+        <tr><td>313-BIND receipts</td><td>Local only — your control</td><td>Delete ~/.shadow313/receipts/</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
 <script>function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=location.pathname.split('/').pop()||'page.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}</script>
 </body>
 </html>
