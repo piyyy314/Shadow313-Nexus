@@ -10,16 +10,6 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "shadow313.dev"
-        }
-      ],
-      "destination": "/sentinelos/index.html"
-    },
-    {
       "source": "/attck-coverage-graph",
       "destination": "/docs/attck-coverage-graph.html"
     },
@@ -730,6 +720,10 @@
     {
       "source": "/tools/vsat-tactical-suite",
       "destination": "/tools/vsat-tactical-suite.html"
+    },
+    {
+      "source": "/sentinelos",
+      "destination": "/sentinelos/index.html"
     }
   ],
   "headers": [

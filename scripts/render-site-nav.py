@@ -19,8 +19,9 @@ def main():
     args = parser.parse_args()
     template = (ROOT / 'assets/site-nav.html.template').read_text()
     stale = []
-    for folder in FOLDERS:
-        for path in sorted((ROOT / folder).glob('*.html')):
+    for folder in ('.',) + FOLDERS:
+        paths = [ROOT / 'index.html'] if folder == '.' else sorted((ROOT / folder).glob('*.html'))
+        for path in paths:
             text = path.read_text()
             matches = list(PATTERN.finditer(text))
             if len(matches) != 1:

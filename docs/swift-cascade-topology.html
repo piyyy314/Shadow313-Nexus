@@ -27,11 +27,12 @@ canvas{display:block;width:100%;}
 .footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid rgba(239,68,68,0.08);font-family:'JetBrains Mono',monospace;margin-top:20px;}
 </style>
 <link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
+<body class="site-page">
 <!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
 <nav id="site-nav" aria-label="Primary navigation">
-  <a class="site-brand" href="/">⬡ SHADOW313 NEXUS</a>
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
   <div class="site-links">
     <a href="/platform">Platform</a>
     <a href="/dashboards">Dashboards</a>
@@ -39,7 +40,7 @@ canvas{display:block;width:100%;}
     <a href="/docs/">Docs</a>
     <a href="/pricing">Pricing</a>
     <a href="/contact">Contact</a>
-    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
 

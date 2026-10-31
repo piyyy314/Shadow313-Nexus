@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700&display=swap');
+
+/* Shared public-site design system, taken from the shadow313.com homepage.
+   Green/amber/red remain operational status colors, never branding overrides. */
+html:root {
+  color-scheme: dark;
+  --bg-base: #04060f;
+  --bg-layer1: #070c1a;
+  --bg-layer2: #0b1229;
+  --bg-glass: rgba(11,18,41,.72);
+  --bg: var(--bg-base);
+  --bg2: var(--bg-layer1);
+  --bg3: var(--bg-layer2);
+  --accent: #7b61ff;
+  --accent-glow: rgba(123,97,255,.35);
+  --purple: #b4a3ff;
+  --cyan: #00d4ff;
+  --blue: #77aaff;
+  --green: #00f5a0;
+  --amber: #ffb347;
+  --red: #ff4757;
+  --text: #e2e8f8;
+  --text-secondary: #b0bbd4;
+  --text-muted: #9ca9c6;
+  --text-dim: #8391af;
+  --muted: var(--text-muted);
+  --dim: var(--text-dim);
+  --border: rgba(100,140,255,.18);
+  --border2: rgba(100,140,255,.18);
+  --border-glow: rgba(123,97,255,.45);
+  --font-main: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-display: 'Orbitron', sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+body.site-page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-main);
+  background-color: var(--bg-base);
+  background-image: radial-gradient(ellipse at top left, rgba(123,97,255,.13), transparent 55%);
+  color: var(--text);
+}
+.site-page h1, .site-page h2, .site-page h3 { text-wrap: balance; }
+.site-page h1 { letter-spacing: -.035em; }
+.site-page pre, .site-page code, .site-page .mono, .site-page .code-block { font-family: var(--font-mono); }
+.site-page a:focus-visible, .site-page button:focus-visible, .site-page input:focus-visible,
+.site-page select:focus-visible, .site-page textarea:focus-visible {
+  outline: 2px solid var(--cyan); outline-offset: 4px;
+}
+.site-page .hero {
+  background: radial-gradient(ellipse at 50% 0%, rgba(123,97,255,.16), transparent 70%);
+  border-bottom-color: var(--border);
+}
+.site-page .hero h1 .accent, .site-page .hero h1 > span { color: var(--purple); text-shadow: 0 0 32px var(--accent-glow); }
+.site-page .card, .site-page .doc-card, .site-page .panel, .site-page .plan {
+  background-color: var(--bg-glass);
+  border-color: var(--border);
+  border-radius: var(--radius-md);
+}
+.site-page .card:hover, .site-page .doc-card:hover, .site-page .plan:hover { border-color: var(--border-glow); }
+.site-page .btn-green, .site-page .btn-primary, .site-page .btn-pro {
+  background: linear-gradient(135deg, var(--accent), #5a3fdf);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 24px rgba(123,97,255,.18);
+}
+.site-page .btn-outline, .site-page .btn-ghost {
+  background: rgba(123,97,255,.09); border-color: var(--border-glow); color: #c7bbff;
+}
+.site-page .footer, .site-page > footer {
+  background: rgba(4,6,15,.85); color: var(--text-muted); border-top-color: var(--border);
+}
+/* Documentation/marketing chrome only: don't recolor status badges or charts. */
+.site-page .doc-card h2, .site-page .sec-title { color: var(--purple); }
+.site-page .sidebar-link.active { background: rgba(123,97,255,.13); color: #c7bbff; }
+.site-page .docs-sidebar { background-color: var(--bg-layer1) !important; border-color: var(--border) !important; }
+.site-page .code-block { background-color: var(--bg-layer1); border-color: var(--border-glow); }
+@media (prefers-reduced-motion: reduce) {
+  .site-page *, .site-page *::before, .site-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

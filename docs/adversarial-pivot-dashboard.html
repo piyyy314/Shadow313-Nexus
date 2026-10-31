@@ -39,11 +39,12 @@ canvas{display:block;width:100%;}
 @media(max-width:1100px){.grid-2,.grid-3{grid-template-columns:1fr;}.kpi-strip{grid-template-columns:repeat(4,1fr);}}
 </style>
 <link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
+<body class="site-page">
 <!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
 <nav id="site-nav" aria-label="Primary navigation">
-  <a class="site-brand" href="/">⬡ SHADOW313 NEXUS</a>
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
   <div class="site-links">
     <a href="/platform">Platform</a>
     <a href="/dashboards">Dashboards</a>
@@ -51,7 +52,7 @@ canvas{display:block;width:100%;}
     <a href="/docs/">Docs</a>
     <a href="/pricing">Pricing</a>
     <a href="/contact">Contact</a>
-    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
 
@@ -148,7 +149,7 @@ const VEC_COLORS={"credential_reuse": "#ef4444", "vendor_exploit": "#f97316", "f
 const STRATEGY_ORDER=["baseline", "hardened_d5", "arch_e_pivot", "finacle_pivot", "custom_swift", "insider", "multi_vector"];
 let currentStrategy='baseline',animTime=10.0,animFrame=null,animPaused=false;
 function hexToRgb(h){if(!h||h.length<7)return[100,116,139];return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
-function updateClock(){document.getElementById('clock').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
+function updateClock(){const clock=document.getElementById('clock');if(clock)clock.textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';}
 updateClock();setInterval(updateClock,1000);
 const cardsEl=document.getElementById('strategy-cards');
 STRATEGY_ORDER.forEach(sid=>{

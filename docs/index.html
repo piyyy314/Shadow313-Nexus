@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation — Shadow313 NEXUS</title>
 <style>
-body{margin:0;background:#020617;color:#e2e8f0;font:16px/1.7 system-ui,sans-serif}
+body{margin:0;background:var(--bg-base);color:#e2e8f0;font:16px/1.7 var(--font-main)}
 main{max-width:1040px;margin:auto;padding:48px 24px}h1{font-size:clamp(32px,5vw,48px);margin:0 0 12px}
-p{color:#aebed0}.doc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;margin:28px 0 48px}
-.doc-card{display:block;padding:24px;border:1px solid #294039;border-radius:12px;background:#0b1329;text-decoration:none;color:#e2e8f0}
-.doc-card:hover,.doc-card:focus-visible{border-color:#4ade80}.doc-card h2{font-size:20px;color:#4ade80;margin:0 0 8px}.doc-card p{margin:0;font-size:14px}
-a{color:#4ade80}footer{padding:24px;border-top:1px solid #294039;text-align:center}
+p{color:var(--text-muted)}.doc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;margin:28px 0 48px}
+.doc-card{display:block;padding:24px;border:1px solid var(--border);border-radius:12px;background:var(--bg-glass);text-decoration:none;color:#e2e8f0}
+.doc-card:hover,.doc-card:focus-visible{border-color:var(--purple)}.doc-card h2{font-size:20px;color:var(--purple);margin:0 0 8px}.doc-card p{margin:0;font-size:14px}
+a{color:var(--purple)}footer{padding:24px;border-top:1px solid var(--border);text-align:center}
 </style>
 <link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
+<body class="site-page">
 <!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
 <nav id="site-nav" aria-label="Primary navigation">
-  <a class="site-brand" href="/">⬡ SHADOW313 NEXUS</a>
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
   <div class="site-links">
     <a href="/platform">Platform</a>
     <a href="/dashboards">Dashboards</a>
@@ -25,7 +26,7 @@ a{color:#4ade80}footer{padding:24px;border-top:1px solid #294039;text-align:cent
     <a href="/docs/">Docs</a>
     <a href="/pricing">Pricing</a>
     <a href="/contact">Contact</a>
-    <a href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
 <main>
