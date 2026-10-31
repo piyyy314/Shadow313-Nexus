@@ -50,8 +50,11 @@ class Session:
             try:
                 from .crypto_store import EncryptedSessionStore
                 self._store = EncryptedSessionStore(self.session_dir)
-            except ImportError:
-                pass  # graceful fallback to plain I/O
+            except ImportError as exc:
+                raise RuntimeError(
+                    "encrypt=True requires the 'cryptography' package. "
+                    "Install it with: pip install cryptography"
+                ) from exc
 
     # ── Meta ──────────────────────────────────────────────────────────────────
     @property
