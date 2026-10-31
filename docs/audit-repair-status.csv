@@ -1,0 +1,45 @@
+id,title,repair_status
+S313-A01,Wildcard scope accepts an unauthorized suffix domain,fixed in PR; see regression tests
+S313-A02,Receipt verifier accepts changed signature and chain hash,fixed in PR; see regression tests
+S313-A03,Signing failure silently downgrades to HMAC under a PQC label,fixed in PR; see regression tests
+S313-A04,Mobile API token verifier is never attached to routes,fixed in PR; see regression tests
+S313-A05,Exported receipt signatures are truncated,fixed in PR; see regression tests
+S313-A06,Valid later receipts fail payload verification,fixed in PR; see regression tests
+S313-A07,Compose Python services inherit the CLI entrypoint,configuration/source repaired; local runtime validation required
+S313-A08,Nginx routes to wrong WebUI port and a nonexistent service,configuration/source repaired; local runtime validation required
+S313-A09,"Model base, chat template and license metadata conflict",configuration/source repaired; local runtime validation required
+S313-A10,Model deployment script pulls a different base,configuration/source repaired; local runtime validation required
+S313-A11,AI prompt instructs unverifiable operational and receipt claims,configuration/source repaired; local runtime validation required
+S313-A12,Website chat is not a connected Gateway or local Ollama,left unavailable intentionally; hosted AI requires credential/budget/auth decision
+S313-A13,OpenAI-compatible URL joining breaks standard /v1 base URLs,fixed in PR; see regression tests
+S313-A14,Two AIEngine implementations obscure which fixes run,fixed in PR; see regression tests
+S313-A15,SentinelOS chat contract differs from local dashboard contract,partially addressed; not claimed complete
+S313-A16,Detection API calls a missing LOLBinDetector method,fixed in PR; see regression tests
+S313-A17,Documented recon and vuln scan endpoints are absent,fixed in PR; see regression tests
+S313-A18,Mobile queue and audit health endpoints fabricate success state,fixed in PR; see regression tests
+S313-A19,Rate-limit/auth implementations are shadowed or not installed,fixed in PR; see regression tests
+S313-A20,Invalid link-budget input produces server errors,fixed in PR; see regression tests
+S313-A21,Audit service has permissive CORS and no auth or storage bound,audit auth/body limits/store cap fixed; durable storage and complete chain verification not implemented
+S313-A22,Telegram event polling points at the wrong API contract,"credential header added; real event backend unavailable, not fabricated"
+S313-A23,Model pulls cannot reach the registry on an internal-only network,fixed in PR; see regression tests
+S313-A24,Bootstrap can announce model readiness after a failed pull,fixed in PR; see regression tests
+S313-A25,Local ports/storage expectations differ across setup methods,configuration/source repaired; local runtime validation required
+S313-A26,Optional services and Linux-specific storage block a minimal Windows stack,configuration/source repaired; local runtime validation required
+S313-A27,Current Vercel/GitHub Pages publication boundary is repository-root,Vercel allowlisted output fixed; GitHub Pages workflow patch requires operator
+S313-A28,Contact shows sent without sending; waitlist is unconnected,fake success disabled; real delivery pending operator configuration
+S313-A29,Architecture/status/crypto/compliance claims are static and inconsistent,public-build demo notice added; historical documents not comprehensively rewritten
+S313-A30,Some documented research commands do not exist in the CLI,operator/review work required; see handoff
+S313-A31,Built wheel omits related toolkit and runtime resources,fixed in PR; see regression tests
+S313-A32,Green CI masks actual lint/test/security failures,operator/review work required; see handoff
+S313-A33,TestPyPI trusted publishing is broken despite a green job,operator/review work required; see handoff
+S313-A34,Integration tests leak working-directory state,fixed in PR; see regression tests
+S313-A35,Fallback graph crashes when NetworkX is installed,fixed in PR; see regression tests
+S313-A36,Empty algorithm is reported SAFE,fixed in PR; see regression tests
+S313-A37,JUnit XML is not escaped,fixed in PR; see regression tests
+S313-A38,Temporal attack simulation crashes in default verbose path,operator/review work required; see handoff
+S313-A39,Resolved dependency audit reports advisory matches requiring triage,wheel/image package resources fixed; full remains subset and optional runtime matrix pending
+S313-A40,full extra and container image do not represent all documented modules,fixed in PR; see regression tests
+S313-A41,One-shot setup script changes unrelated settings and can report false success,operator/review work required; see handoff
+S313-A42,"Heuristic import/name/DOM warnings need triage, not blanket fixes",undefined default-path logger fixed; other heuristic warnings require review
+S313-A43,HTTP reconnaissance client disables TLS verification globally,fixed in PR; see regression tests
+S313-A44,Two workflows publish different GitHub Pages artifacts,checked workflow patch supplied; publisher cannot install it

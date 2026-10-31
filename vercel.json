@@ -764,5 +764,8 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "node scripts/build-public-site.cjs",
+  "outputDirectory": "public-site",
+  "installCommand": "echo \"No npm installation required\""
 }

@@ -163,9 +163,12 @@ def classify_algorithm(name: str) -> dict:
     Hyphens and underscores are ignored during matching. Substring matching works
     in either direction, with equal-length ties resolved in table order. Return a
     copy of the table fields plus algorithm; unmatched names return UNKNOWN with
-    an empty replacement. An empty name matches the longest normalized table key.
+    an empty replacement. Empty names are UNKNOWN.
     """
-    name_upper = name.upper().replace("-", "").replace("_", "")
+    name_upper = name.strip().upper().replace("-", "").replace("_", "")
+    if not name_upper:
+        return {"algorithm": name, "vuln": "UNKNOWN",
+                "reason": "Empty algorithm name", "replace": ""}
 
     # Pass 1: exact normalised match
     for key, info in QUANTUM_VULN_TABLE.items():

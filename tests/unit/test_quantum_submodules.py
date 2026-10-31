@@ -38,11 +38,6 @@ def test_classification_result_cannot_mutate_reference_table():
     assert classify_algorithm("DSA")["vuln"] == "VULNERABLE"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="PR #86 empty algorithm matches a PQC substring as SAFE",
-)
 def test_empty_algorithm_is_unknown():
     assert classify_algorithm("")["vuln"] == "UNKNOWN"
 

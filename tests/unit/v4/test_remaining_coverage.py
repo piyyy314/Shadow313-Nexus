@@ -124,7 +124,7 @@ class TestMobileAPI:
     def test_timing_safe_compare_used(self):
         """Verify hmac.compare_digest is used for token comparison (timing-safe)."""
         import inspect
-        from shadow313.v4.mobile_api import mobile_api as m
+        from shadow313.api import access as m
         src = inspect.getsource(m)
         assert "compare_digest" in src, "Must use hmac.compare_digest for timing-safe token comparison"
 

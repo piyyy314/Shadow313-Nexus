@@ -146,19 +146,19 @@ class TestPluginModule:
 
 
 class TestCICDModule:
-    def test_cicd_generate_github_actions(self, tmp_path):
+    def test_cicd_generate_github_actions(self, tmp_path, monkeypatch):
         from shadow313.cli.main import main
         import os
-        os.chdir(tmp_path)
+        monkeypatch.chdir(tmp_path)
         result = main(["--no-banner", "--config", str(tmp_path / "config.yaml"),
                        "cicd", "--generate", "github-actions"])
         assert result == 0
         assert (tmp_path / ".github" / "workflows" / "shadow313.yml").exists()
 
-    def test_cicd_generate_gitlab_ci(self, tmp_path):
+    def test_cicd_generate_gitlab_ci(self, tmp_path, monkeypatch):
         from shadow313.cli.main import main
         import os
-        os.chdir(tmp_path)
+        monkeypatch.chdir(tmp_path)
         result = main(["--no-banner", "--config", str(tmp_path / "config.yaml"),
                        "cicd", "--generate", "gitlab-ci"])
         assert result == 0

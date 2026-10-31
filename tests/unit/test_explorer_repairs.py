@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_ollama_healthcheck_and_bot_port():
     config = yaml.safe_load((ROOT / 'docker-compose.yml').read_text())
     services = config['services']
-    assert services['ollama']['healthcheck']['test'][-1].endswith(':11434/api/tags')
+    assert services['ollama']['healthcheck']['test'] == ['CMD', 'ollama', 'list']
     bot = services['telegram-bot']
     assert 'SHADOW313_API_URL=http://shadow313-api:8313' in bot['environment']
     assert 'shadow313_internal' in bot['networks']

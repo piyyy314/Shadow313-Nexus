@@ -358,12 +358,6 @@ class DistanceBoundingProtocol:
         }
 
 
-
-        self.window    = window
-        self.threshold = corr_threshold
-        self.buf_a     = deque(maxlen=window)
-        self.buf_b     = deque(maxlen=window)
-
     def _pearson(self, a: list, b: list) -> float:
         n  = len(a)
         if n < 10:

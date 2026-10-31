@@ -14,7 +14,8 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 MODEL_NAME="matarmohamad313/shadow313-nexus"
-BASE_MODEL="llama3.2:3b"
+BASE_MODEL="$(awk 'toupper($1) == "FROM" {print $2; exit}' ollama/Modelfile)"
+[ -n "$BASE_MODEL" ] || { echo "Modelfile FROM missing" >&2; exit 1; }
 MODELFILE_PATH="ollama/Modelfile"
 OLLAMA_API="http://localhost:11434"
 
@@ -90,7 +91,7 @@ echo -e "${BOLD}[STEP 1] Pulling base model: ${BASE_MODEL}...${NC}"
 echo -e "  ${CYAN}This may take a few minutes (2GB download)${NC}"
 
 # Check if already pulled
-if ollama list 2>/dev/null | grep -q "llama3.2:3b"; then
+if ollama list 2>/dev/null | grep -Fq "$BASE_MODEL"; then
     echo -e "  ${GREEN}✅ ${BASE_MODEL} already downloaded — skipping pull${NC}"
 else
     ollama pull "$BASE_MODEL"

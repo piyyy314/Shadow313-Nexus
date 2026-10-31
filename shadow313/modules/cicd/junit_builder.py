@@ -13,20 +13,15 @@ def build_junit_xml(findings: list[dict], suite_name: str = "shadow313") -> str:
 
     Only high and critical severities count as failures, ignoring case.
     """
-    failures = [f for f in findings if f.get("severity", "").lower() in ("critical", "high")]
-    total    = len(findings)
-    lines = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        f'<testsuite name="{suite_name}" tests="{total}" '
-        f'failures="{len(failures)}" timestamp="{_now()}">',
-    ]
-    for f in findings:
-        name = f.get("rule_id", "finding").replace("&", "&amp;")
-        msg  = f.get("desc", "").replace("&", "&amp;").replace("<", "&lt;")
-        sev  = f.get("severity", "").lower()
-        lines.append(f'  <testcase name="{name}" classname="{f.get("file","")}">')
-        if sev in ("critical", "high"):
-            lines.append(f'    <failure message="{msg}">{f.get("content","")}</failure>')
-        lines.append("  </testcase>")
-    lines.append("</testsuite>")
-    return "\n".join(lines)
+    from xml.etree.ElementTree import Element, SubElement, tostring
+
+    failures = sum(f.get("severity", "").lower() in ("critical", "high") for f in findings)
+    root = Element("testsuite", name=str(suite_name), tests=str(len(findings)),
+                   failures=str(failures), timestamp=_now())
+    for finding in findings:
+        case = SubElement(root, "testcase", name=str(finding.get("rule_id", "finding")),
+                          classname=str(finding.get("file", "")))
+        if finding.get("severity", "").lower() in ("critical", "high"):
+            failure = SubElement(case, "failure", message=str(finding.get("desc", "")))
+            failure.text = str(finding.get("content", ""))
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(root, encoding="unicode")

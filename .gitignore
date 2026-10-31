@@ -79,3 +79,6 @@ dist/*.json
 !dist/manifest.json
 node_modules/
 scan_results.json
+
+# Generated public output (archives/source are never copied)
+public-site/

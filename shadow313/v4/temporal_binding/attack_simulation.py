@@ -345,7 +345,7 @@ def run_simulation(verbose: bool = True) -> dict:
     def section(title: str) -> None:
         if verbose:
             print(f"\n{'═' * 70}")
-            logger.debug("  {bold(title)}")
+            print(f"  {bold(title)}")
             print(f"{'═' * 70}")
 
     def subsection(title: str) -> None:

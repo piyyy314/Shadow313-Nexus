@@ -9,12 +9,8 @@ from urllib.error import URLError
 
 import pytest
 
-# Python prefers the existing ai_engine/ package over PR #86's new ai_engine.py.
-# Load the changed file explicitly so these tests exercise the pull request code.
-_SOURCE = Path(__file__).resolve().parents[2] / "shadow313/core/ai_engine.py"
-_SPEC = spec_from_file_location("_pr86_ai_engine", _SOURCE)
-_MODULE = module_from_spec(_SPEC)
-_SPEC.loader.exec_module(_MODULE)
+# Exercise the implementation used by normal runtime imports, not a shadowed file.
+import shadow313.core.ai_engine as _MODULE
 AIEngine = _MODULE.AIEngine
 
 
@@ -113,7 +109,7 @@ def test_disabled_and_missing_api_key_never_make_requests(monkeypatch):
     assert "disabled" in disabled.chat("question")
     assert disabled.is_available() is False
     assert disabled.list_models() == []
-    assert "OPENAI_API_KEY not set" in AIEngine({"backend": "openai"}).chat("question")
+    assert "configure the selected provider API key" in AIEngine({"backend": "openai"}).chat("question")
     fetch.assert_not_called()
 
 

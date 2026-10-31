@@ -312,7 +312,7 @@ class IntelligenceGraph:
 
     def shortest_path(self, src: str, dst: str) -> list[str]:
         """Find shortest path between two nodes."""
-        if not _HAS_NX:
+        if not _HAS_NX or isinstance(self._g, _SimpleGraph):
             return []
         try:
             return list(nx.shortest_path(self._g.to_undirected(), src, dst))

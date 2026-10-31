@@ -57,7 +57,12 @@ class AIEngine:
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
         self.timeout:  int = int(config.get("timeout", 120))
         self.ctx_win:  int = int(config.get("context_window", 8192))
-        self._api_key: str = config.get("openai_api_key", "") or os.environ.get("OPENAI_API_KEY", "")
+        self._api_key: str = (config.get("openai_api_key", "")
+                              or (os.environ.get("AI_GATEWAY_API_KEY", "")
+                                  if self.backend == "gateway" else "")
+                              or os.environ.get("OPENAI_API_KEY", ""))
+        if self.backend == "gateway" and "endpoint" not in config:
+            self.endpoint = "https://ai-gateway.vercel.sh/v1"
 
     def _validate_endpoint(self, endpoint: str) -> str:
         """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
@@ -115,7 +120,7 @@ class AIEngine:
 
         if self.backend == "ollama":
             return self._ollama_chat(sys_p, user_prompt)
-        if self.backend == "openai":
+        if self.backend in {"openai", "gateway"}:
             return self._openai_chat(sys_p, user_prompt)
         return "[Unknown AI backend]"
 
@@ -243,7 +248,7 @@ class AIEngine:
     # ── OpenAI-compatible backend ─────────────────────────────────────────────
     def _openai_chat(self, system: str, user: str) -> str:
         if not self._api_key:
-            return "[AI error — OPENAI_API_KEY not set]"
+            return "[AI error — configure the selected provider API key]"
         payload = {
             "model": self.model,
             "messages": [
@@ -254,7 +259,7 @@ class AIEngine:
         }
         body = json.dumps(payload).encode()
         req  = request.Request(
-            f"{self.endpoint}/v1/chat/completions",
+            f"{self.endpoint if self.endpoint.endswith('/v1') else self.endpoint + '/v1'}/chat/completions",
             data=body,
             headers={
                 "Content-Type":  "application/json",

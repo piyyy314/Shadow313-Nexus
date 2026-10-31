@@ -35,6 +35,10 @@ RUN apt-get update -o Acquire::Retries=3 \
 
 COPY pyproject.toml README.md ./
 COPY shadow313/ ./shadow313/
+COPY shadow313_sdk/ ./shadow313_sdk/
+COPY shadow313_platform/ ./shadow313_platform/
+COPY nexus_toolkit/ ./nexus_toolkit/
+COPY MANIFEST.in LICENSE CHANGELOG.md SECURITY.md requirements.txt ./
 
 RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
     && pip install --no-cache-dir --prefix=/install .

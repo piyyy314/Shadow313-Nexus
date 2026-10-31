@@ -117,7 +117,7 @@ class TestBinder313:
 
     def test_signature_algorithm_is_slhdsa_or_hmac(self, binder313):
         r = binder313.bind({"x": 1})
-        assert "SLH-DSA" in r.signature_algorithm or "HMAC" in r.signature_algorithm
+        assert "SPHINCS+" in r.signature_algorithm or "HMAC" in r.signature_algorithm
 
     def test_verify_method(self, binder313):
         payload = {"audit": "data"}

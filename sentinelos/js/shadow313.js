@@ -577,25 +577,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(async () => {
             try {
-                addChatMsg('system', '[ai-gateway] routing request');
+                addChatMsg('system', '[demo] checking configured chat service');
                 const reply = await fetchAiResponse(input);
                 addChatMsg('response', reply);
             } catch (error) {
-                console.warn('AI Gateway unavailable, using local Shadow313 fallback', error);
+                console.warn('AI Gateway unavailable, using browser demonstration', error);
                 if (category && chatResponses[category]) {
                     const resp = chatResponses[category];
                     addChatMsg('system', `[${resp.category}] classified locally`);
                     addChatMsg('response', `${resp.respond(input)}
 
-[Local fallback: AI Gateway is unavailable or not configured.]`);
+[Browser demo only: no model inference or Gateway backend is connected.]`);
                 } else {
-                    addChatMsg('response', `⬡ [general] I processed your query "${input}" through the local thought engine.
+                    addChatMsg('response', `⬡ [general] I processed your query "${input}" in a browser demonstration.
   Current backend: ${backendSelect?.value || 'local_sim'}
-  [Local fallback: AI Gateway is unavailable or not configured.]`);
+  [Browser demo only: no model inference or Gateway backend is connected.]`);
                 }
             } finally {
                 performTemporalBind();
-                addChatMsg('system', `  ↳ 313-bound temporal signature: ${simHash(input).slice(0, 24)}...`);
+                addChatMsg('system', `  ↳ unsigned browser demo identifier: ${simHash(input).slice(0, 24)}...`);
             }
         }, 200);
     };
