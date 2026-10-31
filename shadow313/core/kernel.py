@@ -56,6 +56,7 @@ class Kernel:
 
         # Module registry: namespace → handler callable
         self._registry: dict[str, Callable] = {}
+        self._load_errors: list[dict] = []  # populated during module loading
         self._modules:  dict[str, Any]      = {}
 
         # Auto-load all built-in modules
