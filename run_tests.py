@@ -118,8 +118,10 @@ except ValueError:
 print('SLHDSASigner:')
 signer = SLHDSASigner()
 t('Instantiates', lambda: None if signer is not None else (_ for _ in ()).throw(AssertionError()))
-t('available=False (no pqcrypto)', lambda: None if not signer.available else (_ for _ in ()).throw(AssertionError('pqcrypto installed?')))
-t('algorithm_name correct', lambda: None if 'SLH-DSA' in signer.algorithm_name else (_ for _ in ()).throw(AssertionError(signer.algorithm_name)))
+t('available matches public-key support', lambda: None if signer.available == (signer.public_key is not None) else (_ for _ in ()).throw(AssertionError('backend/public key mismatch')))
+expected_algorithm = 'SPHINCS+-SHAKE-128f' if signer.available else 'HMAC-SHA3-256'
+t('algorithm_name correct', lambda: None if signer.algorithm_name == expected_algorithm else (_ for _ in ()).throw(AssertionError(signer.algorithm_name)))
+t('sign/verify round trip', lambda: None if signer.verify(b'test receipt', signer.sign(b'test receipt')) else (_ for _ in ()).throw(AssertionError('signature verification failed')))
 
 # ── IOC detection ─────────────────────────────────────────────────────────────
 print('IOC type detection:')
@@ -133,7 +135,7 @@ t('Unknown type', lambda: None if _detect_ioc_type('not-an-ioc')=='unknown' else
 print('Kernel:')
 from shadow313.core.kernel import Kernel
 k = Kernel(load_v2=True)
-t('0 load errors', lambda: None if len(k.load_errors)==0 else (_ for _ in ()).throw(AssertionError(list(k.load_errors.keys()))))
+t('0 load errors', lambda: None if len(k.load_errors)==0 else (_ for _ in ()).throw(AssertionError(k.load_errors)))
 t('commands registered', lambda: None if len(k.registered_commands())>0 else (_ for _ in ()).throw(AssertionError(len(k.registered_commands()))))
 for cmd in ['recon','vuln','quantum','campaign','sandbox','crypto_agility','cloud','network','defense','cicd']:
     t(f'command: {cmd}', lambda c=cmd: None if c in k.registered_commands() else (_ for _ in ()).throw(AssertionError(f'{c} missing')))

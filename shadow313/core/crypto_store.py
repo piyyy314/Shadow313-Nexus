@@ -234,65 +234,76 @@ class EncryptedSessionStore:
         return self._cipher is not None
 
 
-# ── SLHDSASigner — FIPS 205 stateless hash-based signature (P-15) ────────────
+# ── SLHDSASigner — pyspx signatures with an explicit symmetric fallback ──────
 import hashlib as _hashlib
 import hmac as _hmac
-import os as _os
 
 
 class SLHDSASigner:
-    """FIPS 205 SLH-DSA signature implementation (pure-Python fallback)."""
+    """Legacy signer API backed by SPHINCS+ or a local-only HMAC fallback.
 
-    ALGORITHM = "SLH-DSA-SHAKE-128f"
-    algorithm_name = "SLH-DSA-SHAKE-128f"  # v2 compatibility attribute
+    pyspx exposes SPHINCS+, not the standardized FIPS 205 SLH-DSA interface.
+    Receipts name the actual algorithm; HMAC receipts have no public key and
+    can only be verified by a holder of the same secret.
+    """
+
+    def __init__(self, private_key: bytes | None = None) -> None:
+        """Load a pyspx secret key, or generate a new key for the active backend."""
+        try:
+            import pyspx.shake_128f as backend
+        except ImportError:
+            backend = None
+        self._backend = backend
+        if backend is None:
+            self._private_key = private_key if private_key is not None else os.urandom(32)
+            self._public_key = None
+            self.ALGORITHM = "HMAC-SHA3-256"
+        else:
+            if private_key is None:
+                self._public_key, self._private_key = backend.generate_keypair(
+                    os.urandom(backend.crypto_sign_SEEDBYTES)
+                )
+            else:
+                if len(private_key) != backend.crypto_sign_SECRETKEYBYTES:
+                    raise ValueError(
+                        f"SPHINCS+ private key must be {backend.crypto_sign_SECRETKEYBYTES} bytes"
+                    )
+                self._private_key = private_key
+                # pyspx secret keys contain SK_SEED || SK_PRF || PUB_SEED || root.
+                self._public_key = private_key[-backend.crypto_sign_PUBLICKEYBYTES:]
+            self.ALGORITHM = "SPHINCS+-SHAKE-128f"
+        self.algorithm_name = self.ALGORITHM
 
     @property
     def available(self) -> bool:
-        """Return True if pyspx is available for full FIPS 205 compliance."""
-        try:
-            import pyspx.slh_dsa_shake_128f  # noqa: F401
-            return True
-        except ImportError:
-            return False
-
-    def __init__(self, private_key: bytes | None = None) -> None:
-        if private_key is None:
-            private_key = _os.urandom(32)
-        self._private_key = private_key
-        self._public_key = _hashlib.sha3_256(private_key).digest()
+        """Whether this instance uses public-key signatures rather than HMAC."""
+        return self._backend is not None
 
     @classmethod
     def generate(cls) -> "SLHDSASigner":
-        return cls(private_key=_os.urandom(32))
+        return cls()
 
     @property
-    def public_key(self) -> bytes:
+    def public_key(self) -> bytes | None:
         return self._public_key
 
     def sign(self, message: bytes) -> bytes:
-        try:
-            import pyspx.slh_dsa_shake_128f as _slh
-            # Use the existing key pair — do NOT regenerate on every sign call
-            return _slh.sign(message, self._private_key)
-        except ImportError:
-            # Fallback: HMAC-SHA3-256 (not FIPS 205 compliant)
-            return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
-        except Exception:
-            # pyspx installed but key format mismatch — use HMAC fallback
-            return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
+        if self._backend is not None:
+            # Backend/key failures must not silently downgrade a signature to HMAC.
+            return self._backend.sign(message, self._private_key)
+        return _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
 
     def verify(self, message: bytes, signature: bytes) -> bool:
-        try:
-            import pyspx.slh_dsa_shake_128f as _slh
-            return _slh.verify(message, signature, self._public_key)
-        except ImportError:
-            expected = _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
-            return _hmac.compare_digest(signature, expected)
+        if self._backend is not None:
+            if len(signature) != self._backend.crypto_sign_BYTES:
+                return False
+            return self._backend.verify(message, signature, self._public_key)
+        expected = _hmac.new(self._private_key, message, _hashlib.sha3_256).digest()
+        return _hmac.compare_digest(signature, expected)
 
     def sign_receipt(self, receipt_data: dict) -> dict:
-        import json as _json
-        payload = _json.dumps(receipt_data, sort_keys=True).encode()
+        payload = json.dumps(receipt_data, sort_keys=True).encode()
         sig = self.sign(payload)
         return {**receipt_data, "signature": sig.hex(),
-                "algorithm": self.ALGORITHM, "public_key": self._public_key.hex()}
-
+                "algorithm": self.ALGORITHM,
+                "public_key": self._public_key.hex() if self._public_key is not None else None}

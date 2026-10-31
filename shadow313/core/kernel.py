@@ -163,16 +163,25 @@ class Kernel:
                 if hasattr(instance, "register"):
                     instance.register(self)
             except ModuleNotFoundError as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # Optional dependency missing — expected, log at verbose level
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' skipped (missing dep): {exc}"
                 )
             except ImportError as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # FIX: distinguish import errors from syntax/runtime errors
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' import error: {exc}"
                 )
             except Exception as exc:
+                self._load_errors.append(
+                    {"module": name, "error": str(exc), "type": type(exc).__name__}
+                )
                 # Unexpected error — always log
                 self.out.verbose_msg(
                     f"[kernel] Module '{name}' init error: {type(exc).__name__}: {exc}"
