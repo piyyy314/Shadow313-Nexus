@@ -25,7 +25,10 @@ class MobileAPIModule:
         try:
             self._start(host, port, token)
         except ImportError:
-            self.out.warn("FastAPI not installed — pip install shadow313-nexus[dashboard]")
+            self.out.warn(
+                "FastAPI not installed — from your reviewed source checkout run: "
+                "pip install '.[dashboard]'"
+            )
         return {"host": host, "port": port}
 
     def _start(self, host: str, port: int, token: str) -> None:

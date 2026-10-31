@@ -173,7 +173,10 @@ class DashboardModule:
         try:
             self._start_fastapi(host, port, no_browser)
         except ImportError:
-            self.out.warn("FastAPI not installed — pip install shadow313-nexus[dashboard]")
+            self.out.warn(
+                "FastAPI not installed — from your reviewed source checkout run: "
+                "pip install '.[dashboard]'"
+            )
             self.out.info("Serving static HTML dashboard instead …")
             self._serve_static(host, port)
         return {"host": host, "port": port}

@@ -282,7 +282,7 @@ jobs:
 
       - name: Install Shadow313
         run: |
-          pip install shadow313-nexus
+          pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44
           shadow313 --version
 
       - name: Run Dependency Vulnerability Audit
@@ -325,7 +325,9 @@ shadow313-security:
   stage: test
   image: python:3.11-slim
   before_script:
-    - pip install shadow313-nexus
+    # VCS installs require Git; python:slim does not include it.
+    - apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+    - pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44
   script:
     - shadow313 vuln --audit-deps requirements.txt --output json > gl-vuln.json || true
     - shadow313 cicd --scan --threshold high --output sarif > gl-results.sarif
