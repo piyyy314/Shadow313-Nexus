@@ -134,3 +134,39 @@ def test_default_simulation_no_undefined_logger():
     from shadow313.v4.temporal_binding.attack_simulation import run_simulation
 
     assert isinstance(run_simulation(), dict)
+
+
+def test_asgi_body_replay_and_streaming_limit():
+    """Do not rely on private Request._body caching or framework version behavior."""
+    import asyncio
+
+    from shadow313.api.access import _RequestLimits
+
+    async def scenario(chunks, max_bytes):
+        messages = iter(chunks)
+        sent = []
+        received = []
+
+        async def receive():
+            return next(messages)
+
+        async def send(message):
+            sent.append(message)
+
+        async def endpoint(scope, get_body, send_body):
+            received.append(await get_body())
+            await send_body({"type": "http.response.start", "status": 200, "headers": []})
+            await send_body({"type": "http.response.body", "body": b"ok"})
+
+        app = _RequestLimits(endpoint, max_bytes=max_bytes, per_minute=2)
+        await app({"type": "http"}, receive, send)
+        return sent, received
+
+    chunks = [
+        {"type": "http.request", "body": b"abc", "more_body": True},
+        {"type": "http.request", "body": b"def", "more_body": False},
+    ]
+    sent, received = asyncio.run(scenario(chunks, 6))
+    assert sent[0]["status"] == 200 and received[0]["body"] == b"abcdef"
+    sent, received = asyncio.run(scenario(chunks, 5))
+    assert sent[0]["status"] == 413 and received == []

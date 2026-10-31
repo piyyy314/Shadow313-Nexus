@@ -23,26 +23,58 @@ def authorize(request: Request, expected: str | None) -> None:
         raise HTTPException(503, "Configure an API key before remote access")
 
 
+class _RequestLimits:
+    """ASGI body replay works with both old and current Starlette versions."""
+
+    def __init__(self, app, max_bytes: int, per_minute: int):
+        self.app = app
+        self.max_bytes = max_bytes
+        self.per_minute = per_minute
+        self.lock = Lock()
+        self.calls = deque()
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        now = monotonic()
+        with self.lock:
+            while self.calls and self.calls[0] <= now - 60:
+                self.calls.popleft()
+            limited = len(self.calls) >= self.per_minute
+            if not limited:
+                self.calls.append(now)
+        if limited:
+            return await JSONResponse({"detail": "Rate limit exceeded"}, status_code=429)(
+                scope, receive, send
+            )
+        chunks = []
+        size = 0
+        while True:
+            message = await receive()
+            if message["type"] == "http.disconnect":
+                return
+            chunk = message.get("body", b"")
+            size += len(chunk)
+            if size > self.max_bytes:
+                return await JSONResponse({"detail": "Request body too large"}, status_code=413)(
+                    scope, receive, send
+                )
+            chunks.append(chunk)
+            if not message.get("more_body", False):
+                break
+        body = b"".join(chunks)
+        delivered = False
+
+        async def replay():
+            nonlocal delivered
+            if not delivered:
+                delivered = True
+                return {"type": "http.request", "body": body, "more_body": False}
+            return await receive()
+
+        return await self.app(scope, replay, send)
+
+
 def install_limits(app, max_bytes: int = 1_048_576, per_minute: int = 1000) -> None:
     """Per-process global quota and streaming body cap; not distributed limits."""
-    lock = Lock()
-    calls = deque()
-
-    @app.middleware("http")
-    async def limits(request, call_next):
-        now = monotonic()
-        with lock:
-            while calls and calls[0] <= now - 60:
-                calls.popleft()
-            if len(calls) >= per_minute:
-                return JSONResponse({"detail": "Rate limit exceeded"}, status_code=429)
-            calls.append(now)
-        size = 0
-        body = []
-        async for chunk in request.stream():
-            size += len(chunk)
-            if size > max_bytes:
-                return JSONResponse({"detail": "Request body too large"}, status_code=413)
-            body.append(chunk)
-        request._body = b"".join(body)
-        return await call_next(request)
+    app.add_middleware(_RequestLimits, max_bytes=max_bytes, per_minute=per_minute)
