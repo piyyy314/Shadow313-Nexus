@@ -74,7 +74,20 @@ class AIEngine:
                 raise ValueError(
                     f"AI endpoint host '{host}' is blocked to prevent SSRF attacks."
                 )
-            if host.startswith("169.254.") or host.startswith("fd00:"):
+            # Normalize IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254)
+            normalized_host = host
+            try:
+                from ipaddress import IPv6Address
+                ipv6 = IPv6Address(host)
+                if ipv6.ipv4_mapped:
+                    normalized_host = str(ipv6.ipv4_mapped)
+            except Exception:
+                pass
+            if normalized_host in self._BLOCKED_HOSTS:
+                raise ValueError(
+                    f"AI endpoint host '{host}' is blocked (IPv4-mapped) to prevent SSRF attacks."
+                )
+            if normalized_host.startswith("169.254.") or host.startswith("169.254.") or host.startswith("fd00:"):
                 raise ValueError(
                     f"AI endpoint host '{host}' is in a reserved/link-local range."
                 )
