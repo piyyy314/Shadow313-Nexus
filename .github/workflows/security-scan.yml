@@ -61,13 +61,13 @@ jobs:
           docker build --target production -t shadow313-scan:nightly . || true
 
       - name: Run Trivy container scan
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402c11fb9d89a7634134e4 # v0.29.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: "shadow313-scan:nightly"
           severity: "CRITICAL,HIGH"
           format: "sarif"
           output: "trivy-container.sarif"
-          exit-code: "0"
+          exit-code: "1"
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
@@ -106,7 +106,7 @@ jobs:
           checkov -f docker-compose.yml \
             --framework dockerfile \
             --output cli \
-            --soft-fail || true
+            --soft-fail
 
       - name: Verify security hardening
         run: |
