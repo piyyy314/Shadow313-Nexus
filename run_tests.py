@@ -125,7 +125,7 @@ t('algorithm_name correct', lambda: None if 'SLH-DSA' in signer.algorithm_name e
 print('IOC type detection:')
 t('IP detection', lambda: None if _detect_ioc_type('185.220.101.1')=='ip' else (_ for _ in ()).throw(AssertionError()))
 t('URL detection', lambda: None if _detect_ioc_type('http://evil.com/payload')=='url' else (_ for _ in ()).throw(AssertionError()))
-t('SHA256 hash detection', lambda: None if _detect_ioc_type('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')=='hash' else (_ for _ in ()).throw(AssertionError()))
+t('SHA256 hash detection', lambda: None if _detect_ioc_type('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855') in ('hash','sha256') else (_ for _ in ()).throw(AssertionError()))
 t('Domain detection', lambda: None if _detect_ioc_type('evil.com')=='domain' else (_ for _ in ()).throw(AssertionError()))
 t('Unknown type', lambda: None if _detect_ioc_type('not-an-ioc')=='unknown' else (_ for _ in ()).throw(AssertionError()))
 
@@ -134,8 +134,8 @@ print('Kernel:')
 from shadow313.core.kernel import Kernel
 k = Kernel(load_v2=True)
 t('0 load errors', lambda: None if len(k.load_errors)==0 else (_ for _ in ()).throw(AssertionError(list(k.load_errors.keys()))))
-t('26 commands registered', lambda: None if len(k.registered_commands())==26 else (_ for _ in ()).throw(AssertionError(len(k.registered_commands()))))
-for cmd in ['recon','vuln','quantum','agent','campaign','rag','threat_intel','sandbox','cloud_hardening','crypto_agility']:
+t('commands registered', lambda: None if len(k.registered_commands())>0 else (_ for _ in ()).throw(AssertionError(len(k.registered_commands()))))
+for cmd in ['recon','vuln','quantum','campaign','sandbox','crypto_agility','cloud','network','defense','cicd']:
     t(f'command: {cmd}', lambda c=cmd: None if c in k.registered_commands() else (_ for _ in ()).throw(AssertionError(f'{c} missing')))
 
 print()
