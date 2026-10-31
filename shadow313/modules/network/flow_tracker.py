@@ -1,21 +1,16 @@
 """shadow313.modules.network.flow_tracker — 5-tuple flow tracker with statistics."""
 from __future__ import annotations
-from collections import defaultdict
+from collections import defaultdict, defaultdict as _defaultdict
+from datetime import datetime as _datetime, timezone as _timezone
 
 
 class FlowTracker:
     """Maintains 5-tuple flow table with per-flow statistics."""
 
     def __init__(self) -> None:
-        """Initialize an empty directional flow table."""
         self._flows: dict[tuple, dict] = {}
 
     def update(self, pkt: dict) -> None:
-        """Accumulate packet count, length in bytes, and timestamps for a directional flow.
-
-        Ignore packets without src_ip. ts is in seconds; the last timestamp is
-        the most recently processed packet's timestamp, not the maximum.
-        """
         if not pkt.get("src_ip"):
             return
         key = (pkt.get("src_ip", ""), pkt.get("dst_ip", ""),
@@ -29,11 +24,6 @@ class FlowTracker:
         self._flows[key]["last"]     = ts
 
     def get_flows(self) -> list[dict]:
-        """Return flow statistics sorted by descending byte count.
-
-        Duration is in seconds with a 0.001-second floor; rates are packets and
-        bytes per second. Returned records are separate from the stored counters.
-        """
         results = []
         for (src_ip, dst_ip, sport, dport, proto), stats in self._flows.items():
             duration = max(stats["last"] - stats["first"], 0.001)
@@ -50,16 +40,12 @@ class FlowTracker:
         return sorted(results, key=lambda x: x["bytes"], reverse=True)
 
     def from_packets(self, packets: list[dict]) -> list[dict]:
-        """Accumulate packets into the existing table and return all flow statistics."""
         for pkt in packets:
             self.update(pkt)
         return self.get_flows()
 
+
 # ── UEBA: Per-Endpoint Outbound Volume Monitor (Gap 9 / DLP) ─────────────────
-from collections import defaultdict as _defaultdict
-from datetime import datetime as _datetime, timezone as _timezone
-
-
 class OutboundVolumeMonitor:
     """Track per-endpoint outbound data volume to detect exfiltration (T1041/T1048).
 
@@ -71,13 +57,15 @@ class OutboundVolumeMonitor:
         threshold_bytes:    Alert threshold per endpoint per window (default 1GB).
         window_s:           Sliding window in seconds (default 86400 = 24h).
         approved_domains:   Set of approved cloud storage domains (allowlist).
+                            Pass None to use class defaults. Pass empty set() for
+                            stricter mode (no domains approved — all uploads monitored).
         alert_callback:     Callable(src_ip, dest_domain, bytes_sent) on breach.
     """
 
     DEFAULT_THRESHOLD = 1_073_741_824  # 1 GB
     DEFAULT_WINDOW_S  = 86_400         # 24 hours
 
-    APPROVED_DOMAINS: frozenset[str] = frozenset({
+    APPROVED_DOMAINS: frozenset = frozenset({
         "sharepoint.com", "onedrive.live.com", "drive.google.com",
         "s3.amazonaws.com", "blob.core.windows.net", "dropbox.com",
     })
@@ -86,23 +74,23 @@ class OutboundVolumeMonitor:
         self,
         threshold_bytes: int = DEFAULT_THRESHOLD,
         window_s: float = DEFAULT_WINDOW_S,
-        approved_domains: set[str] | None = None,
+        approved_domains=None,
         alert_callback=None,
     ) -> None:
-        """Configure per-source/destination byte thresholds over a window in seconds.
-
-        A falsy approved_domains uses the default allowlist. The callback
-        receives (src_ip, dest_domain, total_bytes) when a record triggers it.
-        """
         self.threshold_bytes = threshold_bytes
         self.window_s = window_s
-        self.approved_domains = approved_domains or self.APPROVED_DOMAINS
+        # Explicit None sentinel: None → use class defaults; empty set() → no approved domains
+        # This prevents accidental bypass: passing set() is STRICTER (monitors all domains),
+        # not more permissive. Only None restores the default cloud-storage exemptions.
+        if approved_domains is None:
+            self.approved_domains = self.APPROVED_DOMAINS
+        else:
+            self.approved_domains = frozenset(approved_domains)
         self.alert_callback = alert_callback or self._default_alert
         # {(src_ip, dest_domain): [(timestamp, bytes)]}
-        self._events: dict[tuple[str, str], list[tuple[float, int]]] = _defaultdict(list)
+        self._events: dict = _defaultdict(list)
 
     def _default_alert(self, src_ip: str, dest_domain: str, total_bytes: int) -> None:
-        """Print the source, destination, and window byte total expressed in MiB."""
         mb = total_bytes / 1_048_576
         print(
             f"[SHADOW313-GAP9] EXFIL ALERT: {src_ip} → {dest_domain} "
@@ -110,16 +98,14 @@ class OutboundVolumeMonitor:
         )
 
     def _is_approved(self, domain: str) -> bool:
-        """Match a lowercased domain or its subdomain against the configured allowlist."""
         domain = domain.lower()
         return any(domain == d or domain.endswith("." + d) for d in self.approved_domains)
 
     def record(self, src_ip: str, dest_domain: str, bytes_sent: int) -> bool:
-        """Record bytes for an unapproved source/destination pair in the current window.
+        """Record an outbound transfer event.
 
-        Approved destinations are ignored. Invoke the callback on each record
-        whose cumulative total reaches or exceeds threshold_bytes. Return True
-        after a successful callback, otherwise False; callback errors propagate.
+        Returns:
+            True if alert was triggered, False otherwise.
         """
         if self._is_approved(dest_domain):
             return False
@@ -139,11 +125,7 @@ class OutboundVolumeMonitor:
         return False
 
     def stats(self) -> list[dict]:
-        """Return active source/destination totals, sorted by descending bytes.
-
-        total_mb uses MiB (1,048,576 bytes). alert includes equality with the
-        threshold. This method does not invoke alert callbacks.
-        """
+        """Return current per-endpoint outbound volume stats."""
         now = _datetime.now(_timezone.utc).timestamp()
         cutoff = now - self.window_s
         results = []
@@ -184,33 +166,24 @@ class UserFileAccessMonitor:
         min_baseline: int = 100,
         alert_callback=None,
     ) -> None:
-        """Configure daily access-count alerts against each user's recent baseline.
-
-        alert_multiplier scales the average count; min_baseline suppresses
-        alerts below that average. The callback receives (username, count,
-        baseline). Days advance only through end_of_day calls.
-        """
         self.alert_multiplier = alert_multiplier
         self.min_baseline = min_baseline
         self.alert_callback = alert_callback or self._default_alert
         # {username: [daily_count, ...]} — rolling 30-day history
-        self._history: dict[str, list[int]] = _defaultdict(list)
-        self._today: dict[str, int] = _defaultdict(int)
+        self._history: dict = _defaultdict(list)
+        self._today: dict = _defaultdict(int)
 
     def _default_alert(self, username: str, count: int, baseline: float) -> None:
-        """Print the user access count, baseline, and scaled alert threshold."""
         print(
             f"[SHADOW313-GAP8] UEBA ALERT: {username} accessed {count} files "
             f"(baseline={baseline:.0f}, threshold={baseline * self.alert_multiplier:.0f})"
         )
 
     def record_access(self, username: str, file_path: str = "") -> bool:
-        """Increment today's user count and return whether an alert callback completed.
+        """Record a file access event for a user.
 
-        Require at least seven history entries and an average at least
-        min_baseline. Alert on every count at or above the scaled average of
-        the last 30 entries. file_path is unused; repeated accesses count again.
-        Callback exceptions propagate.
+        Returns:
+            True if alert was triggered, False otherwise.
         """
         self._today[username] += 1
         count = self._today[username]
@@ -238,6 +211,6 @@ class UserFileAccessMonitor:
                 self._history[username] = self._history[username][-30:]
         self._today.clear()
 
-    def set_baseline(self, username: str, daily_counts: list[int]) -> None:
+    def set_baseline(self, username: str, daily_counts: list) -> None:
         """Seed baseline history for a user (e.g., from SIEM historical data)."""
         self._history[username] = list(daily_counts[-30:])
