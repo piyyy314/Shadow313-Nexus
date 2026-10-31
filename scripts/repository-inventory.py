@@ -38,7 +38,7 @@ for name in sorted(filter(None, files)):
         area, action = "development-or-metadata", "repository-only; no automatic deletion"
     rows.append((name, area, action))
 with (ROOT / "site/repository-inventory.csv").open("w", newline="") as output:
-    writer = csv.writer(output)
+    writer = csv.writer(output, lineterminator="\n")
     writer.writerow(("path", "classification", "disposition"))
     writer.writerows(rows)
 print(f"Inventoried {len(rows)} files. No files deleted.")
