@@ -926,10 +926,11 @@ footer {
         Multi-backend orchestration. Autonomous Quantum Agent. 313 Temporal Binding.
         <strong>No PhD. No cloud account. No limits.</strong>
     </p>
+    <p style="color:var(--text-muted);font-size:13px">PyPI publication pending. Clone and review <a href="https://github.com/piyyy314/Shadow313-Nexus">the source repository</a>, then run this command inside that checkout in a fresh environment.</p>
     <div class="hero-actions">
         <div class="install-pill">
             <span class="prompt">$</span>
-            <span id="hero-cmd">pip install shadow313</span>
+            <span id="hero-cmd" title="Run inside a reviewed source checkout">pip install .</span>
             <button class="copy-btn" id="hero-copy"><i class="fa-regular fa-copy"></i></button>
         </div>
         <a href="#terminal-demo" class="btn btn-primary"><i class="fa-solid fa-terminal"></i> Try the Terminal</a>
@@ -1629,7 +1630,7 @@ function showToast(msg) {
 
 // --- COPY BUTTON ---
 document.getElementById('hero-copy').addEventListener('click', () => {
-    navigator.clipboard.writeText('pip install shadow313').then(() => showToast('Copied to clipboard!'));
+    navigator.clipboard.writeText('pip install .').then(() => showToast('Copied to clipboard!'));
 });
 
 // --- HERO TERMINAL TYPEWRITER ---

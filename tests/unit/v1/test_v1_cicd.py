@@ -106,7 +106,7 @@ class TestGitHubActionsIntegration:
                     "runs-on": "ubuntu-latest",
                     "steps": [
                         {"uses": "actions/checkout@v4"},
-                        {"run": "pip install shadow313"},
+                        {"run": "pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44"},
                         {"run": "shadow313 cicd --scan"},
                     ],
                 }
@@ -119,7 +119,7 @@ class TestGitHubActionsIntegration:
         gitlab_ci = {
             "shadow313-scan": {
                 "image": "python:3.11",
-                "script": ["pip install shadow313", "shadow313 cicd --scan"],
+                "script": ["pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44", "shadow313 cicd --scan"],
                 "artifacts": {"reports": {"sast": "shadow313-report.json"}},
             }
         }

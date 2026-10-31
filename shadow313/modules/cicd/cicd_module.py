@@ -35,7 +35,7 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install Shadow313
-        run: pip install shadow313
+        run: pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44
       - name: Run Secret Scan
         run: git diff HEAD~1 | shadow313 cicd --scan-secrets - --output-sarif secrets.sarif || true
       - name: Run Full Security Scan
@@ -52,7 +52,9 @@ shadow313-security:
   stage: test
   image: python:3.11-slim
   before_script:
-    - pip install shadow313
+    # VCS installs require Git; python:slim does not include it.
+    - apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+    - pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@48bedb15e37bb31e6f51253f3e28a2700c9fcf44
   script:
     - shadow313 cicd --scan-secrets ./ --severity-threshold high --output-sarif gl-results.sarif
   artifacts:
