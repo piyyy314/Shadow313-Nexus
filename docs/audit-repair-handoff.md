@@ -10,7 +10,8 @@
 - Shared API authentication and per-process request-size/global-rate limits;
   mobile token checks actually attached; invalid link-budget numbers rejected.
 - Main API LOLBin adapter uses `analyze_event`. Missing scan/event/mobile/audit
-  integrations return authenticated 503, not invented queued/success states.
+  integrations return authenticated HTTP 200 with an explicit unavailable status,
+  not invented queued/success states.
 - Audit server explicitly reports unsigned demo receipts/no signing public key.
   Receipt stores are capped at 1,000 rather than growing without bound.
 - OpenAI-compatible URL joining and explicit `gateway` backend/key mapping.

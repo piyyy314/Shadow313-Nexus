@@ -4,7 +4,7 @@ Advanced interface with TARTARUS, ORACLE, NIGHTSHADE, CERBERUS.
 """
 from __future__ import annotations
 import sys, os, json
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from ghost_watch_terminal.src.core.engine import GhostWatchEngine, _now_iso
 

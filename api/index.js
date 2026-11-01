@@ -1,7 +1,7 @@
 // This static website does not run the Python security backend.
-// Do not return fabricated detection results, receipts, or queued scans.
+// Backend-dependent routes report unavailability rather than fabricated results.
 const backendRoutes = [
-  ['GET', /^\/api\/(modules|attck\/coverage|bind|audit|audit\/chain|stream|docs|openapi\.json)$/],
+  ['GET', /^\/api\/(modules|attck\/coverage|bind|audit|audit\/chain|stream|events|docs|openapi\.json)$/],
   ['GET', /^\/api\/bind\/[^/]+$/],
   ['GET', /^\/api\/mobile\/(status|alerts|findings|sessions)$/],
   ['POST', /^\/api\/(detect|webshell\/scan|bind\/create|mobile\/scan|scan\/recon|scan\/vuln|chat)$/],
@@ -39,8 +39,9 @@ function handler(req, res) {
       backend_connected: false,
     });
   }
-  return send(503, {
-    error: 'backend_unavailable',
+  return send(200, {
+    status: 'unavailable',
+    backend_connected: false,
     message: 'This website does not run the Shadow313 Python backend. Use the locally hosted API; see /docs/api.',
   });
 }

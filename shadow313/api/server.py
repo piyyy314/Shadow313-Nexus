@@ -279,12 +279,15 @@ def create_app(api_key: str | None = None) -> FastAPI:
             "receipts": list(_receipts.values()),
         }
 
-    # Do not fabricate queued jobs, events, or verified audit-chain health.
+    # Keep unavailable integrations explicit without fabricating successful work.
     @app.post("/api/scan/recon", dependencies=[Depends(verify_api_key)])
     @app.post("/api/scan/vuln", dependencies=[Depends(verify_api_key)])
     @app.post("/api/mobile/scan", dependencies=[Depends(verify_api_key)])
     async def scan_unavailable():
-        raise HTTPException(503, "No remote scan worker is connected. Use the local CLI.")
+        return {
+            "status": "unavailable",
+            "message": "No remote scan worker is connected. Use the local CLI.",
+        }
 
     @app.get("/api/mobile/status", dependencies=[Depends(verify_api_key)])
     @app.get("/api/mobile/alerts", dependencies=[Depends(verify_api_key)])
@@ -295,7 +298,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     @app.get("/api/stream", dependencies=[Depends(verify_api_key)])
     @app.get("/api/events", dependencies=[Depends(verify_api_key)])
     async def data_unavailable():
-        raise HTTPException(503, "No persisted audit, event, or mobile backend is connected.")
+        return {
+            "status": "unavailable",
+            "message": "No persisted audit, event, or mobile backend is connected.",
+        }
 
     return app
 

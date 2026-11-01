@@ -92,3 +92,47 @@ class TestAIEngineConfig:
     def test_endpoint_trailing_slash_stripped(self):
         engine = AIEngine({"endpoint": "http://localhost:11434/"})
         assert not engine.endpoint.endswith("/")
+
+    def test_gateway_key_does_not_fall_back_to_openai_key(self, monkeypatch):
+        monkeypatch.setenv("OPENAI_API_KEY", "openai-secret")
+        monkeypatch.delenv("AI_GATEWAY_API_KEY", raising=False)
+        engine = AIEngine({"backend": "gateway"})
+        assert engine._api_key == ""
+
+    def test_gateway_uses_gateway_key(self, monkeypatch):
+        monkeypatch.setenv("OPENAI_API_KEY", "openai-secret")
+        monkeypatch.setenv("AI_GATEWAY_API_KEY", "gateway-secret")
+        engine = AIEngine({"backend": "gateway"})
+        assert engine._api_key == "gateway-secret"
+
+    def test_openai_compatible_backend_sends_selected_key(self, monkeypatch):
+        import json
+        from shadow313.core.ai_engine import request
+
+        seen = {}
+
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return None
+
+            def read(self):
+                return json.dumps({
+                    "choices": [{"message": {"content": "ok"}}],
+                }).encode()
+
+        def fake_urlopen(req, timeout):
+            seen["authorization"] = req.get_header("Authorization")
+            return FakeResponse()
+
+        monkeypatch.setattr(request, "urlopen", fake_urlopen)
+        engine = AIEngine({
+            "backend": "gateway",
+            "endpoint": "https://gateway.example/v1",
+            "gateway_api_key": "gateway-secret",
+        })
+
+        assert engine._openai_chat("system", "hello") == "ok"
+        assert seen["authorization"] == "Bearer gateway-secret"

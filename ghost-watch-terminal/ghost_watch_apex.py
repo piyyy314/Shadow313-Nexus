@@ -5,7 +5,7 @@ Hardware: HB-9982-AX-2026 | LoRa: 915.0 MHz | DEFCON 4
 """
 from __future__ import annotations
 import sys, os, json, time, logging
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s %(message)s',
                     datefmt='%H:%M:%S')
