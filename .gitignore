@@ -57,6 +57,12 @@ Thumbs.db
 # Internal planning — do not expose publicly
 todo.md
 notes/
+docs-archive/
+audit-results/
+docs/session-exports/
+*.env
+docs/*.patch
+!docs/manual-vercel-workflow.patch
 dist/receipts/
 dist/p1_*/
 dist/manifest.json
