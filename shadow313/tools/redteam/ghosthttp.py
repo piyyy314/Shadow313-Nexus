@@ -22,7 +22,10 @@ try:
     from shadow313.core.kernel import KernelContext, register_command
 except ImportError:
     KernelContext = object
-    def register_command(*a, **kw): pass  # nosec
+    def register_command(*a, **kw):  # nosec
+        def _deco(fn):
+            return fn
+        return _deco
 
 try:
     from shadow313.tools.base import BaseTool, ToolResult
