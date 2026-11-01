@@ -59,6 +59,9 @@ def test_deploy_workflow_targets_repo_root_static_site():
         assert stale_path not in required_paths
 
     preview_steps = workflow["jobs"]["preview"]["steps"]
+    deploy_step = next(step for step in preview_steps if step.get("name") == "Deploy Preview")
+    assert "grep -Eo" in deploy_step["run"]
+    assert r"\.vercel\.(app|dev)" in deploy_step["run"]
     summary_step = next(
         step for step in preview_steps if step.get("name") == "Summarize preview deployment"
     )
