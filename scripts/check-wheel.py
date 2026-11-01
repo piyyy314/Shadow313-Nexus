@@ -44,8 +44,12 @@ def validate_artifacts(directory):
     wheels = list(directory.glob("*.whl"))
     if len(wheels) != 1:
         raise ValueError("Expected exactly one wheel")
+    sources = list(directory.glob("*.tar.gz"))
+    if len(sources) != 1:
+        raise ValueError("Expected exactly one source archive")
     actual = {p.name for p in directory.iterdir() if p.is_file()} - {"SHA256SUMS.json"}
-    if set(manifest) != actual:
+    expected = {wheels[0].name, sources[0].name}
+    if actual != expected or set(manifest) != expected:
         raise ValueError("Artifact list differs from build manifest")
     for name, expected in manifest.items():
         if Path(name).name != name or digest(directory / name) != expected:
