@@ -46,6 +46,25 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertIsNone(fixed_score.search(text))
                 self.assertNotRegex(text, r"tests_passing\s*:\s*[\d,]+")
 
+    def test_dashboard_export_scripts_are_valid_javascript(self):
+        dashboard_pages = (
+            ROOT / 'docs/shadow313-nexus-dashboard.html',
+            ROOT / 'local_bundle/dashboard.html',
+            ROOT / 'local_bundle/command-center.html',
+        )
+        script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
+        for path in dashboard_pages:
+            scripts = [
+                code for attrs, code in script_pattern.findall(path.read_text())
+                if code.strip() and not re.search(r'type=["\']application/json', attrs, re.I)
+            ]
+            self.assertTrue(scripts, path)
+            for index, code in enumerate(scripts):
+                result = subprocess.run(
+                    ['node', '--check', '-'], input=code, capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, f'{path}:{index}: {result.stderr}')
+
     def test_one_shared_primary_nav_without_injected_menus(self):
         for path in pages():
             with self.subTest(page=path.name):

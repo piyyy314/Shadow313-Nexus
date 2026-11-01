@@ -4,7 +4,8 @@ info:
   description: >-
     Local-First AI-Powered Security Intelligence REST API. This contract describes
     the separately hosted Python backend, not the static website. The static-site
-    adapter returns HTTP 503 for backend-dependent routes.
+    adapter returns HTTP 200 with an explicit unavailable status for backend-dependent
+    routes and never fabricates scan results.
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team
@@ -127,9 +128,13 @@ paths:
     get:
       summary: Mobile API status
       operationId: mobileStatus
+      security:
+        - ApiKeyAuth: []
       responses:
         "200":
-          description: Mobile status
+          description: Mobile service status; unavailable when no mobile backend is connected
+        "401":
+          description: Unauthorized
 
   /api/audit:
     get:
@@ -139,7 +144,9 @@ paths:
         - ApiKeyAuth: []
       responses:
         "200":
-          description: Audit entries
+          description: Audit data status; unavailable when no persisted audit backend is connected
+        "401":
+          description: Unauthorized
 
   /api/audit/chain:
     get:
@@ -149,7 +156,9 @@ paths:
         - ApiKeyAuth: []
       responses:
         "200":
-          description: Chain status
+          description: Audit-chain status; unavailable when no persisted audit backend is connected
+        "401":
+          description: Unauthorized
 
   /api/scan/recon:
     post:
@@ -169,7 +178,7 @@ paths:
                 mode: {type: string, default: passive}
                 ports: {type: string}
       responses:
-        "200": {description: Scan results}
+        "200": {description: Scan status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
 
   /api/scan/vuln:
@@ -189,7 +198,7 @@ paths:
                 cve_id: {type: string}
                 from_session: {type: string}
       responses:
-        "200": {description: Analysis results}
+        "200": {description: Analysis status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
 
   /api/mobile/scan:
@@ -199,7 +208,7 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Scan accepted}
+        "200": {description: Scan status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
 
   /api/mobile/alerts:
@@ -209,7 +218,8 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Alert list}
+        "200": {description: Alert data status; unavailable when no mobile backend is connected}
+        "401": {description: Unauthorized}
 
   /api/mobile/findings:
     get:
@@ -218,7 +228,8 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Finding list}
+        "200": {description: Finding data status; unavailable when no mobile backend is connected}
+        "401": {description: Unauthorized}
 
   /api/mobile/sessions:
     get:
@@ -227,7 +238,8 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Session list}
+        "200": {description: Session data status; unavailable when no mobile backend is connected}
+        "401": {description: Unauthorized}
 
   /api/stream:
     get:
@@ -236,7 +248,8 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Event stream}
+        "200": {description: Stream status; unavailable when no event backend is connected}
+        "401": {description: Unauthorized}
 
   /api/events:
     get:
@@ -245,7 +258,8 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        "200": {description: Event list}
+        "200": {description: Event data status; unavailable when no event backend is connected}
+        "401": {description: Unauthorized}
 
 components:
   securitySchemes:

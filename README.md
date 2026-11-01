@@ -49,7 +49,7 @@ does not publish a fixed test count or claim a passing result.
 | `shadow313_sdk/`, `shadow313_platform/`, `nexus_toolkit/` | SDK, platform, and toolkit packages |
 | `tests/` | Unit, integration, and simulation tests |
 | `docs/`, `assets/`, `index.html` | Static website and documentation |
-| `api/` | Static-site API adapter and OpenAPI contract; backend-dependent website routes return `503` |
+| `api/` | Static-site API adapter and OpenAPI contract; backend-dependent website routes return `200` with an explicit unavailable status |
 | `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
 | `scripts/` | Repository checks, site generation, and maintenance utilities |
 
@@ -76,7 +76,10 @@ backend and is not reused for the gateway.
 
 The Python API listens on port `8313` when run in Docker Compose. Compose keeps
 the API internal to its Docker network; the static site adapter does not host
-the Python backend and returns `503` for backend-dependent routes.
+the Python backend and returns `200` with an explicit unavailable status for
+backend-dependent routes. The Python API also reports unavailable integrations
+in a `200` response after authentication; authentication and routing errors keep
+their appropriate error statuses.
 
 ---
 
@@ -456,7 +459,6 @@ MIT — see [LICENSE](LICENSE)
 
 *Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
 *"The only security platform where every finding is a cryptographic fact."*
-
 
 
 

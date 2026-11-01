@@ -1346,7 +1346,7 @@ function downloadExport() {
     attck_heatmap: HEATMAP_DATA,
     evidence_receipts: 50,
     platform_status: 'OPERATIONAL',
-    test_status: 'See live CI results'
+    test_status: 'See live CI results',
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');

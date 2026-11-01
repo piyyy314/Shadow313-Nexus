@@ -21,9 +21,10 @@
 </nav>
 <aside role="note" style="padding:16px 24px;background:#0b1329;color:#e2e8f0;border-bottom:1px solid #334155;">
 <strong>Hosting notice:</strong> The public website does not run the Python security backend.
-Only <code>/api/health</code> and <code>/api/status</code> are available here;
-backend-dependent endpoints return HTTP 503, not scan results. Run the backend locally
-at <code>http://localhost:8313</code>. Never put your API key in public browser code.
+Backend-dependent endpoints return HTTP 200 with an explicit unavailable status,
+not scan results. Run the Python backend locally at <code>http://localhost:8313</code>.
+Authentication, method, and route errors retain their appropriate HTTP error statuses.
+Never put your API key in public browser code.
 </aside>
 
 
@@ -93,4 +94,3 @@ at <code>http://localhost:8313</code>. Never put your API key in public browser 
 </div></div></div>
 <footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>
-
