@@ -3,8 +3,8 @@ info:
   title: Shadow313 NEXUS API
   description: >-
     Local-First AI-Powered Security Intelligence REST API. This contract describes
-    the separately hosted backend, not the static website. The website currently
-    exposes only health/status; backend-dependent routes return HTTP 503.
+    the separately hosted Python backend, not the static website. The static-site
+    adapter returns HTTP 503 for backend-dependent routes.
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team
@@ -15,34 +15,29 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
 
 servers:
-  - url: http://localhost:8313/api
+  - url: http://localhost:8313
     description: Local development
 
 paths:
-  /status:
+  /api/status:
     get:
-      summary: API status
-      operationId: getStatus
+      summary: Python API status
+      operationId: getPythonApiStatus
       responses:
         "200":
           description: API operational
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: {type: string}
-                  version: {type: string}
 
   /health:
     get:
       summary: Health check
       operationId: healthCheck
+      servers:
+        - url: http://localhost:8313
       responses:
         "200":
           description: Healthy
 
-  /modules:
+  /api/modules:
     get:
       summary: List available modules
       operationId: listModules
@@ -54,7 +49,7 @@ paths:
         "401":
           description: Unauthorized
 
-  /detect:
+  /api/detect:
     post:
       summary: Run threat detection
       operationId: detect
@@ -75,7 +70,7 @@ paths:
         "401":
           description: Unauthorized
 
-  /webshell/scan:
+  /api/webshell/scan:
     post:
       summary: Scan for web shells
       operationId: webshellScan
@@ -85,7 +80,7 @@ paths:
         "200":
           description: Scan results
 
-  /attck/coverage:
+  /api/attck/coverage:
     get:
       summary: ATT&CK coverage matrix
       operationId: attckCoverage
@@ -93,7 +88,7 @@ paths:
         "200":
           description: Coverage data
 
-  /bind/create:
+  /api/bind/create:
     post:
       summary: Create 313-BIND receipt
       operationId: createBind
@@ -103,7 +98,7 @@ paths:
         "200":
           description: Receipt created
 
-  /bind/{bind_id}:
+  /api/bind/{bind_id}:
     get:
       summary: Get bind receipt
       operationId: getBind
@@ -118,7 +113,7 @@ paths:
         "404":
           description: Not found
 
-  /bind:
+  /api/bind:
     get:
       summary: List bind receipts
       operationId: listBinds
@@ -128,7 +123,7 @@ paths:
         "200":
           description: Receipt list
 
-  /mobile/status:
+  /api/mobile/status:
     get:
       summary: Mobile API status
       operationId: mobileStatus
@@ -136,7 +131,7 @@ paths:
         "200":
           description: Mobile status
 
-  /audit:
+  /api/audit:
     get:
       summary: Audit log
       operationId: getAuditLog
@@ -146,7 +141,7 @@ paths:
         "200":
           description: Audit entries
 
-  /audit/chain:
+  /api/audit/chain:
     get:
       summary: Audit chain integrity
       operationId: getAuditChain
@@ -155,6 +150,102 @@ paths:
       responses:
         "200":
           description: Chain status
+
+  /api/scan/recon:
+    post:
+      summary: Run an authorized reconnaissance scan
+      operationId: scanRecon
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [target]
+              properties:
+                target: {type: string}
+                mode: {type: string, default: passive}
+                ports: {type: string}
+      responses:
+        "200": {description: Scan results}
+        "401": {description: Unauthorized}
+
+  /api/scan/vuln:
+    post:
+      summary: Run vulnerability analysis on an authorized target
+      operationId: scanVulnerabilities
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target: {type: string}
+                cve_id: {type: string}
+                from_session: {type: string}
+      responses:
+        "200": {description: Analysis results}
+        "401": {description: Unauthorized}
+
+  /api/mobile/scan:
+    post:
+      summary: Submit a mobile scan request
+      operationId: mobileScan
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Scan accepted}
+        "401": {description: Unauthorized}
+
+  /api/mobile/alerts:
+    get:
+      summary: List mobile alerts
+      operationId: listMobileAlerts
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Alert list}
+
+  /api/mobile/findings:
+    get:
+      summary: List mobile findings
+      operationId: listMobileFindings
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Finding list}
+
+  /api/mobile/sessions:
+    get:
+      summary: List mobile sessions
+      operationId: listMobileSessions
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Session list}
+
+  /api/stream:
+    get:
+      summary: Subscribe to event stream
+      operationId: streamEvents
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Event stream}
+
+  /api/events:
+    get:
+      summary: List API events
+      operationId: listEvents
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Event list}
 
 components:
   securitySchemes:

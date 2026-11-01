@@ -57,10 +57,18 @@ class AIEngine:
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
         self.timeout:  int = int(config.get("timeout", 120))
         self.ctx_win:  int = int(config.get("context_window", 8192))
-        self._api_key: str = (config.get("openai_api_key", "")
-                              or (os.environ.get("AI_GATEWAY_API_KEY", "")
-                                  if self.backend == "gateway" else "")
-                              or os.environ.get("OPENAI_API_KEY", ""))
+        if self.backend == "gateway":
+            self._api_key = (
+                config.get("gateway_api_key", "")
+                or os.environ.get("AI_GATEWAY_API_KEY", "")
+            )
+        elif self.backend == "openai":
+            self._api_key = (
+                config.get("openai_api_key", "")
+                or os.environ.get("OPENAI_API_KEY", "")
+            )
+        else:
+            self._api_key = ""
         if self.backend == "gateway" and "endpoint" not in config:
             self.endpoint = "https://ai-gateway.vercel.sh/v1"
 

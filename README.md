@@ -28,29 +28,55 @@
 <div align="center">
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/piyyy314/Shadow313-Nexus/shadow313-ci.yml?branch=master&style=for-the-badge&logo=github-actions&label=CI%20Build)](https://github.com/piyyy314/Shadow313-Nexus/actions)
-[![Tests: 4107 passed](https://img.shields.io/badge/tests-4107%20passed-brightgreen.svg?style=for-the-badge&logo=pytest)](https://github.com/piyyy314/Shadow313-Nexus/actions)
-[![Vulnerabilities](https://img.shields.io/badge/vulnerabilities-0_detected-brightgreen.svg?style=for-the-badge&logo=snyk)](https://github.com/piyyy314/Shadow313-Nexus/security)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.x-61DAFB.svg?style=for-the-badge&logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF.svg?style=for-the-badge&logo=vite)](https://vitejs.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22.x-green.svg?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38B2AC.svg?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![NIST Post-Quantum](https://img.shields.io/badge/NIST_PQC-FIPS_203%2F204%2F205-blueviolet.svg?style=for-the-badge&logo=shield)](https://csrc.nist.gov/projects/post-quantum-cryptography)
-[![FIPS 140-3](https://img.shields.io/badge/FIPS_140--3-Aligned-purple.svg?style=for-the-badge&logo=lock)](https://csrc.nist.gov/publications/detail/fips/140/3/final)
-[![FedRAMP](https://img.shields.io/badge/FedRAMP-Moderate_Ready-blue.svg?style=for-the-badge&logo=cloud)](https://www.fedramp.gov/)
-[![MITRE ATT&CK](https://img.shields.io/badge/MITRE_ATT%26CK-v15-red.svg?style=for-the-badge&logo=target)](https://attack.mitre.org/)
 **PyPI publication pending — install from the reviewed source checkout.**
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Security Grade](https://img.shields.io/badge/Security_Grade-A%2B-brightgreen.svg?style=for-the-badge&logo=security)](https://github.com/piyyy314/Shadow313-Nexus/security)
-[![Vercel](https://img.shields.io/badge/Deployed-shadow313.dev-black.svg?style=for-the-badge&logo=vercel)](https://shadow313.dev)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/piyyy314/Shadow313-Nexus/badge?style=for-the-badge)](https://securityscorecards.dev/viewer/?uri=github.com/piyyy314/Shadow313-Nexus)
-[![Known Vulnerabilities](https://snyk.io/test/github/piyyy314/Shadow313-Nexus/badge.svg?style=for-the-badge)](https://snyk.io/test/github/piyyy314/Shadow313-Nexus)
-[![codecov](https://codecov.io/gh/piyyy314/Shadow313-Nexus/branch/master/graph/badge.svg?style=for-the-badge)](https://codecov.io/gh/piyyy314/Shadow313-Nexus)
 
 </div>
 
-Shadow313 NEXUS is a modular, offline-capable, AI-augmented security intelligence CLI spanning **28 modules** across reconnaissance, vulnerability intelligence, exploit advisory, network forensics, defense hardening, quantum cryptography migration, agentic automation, cloud hardening, and the proprietary **313 Temporal Binding Protocol** — all from the terminal, with no data leaving your machine.
+Shadow313 NEXUS is a Python security-intelligence toolkit with a CLI, API,
+optional local Ollama integration, and static documentation site. Some modules
+require optional dependencies or external services; network activity is not
+guaranteed to remain local. Use only on systems you own or are authorized to
+assess. The CI badge above links to the current workflow result; this README
+does not publish a fixed test count or claim a passing result.
+
+## Repository map
+
+| Path | Contents |
+|---|---|
+| `shadow313/` | Main Python package, API, CLI, modules, and versioned components |
+| `shadow313_sdk/`, `shadow313_platform/`, `nexus_toolkit/` | SDK, platform, and toolkit packages |
+| `tests/` | Unit, integration, and simulation tests |
+| `docs/`, `assets/`, `index.html` | Static website and documentation |
+| `api/` | Static-site API adapter and OpenAPI contract; backend-dependent website routes return `503` |
+| `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
+| `scripts/` | Repository checks, site generation, and maintenance utilities |
+
+## Development and tests
+
+Use Python 3.11 or newer. From a fresh virtual environment:
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest tests/ -q --tb=short --ignore=tests/integration --timeout=120
+```
+
+For the API and dashboard extras, install `.[dashboard]`; other optional
+features may require their corresponding extras. Check the live CI workflow
+for the authoritative status of a specific commit.
+
+## Local AI and API
+
+The default AI backend is local Ollama at `http://localhost:11434`. Select it
+with `SHADOW313_AI_BACKEND=ollama`, and configure `SHADOW313_AI_MODEL` and
+`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway
+requires `AI_GATEWAY_API_KEY`; `OPENAI_API_KEY` is used only for the OpenAI
+backend and is not reused for the gateway.
+
+The Python API listens on port `8313` when run in Docker Compose. Compose keeps
+the API internal to its Docker network; the static site adapter does not host
+the Python backend and returns `503` for backend-dependent routes.
 
 ---
 
@@ -162,17 +188,19 @@ docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.
 
 ### Docker Compose (full stack)
 ```bash
-docker-compose up -d
-# Dashboard: http://localhost:7313
-# Mobile API: http://localhost:7314
-# Ollama: http://localhost:11434
+cp .env.example .env
+# Replace the example secrets before starting the API services.
+docker compose up -d
+# Open WebUI through the nginx development listener: http://localhost:8080
+# Nginx HTTPS listener: https://localhost
+# Ollama and the Python API are internal to the Compose network by default.
 ```
 
 ### AI Setup (Ollama — local, recommended)
 ```bash
 # Install Ollama: https://ollama.com
 ollama pull mistral:7b
-# Shadow313 auto-connects to localhost:11434
+# Set SHADOW313_AI_ENDPOINT=http://localhost:11434 for a native CLI process.
 ```
 
 ---
@@ -428,8 +456,6 @@ MIT — see [LICENSE](LICENSE)
 
 *Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
 *"The only security platform where every finding is a cryptographic fact."*
-
-
 
 
 

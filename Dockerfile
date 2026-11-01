@@ -86,7 +86,7 @@ ENV SHADOW313_AI_MODEL=mistral:7b
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD ["python", "-c", "import shadow313; print('ok')"]
 
-EXPOSE 7313 7314
+EXPOSE 8313
 
 ENTRYPOINT ["shadow313"]
 CMD ["--help"]
