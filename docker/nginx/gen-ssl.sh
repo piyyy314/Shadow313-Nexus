@@ -19,7 +19,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=CA/ST=Ontario/L=Ottawa/O=Shadow313 NEXUS/CN=localhost" \
     -addext "subjectAltName=DNS:localhost,DNS:shadow313.local,IP:127.0.0.1" \
     2>/dev/null
-
+chmod 644 "$CERT" "$KEY"
 echo "✅ SSL cert generated: $CERT"
 echo "   Valid for: localhost, shadow313.local, 127.0.0.1"
 echo "   Expires:   365 days"
