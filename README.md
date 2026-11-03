@@ -162,6 +162,7 @@ docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.
 
 ### Docker Compose (full stack)
 ```bash
+sh docker/nginx/gen-ssl.sh
 docker-compose up -d
 # Dashboard: http://localhost:7313
 # Mobile API: http://localhost:7314
