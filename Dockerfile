@@ -68,7 +68,7 @@ RUN apt-get update -o Acquire::Retries=3 \
 RUN apt-get update -o Acquire::Retries=3 && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Refresh pip and setuptools (pip bundles urllib3 and msgpack)
-RUN pip install --no-cache-dir --upgrade pip setuptools
+RUN pip install --no-cache-dir --upgrade pip==26.2.2 setuptools==80.9.0
 
 # Clear proxy env after apt (don't leak into runtime)
 ENV http_proxy="" https_proxy=""
