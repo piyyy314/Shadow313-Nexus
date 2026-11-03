@@ -2,9 +2,10 @@
 # Generate self-signed SSL cert for local Shadow313 NEXUS dev
 # For production: replace with Let's Encrypt or your own cert
 
-SSL_DIR="$(dirname "$0")"
+SSL_DIR="$(dirname "$0")/ssl"
 CERT="$SSL_DIR/shadow313.crt"
 KEY="$SSL_DIR/shadow313.key"
+mkdir -p "$SSL_DIR"
 
 if [ -f "$CERT" ] && [ -f "$KEY" ]; then
     echo "✅ SSL cert already exists — skipping generation"
