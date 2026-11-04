@@ -1,0 +1,99 @@
+# Copy to .github/workflows/cross-platform-wheel.yml to activate (see docs).
+name: Installed Wheel Compatibility
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wheel-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: '1'
+
+jobs:
+  build:
+    name: Build once
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build twine
+      - run: python -m build --outdir wheel-dist
+      - run: python -m twine check wheel-dist/*
+      - run: python scripts/check-wheel.py wheel-dist --write-manifest
+      - uses: actions/upload-artifact@v7
+        with:
+          name: exact-wheel-${{ github.sha }}
+          path: wheel-dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  installed-wheel:
+    name: Wheel (${{ matrix.os }}, Python ${{ matrix.python }}, ${{ matrix.profile }})
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-15]
+        python: ['3.11', '3.12']
+        profile: [core, api]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: exact-wheel-${{ github.sha }}
+          path: wheel-dist
+      - name: Verify exact wheel outside checkout in unique environment
+        run: python scripts/check-wheel.py wheel-dist --profile ${{ matrix.profile }}
+
+  native-signing:
+    name: Linux native signing (Python ${{ matrix.python }})
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: exact-wheel-${{ github.sha }}
+          path: wheel-dist
+      - run: python scripts/check-wheel.py wheel-dist --profile pqc
+
+  wheel-gate:
+    name: Installed wheel gate
+    if: always()
+    needs: [build, installed-wheel, native-signing]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail if any required job failed, skipped, or was cancelled
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python - <<'PY'
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          assert all(job['result'] == 'success' for job in results.values()), results
+          PY
