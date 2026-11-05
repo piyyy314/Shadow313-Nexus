@@ -2,9 +2,10 @@
 # Generate self-signed SSL cert for local Shadow313 NEXUS dev
 # For production: replace with Let's Encrypt or your own cert
 
-SSL_DIR="$(dirname "$0")"
+SSL_DIR="$(dirname "$0")/ssl"
 CERT="$SSL_DIR/shadow313.crt"
 KEY="$SSL_DIR/shadow313.key"
+mkdir -p "$SSL_DIR"
 
 if [ -f "$CERT" ] && [ -f "$KEY" ]; then
     echo "✅ SSL cert already exists — skipping generation"
@@ -18,7 +19,8 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=CA/ST=Ontario/L=Ottawa/O=Shadow313 NEXUS/CN=localhost" \
     -addext "subjectAltName=DNS:localhost,DNS:shadow313.local,IP:127.0.0.1" \
     2>/dev/null
-
+chmod 644 "$CERT"
+chmod 600 "$KEY"
 echo "✅ SSL cert generated: $CERT"
 echo "   Valid for: localhost, shadow313.local, 127.0.0.1"
 echo "   Expires:   365 days"
