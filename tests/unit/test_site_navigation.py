@@ -32,6 +32,39 @@ class Page(HTMLParser):
 
 
 class SiteNavigationTests(unittest.TestCase):
+    def test_html_pages_do_not_publish_fixed_test_scores(self):
+        fixed_score = re.compile(
+            r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*tests?\s+"
+            r"(?:GREEN|passing|passed|included|all passing)\b",
+            re.IGNORECASE,
+        )
+        for path in ROOT.rglob("*.html"):
+            if ".git" in path.parts or "public-site" in path.parts:
+                continue
+            text = path.read_text()
+            with self.subTest(page=path.relative_to(ROOT)):
+                self.assertIsNone(fixed_score.search(text))
+                self.assertNotRegex(text, r"tests_passing\s*:\s*[\d,]+")
+
+    def test_dashboard_export_scripts_are_valid_javascript(self):
+        dashboard_pages = (
+            ROOT / 'docs/shadow313-nexus-dashboard.html',
+            ROOT / 'local_bundle/dashboard.html',
+            ROOT / 'local_bundle/command-center.html',
+        )
+        script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
+        for path in dashboard_pages:
+            scripts = [
+                code for attrs, code in script_pattern.findall(path.read_text())
+                if code.strip() and not re.search(r'type=["\']application/json', attrs, re.I)
+            ]
+            self.assertTrue(scripts, path)
+            for index, code in enumerate(scripts):
+                result = subprocess.run(
+                    ['node', '--check', '-'], input=code, capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, f'{path}:{index}: {result.stderr}')
+
     def test_one_shared_primary_nav_without_injected_menus(self):
         for path in pages():
             with self.subTest(page=path.name):
@@ -67,6 +100,17 @@ class SiteNavigationTests(unittest.TestCase):
                 with self.subTest(page=path.name, link=href):
                     self.assertTrue(dest.is_file() or (dest / 'index.html').is_file(), target)
 
+    def test_local_bundle_internal_links_resolve_offline(self):
+        bundle = ROOT / 'local_bundle'
+        for path in bundle.glob('*.html'):
+            for href in Page(path.read_text()).links:
+                url = urlsplit(href)
+                if url.scheme or url.netloc or href.startswith('#'):
+                    continue
+                target = (bundle / url.path.lstrip('/')) if url.path.startswith('/') else path.parent / url.path
+                with self.subTest(page=path.name, link=href):
+                    self.assertTrue(target.is_file(), href)
+
     def test_links_do_not_send_visitors_to_github_pages(self):
         for path in pages() + [ROOT / 'index.html', ROOT / 'sentinelos/index.html']:
             for href in Page(path.read_text()).links:
@@ -95,6 +139,10 @@ class SiteNavigationTests(unittest.TestCase):
         routes = json.loads((ROOT / 'vercel.json').read_text())['rewrites']
         for source in ('/docs', '/docs/'):
             self.assertIn({'source': source, 'destination': '/docs/index.html'}, routes)
+        self.assertIn(
+            {'source': '/tools/recon', 'destination': '/docs/recon.html'},
+            routes,
+        )
 
     def test_shared_css_is_scoped_and_mobile_navigation_is_available(self):
         css = (ROOT / 'assets/site-nav.css').read_text()

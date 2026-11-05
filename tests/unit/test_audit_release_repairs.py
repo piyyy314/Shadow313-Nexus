@@ -65,10 +65,22 @@ def test_main_api_auth_unavailable_routes_and_lolbin():
     for path in ("/api/mobile/scan", "/api/scan/recon", "/api/scan/vuln"):
         assert c.post(path, json={}).status_code == 401
         r = c.post(path, json={}, headers={"X-API-Key": "test-fixture"})
-        assert r.status_code == 503 and "queued" not in r.text
-    for path in ("/api/audit/chain", "/api/events"):
+        assert r.status_code == 200
+        assert r.json()["status"] == "unavailable"
+    for path in (
+        "/api/mobile/status",
+        "/api/mobile/alerts",
+        "/api/mobile/findings",
+        "/api/mobile/sessions",
+        "/api/events",
+        "/api/audit",
+        "/api/audit/chain",
+        "/api/stream",
+    ):
         assert c.get(path).status_code == 401
-        assert c.get(path, headers={"X-API-Key": "test-fixture"}).status_code == 503
+        r = c.get(path, headers={"X-API-Key": "test-fixture"})
+        assert r.status_code == 200
+        assert r.json()["status"] == "unavailable"
     r = c.post(
         "/api/detect",
         json={

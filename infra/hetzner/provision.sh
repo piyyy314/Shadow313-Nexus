@@ -228,7 +228,7 @@ chmod 600 /etc/wireguard/wg0.conf
 # Client config (save for download)
 cat > /etc/wireguard/client_shadow313.conf << EOF
 # Shadow313 NEXUS — WireGuard Client Config
-# Copy this to your laptop: C:\Users\shiatoali\shadow313-nexus\wireguard\wg0.conf
+# Copy this config to your workstation: shadow313-nexus/wireguard/wg0.conf
 
 [Interface]
 Address = ${WG_CLIENT_IP}/24

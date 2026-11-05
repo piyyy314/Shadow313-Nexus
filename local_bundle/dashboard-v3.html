@@ -187,7 +187,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-12">
 <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
-<div class="kpi"><div class="kpi-num green">2,071</div><div class="kpi-lbl">Tests</div><div class="kpi-sub">All passing</div></div>
+<div class="kpi"><div class="kpi-num green">LIVE</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
 <div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
 <div class="kpi"><div class="kpi-num green">12/14</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
 <div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
@@ -443,7 +443,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
 <div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
 <div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
-<div class="t-green">[TEST] 2,071/2,071 tests passing — zero regressions</div>
+<div class="t-green">[TEST] Test status: see live CI results</div>
 <div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
 <div class="t-green">[CRQC] 12/14 items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
 <div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
@@ -486,8 +486,8 @@ function show(id,btn){
 // Terminal
 const COMMANDS={
   'help':'Available: status, tests, crqc, pqc, vsat, cmmc, clear',
-  'status':'[GREEN] Posture: CRIT=0 HIGH=0 | Tests: 2071/2071 | CRQC: 12/14 closed',
-  'tests':'[PASS] 2,071/2,071 tests passing — zero regressions — posture GREEN',
+  'status':'Posture: CRIT=0 HIGH=0 | Test status: see live CI results | CRQC: 12/14 closed',
+  'tests':'[PASS] Test status: see live CI results',
   'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
   'pqc':'SLH-DSA-SHAKE-128f (FIPS 205) | ML-DSA-65 proxy | ML-KEM-768 | AES-256-GCM | Argon2id | SHA3-256/512',
   'vsat':'7 CRITICAL findings: Telnet/FTP/HTTP/CVE-2026-3392/Firmware/UART/QKD-QBER-40%',
