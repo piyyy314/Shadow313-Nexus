@@ -369,7 +369,7 @@
         <div class="topic-row"><span class="topic-name">313-BIND chain</span><span class="topic-status status-ok">✅ INTACT</span></div>
         <div class="topic-row"><span class="topic-name">liboqs ML-DSA</span><span class="topic-status status-warn">⚠ DW-1 Q4 2026</span></div>
         <div class="topic-row"><span class="topic-name">HSM key storage</span><span class="topic-status status-warn">⚠ DW-2 Q1 2027</span></div>
-        <div class="topic-row"><span class="topic-name">Tests: 3,419</span><span class="topic-status status-ok">✅ GREEN</span></div>
+        <div class="topic-row"><span class="topic-name">Test status</span><span class="topic-status status-ok"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View live results</a></span></div>
       </div>
     </div>
   </div>
@@ -1346,7 +1346,7 @@ function downloadExport() {
     attck_heatmap: HEATMAP_DATA,
     evidence_receipts: 50,
     platform_status: 'OPERATIONAL',
-    tests_passing: 3419,
+    test_status: 'See live CI results',
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');

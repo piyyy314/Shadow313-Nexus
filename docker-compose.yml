@@ -132,7 +132,7 @@ services:
     - OLLAMA_BASE_URL=http://ollama:11434
     - WEBUI_AUTH=true
     - WEBUI_NAME=Shadow313 NEXUS AI
-    - WEBUI_URL=http://localhost:3000
+    - WEBUI_URL=${WEBUI_URL:-http://localhost:8080}
     - DEFAULT_MODELS=matarmohamad313/shadow313-nexus
     - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?WEBUI_SECRET_KEY must be set}
     - SCARF_NO_ANALYTICS=true
