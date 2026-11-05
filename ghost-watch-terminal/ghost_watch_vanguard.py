@@ -4,7 +4,7 @@ Gorgon anti-tamper + Lazarus mesh-net resilience
 """
 from __future__ import annotations
 import sys, os, json, hashlib
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from ghost_watch_terminal.src.core.engine import GhostWatchEngine, _now_iso
 

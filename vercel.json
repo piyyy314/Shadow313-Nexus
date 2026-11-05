@@ -86,6 +86,10 @@
       "destination": "/tools/index.html"
     },
     {
+      "source": "/tools/recon",
+      "destination": "/docs/recon.html"
+    },
+    {
       "source": "/tools/aegis",
       "destination": "/tools/aegis-nexus.html"
     },

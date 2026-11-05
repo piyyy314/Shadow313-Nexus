@@ -220,13 +220,11 @@ else
         fail "Push failed."
         echo ""
         warn "Common fixes:"
-        info "  1. HTTPS with token:"
-        info "     git remote set-url origin https://\$GITHUB_TOKEN@github.com/piyyy314/Shadow313-Nexus.git"
-        info "  2. SSH key:"
-        info "     git remote set-url origin git@github.com:piyyy314/Shadow313-Nexus.git"
-        info "  3. GitHub CLI:"
+        info "  1. GitHub CLI:"
         info "     gh auth login"
         info "     gh auth setup-git"
+        info "  2. SSH key:"
+        info "     git remote set-url origin git@github.com:piyyy314/Shadow313-Nexus.git"
         exit 1
     fi
     ok "Pushed successfully to $REMOTE/$BRANCH_NAME"
