@@ -10,6 +10,8 @@ until ollama list >/dev/null 2>&1; do
 done
 ollama pull matarmohamad313/shadow313-nexus
 ollama pull mistral:7b
+ollama pull nomic-embed-text:latest
 ollama show matarmohamad313/shadow313-nexus >/dev/null
 ollama show mistral:7b >/dev/null
+ollama show nomic-embed-text:latest >/dev/null
 echo "Required models verified by Ollama CLI"

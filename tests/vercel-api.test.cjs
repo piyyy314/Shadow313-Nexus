@@ -23,7 +23,7 @@ test('health is public and status discloses backend availability', async () => {
   assert.equal(response.headers.get('cache-control'), 'no-store');
 });
 
-test('unimplemented operations never fabricate clean scans or receipts', async () => {
+test('unavailable operations use HTTP 200 without fabricating results', async () => {
   const endpoints = [
     ['POST', '/api/detect'], ['POST', '/api/webshell/scan'], ['POST', '/api/bind/create'],
     ['GET', '/api/bind'], ['GET', '/api/bind/313-FAKE'], ['GET', '/api/modules'],
@@ -31,14 +31,16 @@ test('unimplemented operations never fabricate clean scans or receipts', async (
     ['GET', '/api/mobile/status'], ['GET', '/api/mobile/alerts'],
     ['GET', '/api/mobile/findings'], ['GET', '/api/mobile/sessions'],
     ['GET', '/api/audit'], ['GET', '/api/audit/chain'], ['GET', '/api/stream'],
+    ['GET', '/api/events'],
     ['POST', '/api/webhooks/example'], ['POST', '/api/scan/recon'],
     ['POST', '/api/scan/vuln'], ['GET', '/api/docs'], ['GET', '/api/openapi.json'],
     ['POST', '/api/chat'],
   ];
   for (const [method, path] of endpoints) {
     const response = await request(path, method);
-    assert.equal(response.status, 503, `${method} ${path}`);
-    assert.equal(response.body.error, 'backend_unavailable');
+    assert.equal(response.status, 200, `${method} ${path}`);
+    assert.equal(response.body.status, 'unavailable');
+    assert.equal(response.body.backend_connected, false);
     assert.equal(response.body.detected, undefined);
     assert.equal(response.body.bind_id, undefined);
   }

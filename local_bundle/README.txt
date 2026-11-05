@@ -4,7 +4,7 @@
 
 1. **Extract** this folder anywhere on your computer
 2. **Open** `index.html` in your browser (double-click it)
-3. **Navigate** using the top nav bar — all links work offline
+3. **Navigate** using the top nav bar — internal page links work offline
 
 ## Files Included
 
@@ -43,7 +43,7 @@
 - `docs-pqc.html` — PQC guide
 
 ## Notes
-- All links use relative paths (./filename.html) — works offline
+- Internal page links use relative paths (./filename.html) — works offline
 - Google Fonts loads from CDN (requires internet for fonts, but pages work without it)
 - Dashboard data is embedded — no server needed
 - GitHub link opens github.com/piyyy314/Shadow313-Nexus in a new tab
