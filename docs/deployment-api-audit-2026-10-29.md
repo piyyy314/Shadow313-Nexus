@@ -58,8 +58,9 @@ The API/layout tests below were run locally, not by CI. Do not merge before this
    with no added dependency.
 6. **Website API fabricates successful backend work.** The previous Node handler returned clean
    webshell verdicts, negative detections, nonexistent receipts and queued scans without running
-   the Python backend. These operations now explicitly return JSON HTTP 503; unknown routes
-   return JSON 404 and incorrect methods return 405. Health/status remain available and disclose
+   the Python backend.    These operations now return HTTP 200 with an explicit unavailable status; they do not
+   fabricate results. Unknown routes return JSON 404 and incorrect methods return 405.
+   Health/status remain available and disclose
    that the backend is not connected. Request bodies are no longer logged by the webhook stub.
    This intentionally changes placeholder API behavior; it does not implement the backend.
 7. **SentinelOS fetches missing, blocked circuit files.** Three requests targeted
@@ -67,7 +68,7 @@ The API/layout tests below were run locally, not by CI. Do not merge before this
    deliberately blocked. It now uses the already embedded QASM examples without those requests.
 8. **Public API contract implies a working hosted backend.** The advertised production server
    was removed from `api/openapi.yaml`; the local server remains. The API documentation now
-   states the website/backend distinction and the HTTP 503 behavior.
+   states the website/backend distinction and the explicit unavailable response behavior.
 
 ## Remaining gaps / decisions
 
