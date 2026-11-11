@@ -91,3 +91,6 @@ public-site/
 
 # Local TLS private keys
 docker/nginx/ssl/*.key
+
+docker/nginx/ssl/shadow313.key
+scripts/secret-fixtures.json
