@@ -70,9 +70,11 @@ for the authoritative status of a specific commit.
 
 The default AI backend is local Ollama at `http://localhost:11434`. Select it
 with `SHADOW313_AI_BACKEND=ollama`, and configure `SHADOW313_AI_MODEL` and
-`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway
-requires `AI_GATEWAY_API_KEY`; `OPENAI_API_KEY` is used only for the OpenAI
-backend and is not reused for the gateway.
+`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway uses `AI_GATEWAY_API_KEY` and defaults
+to `https://ai-gateway.vercel.sh/v1`; the OpenAI backend defaults to
+`https://api.openai.com/v1` and uses `OPENAI_API_KEY`. Set
+`SHADOW313_AI_MODEL` to a model identifier supported by the selected provider.
+The Docker Compose stack passes these settings through to both the CLI and API.
 
 The Python API listens on port `8313` when run in Docker Compose. Compose keeps
 the API internal to its Docker network; the static site adapter does not host
