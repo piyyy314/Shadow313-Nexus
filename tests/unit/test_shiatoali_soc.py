@@ -154,3 +154,33 @@ def test_case_rejects_invalid_status_and_unknown_alert(tmp_path):
         raise AssertionError("expected invalid status validation")
     except ValueError as exc:
         assert "invalid case status" in str(exc)
+
+def test_sqlalchemy_adapter_supports_parameterized_idempotent_writes():
+    from sqlalchemy import create_engine, text
+
+    from shadow313.v4.shiatoali.service import _SQLAlchemyConnection
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    with engine.begin() as connection:
+        connection.execute(
+            text("CREATE TABLE adapter_probe (event_id TEXT PRIMARY KEY, message TEXT)")
+        )
+        adapter = _SQLAlchemyConnection(connection, text)
+        first = adapter.execute(
+            "INSERT OR IGNORE INTO adapter_probe (event_id, message) VALUES (?, ?)",
+            ("probe-1", "first"),
+        )
+        duplicate = adapter.execute(
+            "INSERT OR IGNORE INTO adapter_probe (event_id, message) VALUES (?, ?)",
+            ("probe-1", "duplicate"),
+        )
+        row = adapter.execute(
+            "SELECT event_id, message FROM adapter_probe WHERE event_id = ?",
+            ("probe-1",),
+        ).fetchone()
+
+    assert first.rowcount == 1
+    assert duplicate.rowcount == 0
+    assert row["event_id"] == "probe-1"
+    assert row[1] == "first"
+    engine.dispose()
