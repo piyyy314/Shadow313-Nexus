@@ -134,6 +134,7 @@ def create_app(api_key: str | None = None) -> FastAPI:
             },
             # These describe the HTTP API surface, not local CLI module availability.
             "api_endpoints": {
+                "chat": "requires_configured_ai_backend",
                 "recon_scan": "unavailable",
                 "vulnerability_scan": "unavailable",
                 "detection": "available",
