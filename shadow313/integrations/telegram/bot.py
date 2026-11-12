@@ -10,7 +10,10 @@ to a Telegram chat. Runs as a lightweight asyncio service inside Docker.
 Environment variables (set in docker-compose.yml or .env):
   TELEGRAM_BOT_TOKEN      — Bot token from @BotFather
   TELEGRAM_CHAT_ID        — Target chat/channel ID (e.g. -1001234567890)
-  SHADOW313_API_URL        — FastAPI event bus (default: http://shadow313-api:8000)
+  SHADOW313_API_URL        — FastAPI event bus (default: http://shadow313-api:8313)
+  SHADOW313_AI_BACKEND     — ollama | openai | gateway | disabled
+  SHADOW313_AI_ENDPOINT    — Optional custom OpenAI-compatible endpoint
+  SHADOW313_AI_MODEL       — Model name for the selected backend
   TELEGRAM_MIN_SEVERITY   — Minimum severity: LOW|MEDIUM|HIGH|CRITICAL (default: HIGH)
   TELEGRAM_POLL_INTERVAL  — Seconds between polls (default: 10)
 
@@ -19,6 +22,7 @@ Quick start:
   2. Add bot to your channel, get chat ID via @userinfobot
   3. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
   4. docker compose --profile telegram up -d telegram-bot
+  5. The bot polls authenticated ShiatoAli SOC alerts; event ingestion must be active.
 """
 
 import asyncio
@@ -39,6 +43,11 @@ CHAT_ID         = os.getenv("TELEGRAM_CHAT_ID", "")
 API_URL         = os.getenv("SHADOW313_API_URL", "")
 OLLAMA_URL      = os.getenv("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL    = os.getenv("OLLAMA_MODEL", "matarmohamad313/shadow313-nexus")
+AI_BACKEND      = os.getenv("SHADOW313_AI_BACKEND", "ollama")
+AI_ENDPOINT     = os.getenv("SHADOW313_AI_ENDPOINT", OLLAMA_URL)
+AI_MODEL        = os.getenv("SHADOW313_AI_MODEL", OLLAMA_MODEL)
+PROCESSED_ALERT_IDS: set[str] = set()
+EVENT_PROVIDER_WARNED = False
 MIN_SEVERITY    = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
 POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
 
@@ -67,21 +76,32 @@ def _tg_request(method: str, payload: dict) -> Optional[dict]:
         return None
 
 
-def _ollama_generate(prompt: str) -> str:
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False,
-    }).encode()
-    req = urllib.request.Request(
-        f"{OLLAMA_URL.rstrip('/')}/api/generate",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
+def _ai_engine():
+    """Build the same configured AI engine used by the main Python API."""
+    from shadow313.core.ai_engine import AIEngine
+
+    return AIEngine({
+        "backend": AI_BACKEND,
+        "model": AI_MODEL,
+        "endpoint": AI_ENDPOINT,
+        "timeout": 120,
+    })
+
+
+def _ai_generate(prompt: str) -> str:
+    engine = _ai_engine()
+    if not engine.is_available():
+        raise RuntimeError(f"{engine.backend} is unavailable or missing provider credentials")
+    answer = engine.chat(
+        prompt,
+        system_prompt=(
+            "You are SATExpert, a defensive satellite and VSAT security assistant. "
+            "Give concise, evidence-based guidance and flag uncertainty."
+        ),
     )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        data = json.loads(resp.read())
-    return str(data.get("response", "No response from Ollama.")).strip()
+    if answer.startswith("[AI error"):
+        raise RuntimeError("Configured AI provider request failed")
+    return answer
 
 
 def _authorized(chat_id: object) -> bool:
@@ -103,22 +123,30 @@ def _handle_update(update: dict) -> None:
         return
 
     if text == "/help":
-        _send_command_reply(chat_id, "<b>SATExpert commands</b>\n/help — show commands\n/status — check Ollama\n/ask &lt;question&gt; — ask the local model")
+        _send_command_reply(chat_id, "<b>SATExpert commands</b>\n/help — show commands\n/status — check configured AI backend\n/ask &lt;question&gt; — ask the configured model")
     elif text == "/status":
         try:
-            with urllib.request.urlopen(f"{OLLAMA_URL.rstrip('/')}/api/tags", timeout=10) as resp:
-                data = json.loads(resp.read())
-            models = ", ".join(m.get("name", "unknown") for m in data.get("models", [])) or "none"
-            _send_command_reply(chat_id, f"Ollama online. Models: <code>{html.escape(models)}</code>")
+            engine = _ai_engine()
+            if not engine.is_available():
+                raise RuntimeError("backend is unavailable or provider credentials are missing")
+            if engine.backend == "ollama":
+                models = ", ".join(engine.list_models()) or "none"
+                detail = f"Ollama online. Models: {html.escape(models)}"
+            else:
+                detail = (
+                    f"{html.escape(engine.backend)} credentials configured. "
+                    "Provider connectivity is checked when a request is sent."
+                )
+            _send_command_reply(chat_id, f"AI backend: <code>{detail}</code>")
         except Exception as exc:
-            _send_command_reply(chat_id, f"Ollama unavailable: <code>{html.escape(str(exc))}</code>")
+            _send_command_reply(chat_id, f"AI backend unavailable: <code>{html.escape(str(exc))}</code>")
     elif text.startswith("/ask "):
         question = text[5:].strip()
         if not question:
             _send_command_reply(chat_id, "Usage: /ask &lt;question&gt;")
             return
         try:
-            answer = _ollama_generate(
+            answer = _ai_generate(
                 "You are SATExpert, a defensive satellite and VSAT security assistant. "
                 "Give concise, evidence-based guidance and flag uncertainty.\n\n" + question
             )
@@ -169,25 +197,65 @@ def send_alert(event: dict) -> None:
     result = send_message("\n".join(lines))
     if result and result.get("ok"):
         logger.info("Alert sent: %s — %s", severity, str(message)[:60])
-    else:
-        logger.warning("Failed to send alert: %s", str(message)[:60])
+        return True
+    logger.warning("Failed to send alert: %s", str(message)[:60])
+    return False
 
 
-def _fetch_events(since_ts: float) -> list:
+def _fetch_events(since_ts: float) -> list[dict]:
+    """Fetch new ShiatoAli alerts; the generic /api/events route is not connected."""
+    global EVENT_PROVIDER_WARNED
     if not API_URL:
         return []
-    url = f"{API_URL.rstrip('/')}/api/events?since={since_ts}&limit=50"
+    url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?limit=500"
     key = os.environ.get("SHADOW313_API_KEY", "")
     if not key:
-        logger.warning("Event polling disabled: configure SHADOW313_API_KEY and an event provider")
+        if not EVENT_PROVIDER_WARNED:
+            logger.warning("Alert polling disabled: configure SHADOW313_API_KEY")
+            EVENT_PROVIDER_WARNED = True
         return []
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "X-API-Key": key})
+    req = urllib.request.Request(
+        url,
+        headers={"Accept": "application/json", "X-API-Key": key},
+    )
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read())
-            return data if isinstance(data, list) else data.get("events", [])
-    except Exception as e:
-        logger.debug("Event poll failed (API may be starting): %s", e)
+        if isinstance(data, dict) and data.get("status") == "unavailable":
+            if not EVENT_PROVIDER_WARNED:
+                logger.warning("ShiatoAli alert provider is unavailable")
+                EVENT_PROVIDER_WARNED = True
+            return []
+        items = data.get("items", []) if isinstance(data, dict) else []
+        events = []
+        for alert in items:
+            alert_id = str(alert.get("alert_id", ""))
+            created_at = str(alert.get("created_at", ""))
+            try:
+                created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                if created.tzinfo is None:
+                    created = created.replace(tzinfo=timezone.utc)
+                created_unix = created.timestamp()
+            except ValueError:
+                continue
+            if created_unix < since_ts or (alert_id and alert_id in PROCESSED_ALERT_IDS):
+                continue
+            host = str(alert.get("host") or "unknown host")
+            title = str(alert.get("title") or "Security alert")
+            events.append({
+                "id": alert_id,
+                "alert_id": alert_id,
+                "severity": str(alert.get("severity", "LOW")).upper(),
+                "source": "ShiatoAli SOC",
+                "message": f"{title} on {host} (risk {alert.get('risk_score', 'n/a')})",
+                "timestamp": created_at,
+                "timestamp_unix": created_unix,
+                "technique": alert.get("technique", ""),
+                "host": host,
+            })
+        return events
+    except Exception as exc:
+        logger.debug("ShiatoAli alert poll failed (API may be starting): %s", exc)
         return []
 
 
@@ -233,11 +301,14 @@ async def run_bot() -> None:
                 _handle_update(update)
             events = _fetch_events(since_ts) if API_URL else []
             for event in events:
+                alert_id = str(event.get("alert_id") or event.get("id") or "")
+                if alert_id and alert_id in PROCESSED_ALERT_IDS:
+                    continue
+                delivered = True
                 if _severity_passes(event):
-                    send_alert(event)
-                event_ts = event.get("ts", event.get("timestamp_unix", since_ts))
-                if isinstance(event_ts, (int, float)):
-                    since_ts = max(since_ts, event_ts)
+                    delivered = send_alert(event)
+                if delivered and alert_id:
+                    PROCESSED_ALERT_IDS.add(alert_id)
         except Exception as e:
             logger.error("Polling loop error: %s", e)
         await asyncio.sleep(POLL_INTERVAL)
