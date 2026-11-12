@@ -261,10 +261,16 @@ class DashboardModule:
         async def chat(body: dict):
             question = body.get("question", "")
             if not isinstance(question, str) or not question.strip():
-                return JSONResponse({"error": "A non-empty question is required"}, status_code=400)
+                return JSONResponse(
+                    {"error": "A non-empty question is required"},
+                    status_code=400,
+                )
             question = question.strip()
             if len(question) > 20000:
-                return JSONResponse({"error": "Question exceeds the 20000-character limit"}, status_code=413)
+                return JSONResponse(
+                    {"error": "Question exceeds the 20000-character limit"},
+                    status_code=413,
+                )
             rag = kernel.get_module("rag")
             if rag:
                 answer = rag.engine.ask(question)
