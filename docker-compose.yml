@@ -183,6 +183,7 @@ services:
     - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
     - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
     - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - AI_GATEWAY_ENDPOINT=${AI_GATEWAY_ENDPOINT:-https://ai-gateway.vercel.sh/v1}
     - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_OUTPUT=rich
     depends_on:
@@ -230,6 +231,7 @@ services:
     - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
     - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
     - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - AI_GATEWAY_ENDPOINT=${AI_GATEWAY_ENDPOINT:-https://ai-gateway.vercel.sh/v1}
     - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
     - SHADOW313_ENV=production
