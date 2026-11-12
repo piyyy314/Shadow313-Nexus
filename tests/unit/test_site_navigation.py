@@ -75,6 +75,8 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertIn(endpoint, text)
         self.assertIn('"X-API-Key":apiKey', text)
         self.assertIn('credentials:"omit"', text)
+        self.assertIn("Required: the static website does not host the SOC backend.", text)
+        self.assertNotIn('$("apiBase").value=window.location.origin', text)
         self.assertNotIn('localStorage', text)
         self.assertNotIn('sessionStorage', text)
 
