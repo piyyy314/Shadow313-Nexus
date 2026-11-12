@@ -40,3 +40,5 @@ def test_static_site_publishes_shiatoali_console():
         (ROOT / "site/public-files.json").read_text(encoding="utf-8")
     )
     assert "docs/shiatoali-console.html" in public_files
+    build_script = (ROOT / "scripts/build-public-site.cjs").read_text(encoding="utf-8")
+    assert "relative !== 'docs/shiatoali-console.html'" in build_script
