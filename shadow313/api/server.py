@@ -115,6 +115,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
     def verify_api_key(request: Request):
         authorize(request, api_key)
 
+    # ShiatoAli SOC vertical slice: durable events + defensive alert generation.
+    from shadow313.v4.shiatoali.router import build_router as build_shiatoali_router
+    app.include_router(build_shiatoali_router(verify_api_key))
+
     install_limits(app)
 
     # ── Routes ────────────────────────────────────────────────────
