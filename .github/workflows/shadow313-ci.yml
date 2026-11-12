@@ -75,6 +75,38 @@ jobs:
         continue-on-error: true
 
 # ── Security Self-Scan ────────────────────────────────────────────────────────
+  shiatoali-postgres:
+    name: ShiatoAli PostgreSQL Integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: shiatoali_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d shiatoali_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      SHIAATOALI_DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/shiatoali_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install PostgreSQL test dependencies
+        run: pip install -e ".[dev]"
+      - name: Apply ShiatoAli schema migration
+        run: alembic -c alembic-shiatoali.ini upgrade head
+      - name: Run real PostgreSQL integration tests
+        run: pytest tests/integration/test_shiatoali_postgres.py -q --tb=short
+
   security:
     name: Security Scan
     runs-on: ubuntu-latest
