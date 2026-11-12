@@ -20,6 +20,67 @@ from pathlib import Path
 from typing import Any
 
 
+class _CompatRow(dict[str, Any]):
+    """Mapping row that also supports SQLite-style integer indexing."""
+
+    def __getitem__(self, key: str | int) -> Any:
+        if isinstance(key, int):
+            return tuple(self.values())[key]
+        return super().__getitem__(key)
+
+
+class _CompatResult:
+    def __init__(self, result: Any) -> None:
+        self._result = result
+        self.rowcount = result.rowcount
+
+    def fetchone(self) -> _CompatRow | None:
+        row = self._result.fetchone()
+        return _CompatRow(row._mapping) if row is not None else None
+
+    def fetchall(self) -> list[_CompatRow]:
+        return [_CompatRow(row._mapping) for row in self._result.fetchall()]
+
+
+class _EmptyResult:
+    rowcount = 0
+
+    @staticmethod
+    def fetchone() -> None:
+        return None
+
+    @staticmethod
+    def fetchall() -> list[Any]:
+        return []
+
+
+class _SQLAlchemyConnection:
+    """Compatibility adapter for parameterized SQL shared by both stores."""
+
+    def __init__(self, connection: Any, text_factory: Any) -> None:
+        self._connection = connection
+        self._text = text_factory
+
+    def execute(self, statement: str, parameters: tuple[Any, ...] = ()) -> _CompatResult:
+        if statement.lstrip().upper().startswith("PRAGMA "):
+            return _CompatResult(_EmptyResult())
+        sql = statement.strip()
+        ignore_conflict = bool(re.match(r"INSERT\\s+OR\\s+IGNORE\\s+INTO", sql, re.I))
+        if ignore_conflict:
+            sql = re.sub(
+                r"INSERT\\s+OR\\s+IGNORE\\s+INTO",
+                "INSERT INTO",
+                sql,
+                count=1,
+                flags=re.I,
+            )
+            sql = sql.rstrip().rstrip(";") + " ON CONFLICT DO NOTHING"
+        values = {f"p{index}": value for index, value in enumerate(parameters)}
+        index = iter(range(len(parameters)))
+        sql = re.sub(r"\\?", lambda _: f":p{next(index)}", sql)
+        return _CompatResult(self._connection.execute(self._text(sql), values))
+
+
 @dataclass(frozen=True)
 class EventInput:
     source: str
@@ -85,6 +146,27 @@ class ShiatoAliStore:
     """SQLite-backed event and alert store with idempotent event ingestion."""
 
     def __init__(self, database_path: str | Path | None = None) -> None:
+        configured_url = os.getenv("SHIAATOALI_DATABASE_URL")
+        self._engine: Any | None = None
+        if configured_url:
+            if not configured_url.startswith("postgresql+psycopg://"):
+                raise ValueError(
+                    "SHIAATOALI_DATABASE_URL must use postgresql+psycopg://"
+                )
+            try:
+                from sqlalchemy import create_engine, text
+            except ImportError as exc:
+                raise RuntimeError(
+                    "PostgreSQL support requires: pip install -e '.[postgres]'"
+                ) from exc
+            self._engine = create_engine(configured_url, pool_pre_ping=True)
+            self._sql_text = text
+            self.database_path = "<postgresql>"
+            self._memory_uri = None
+            self._memory_anchor = None
+            self._initialize()
+            return
+
         configured = database_path or os.getenv(
             "SHIAATOALI_DB_PATH",
             str(Path.home() / ".shadow313" / "shiatoali.sqlite3"),
@@ -118,7 +200,12 @@ class ShiatoAliStore:
         return connection
 
     @contextmanager
-    def _session(self) -> Iterator[sqlite3.Connection]:
+    def _session(self) -> Iterator[Any]:
+        if self._engine is not None:
+            with self._engine.begin() as connection:
+                yield _SQLAlchemyConnection(connection, self._sql_text)
+            return
+
         db = self._connect()
         try:
             yield db
@@ -130,6 +217,16 @@ class ShiatoAliStore:
             db.close()
 
     def _initialize(self) -> None:
+        if self._engine is not None:
+            from sqlalchemy import inspect
+
+            if not inspect(self._engine).has_table("shiatoali_events"):
+                raise RuntimeError(
+                    "ShiatoAli PostgreSQL schema is missing; run "
+                    "'alembic -c alembic-shiatoali.ini upgrade head' first"
+                )
+            return
+
         with self._session() as db:
             db.execute("PRAGMA journal_mode = WAL")
             db.executescript(
