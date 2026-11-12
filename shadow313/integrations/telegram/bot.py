@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.integrations.telegram.bot
 ────────────────────────────────────
@@ -25,16 +24,18 @@ Quick start:
   5. The bot polls authenticated ShiatoAli SOC alerts; event ingestion must be active.
 """
 
+from __future__ import annotations
+
 import asyncio
 import html
 import json
 import logging
 import os
 import time
-from datetime import datetime, timezone
-from typing import Optional
-import urllib.request
+from datetime import UTC, datetime
+from urllib.parse import urlsplit
 import urllib.error
+import urllib.request
 
 logger = logging.getLogger("shadow313.telegram")
 
@@ -56,7 +57,7 @@ SEVERITY_EMOJI  = {"LOW": "🔵", "MEDIUM": "🟡", "HIGH": "🟠", "CRITICAL": 
 TELEGRAM_API    = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
-def _tg_request(method: str, payload: dict) -> Optional[dict]:
+def _tg_request(method: str, payload: dict) -> dict | None:
     if not BOT_TOKEN:
         logger.warning("TELEGRAM_BOT_TOKEN not set")
         return None
@@ -66,7 +67,7 @@ def _tg_request(method: str, payload: dict) -> Optional[dict]:
                                   headers={"Content-Type": "application/json"},
                                   method="POST")
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
             return json.loads(resp.read())
     except urllib.error.HTTPError as e:
         logger.error("Telegram API %s: %s", e.code, e.read().decode())
@@ -123,7 +124,12 @@ def _handle_update(update: dict) -> None:
         return
 
     if text == "/help":
-        _send_command_reply(chat_id, "<b>SATExpert commands</b>\n/help — show commands\n/status — check configured AI backend\n/ask &lt;question&gt; — ask the configured model")
+        _send_command_reply(
+            chat_id,
+            "<b>SATExpert commands</b>\n/help — show commands\n"
+            "/status — check configured AI backend\n"
+            "/ask &lt;question&gt; — ask the configured model",
+        )
     elif text == "/status":
         try:
             engine = _ai_engine()
@@ -139,7 +145,10 @@ def _handle_update(update: dict) -> None:
                 )
             _send_command_reply(chat_id, f"AI backend: <code>{detail}</code>")
         except Exception as exc:
-            _send_command_reply(chat_id, f"AI backend unavailable: <code>{html.escape(str(exc))}</code>")
+            _send_command_reply(
+                chat_id,
+                f"AI backend unavailable: <code>{html.escape(str(exc))}</code>",
+            )
     elif text.startswith("/ask "):
         question = text[5:].strip()
         if not question:
@@ -152,15 +161,23 @@ def _handle_update(update: dict) -> None:
             )
             _send_command_reply(chat_id, html.escape(answer[:3900]))
         except Exception as exc:
-            _send_command_reply(chat_id, f"SATExpert request failed: <code>{html.escape(str(exc))}</code>")
+            _send_command_reply(
+                chat_id,
+                f"SATExpert request failed: <code>{html.escape(str(exc))}</code>",
+            )
     elif text.startswith("/"):
         _send_command_reply(chat_id, "Unknown command. Use /help.")
 
 
 def _fetch_updates(offset: int) -> list[dict]:
-    result = _tg_request("getUpdates", {"offset": offset, "timeout": 1, "allowed_updates": ["message"]})
+    result = _tg_request(
+        "getUpdates",
+        {"offset": offset, "timeout": 1, "allowed_updates": ["message"]},
+    )
     return result.get("result", []) if result and result.get("ok") else []
-def send_message(text: str, parse_mode: str = "HTML", chat_id: object = None) -> Optional[dict]:
+def send_message(
+    text: str, parse_mode: str = "HTML", chat_id: object = None
+) -> dict | None:
     destination = CHAT_ID if chat_id is None else chat_id
     if not destination:
         logger.warning("Telegram chat ID not set")
@@ -174,11 +191,11 @@ def send_message(text: str, parse_mode: str = "HTML", chat_id: object = None) ->
 
 
 def send_alert(event: dict) -> bool:
-    severity  = event.get("severity", "UNKNOWN").upper()
+    severity  = str(event.get("severity", "UNKNOWN")).upper()
     emoji     = SEVERITY_EMOJI.get(severity, "⚪")
     source    = event.get("source", event.get("module", "NEXUS"))
     message   = event.get("message", event.get("msg", str(event)))
-    ts        = event.get("timestamp", datetime.now(timezone.utc).isoformat())
+    ts        = event.get("timestamp", datetime.now(UTC).isoformat())
     bind_id   = event.get("bind_id", "")
     technique = event.get("technique", event.get("tid", ""))
 
@@ -207,6 +224,10 @@ def _fetch_events(since_ts: float) -> list[dict]:
     global EVENT_PROVIDER_WARNED
     if not API_URL:
         return []
+    parsed_api_url = urlsplit(API_URL)
+    if parsed_api_url.scheme not in {"http", "https"} or not parsed_api_url.hostname:
+        logger.warning("Alert polling disabled: SHADOW313_API_URL must be an HTTP(S) URL")
+        return []
     url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?limit=500"
     key = os.environ.get("SHADOW313_API_KEY", "")
     if not key:
@@ -219,7 +240,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
         headers={"Accept": "application/json", "X-API-Key": key},
     )
     try:
-        with urllib.request.urlopen(req, timeout=8) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:  # nosec B310
             data = json.loads(resp.read())
         if isinstance(data, dict) and data.get("status") == "unavailable":
             if not EVENT_PROVIDER_WARNED:
@@ -229,12 +250,14 @@ def _fetch_events(since_ts: float) -> list[dict]:
         items = data.get("items", []) if isinstance(data, dict) else []
         events = []
         for alert in items:
+            if not isinstance(alert, dict):
+                continue
             alert_id = str(alert.get("alert_id", ""))
             created_at = str(alert.get("created_at", ""))
             try:
                 created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
                 if created.tzinfo is None:
-                    created = created.replace(tzinfo=timezone.utc)
+                    created = created.replace(tzinfo=UTC)
                 created_unix = created.timestamp()
             except ValueError:
                 continue
@@ -260,15 +283,15 @@ def _fetch_events(since_ts: float) -> list[dict]:
 
 
 def _severity_passes(event: dict) -> bool:
-    sev = event.get("severity", "LOW").upper()
+    sev = str(event.get("severity", "LOW")).upper()
     return SEVERITY_ORDER.get(sev, 0) >= SEVERITY_ORDER.get(MIN_SEVERITY, 2)
 
 
 def send_startup_message() -> None:
     text = (
         "⬡ <b>Shadow313 NEXUS Bot Online</b>\n"
-        f"<code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>\n\n"
-        f"Monitoring: <code>{API_URL}</code>\n"
+        f"<code>{datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>\n\n"
+        f"Monitoring: <code>{html.escape(API_URL)}</code>\n"
         f"Min severity: <b>{MIN_SEVERITY}</b>\n"
         f"Poll interval: <b>{POLL_INTERVAL}s</b>\n\n"
         "313-BIND · FIPS 205 · Ottawa, ON, Canada"
