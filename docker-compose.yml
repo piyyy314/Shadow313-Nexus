@@ -294,6 +294,28 @@ services:
           memory: 256M
     profiles:
     - rag
+  nginx-cert-init:
+    image: alpine:3.22
+    container_name: shadow313-nginx-cert-init
+    restart: "no"
+    volumes:
+    - nginx_ssl:/certs
+    entrypoint:
+    - /bin/sh
+    - -ec
+    command:
+    - |
+      apk add --no-cache openssl >/dev/null
+      if [ ! -s /certs/shadow313.crt ] || [ ! -s /certs/shadow313.key ]; then
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+          -keyout /certs/shadow313.key \
+          -out /certs/shadow313.crt \
+          -subj "/C=CA/ST=Ontario/L=Ottawa/O=Shadow313 NEXUS/CN=localhost" \
+          -addext "subjectAltName=DNS:localhost,DNS:shadow313.local,IP:127.0.0.1"
+      fi
+      chown 101:101 /certs/shadow313.crt /certs/shadow313.key
+      chmod 644 /certs/shadow313.crt
+      chmod 640 /certs/shadow313.key
   nginx:
     security_opt:
     - no-new-privileges:true
@@ -314,11 +336,15 @@ services:
     - 127.0.0.1:8080:8080
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    - nginx_ssl:/etc/nginx/ssl:ro
     - nginx_logs:/var/log/nginx
     depends_on:
-    - open-webui
-    - shadow313-api
+      open-webui:
+        condition: service_started
+      shadow313-api:
+        condition: service_started
+      nginx-cert-init:
+        condition: service_completed_successfully
     networks:
     - shadow313_external
     - shadow313_internal
@@ -339,6 +365,8 @@ volumes:
   chroma_data:
     driver: local
   nginx_logs:
+    driver: local
+  nginx_ssl:
     driver: local
 networks:
   shadow313_internal:
