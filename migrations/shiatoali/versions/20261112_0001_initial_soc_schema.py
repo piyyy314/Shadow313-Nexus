@@ -17,7 +17,7 @@ depends_on = None
 def upgrade() -> None:
     op.create_table(
         "shiatoali_events",
-        sa.Column("event_id", sa.String(36), primary_key=True),
+        sa.Column("event_id", sa.String(100), primary_key=True),
         sa.Column("source", sa.String(255), nullable=False),
         sa.Column("host", sa.String(255), nullable=False),
         sa.Column("event_type", sa.String(255), nullable=False),
@@ -42,7 +42,7 @@ def upgrade() -> None:
         sa.Column("fingerprint", sa.String(64), nullable=False, unique=True),
         sa.Column(
             "event_id",
-            sa.String(36),
+            sa.String(100),
             sa.ForeignKey("shiatoali_events.event_id", ondelete="CASCADE"),
             nullable=False,
         ),
