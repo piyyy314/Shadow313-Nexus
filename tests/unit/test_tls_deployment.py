@@ -21,6 +21,10 @@ def test_compose_initializes_tls_volume_for_unprivileged_nginx():
     assert nginx["user"] == "nginx"
     assert nginx["depends_on"]["nginx-cert-init"]["condition"] == "service_completed_successfully"
     assert "nginx_ssl" in compose["volumes"]
+    assert services["ollama-init"]["depends_on"]["ollama"]["condition"] == "service_started"
+    assert services["open-webui"]["depends_on"]["ollama"]["condition"] == "service_healthy"
+    for service_name in ("shadow313-cli", "shadow313-api", "telegram-bot"):
+        assert services[service_name]["depends_on"]["ollama-init"]["condition"] == "service_completed_successfully"
 
 
 def test_manual_tls_generator_does_not_make_private_key_world_readable():
@@ -44,7 +48,9 @@ def test_compose_passes_ai_provider_configuration_to_all_runtimes():
 def test_ollama_initializer_skips_cloud_backends_and_uses_configured_models():
     script = (ROOT / "docker/ollama/init.sh").read_text(encoding="utf-8")
 
-    assert 'if [ "${SHADOW313_AI_BACKEND:-ollama}" != "ollama" ]' in script
+    backend_check = script.index('if [ "${SHADOW313_AI_BACKEND:-ollama}" != "ollama" ]')
+    ollama_wait = script.index("until ollama list")
+    assert backend_check < ollama_wait
     assert "OLLAMA_DEFAULT_MODEL" in script
     assert "SHADOW313_AI_MODEL" in script
     assert "OLLAMA_EXTRA_MODELS" in script
