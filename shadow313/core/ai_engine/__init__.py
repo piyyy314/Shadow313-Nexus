@@ -30,7 +30,8 @@ class AIEngine:
     # Maximum characters of context JSON to include in a prompt
     _MAX_CTX_CHARS = 12_000
 
-    # Restrict schemes and known metadata destinations; endpoint values are administrator-controlled.
+    # Restrict schemes and known metadata destinations.
+    # Endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
     _BLOCKED_HOSTS   = {
         "169.254.169.254",       # AWS/GCP/Azure instance metadata
