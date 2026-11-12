@@ -1,5 +1,6 @@
+# ruff: noqa: S310
 """Unified AI inference engine for Ollama, OpenAI-compatible APIs, and gateways."""
-# ruff: noqa: S310  # All outbound URLs are validated as HTTP(S) in _validate_endpoint.
+
 
 from __future__ import annotations
 
@@ -157,7 +158,7 @@ class AIEngine:
         try:
             if self.backend == "ollama":
                 req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with request.urlopen(req, timeout=5):  # noqa: S310  # nosec B310
+                with request.urlopen(req, timeout=5):  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -170,7 +171,7 @@ class AIEngine:
             return []
         try:
             req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310
+            with request.urlopen(req, timeout=10) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -206,7 +207,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib_error.URLError as exc:
@@ -232,7 +233,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -283,7 +284,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:
