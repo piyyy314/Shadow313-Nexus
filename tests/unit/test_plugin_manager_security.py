@@ -35,7 +35,8 @@ def test_plugin_manager_rejects_unsigned_and_tampered_manifests(tmp_path):
     assert manager.load("sample") is True
 
     (path / "plugin.json").write_text('{"name":"tampered","hooks":["recon.post"]}')
-    assert manager.load("sample") is False
+    fresh_manager = PluginManager(str(tmp_path), secret=KEY)
+    assert fresh_manager.load("sample") is False
 
 
 def test_plugin_manager_dispatches_each_hook_once_with_correct_name(tmp_path, monkeypatch):
