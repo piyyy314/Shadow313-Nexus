@@ -35,15 +35,22 @@ discovery utilities. These are triage signals, not proof of compromise.
 
 ## Storage and deployment
 
-The service uses SQLite and the Python standard library by default. Set
-`SHIAATOALI_DB_PATH` to choose a persistent path. The default is
-`~/.shadow313/shiatoali.sqlite3`. Mount that directory as a persistent volume
-when running in a container.
+The service uses SQLite by default. Set `SHIAATOALI_DB_PATH` to choose a
+persistent path. The default is `~/.shadow313/shiatoali.sqlite3`. Mount that
+directory as a persistent volume when running in a container.
 
-SQLite is suitable for a single-instance starter deployment. Before running
-multiple API workers or replicas, migrate the store to PostgreSQL and add
-distributed rate limits, migrations, retention policies, and a managed
-backup/restore procedure.
+For a shared PostgreSQL deployment, install `.[postgres]`, set
+`SHIAATOALI_DATABASE_URL` to a `postgresql+psycopg://` URL, and apply the
+schema first with `alembic -c alembic-shiatoali.ini upgrade head`. At startup,
+the service selects PostgreSQL when this variable is set and fails clearly if
+the schema is missing. Otherwise it continues using SQLite. The two settings
+are mutually exclusive in practice: an explicitly supplied SQLite path takes
+precedence for direct store construction.
+
+The PostgreSQL adapter provides transactional database access, but production
+readiness still requires real-PostgreSQL integration/concurrency testing,
+distributed rate limits, retention policies, managed backups, monitoring,
+restore drills, and deployment health checks.
 
 ## Current limitations
 
