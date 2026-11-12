@@ -1,6 +1,11 @@
 #!/bin/sh
 # Runs inside the official Ollama image; do not assume Python/curl are installed.
 set -eu
+if [ "${SHADOW313_AI_BACKEND:-ollama}" != "ollama" ]; then
+    echo "AI backend is not Ollama; skipping local model downloads"
+    exit 0
+fi
+
 export OLLAMA_HOST="${OLLAMA_HOST:-http://ollama:11434}"
 attempt=0
 until ollama list >/dev/null 2>&1; do
@@ -8,11 +13,6 @@ until ollama list >/dev/null 2>&1; do
     if [ "$attempt" -ge 40 ]; then echo "Ollama not ready" >&2; exit 1; fi
     sleep 3
 done
-
-if [ "${SHADOW313_AI_BACKEND:-ollama}" != "ollama" ]; then
-    echo "AI backend is not Ollama; skipping local model downloads"
-    exit 0
-fi
 
 ensure_model() {
     model="$1"
