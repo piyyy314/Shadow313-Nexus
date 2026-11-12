@@ -95,3 +95,13 @@ def test_static_openapi_contract_is_published_without_api_rewrite():
     assert "yaml|yml" in build_script
     api_page = (ROOT / "docs/api.html").read_text(encoding="utf-8")
     assert 'href="/docs/openapi.yaml"' in api_page
+
+def test_published_openapi_copy_matches_api_contract():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    api_contract = (root / "api/openapi.yaml").read_text(encoding="utf-8")
+    published_contract = (root / "docs/openapi.yaml").read_text(encoding="utf-8")
+
+    assert published_contract == api_contract
+
