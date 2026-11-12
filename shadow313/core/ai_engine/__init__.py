@@ -1,5 +1,5 @@
 # ruff: noqa: S310
-"""Unified AI inference engine for Ollama, OpenAI-compatible APIs, and gateways."""
+"""Unified AI inference engine for Ollama, OpenAI-compatible APIs, and AI gateways."""
 
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ class AIEngine:
     Backends:
       - "ollama"   → http://localhost:11434  (local, default)
       - "openai"   → OpenAI-compatible REST API
+      - "gateway"  → Vercel AI Gateway or a configured OpenAI-compatible gateway
       - "disabled" → returns stub messages (offline / CI mode)
     """
 
@@ -30,7 +31,7 @@ class AIEngine:
     # Maximum characters of context JSON to include in a prompt
     _MAX_CTX_CHARS = 12_000
 
-    # SSRF prevention (S313-CVE-2026-002)
+    # Restrict schemes and known metadata destinations; endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
     _BLOCKED_HOSTS   = {
         "169.254.169.254",       # AWS/GCP/Azure instance metadata
@@ -142,7 +143,7 @@ class AIEngine:
         user_prompt: str,
         system_prompt: str | None = None,
     ) -> Generator[str, None, None]:
-        """Stream response tokens (generator)."""
+        """Stream Ollama tokens; other compatible providers yield one full response chunk."""
         if self.backend == "disabled":
             yield "[AI disabled]"
             return
@@ -153,7 +154,7 @@ class AIEngine:
             yield self.chat(user_prompt, system_prompt=system_prompt)
 
     def is_available(self) -> bool:
-        """Probe the AI backend to check connectivity."""
+        """Check local Ollama connectivity or cloud-provider credential configuration."""
         if self.backend == "disabled":
             return False
         try:
