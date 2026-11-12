@@ -88,3 +88,54 @@ def test_authenticated_api_ingestion_and_alert_query(tmp_path, monkeypatch):
 
     denied = client.get("/api/shiatoali/alerts")
     assert denied.status_code == 401
+
+
+def test_case_lifecycle_links_alert_and_records_audit_activity(tmp_path):
+    store = make_store(tmp_path)
+    event_result = store.ingest(EventInput(
+        source="windows",
+        host="endpoint-03",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="case-alert-event",
+    ))
+    alert_id = event_result["alerts_created"][0]["alert_id"]
+    case = store.create_case(
+        title="Investigate suspicious PowerShell",
+        description="Review endpoint telemetry and user activity.",
+        priority="high",
+        created_by="soc-analyst",
+        alert_id=alert_id,
+    )
+
+    updated = store.update_case(
+        case["case_id"],
+        actor="soc-analyst",
+        status="investigating",
+        assignee="tier-2",
+        note="Endpoint owner contacted; preserve evidence.",
+    )
+    detail = store.get_case(case["case_id"])
+
+    assert updated["status"] == "investigating"
+    assert updated["assignee"] == "tier-2"
+    assert len(detail["alerts"]) == 1
+    assert [item["action"] for item in detail["activity"]] == [
+        "created", "status_changed", "assigned", "note"
+    ]
+
+
+def test_case_rejects_invalid_status_and_unknown_alert(tmp_path):
+    store = make_store(tmp_path)
+    try:
+        store.create_case("Bad link", alert_id="missing-alert")
+        raise AssertionError("expected missing alert validation")
+    except ValueError as exc:
+        assert "alert not found" in str(exc)
+
+    case = store.create_case("Valid case")
+    try:
+        store.update_case(case["case_id"], status="magic")
+        raise AssertionError("expected invalid status validation")
+    except ValueError as exc:
+        assert "invalid case status" in str(exc)
