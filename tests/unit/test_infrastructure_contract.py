@@ -20,6 +20,8 @@ def test_local_tls_generator_writes_to_compose_mounted_directory():
 
     assert 'SSL_DIR="$(dirname "$0")/ssl"' in script
     assert 'mkdir -p "$SSL_DIR"' in script
+    assert 'chmod 644 "$KEY"' in script
+    assert "local-development listener" in script
     assert "./docker/nginx/ssl:/etc/nginx/ssl:ro" in compose
     assert "docker/nginx/ssl/*.key" in ignore
     assert "docker/nginx/ssl/*.crt" in ignore
