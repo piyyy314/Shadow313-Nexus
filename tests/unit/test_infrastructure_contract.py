@@ -18,11 +18,13 @@ def test_local_tls_generator_writes_to_compose_mounted_directory():
     compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
-    assert 'SSL_DIR="$(dirname "$0")/ssl"' in script
-    assert 'mkdir -p "$SSL_DIR"' in script
-    assert 'chmod 644 "$KEY"' in script
-    assert "local-development listener" in script
-    assert "./docker/nginx/ssl:/etc/nginx/ssl:ro" in compose
+    assert "nginx-cert-init:" in compose
+    assert "nginx_ssl:/certs" in compose
+    assert "nginx_ssl:/etc/nginx/ssl:ro" in compose
+    assert "chown 101:101" in compose
+    assert "chmod 640 /certs/shadow313.key" in compose
+    assert "service_completed_successfully" in compose
+    assert "nginx_ssl:" in compose
     assert "docker/nginx/ssl/*.key" in ignore
     assert "docker/nginx/ssl/*.crt" in ignore
 
