@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Generator
+import collections.abc
 import urllib.error
 import urllib.request
 
@@ -142,7 +142,7 @@ class AIEngine:
         self,
         user_prompt: str,
         system_prompt: str | None = None,
-    ) -> Generator[str, None, None]:
+    ) -> collections.abc.Generator[str, None, None]:
         """Stream Ollama tokens; other compatible providers yield one full response chunk."""
         if self.backend == "disabled":
             yield "[AI disabled]"
