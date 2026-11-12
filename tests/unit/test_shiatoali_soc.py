@@ -251,3 +251,22 @@ def test_sqlalchemy_store_backend_runs_event_and_case_workflows(monkeypatch):
     assert len(detail["alerts"]) == 1
     assert detail["activity"][-1]["details"] == "Adapter check"
     engine.dispose()
+
+def test_postgresql_configuration_refuses_an_unmigrated_database(monkeypatch):
+    import sqlalchemy
+    from sqlalchemy import create_engine
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    monkeypatch.setattr(sqlalchemy, "create_engine", lambda *args, **kwargs: engine)
+    monkeypatch.setenv(
+        "SHIAATOALI_DATABASE_URL",
+        "postgresql+psycopg://test:unused@localhost/empty_database",
+    )
+
+    try:
+        ShiatoAliStore()
+        raise AssertionError("expected missing-schema startup failure")
+    except RuntimeError as exc:
+        assert "schema is incomplete" in str(exc)
+    finally:
+        engine.dispose()
