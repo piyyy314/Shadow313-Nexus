@@ -179,9 +179,11 @@ services:
     - shadow313_data:/home/shadow313/.shadow313:rw
     - ./:/workspace:ro
     environment:
-    - SHADOW313_AI_ENDPOINT=http://ollama:11434
-    - SHADOW313_AI_BACKEND=ollama
-    - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+    - SHADOW313_AI_ENDPOINT=${SHADOW313_AI_ENDPOINT:-http://ollama:11434}
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_OUTPUT=rich
     depends_on:
       ollama:
@@ -224,9 +226,11 @@ services:
     volumes:
     - shadow313_data:/home/shadow313/.shadow313:rw
     environment:
-    - SHADOW313_AI_ENDPOINT=http://ollama:11434
-    - SHADOW313_AI_BACKEND=ollama
-    - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+    - SHADOW313_AI_ENDPOINT=${SHADOW313_AI_ENDPOINT:-http://ollama:11434}
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
     - SHADOW313_ENV=production
     depends_on:
