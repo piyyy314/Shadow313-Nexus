@@ -258,7 +258,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
             try:
                 created = datetime.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
                 if created.tzinfo is None:
-                    created = created.replace(tzinfo=UTC)
+                    created = created.replace(tzinfo=datetime.UTC)
                 created_unix = created.timestamp()
             except ValueError:
                 continue
