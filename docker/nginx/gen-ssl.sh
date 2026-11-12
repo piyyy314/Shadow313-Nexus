@@ -19,10 +19,10 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=CA/ST=Ontario/L=Ottawa/O=Shadow313 NEXUS/CN=localhost" \
     -addext "subjectAltName=DNS:localhost,DNS:shadow313.local,IP:127.0.0.1" \
     2>/dev/null
-# The nginx container runs as the unprivileged nginx user. This key is only
-# for the loopback-bound, self-signed local-development listener; never use
-# this generator for a production certificate or private key.
-chmod 644 "$KEY"
+# Keep the private key owner-readable only. Compose uses its own named-volume
+# certificate initializer; this script is for manual local Nginx setups only.
+chmod 600 "$KEY"
+chmod 644 "$CERT"
 
 echo "✅ SSL cert generated: $CERT"
 echo "   Valid for: localhost, shadow313.local, 127.0.0.1"
