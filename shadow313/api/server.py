@@ -62,8 +62,16 @@ def create_app(api_key: str | None = None) -> FastAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
     api_key = api_key or os.environ.get("SHADOW313_API_KEY")
-    if os.environ.get("SHADOW313_ENV", "development") == "production" and not api_key:
-        raise RuntimeError("SHADOW313_API_KEY must be set in production")
+    if os.environ.get("SHADOW313_ENV", "development") == "production":
+        placeholder_keys = {
+            "replace-with-a-random-api-key",
+            "change-me",
+            "your-api-key",
+        }
+        if not api_key or api_key.strip().lower() in placeholder_keys or len(api_key) < 32:
+            raise RuntimeError(
+                "SHADOW313_API_KEY must be a non-placeholder value of at least 32 characters in production"
+            )
 
     app = FastAPI(
         title="Shadow313 NEXUS API",
