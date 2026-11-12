@@ -26,7 +26,7 @@ paths:
       operationId: getPythonApiStatus
       responses:
         "200":
-          description: API operational
+          description: Service health, local module inventory, and remote API endpoint capability status
 
   /health:
     get:
