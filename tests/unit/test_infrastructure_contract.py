@@ -17,6 +17,8 @@ def test_compose_manages_nginx_tls_volume_and_permissions():
     compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
 
     assert "nginx-cert-init:" in compose
+    initializer = compose.split("nginx-cert-init:", 1)[1].split("  nginx:", 1)[0]
+    assert initializer.index("if [ ! -s") < initializer.index("apk add --no-cache openssl")
     assert "nginx_ssl:/certs" in compose
     assert "nginx_ssl:/etc/nginx/ssl:ro" in compose
     assert "chown 101:101" in compose
