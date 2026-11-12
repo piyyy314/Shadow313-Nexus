@@ -10,6 +10,13 @@ from pydantic import BaseModel, Field
 from shadow313.v4.shiatoali.service import EventInput, ShiatoAliStore
 
 
+def _model_payload(model: BaseModel) -> dict[str, Any]:
+    """Serialize request models across supported Pydantic major versions."""
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    return model.dict()
+
+
 class CaseCreateRequest(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     description: str = Field(default="", max_length=10000)
@@ -53,7 +60,7 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.post("/events", status_code=202)
     async def ingest_event(request: EventRequest) -> dict[str, Any]:
         try:
-            return store.ingest(EventInput(**request.dict()))
+            return store.ingest(EventInput(**_model_payload(request)))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -76,7 +83,7 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.post("/cases", status_code=201)
     async def create_case(request: CaseCreateRequest) -> dict[str, Any]:
         try:
-            return store.create_case(**request.dict())
+            return store.create_case(**_model_payload(request))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -98,7 +105,7 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.patch("/cases/{case_id}")
     async def update_case(case_id: str, request: CaseUpdateRequest) -> dict[str, Any]:
         try:
-            return store.update_case(case_id, **request.dict())
+            return store.update_case(case_id, **_model_payload(request))
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="case not found") from exc
         except ValueError as exc:
