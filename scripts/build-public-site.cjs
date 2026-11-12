@@ -9,7 +9,7 @@ function build() {
   fs.rmSync(output, {recursive:true, force:true});
   for (const relative of allowed) {
     if (path.isAbsolute(relative) || relative.split('/').includes('..') ||
-        !/\.(html|js|css|json|xml|txt)$/.test(relative)) throw new Error(`Invalid public file ${relative}`);
+        !/\.(html|js|css|json|xml|txt|yaml|yml)$/.test(relative)) throw new Error(`Invalid public file ${relative}`);
     const file = path.join(root, relative);
     if (!fs.statSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw new Error(`Not a regular file: ${relative}`);
     const dest = path.join(output, relative);
