@@ -24,6 +24,21 @@ def test_ingest_persists_event_and_detects_encoded_powershell(tmp_path):
     assert store.health()["alerts"] == 1
 
 
+def test_in_memory_store_keeps_state_across_connections():
+    store = ShiatoAliStore(":memory:")
+    result = store.ingest(EventInput(
+        source="linux",
+        host="memory-host",
+        event_type="system",
+        message="service started",
+        event_id="memory-event",
+    ))
+
+    assert result["status"] == "accepted"
+    assert store.health()["events"] == 1
+    assert store.list_events()[0]["event_id"] == "memory-event"
+
+
 def test_duplicate_event_is_idempotent(tmp_path):
     store = make_store(tmp_path)
     event = EventInput(
