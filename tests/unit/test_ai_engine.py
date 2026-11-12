@@ -123,7 +123,7 @@ class TestAIEngineConfig:
 
     def test_openai_compatible_backend_sends_selected_key(self, monkeypatch):
         import json
-        from shadow313.core.ai_engine import request
+        from shadow313.core import ai_engine
 
         seen = {}
 
@@ -143,7 +143,7 @@ class TestAIEngineConfig:
             seen["authorization"] = req.get_header("Authorization")
             return FakeResponse()
 
-        monkeypatch.setattr(request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(ai_engine.urllib.request, "urlopen", fake_urlopen)
         engine = AIEngine({
             "backend": "gateway",
             "endpoint": "https://gateway.example/v1",
