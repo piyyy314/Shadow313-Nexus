@@ -107,6 +107,7 @@ def test_telegram_ai_uses_the_configured_gateway(monkeypatch):
 
 
 def test_send_alert_reports_delivery_result(monkeypatch):
+    monkeypatch.setattr(bot, "CHAT_ID", "test-chat")
     monkeypatch.setattr(bot, "send_message", lambda *args, **kwargs: {"ok": True})
     assert bot.send_alert({"severity": "HIGH", "message": "test alert"}) is True
 
