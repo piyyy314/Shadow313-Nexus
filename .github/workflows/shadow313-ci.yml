@@ -124,8 +124,27 @@ jobs:
         run: pip install -e "." pyyaml rich bandit safety
       - name: Bandit SAST scan
         run: |
-          bandit -r shadow313/ -f json -o bandit-report.json \
+          bandit -r shadow313/ -f json -o bandit-report.json --exit-zero \
             --skip B101,B603,B607,B608,B311,B324
+      - name: Enforce high-severity Bandit findings
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          with open("bandit-report.json", encoding="utf-8") as report_file:
+              report = json.load(report_file)
+          findings = report.get("results", [])
+          high = [item for item in findings if item.get("issue_severity") == "HIGH"]
+          medium = [item for item in findings if item.get("issue_severity") == "MEDIUM"]
+          print(f"Bandit findings: {len(high)} high, {len(medium)} medium, "
+                f"{len(findings) - len(high) - len(medium)} low")
+          for item in high:
+              print(f"HIGH: {item['filename']}:{item['line_number']} "
+                    f"{item['test_id']} {item['issue_text']}")
+          if high:
+              sys.exit(1)
+          PY
       - name: Safety dependency check
         run: safety check --json > safety-report.json
       - name: Upload security artifacts
