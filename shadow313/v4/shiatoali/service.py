@@ -84,9 +84,11 @@ class ShiatoAliStore:
             "SHIAATOALI_DB_PATH",
             str(Path.home() / ".shadow313" / "shiatoali.sqlite3"),
         )
-        self.database_path = str(configured)
+        self.database_path = (
+            ":memory:" if str(configured) == ":memory:" else str(Path(configured).expanduser())
+        )
         if self.database_path != ":memory:":
-            Path(self.database_path).expanduser().parent.mkdir(parents=True, exist_ok=True)
+            Path(self.database_path).parent.mkdir(parents=True, exist_ok=True)
         self._initialize()
 
     def _connect(self) -> sqlite3.Connection:
@@ -190,9 +192,10 @@ class ShiatoAliStore:
             cutoff = (_parse_time(event["timestamp"]) - timedelta(minutes=10)).isoformat()
             failures = db.execute(
                 """SELECT COUNT(*) FROM shiatoali_events
-                WHERE host = ? AND event_type IN ('authentication_failure', 'login_failed')
+                WHERE host = ? AND COALESCE(username, '') = COALESCE(?, '')
+                AND event_type IN ('authentication_failure', 'login_failed')
                 AND timestamp >= ?""",
-                (event["host"], cutoff),
+                (event["host"], event["username"], cutoff),
             ).fetchone()[0]
             if failures >= 5:
                 matches.append({
