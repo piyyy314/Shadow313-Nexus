@@ -360,8 +360,8 @@ class ShiatoAliStore:
                 """SELECT COUNT(*) FROM shiatoali_events
                 WHERE host = ? AND COALESCE(username, '') = COALESCE(?, '')
                 AND event_type IN ('authentication_failure', 'login_failed')
-                AND timestamp >= ?""",
-                (event["host"], event["username"], cutoff),
+                AND timestamp >= ? AND timestamp <= ?""",
+                (event["host"], event["username"], cutoff, event["timestamp"]),
             ).fetchone()[0]
             if failures >= 5:
                 matches.append({
@@ -373,6 +373,7 @@ class ShiatoAliStore:
                     "technique": "T1110",
                 })
 
+        created_alerts: list[dict[str, Any]] = []
         for rule in matches:
             fingerprint_source = f'{event["event_id"]}:{rule["id"]}'
             fingerprint = hashlib.sha256(fingerprint_source.encode()).hexdigest()
@@ -390,8 +391,9 @@ class ShiatoAliStore:
             row = db.execute(
                 "SELECT * FROM shiatoali_alerts WHERE fingerprint = ?", (fingerprint,)
             ).fetchone()
-            matches[-1] = dict(row)
-        return matches
+            if row is not None:
+                created_alerts.append(dict(row))
+        return created_alerts
 
     @staticmethod
     def _serialize_event(row: sqlite3.Row) -> dict[str, Any]:
@@ -410,7 +412,10 @@ class ShiatoAliStore:
     def list_alerts(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
         with self._session() as db:
             rows = db.execute(
-                "SELECT * FROM shiatoali_alerts ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                """SELECT alerts.*, events.host
+                FROM shiatoali_alerts AS alerts
+                JOIN shiatoali_events AS events ON events.event_id = alerts.event_id
+                ORDER BY alerts.created_at DESC LIMIT ? OFFSET ?""",
                 (limit, offset),
             ).fetchall()
         return [dict(row) for row in rows]
@@ -544,6 +549,10 @@ class ShiatoAliStore:
                     db, case_id, actor, "assigned", assignee or "unassigned", now,
                 )
             if note:
+                db.execute(
+                    "UPDATE shiatoali_cases SET updated_at = ? WHERE case_id = ?",
+                    (now, case_id),
+                )
                 self._record_case_activity(db, case_id, actor, "note", note, now)
             updated = db.execute(
                 "SELECT * FROM shiatoali_cases WHERE case_id = ?", (case_id,)
