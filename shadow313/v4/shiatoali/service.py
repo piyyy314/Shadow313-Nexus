@@ -89,15 +89,29 @@ class ShiatoAliStore:
             "SHIAATOALI_DB_PATH",
             str(Path.home() / ".shadow313" / "shiatoali.sqlite3"),
         )
-        self.database_path = (
-            ":memory:" if str(configured) == ":memory:" else str(Path(configured).expanduser())
-        )
-        if self.database_path != ":memory:":
+        self._memory_uri: str | None = None
+        self._memory_anchor: sqlite3.Connection | None = None
+        if str(configured) == ":memory:":
+            # Each sqlite3.connect(":memory:") call creates a different database.
+            # A shared-cache URI plus a keeper connection preserves the database
+            # across this store's short-lived transactional connections.
+            self.database_path = ":memory:"
+            self._memory_uri = f"file:shiatoali-{uuid.uuid4().hex}?mode=memory&cache=shared"
+            self._memory_anchor = sqlite3.connect(
+                self._memory_uri, uri=True, timeout=10, check_same_thread=False
+            )
+        else:
+            self.database_path = str(Path(configured).expanduser())
             Path(self.database_path).parent.mkdir(parents=True, exist_ok=True)
         self._initialize()
 
     def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(self.database_path, timeout=10)
+        if self._memory_uri is not None:
+            connection = sqlite3.connect(
+                self._memory_uri, uri=True, timeout=10, check_same_thread=False
+            )
+        else:
+            connection = sqlite3.connect(self.database_path, timeout=10)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys = ON")
         connection.execute("PRAGMA busy_timeout = 10000")
