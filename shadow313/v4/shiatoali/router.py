@@ -10,6 +10,21 @@ from pydantic import BaseModel, Field
 from shadow313.v4.shiatoali.service import EventInput, ShiatoAliStore
 
 
+class CaseCreateRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    description: str = Field(default="", max_length=10000)
+    priority: str = "medium"
+    created_by: str = Field(default="analyst", max_length=255)
+    alert_id: str | None = None
+
+
+class CaseUpdateRequest(BaseModel):
+    actor: str = Field(default="analyst", max_length=255)
+    status: str | None = None
+    assignee: str | None = Field(default=None, max_length=255)
+    note: str | None = Field(default=None, max_length=5000)
+
+
 class EventRequest(BaseModel):
     source: str = Field(min_length=1, max_length=100)
     host: str = Field(min_length=1, max_length=255)
@@ -57,5 +72,36 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     ) -> dict[str, Any]:
         items = store.list_alerts(limit=limit, offset=offset)
         return {"items": items, "limit": limit, "offset": offset}
+
+    @router.post("/cases", status_code=201)
+    async def create_case(request: CaseCreateRequest) -> dict[str, Any]:
+        try:
+            return store.create_case(**request.dict())
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @router.get("/cases")
+    async def list_cases(
+        limit: int = Query(default=100, ge=1, le=500),
+        offset: int = Query(default=0, ge=0),
+    ) -> dict[str, Any]:
+        items = store.list_cases(limit=limit, offset=offset)
+        return {"items": items, "limit": limit, "offset": offset}
+
+    @router.get("/cases/{case_id}")
+    async def get_case(case_id: str) -> dict[str, Any]:
+        case = store.get_case(case_id)
+        if case is None:
+            raise HTTPException(status_code=404, detail="case not found")
+        return case
+
+    @router.patch("/cases/{case_id}")
+    async def update_case(case_id: str, request: CaseUpdateRequest) -> dict[str, Any]:
+        try:
+            return store.update_case(case_id, **request.dict())
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="case not found") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     return router
