@@ -76,6 +76,79 @@ def test_five_failed_authentications_raise_brute_force_alert(tmp_path):
 
 
 
+
+def test_detection_preserves_every_matching_alert(tmp_path):
+    store = make_store(tmp_path)
+    result = store.ingest(EventInput(
+        source="windows",
+        host="multi-rule-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA; nmap -sV 192.0.2.10",
+        event_id="multi-rule-event",
+    ))
+
+    assert {alert["rule_id"] for alert in result["alerts_created"]} == {
+        "SHIA-EXEC-001", "SHIA-DISC-001"
+    }
+    assert store.health()["alerts"] == 2
+
+
+def test_authentication_failures_must_fall_inside_rolling_window(tmp_path):
+    store = make_store(tmp_path)
+    for index in range(4):
+        store.ingest(EventInput(
+            source="linux",
+            host="auth-window-host",
+            event_type="authentication_failure",
+            message="authentication failed",
+            username="analyst",
+            timestamp=f"2026-01-01T10:0{index}:00+00:00",
+            event_id=f"old-failure-{index}",
+        ))
+
+    result = store.ingest(EventInput(
+        source="linux",
+        host="auth-window-host",
+        event_type="authentication_failure",
+        message="authentication failed",
+        username="analyst",
+        timestamp="2026-01-03T10:00:00+00:00",
+        event_id="new-failure",
+    ))
+
+    assert not any(
+        alert["rule_id"] == "SHIA-ID-001" for alert in result["alerts_created"]
+    )
+
+
+def test_alert_listing_includes_originating_event_host(tmp_path):
+    store = make_store(tmp_path)
+    store.ingest(EventInput(
+        source="windows",
+        host="alert-host-01",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="alert-host-event",
+    ))
+
+    alerts = store.list_alerts()
+
+    assert alerts[0]["host"] == "alert-host-01"
+
+
+def test_note_only_case_update_refreshes_updated_at(tmp_path):
+    store = make_store(tmp_path)
+    case = store.create_case("Note activity case")
+
+    updated = store.update_case(
+        case["case_id"], actor="analyst", note="Reviewed supporting telemetry"
+    )
+    detail = store.get_case(case["case_id"])
+
+    assert updated["updated_at"] == detail["activity"][-1]["created_at"]
+    assert detail["activity"][-1]["action"] == "note"
+
+
 def test_authenticated_api_ingestion_and_alert_query(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
     from shadow313.api.server import create_app
