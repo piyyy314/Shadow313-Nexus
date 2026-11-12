@@ -63,13 +63,22 @@ For PR #115 head `87aa028462f6fe1e60ab15872e3cd7fba1d725ca`:
 - Unit tests for Python 3.11 and 3.12: passed.
 - Secret detection, SAST, dependency scan, Dockerfile lint, shell/config and
   file-integrity checks: passed.
-- The repository-wide Ruff lint job: failed on a large existing backlog in
-  unrelated package files. No Ruff diagnostics were emitted for the new
-  `shiatoali` package in the observed log.
-- Python/API validation and the security scan were still in progress at the
-  time of this review.
-- Deployment and publishing jobs were skipped; this PR has not demonstrated a
-  production deployment.
+- Python/API validation, config validation, file-integrity checks, shell
+  validation, HTML validation, quality checks, and live API endpoint validation:
+  passed.
+- Unit test matrix for Python 3.11 and 3.12: passed. The separate aggregate
+  Python Test Suite job was cancelled after the validation gate had already
+  failed; do not count that cancelled job as a pass.
+- Repository-wide Ruff lint: failed with thousands of existing diagnostics
+  across unrelated package files. The observed run emitted no Ruff diagnostics
+  for the new `shiatoali` package.
+- Security scan: failed because the full-tree Bandit scan returned findings.
+  Its uploaded report counted 69 medium and 106 low severity findings, and zero
+  high severity findings. No findings were listed under the new
+  `shiatoali` package in that report. These are baseline findings requiring
+  triage, not proof that every finding is exploitable.
+- The overall validation gate failed. Deployment, Docker build, and publishing
+  jobs were skipped; this PR has not demonstrated a production deployment.
 
 Do not merge the draft until the latest checks complete, the lint baseline is
 handled transparently, and the runtime persistence/configuration review is
