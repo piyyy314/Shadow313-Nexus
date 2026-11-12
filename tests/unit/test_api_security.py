@@ -13,6 +13,7 @@ from shadow313.api.server import create_app
         "replace-with-a-random-api-key",
         "change-me",
         "short-key",
+        " " * 48,
     ],
 )
 def test_production_rejects_missing_placeholder_or_short_api_key(monkeypatch, api_key):
