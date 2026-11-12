@@ -8,10 +8,26 @@ until ollama list >/dev/null 2>&1; do
     if [ "$attempt" -ge 40 ]; then echo "Ollama not ready" >&2; exit 1; fi
     sleep 3
 done
-ollama pull matarmohamad313/shadow313-nexus
-ollama pull mistral:7b
-ollama pull nomic-embed-text:latest
-ollama show matarmohamad313/shadow313-nexus >/dev/null
-ollama show mistral:7b >/dev/null
-ollama show nomic-embed-text:latest >/dev/null
-echo "Required models verified by Ollama CLI"
+
+if [ "${SHADOW313_AI_BACKEND:-ollama}" != "ollama" ]; then
+    echo "AI backend is not Ollama; skipping local model downloads"
+    exit 0
+fi
+
+ensure_model() {
+    model="$1"
+    if ollama show "$model" >/dev/null 2>&1; then
+        echo "Model already available: $model"
+    else
+        echo "Pulling configured model: $model"
+        ollama pull "$model"
+    fi
+}
+
+default_model="${OLLAMA_DEFAULT_MODEL:-${SHADOW313_AI_MODEL:-mistral:7b}}"
+ensure_model "$default_model"
+for model in ${OLLAMA_EXTRA_MODELS:-}; do
+    ensure_model "$model"
+done
+
+echo "Configured Ollama models verified"
