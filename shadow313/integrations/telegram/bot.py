@@ -1,3 +1,4 @@
+# ruff: noqa: S310
 """
 shadow313.integrations.telegram.bot
 ────────────────────────────────────
@@ -32,10 +33,10 @@ import json
 import logging
 import os
 import time
-from datetime import UTC, datetime
-from urllib.parse import urlsplit
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime
+from urllib.parse import urlsplit
 
 logger = logging.getLogger("shadow313.telegram")
 
