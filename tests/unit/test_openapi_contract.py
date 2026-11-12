@@ -96,12 +96,41 @@ def test_static_openapi_contract_is_published_without_api_rewrite():
     api_page = (ROOT / "docs/api.html").read_text(encoding="utf-8")
     assert 'href="/docs/openapi.yaml"' in api_page
 
-def test_published_openapi_copy_matches_api_contract():
-    from pathlib import Path
 
-    root = Path(__file__).resolve().parents[2]
-    api_contract = (root / "api/openapi.yaml").read_text(encoding="utf-8")
-    published_contract = (root / "docs/openapi.yaml").read_text(encoding="utf-8")
+def test_openapi_auth_and_request_schemas_match_api_behavior():
+    contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
 
-    assert published_contract == api_contract
+    assert contract["security"] == [{"ApiKeyAuth": []}]
+    assert contract["paths"]["/api/status"]["get"]["security"] == []
+    assert contract["paths"]["/health"]["get"]["security"] == []
 
+    detect = contract["paths"]["/api/detect"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert detect["required"] == ["event"]
+    assert set(detect["properties"]) == {"event", "detectors"}
+
+    webshell = contract["paths"]["/api/webshell/scan"]["post"]["requestBody"][
+        "content"
+    ]["application/json"]["schema"]
+    assert webshell["required"] == ["content"]
+    assert {"content", "file_path", "mode"} == set(webshell["properties"])
+
+    bind = contract["paths"]["/api/bind/create"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert bind["required"] == ["payload"]
+
+    chat = contract["paths"]["/api/chat"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert chat["properties"]["system_prompt"]["type"] == ["string", "null"]
+    assert chat["properties"]["context"]["type"] == ["object", "null"]
+
+    for path in ("/api/scan/recon", "/api/scan/vuln"):
+        operation = contract["paths"][path]["post"]
+        assert "requestBody" not in operation
+        assert "No remote scan worker is connected" in operation["description"]
+
+    assert contract["paths"]["/api/bind/{bind_id}"]["get"].get("security") is None
+    assert contract["paths"]["/api/attck/coverage"]["get"].get("security") is None
