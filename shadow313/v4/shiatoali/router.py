@@ -1,7 +1,8 @@
 """FastAPI routes for the ShiatoAli SOC event and alert service."""
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
