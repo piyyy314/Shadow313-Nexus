@@ -320,6 +320,7 @@ def test_sqlalchemy_store_backend_runs_event_and_case_workflows(monkeypatch):
     detail = store.get_case(case["case_id"])
 
     assert event["status"] == "accepted"
+    assert store.list_alerts()[0]["host"] == "pg-adapter-host"
     assert detail["status"] == "investigating"
     assert len(detail["alerts"]) == 1
     assert detail["activity"][-1]["details"] == "Adapter check"
