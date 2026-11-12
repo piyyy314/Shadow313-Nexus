@@ -79,3 +79,19 @@ console.log(JSON.stringify(results));
     assert len(responses) == len(cases)
     assert all(response["statusCode"] == 200 for response in responses)
     assert all(response["body"]["status"] == "unavailable" for response in responses)
+
+
+
+def test_static_openapi_contract_is_published_without_api_rewrite():
+    source = (ROOT / "api/openapi.yaml").read_text(encoding="utf-8")
+    published = (ROOT / "docs/openapi.yaml").read_text(encoding="utf-8")
+    public_files = json.loads(
+        (ROOT / "site/public-files.json").read_text(encoding="utf-8")
+    )
+    build_script = (ROOT / "scripts/build-public-site.cjs").read_text(encoding="utf-8")
+
+    assert published == source
+    assert "docs/openapi.yaml" in public_files
+    assert "yaml|yml" in build_script
+    api_page = (ROOT / "docs/api.html").read_text(encoding="utf-8")
+    assert 'href="/docs/openapi.yaml"' in api_page
