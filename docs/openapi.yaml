@@ -12,18 +12,22 @@ info:
     email: ops@shadow313.dev
     url: https://shadow313.dev
   license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
+    name: MIT
+    url: https://opensource.org/license/mit
 
 servers:
   - url: http://localhost:8313
     description: Local development
+
+security:
+  - ApiKeyAuth: []
 
 paths:
   /api/status:
     get:
       summary: Python API status
       operationId: getPythonApiStatus
+      security: []
       responses:
         "200":
           description: Service health, local module inventory, and remote API endpoint capability status
@@ -34,6 +38,7 @@ paths:
       operationId: healthCheck
       servers:
         - url: http://localhost:8313
+      security: []
       responses:
         "200":
           description: Healthy
@@ -65,8 +70,8 @@ paths:
               required: [prompt]
               properties:
                 prompt: {type: string, minLength: 1, maxLength: 20000}
-                system_prompt: {type: string, maxLength: 4000, nullable: true}
-                context: {type: object, additionalProperties: true, nullable: true}
+                system_prompt: {type: [string, "null"], maxLength: 4000}
+                context: {type: [object, "null"], additionalProperties: true}
       responses:
         "200":
           description: AI-generated response
@@ -89,9 +94,13 @@ paths:
           application/json:
             schema:
               type: object
+              required: [event]
               properties:
-                events: {type: array}
-                session_id: {type: string}
+                event: {type: object, additionalProperties: true}
+                detectors:
+                  type: array
+                  items: {type: string}
+                  default: [all]
       responses:
         "200":
           description: Detection results
@@ -104,9 +113,22 @@ paths:
       operationId: webshellScan
       security:
         - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: {type: string}
+                file_path: {type: [string, "null"]}
+                mode: {type: string, enum: [content, access_log], default: content}
       responses:
         "200":
-          description: Scan results
+          description: Web-shell scan results
+        "401":
+          description: Unauthorized
 
   /api/attck/coverage:
     get:
@@ -122,6 +144,16 @@ paths:
       operationId: createBind
       security:
         - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payload]
+              properties:
+                payload: {type: object, additionalProperties: true}
+                metadata: {type: [object, "null"], additionalProperties: true}
       responses:
         "200":
           description: Receipt created
@@ -189,41 +221,22 @@ paths:
 
   /api/scan/recon:
     post:
-      summary: Run an authorized reconnaissance scan
+      summary: Reserved reconnaissance scan endpoint (currently unavailable)
+      description: No remote scan worker is connected. Use the local CLI for authorized scans.
       operationId: scanRecon
       security:
         - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [target]
-              properties:
-                target: {type: string}
-                mode: {type: string, default: passive}
-                ports: {type: string}
       responses:
         "200": {description: Scan status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
 
   /api/scan/vuln:
     post:
-      summary: Run vulnerability analysis on an authorized target
+      summary: Reserved vulnerability scan endpoint (currently unavailable)
+      description: No remote scan worker is connected. Use the local CLI for authorized analysis.
       operationId: scanVulnerabilities
       security:
         - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                target: {type: string}
-                cve_id: {type: string}
-                from_session: {type: string}
       responses:
         "200": {description: Analysis status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
