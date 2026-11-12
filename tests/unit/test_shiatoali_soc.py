@@ -184,3 +184,70 @@ def test_sqlalchemy_adapter_supports_parameterized_idempotent_writes():
     assert row["event_id"] == "probe-1"
     assert row[1] == "first"
     engine.dispose()
+
+def test_sqlalchemy_store_backend_runs_event_and_case_workflows(monkeypatch):
+    import sqlalchemy
+    from sqlalchemy import create_engine
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    schema = (
+        """CREATE TABLE shiatoali_events (
+            event_id TEXT PRIMARY KEY, source TEXT NOT NULL, host TEXT NOT NULL,
+            event_type TEXT NOT NULL, message TEXT NOT NULL, severity TEXT NOT NULL,
+            username TEXT, src_ip TEXT, timestamp TEXT NOT NULL, raw_json TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_alerts (
+            alert_id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL UNIQUE,
+            event_id TEXT NOT NULL REFERENCES shiatoali_events(event_id),
+            rule_id TEXT NOT NULL, title TEXT NOT NULL, severity TEXT NOT NULL,
+            risk_score INTEGER NOT NULL, tactic TEXT NOT NULL, technique TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'open', created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_cases (
+            case_id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL,
+            priority TEXT NOT NULL, status TEXT NOT NULL, assignee TEXT,
+            created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_case_alerts (
+            case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+            alert_id TEXT NOT NULL REFERENCES shiatoali_alerts(alert_id),
+            linked_at TEXT NOT NULL, PRIMARY KEY (case_id, alert_id)
+        )""",
+        """CREATE TABLE shiatoali_case_activity (
+            activity_id TEXT PRIMARY KEY,
+            case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+            actor TEXT NOT NULL, action TEXT NOT NULL, details TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+    )
+    with engine.begin() as connection:
+        for statement in schema:
+            connection.exec_driver_sql(statement)
+
+    monkeypatch.setattr(sqlalchemy, "create_engine", lambda *args, **kwargs: engine)
+    monkeypatch.setenv(
+        "SHIAATOALI_DATABASE_URL",
+        "postgresql+psycopg://test:unused@localhost/shiatoali_test",
+    )
+    store = ShiatoAliStore()
+    event = store.ingest(EventInput(
+        source="windows",
+        host="pg-adapter-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="source-event-id-123",
+    ))
+    case = store.create_case(
+        "Adapter workflow case",
+        created_by="test-analyst",
+        alert_id=event["alerts_created"][0]["alert_id"],
+    )
+    store.update_case(case["case_id"], status="investigating", note="Adapter check")
+    detail = store.get_case(case["case_id"])
+
+    assert event["status"] == "accepted"
+    assert detail["status"] == "investigating"
+    assert len(detail["alerts"]) == 1
+    assert detail["activity"][-1]["details"] == "Adapter check"
+    engine.dispose()
