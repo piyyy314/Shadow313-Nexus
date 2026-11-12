@@ -1,5 +1,5 @@
 # Shadow313 NEXUS — Install & Activation Guide
-**Version:** v4.0.0 | **Date:** 2026-08-31  
+**Version:** v4.0.0  
 **Quantum-Ready CLI · 313 Temporal Binding · Ghost-Watch Apex Tier**
 
 ---
@@ -8,7 +8,7 @@
 
 ```bash
 git clone https://github.com/piyyy314/Shadow313-Nexus.git
-cd shadow313
+cd Shadow313-Nexus
 pip install -e . && shadow313
 ```
 
@@ -37,12 +37,12 @@ If you see project files → already cloned. If "No such file or directory" → 
 # Linux / macOS
 cd ~
 git clone https://github.com/piyyy314/Shadow313-Nexus.git
-cd shadow313
+cd Shadow313-Nexus
 
 # Windows (PowerShell)
 cd $HOME
 git clone https://github.com/piyyy314/Shadow313-Nexus.git
-cd shadow313
+cd Shadow313-Nexus
 ```
 
 ---
@@ -67,14 +67,14 @@ Your prompt will show `(.venv)` when active.
 
 ```bash
 pip install --upgrade pip
-pip install -e .
+pip install -e ".[full,pqc]"
 ```
 
 This installs:
 - Shadow313 CLI (`shadow313` command)
-- All v4 modules (103 Python modules)
-- PQC dependencies (pyspx for SLH-DSA, argon2-cffi for Argon2id)
-- Optional: `pip install -e ".[quantum]"` for Qiskit/qiskit-aer
+- The packaged V1–V4 Python modules and core runtime dependencies
+- The full optional runtime set and the `pyspx` post-quantum signature implementation
+- Additional integrations can be installed with the declared extras in `pyproject.toml` (for example, `.[ai]`, `.[dashboard]`, `.[postgres]`, or `.[rag]`).
 
 ---
 
@@ -165,8 +165,8 @@ PQC stack: ACTIVE
 ## 8. Run the test suite (optional — verifies full installation)
 
 ```bash
-python -m pytest --tb=short -q
-# Expected: 2071 passed
+python -m pytest tests/ -q --tb=short
+# Use the current GitHub Actions run for the verified pass count.
 ```
 
 ---
