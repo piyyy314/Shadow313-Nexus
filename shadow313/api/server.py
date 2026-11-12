@@ -70,7 +70,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         }
         if not api_key or api_key.strip().lower() in placeholder_keys or len(api_key) < 32:
             raise RuntimeError(
-                "SHADOW313_API_KEY must be a non-placeholder value of at least 32 characters in production"
+                "SHADOW313_API_KEY must be a non-placeholder value "
+                "of at least 32 characters in production"
             )
 
     app = FastAPI(
