@@ -83,7 +83,7 @@ storage and role-based authorization.
 A static browser console is available at `/docs/shiatoali-console.html` when
 served from the project website. It reads live health, events, alerts, and cases
 from the API and supports basic case creation and open/close transitions. The
-API URL and key are entered by the analyst; the key is held in page memory only
+The static website does not host the Python SOC API. Enter the base URL of a separately running Shadow313 FastAPI service and its API key; the key is held in page memory only
 and is not written to browser storage. Serve the console over HTTPS and keep
 the API behind TLS and authentication. If the website and API use different
 origins, configure the API's CORS allowlist for the exact console origin before
