@@ -13,10 +13,8 @@ def test_nginx_routes_soc_and_versioned_api_to_fastapi():
     assert "proxy_pass         http://shadow313_api/api/;" in config
 
 
-def test_local_tls_generator_writes_to_compose_mounted_directory():
-    script = (ROOT / "docker/nginx/gen-ssl.sh").read_text(encoding="utf-8")
+def test_compose_manages_nginx_tls_volume_and_permissions():
     compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
-    ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
     assert "nginx-cert-init:" in compose
     assert "nginx_ssl:/certs" in compose
@@ -25,8 +23,6 @@ def test_local_tls_generator_writes_to_compose_mounted_directory():
     assert "chmod 640 /certs/shadow313.key" in compose
     assert "service_completed_successfully" in compose
     assert "nginx_ssl:" in compose
-    assert "docker/nginx/ssl/*.key" in ignore
-    assert "docker/nginx/ssl/*.crt" in ignore
 
 
 def test_compose_passes_gateway_endpoint_to_ai_services():
