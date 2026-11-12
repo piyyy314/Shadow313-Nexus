@@ -184,12 +184,12 @@ python scripts/shadow313_posture_scanner.py
 
 ```bash
 # Linux / macOS
-cd ~/shadow313
+cd ~/Shadow313-Nexus
 source .venv/bin/activate
 shadow313
 
 # Windows (PowerShell)
-cd $HOME\shadow313
+cd $HOME\Shadow313-Nexus
 .\.venv\Scripts\Activate.ps1
 shadow313
 ```
