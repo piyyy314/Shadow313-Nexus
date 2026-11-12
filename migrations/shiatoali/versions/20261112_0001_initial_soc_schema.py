@@ -25,9 +25,9 @@ def upgrade() -> None:
         sa.Column("severity", sa.String(32), nullable=False),
         sa.Column("username", sa.String(255)),
         sa.Column("src_ip", sa.String(64)),
-        sa.Column("timestamp", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("timestamp", sa.String(40), nullable=False),
         sa.Column("raw_json", sa.Text(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.String(40), nullable=False),
     )
     op.create_index(
         "idx_shia_events_host_time", "shiatoali_events", ["host", "timestamp"]
@@ -53,7 +53,7 @@ def upgrade() -> None:
         sa.Column("tactic", sa.String(128), nullable=False),
         sa.Column("technique", sa.String(32), nullable=False),
         sa.Column("status", sa.String(32), nullable=False, server_default="open"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.String(40), nullable=False),
     )
     op.create_index("idx_shia_alerts_created", "shiatoali_alerts", ["created_at"])
 
@@ -66,8 +66,8 @@ def upgrade() -> None:
         sa.Column("status", sa.String(32), nullable=False, server_default="open"),
         sa.Column("assignee", sa.String(255)),
         sa.Column("created_by", sa.String(255), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.String(40), nullable=False),
+        sa.Column("updated_at", sa.String(40), nullable=False),
     )
     op.create_index(
         "idx_shia_cases_status_updated", "shiatoali_cases", ["status", "updated_at"]
@@ -87,7 +87,7 @@ def upgrade() -> None:
             sa.ForeignKey("shiatoali_alerts.alert_id", ondelete="CASCADE"),
             primary_key=True,
         ),
-        sa.Column("linked_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("linked_at", sa.String(40), nullable=False),
     )
     op.create_table(
         "shiatoali_case_activity",
@@ -101,7 +101,7 @@ def upgrade() -> None:
         sa.Column("actor", sa.String(255), nullable=False),
         sa.Column("action", sa.String(64), nullable=False),
         sa.Column("details", sa.Text(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("created_at", sa.String(40), nullable=False),
     )
     op.create_index(
         "idx_shia_case_activity_case_time",
