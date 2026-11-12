@@ -359,9 +359,9 @@ def main():
     app = create_app(api_key=api_key)
 
     print(f"Shadow313 NEXUS API v{__version__}")
-    logger.debug("  Listening: http://{args.host}:{args.port}")
-    logger.debug("  Docs:      http://{args.host}:{args.port}/api/docs")
-    logger.debug("  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
+    logger.debug(f"  Listening: http://{args.host}:{args.port}")
+    logger.debug(f"  Docs:      http://{args.host}:{args.port}/api/docs")
+    logger.debug(f"  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
 
     uvicorn.run(
         app,
