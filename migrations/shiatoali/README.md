@@ -1,8 +1,8 @@
-# ShiatoAli PostgreSQL schema migrations
+# ShiatoAli PostgreSQL storage
 
-This directory defines the first PostgreSQL schema for the ShiatoAli SOC
-service. It mirrors the event, alert, case, case-alert link, and case activity
-tables currently used by the SQLite development store.
+The ShiatoAli store supports SQLite for a local single-instance deployment and
+PostgreSQL for a shared deployment. The PostgreSQL adapter uses the same event,
+alert, case, and activity operations as SQLite.
 
 ## Install
 
@@ -20,6 +20,10 @@ export SHIAATOALI_DATABASE_URL='postgresql+psycopg://USER:PASSWORD@HOST:5432/DAT
 alembic -c alembic-shiatoali.ini upgrade head
 ```
 
+The application reads `SHIAATOALI_DATABASE_URL` at startup. When it is set,
+ShiatoAli uses PostgreSQL and refuses to start if the migration has not been
+applied. Without it, the existing `SHIAATOALI_DB_PATH` SQLite behavior remains.
+
 Inspect the planned SQL without applying it:
 
 ```bash
@@ -27,16 +31,21 @@ alembic -c alembic-shiatoali.ini upgrade head --sql
 ```
 
 Review the generated SQL and database permissions before applying migrations
-to a production database. To inspect the current revision:
+to production. To inspect the current revision:
 
 ```bash
 alembic -c alembic-shiatoali.ini current
 ```
 
-## Important boundary
+## Data representation and operations
 
-This adds a versioned PostgreSQL schema and migration workflow only. The
-running ShiatoAli API still uses its existing SQLite store until a PostgreSQL
-repository adapter, transaction/concurrency tests, configuration wiring, and
-deployment health checks are implemented and validated. Running this migration
-does not switch the application database automatically.
+Timestamps are stored as normalized UTC ISO-8601 text so SQLite and PostgreSQL
+share the same ordering and rolling-window behavior. Do not mix local-time
+timestamp strings into the event stream.
+
+The PostgreSQL adapter uses SQLAlchemy transactions and translates the small
+set of SQLite-compatible parameterized statements used by this service.
+PostgreSQL schema changes must be made through Alembic. Run integration tests
+against a disposable PostgreSQL database before enabling this backend in
+production. Configure backups, retention, monitoring, and restore drills
+separately; the adapter does not provide those operational controls.
