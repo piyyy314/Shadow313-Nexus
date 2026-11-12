@@ -1,8 +1,7 @@
 """Persistent event ingestion and first-pass defensive detections.
 
-The service deliberately uses SQLite from the Python standard library so the
-first vertical slice can run without adding infrastructure dependencies.
-For multi-worker production deployments, replace this store with PostgreSQL.
+The service supports SQLite for local use and an optional PostgreSQL backend
+for shared deployments. PostgreSQL requires the versioned schema migration.
 """
 from __future__ import annotations
 
@@ -65,10 +64,10 @@ class _SQLAlchemyConnection:
         if statement.lstrip().upper().startswith("PRAGMA "):
             return _CompatResult(_EmptyResult())
         sql = statement.strip()
-        ignore_conflict = bool(re.match(r"INSERT\\s+OR\\s+IGNORE\\s+INTO", sql, re.I))
+        ignore_conflict = bool(re.match(r"INSERT\s+OR\s+IGNORE\s+INTO", sql, re.I))
         if ignore_conflict:
             sql = re.sub(
-                r"INSERT\\s+OR\\s+IGNORE\\s+INTO",
+                r"INSERT\s+OR\s+IGNORE\s+INTO",
                 "INSERT INTO",
                 sql,
                 count=1,
@@ -77,7 +76,7 @@ class _SQLAlchemyConnection:
             sql = sql.rstrip().rstrip(";") + " ON CONFLICT DO NOTHING"
         values = {f"p{index}": value for index, value in enumerate(parameters)}
         index = iter(range(len(parameters)))
-        sql = re.sub(r"\\?", lambda _: f":p{next(index)}", sql)
+        sql = re.sub(r"\?", lambda _: f":p{next(index)}", sql)
         return _CompatResult(self._connection.execute(self._text(sql), values))
 
 
