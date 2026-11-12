@@ -47,7 +47,7 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
 <main>
 <section class="intro"><div><div class="eyebrow">Defensive operations · v1 console</div><h1>ShiatoAli SOC Console</h1><p>Live event, alert, and analyst-case views backed by the ShiatoAli API. This console shows only records returned by your configured API; it does not fabricate demo telemetry.</p></div></section>
 <section class="panel config"><h2>API connection</h2><div class="config-row">
-<div class="field"><label for="apiBase">API base URL</label><input id="apiBase" type="url" placeholder="https://your-api.example.com" autocomplete="url"></div>
+<div class="field"><label for="apiBase">Python API base URL</label><input id="apiBase" type="url" placeholder="https://your-api-host.example.com" autocomplete="url"><small>Required: the static website does not host the SOC backend. Enter the base URL of your running Shadow313 FastAPI service.</small></div>
 <div class="field"><label for="apiKey">API key</label><input id="apiKey" type="password" placeholder="Enter SHADOW313_API_KEY" autocomplete="off"></div>
 <button class="primary" id="connect">Connect</button><button id="disconnect">Clear key</button>
 </div><div class="notice" id="message" role="status">The API key stays in this page's memory only and is not saved to browser storage. Use HTTPS. If this console is hosted on a different origin than the API, configure a strict CORS allowlist on the API server.</div></section>
@@ -150,7 +150,6 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
     try { await request("/api/shiatoali/cases",{method:"POST",body:JSON.stringify(payload)}); $("caseForm").reset(); $("caseActor").value="analyst"; $("caseMessage").textContent="Case created."; $("caseMessage").className="notice success"; await refresh(); }
     catch(error){$("caseMessage").textContent="Could not create case: "+error.message;$("caseMessage").className="notice error";}
   });
-  $("apiBase").value=window.location.origin;
 })();
 </script>
 </body>
