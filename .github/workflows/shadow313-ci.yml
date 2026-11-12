@@ -84,7 +84,7 @@ jobs:
         env:
           POSTGRES_DB: shiatoali_test
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -93,7 +93,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      SHIAATOALI_DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/shiatoali_test
+      SHIAATOALI_DATABASE_URL: postgresql+psycopg://postgres@localhost:5432/shiatoali_test
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
