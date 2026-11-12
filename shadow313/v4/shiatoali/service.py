@@ -15,8 +15,8 @@ import uuid
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 
@@ -326,7 +326,8 @@ class ShiatoAliStore:
             )
             if alert_id:
                 db.execute(
-                    "INSERT INTO shiatoali_case_alerts (case_id, alert_id, linked_at) VALUES (?, ?, ?)",
+                    """INSERT INTO shiatoali_case_alerts
+                    (case_id, alert_id, linked_at) VALUES (?, ?, ?)""",
                     (case_id, alert_id, now),
                 )
             self._record_case_activity(db, case_id, created_by, "created", title, now)
