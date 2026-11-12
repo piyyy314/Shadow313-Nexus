@@ -25,9 +25,25 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.columns{grid-template-columns:1fr}.config-row{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){header{padding:12px 15px}main{padding:16px}.intro{align-items:start;flex-direction:column}.grid{gap:8px}.metric{padding:12px}.metric strong{font-size:24px}.config-row{grid-template-columns:1fr}.header-actions .status{display:none}}
 </style>
+<link rel="stylesheet" href="/assets/site-nav.css">
+<link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body>
-<header><div class="brand"><span class="mark">313</span><div>SHADOW313 NEXUS<small>SHIATOALI · SECURITY OPERATIONS</small></div></div><div class="header-actions"><span class="status" id="connection"><i class="dot"></i>NOT CONNECTED</span><button id="refresh">Refresh data</button></div></header>
+<body class="site-page">
+<!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
+<nav id="site-nav" aria-label="Primary navigation">
+  <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
+  <div class="site-links">
+    <a href="/platform">Platform</a>
+    <a href="/dashboards">Dashboards</a>
+    <a href="/tools">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml" target="_blank" rel="noopener noreferrer">Live CI</a>
+    <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+  </div>
+</nav>
+<header><div class="brand"><span class="mark">313</span><div>SHIATOALI SOC<small>SECURITY OPERATIONS CONSOLE</small></div></div><div class="header-actions"><span class="status" id="connection"><i class="dot"></i>NOT CONNECTED</span><button id="refresh">Refresh data</button></div></header>
 <main>
 <section class="intro"><div><div class="eyebrow">Defensive operations · v1 console</div><h1>ShiatoAli SOC Console</h1><p>Live event, alert, and analyst-case views backed by the ShiatoAli API. This console shows only records returned by your configured API; it does not fabricate demo telemetry.</p></div></section>
 <section class="panel config"><h2>API connection</h2><div class="config-row">
