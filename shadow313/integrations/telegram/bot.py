@@ -20,9 +20,10 @@ Environment variables (set in docker-compose.yml or .env):
 Quick start:
   1. Message @BotFather → /newbot → copy token
   2. Add bot to your channel, get chat ID via @userinfobot
-  3. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
-  4. docker compose --profile telegram up -d telegram-bot
-  5. The bot polls authenticated ShiatoAli SOC alerts; event ingestion must be active.
+  3. Set TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, and SHADOW313_API_KEY in .env
+  4. docker compose up -d
+  5. docker compose --profile telegram up -d telegram-bot
+  6. The bot polls authenticated ShiatoAli SOC alerts; event ingestion must be active.
 """
 
 from __future__ import annotations
