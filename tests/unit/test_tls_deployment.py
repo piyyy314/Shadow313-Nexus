@@ -61,3 +61,11 @@ def test_ollama_initializer_skips_cloud_backends_and_uses_configured_models():
     assert "OLLAMA_EXTRA_MODELS" in script
     assert 'ollama pull matarmohamad313/shadow313-nexus' not in script
 
+def test_api_healthcheck_uses_runtime_python_not_missing_curl():
+    compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
+    healthcheck = compose["services"]["shadow313-api"]["healthcheck"]
+
+    assert healthcheck["test"][0:2] == ["CMD", "python"]
+    assert "urllib.request.urlopen" in healthcheck["test"][2]
+    assert "curl" not in healthcheck["test"]
+
