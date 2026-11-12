@@ -26,7 +26,7 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import uvicorn
 HAS_FASTAPI = True
 
@@ -52,6 +52,11 @@ if HAS_FASTAPI:
     class DetectRequest(BaseModel):
         event: dict[str, Any]
         detectors: list[str] = ["all"]
+
+    class ChatRequest(BaseModel):
+        prompt: str = Field(min_length=1, max_length=20000)
+        system_prompt: str | None = Field(default=None, max_length=4000)
+        context: dict[str, Any] | None = None
 
     class WebShellScanRequest(BaseModel):
         content: str
@@ -159,6 +164,32 @@ def create_app(api_key: str | None = None) -> FastAPI:
                 {"name": "cicd",     "version": __version__, "status": "active"},
                 {"name": "docs",     "version": __version__, "status": "active"},
             ]
+        }
+
+    @app.post("/api/chat")
+    async def chat(req: ChatRequest, _: str = Depends(verify_api_key)):
+        """Run a prompt through the configured Ollama/OpenAI/gateway backend."""
+        from shadow313.core.ai_engine import AIEngine
+        from shadow313.core.config import Config
+
+        engine = AIEngine(Config().get("ai", default={}))
+        if engine.backend == "disabled":
+            raise HTTPException(503, detail="AI backend is disabled")
+        if not engine.is_available():
+            raise HTTPException(503, detail="AI backend is unavailable or its API key is missing")
+
+        answer = engine.chat(
+            req.prompt,
+            system_prompt=req.system_prompt,
+            context=req.context,
+        )
+        if answer.startswith("[AI error"):
+            raise HTTPException(502, detail="AI provider request failed")
+        return {
+            "status": "ok",
+            "backend": engine.backend,
+            "model": engine.model,
+            "response": answer,
         }
 
     @app.post("/api/detect")
