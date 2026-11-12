@@ -173,7 +173,7 @@ def send_message(text: str, parse_mode: str = "HTML", chat_id: object = None) ->
     })
 
 
-def send_alert(event: dict) -> None:
+def send_alert(event: dict) -> bool:
     severity  = event.get("severity", "UNKNOWN").upper()
     emoji     = SEVERITY_EMOJI.get(severity, "⚪")
     source    = event.get("source", event.get("module", "NEXUS"))
@@ -238,7 +238,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
                 created_unix = created.timestamp()
             except ValueError:
                 continue
-            if created_unix < since_ts or (alert_id and alert_id in PROCESSED_ALERT_IDS):
+            if created_unix <= since_ts or (alert_id and alert_id in PROCESSED_ALERT_IDS):
                 continue
             host = str(alert.get("host") or "unknown host")
             title = str(alert.get("title") or "Security alert")
@@ -300,15 +300,24 @@ async def run_bot() -> None:
                 update_offset = max(update_offset, int(update.get("update_id", 0)) + 1)
                 _handle_update(update)
             events = _fetch_events(since_ts) if API_URL else []
+            batch_latest = since_ts
+            batch_failed = False
             for event in events:
                 alert_id = str(event.get("alert_id") or event.get("id") or "")
                 if alert_id and alert_id in PROCESSED_ALERT_IDS:
                     continue
-                delivered = True
-                if _severity_passes(event):
-                    delivered = send_alert(event)
-                if delivered and alert_id:
-                    PROCESSED_ALERT_IDS.add(alert_id)
+                delivered = not _severity_passes(event) or send_alert(event)
+                if delivered:
+                    if alert_id:
+                        PROCESSED_ALERT_IDS.add(alert_id)
+                    event_ts = event.get("timestamp_unix")
+                    if isinstance(event_ts, (int, float)):
+                        batch_latest = max(batch_latest, event_ts)
+                else:
+                    batch_failed = True
+            if not batch_failed:
+                since_ts = batch_latest
+                PROCESSED_ALERT_IDS.clear()
         except Exception as e:
             logger.error("Polling loop error: %s", e)
         await asyncio.sleep(POLL_INTERVAL)
