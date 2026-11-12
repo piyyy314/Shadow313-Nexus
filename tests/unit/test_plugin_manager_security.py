@@ -44,6 +44,7 @@ def test_plugin_manager_dispatches_each_hook_once_with_correct_name(tmp_path, mo
     manager = PluginManager(str(tmp_path), secret=KEY)
     manager.sign_plugin("sample")
     assert manager.load("sample") is True
+    assert manager.load("sample") is True  # repeated discovery must not duplicate hooks
 
     calls = []
     monkeypatch.setattr(
