@@ -25,6 +25,7 @@ def test_compose_initializes_tls_volume_for_unprivileged_nginx():
     assert services["open-webui"]["depends_on"]["ollama"]["condition"] == "service_healthy"
     for service_name in ("shadow313-cli", "shadow313-api", "telegram-bot"):
         assert services[service_name]["depends_on"]["ollama-init"]["condition"] == "service_completed_successfully"
+    assert services["telegram-bot"]["depends_on"]["shadow313-api"]["condition"] == "service_healthy"
 
 
 def test_manual_tls_generator_does_not_make_private_key_world_readable():
