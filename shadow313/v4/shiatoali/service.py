@@ -250,7 +250,7 @@ class ShiatoAliStore:
         return result
 
     def list_events(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
-        with self._connect() as db:
+        with self._session() as db:
             rows = db.execute(
                 "SELECT * FROM shiatoali_events ORDER BY timestamp DESC LIMIT ? OFFSET ?",
                 (limit, offset),
@@ -258,7 +258,7 @@ class ShiatoAliStore:
         return [self._serialize_event(row) for row in rows]
 
     def list_alerts(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
-        with self._connect() as db:
+        with self._session() as db:
             rows = db.execute(
                 "SELECT * FROM shiatoali_alerts ORDER BY created_at DESC LIMIT ? OFFSET ?",
                 (limit, offset),
@@ -266,7 +266,7 @@ class ShiatoAliStore:
         return [dict(row) for row in rows]
 
     def health(self) -> dict[str, Any]:
-        with self._connect() as db:
+        with self._session() as db:
             events = db.execute("SELECT COUNT(*) FROM shiatoali_events").fetchone()[0]
             alerts = db.execute("SELECT COUNT(*) FROM shiatoali_alerts").fetchone()[0]
         return {"service": "shiatoali-event-detection", "status": "ok",
