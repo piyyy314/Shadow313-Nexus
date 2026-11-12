@@ -1,7 +1,5 @@
 """Security and responsive-layout checks for the legacy local dashboard."""
 
-from pathlib import Path
-
 import pytest
 
 from shadow313.v2.dashboard.app import (
