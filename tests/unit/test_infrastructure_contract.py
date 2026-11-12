@@ -1,5 +1,6 @@
 """Infrastructure contract tests for local Docker/Nginx routing."""
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,3 +32,11 @@ def test_compose_manages_nginx_tls_volume_and_permissions():
 def test_compose_passes_gateway_endpoint_to_ai_services():
     compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
     assert compose.count("AI_GATEWAY_ENDPOINT=") >= 2
+
+
+
+def test_static_site_publishes_shiatoali_console():
+    public_files = json.loads(
+        (ROOT / "site/public-files.json").read_text(encoding="utf-8")
+    )
+    assert "docs/shiatoali-console.html" in public_files
