@@ -171,8 +171,16 @@ evtSource.onerror = () => {
 </html>"""
 
 
+def _is_loopback_host(host: str) -> bool:
+    """Return true only for loopback IPs and the localhost hostname."""
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return host.strip().lower() == "localhost"
+
+
 class DashboardModule:
-    """shadow313.v2.dashboard — Web dashboard. Registered: dashboard"""
+    """Local-only shadow313.v2 dashboard. Use the authenticated API remotely."""
 
     def __init__(self, kernel) -> None:
         self.kernel = kernel
@@ -194,6 +202,11 @@ class DashboardModule:
         self.out.section("WEB DASHBOARD")
         port = port or self._port
         host = host or self._host
+        if not _is_loopback_host(host):
+            raise RuntimeError(
+                "The legacy dashboard is local-only. Use the authenticated Python API "
+                "for remote access."
+            )
 
         try:
             self._start_fastapi(host, port, no_browser)
