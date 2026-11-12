@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
+import collections.abc
 import json
 import os
-import collections.abc
 import urllib.error
 import urllib.request
 
@@ -143,7 +143,7 @@ class AIEngine:
         self,
         user_prompt: str,
         system_prompt: str | None = None,
-    ) -> collections.abc.collections.abc.Generator[str, None, None]:
+    ) -> collections.abc.Generator[str, None, None]:
         """Stream Ollama tokens; other compatible providers yield one full response chunk."""
         if self.backend == "disabled":
             yield "[AI disabled]"
@@ -218,7 +218,9 @@ class AIEngine:
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(self, system: str, user: str) -> collections.abc.Generator[str, None, None]:
+    def _ollama_stream(
+        self, system: str, user: str
+    ) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
