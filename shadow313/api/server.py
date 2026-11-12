@@ -121,6 +121,16 @@ def create_app(api_key: str | None = None) -> FastAPI:
                 "detection": True,
                 "webshell": True,
             },
+            # These describe the HTTP API surface, not local CLI module availability.
+            "api_endpoints": {
+                "chat": "requires_configured_ai_backend",
+                "recon_scan": "unavailable",
+                "vulnerability_scan": "unavailable",
+                "detection": "available",
+                "webshell_scan": "available",
+                "shiatoali_soc": "available",
+                "bind_receipts": "unsigned_demo_only",
+            },
         }
 
     @app.get("/health")
