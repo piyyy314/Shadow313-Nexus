@@ -1,7 +1,6 @@
 # ruff: noqa: S310
 """Unified AI inference engine for Ollama, OpenAI-compatible APIs, and AI gateways."""
 
-
 from __future__ import annotations
 
 import json
@@ -87,7 +86,7 @@ class AIEngine:
             raise ValueError("AI endpoint must use http or https")
         if not host or parsed.username is not None or parsed.password is not None:
             raise ValueError("AI endpoint must include a host and must not include user info")
-        # Accessing .port validates malformed port strings before any request.
+        # Accessing .port validates malformed port strings before any urllib.request.
         _ = parsed.port
         if host in self._BLOCKED_HOSTS:
             raise ValueError(f"AI endpoint host '{host}' is blocked")
@@ -113,7 +112,9 @@ class AIEngine:
         except ValueError:
             address = None
         if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
-            raise ValueError(f"AI endpoint IP '{host}' is not a permitted destination")
+            raise ValueError(
+                f"AI endpoint IP '{host}' is not a permitted destination"
+            )
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -142,7 +143,7 @@ class AIEngine:
         self,
         user_prompt: str,
         system_prompt: str | None = None,
-    ) -> collections.abc.Generator[str, None, None]:
+    ) -> collections.abc.collections.abc.Generator[str, None, None]:
         """Stream Ollama tokens; other compatible providers yield one full response chunk."""
         if self.backend == "disabled":
             yield "[AI disabled]"
@@ -172,8 +173,8 @@ class AIEngine:
         if self.backend != "ollama":
             return []
         try:
-            req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:  # nosec B310
+            req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -202,14 +203,14 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib.error.URLError as exc:
@@ -217,7 +218,7 @@ class AIEngine:
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(self, system: str, user: str) -> Generator[str, None, None]:
+    def _ollama_stream(self, system: str, user: str) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
@@ -228,14 +229,14 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -272,7 +273,7 @@ class AIEngine:
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
+        req  = urllib.request.Request(
             (
                 f"{self.endpoint}/chat/completions"
                 if self.endpoint.endswith("/v1")
@@ -286,7 +287,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:
