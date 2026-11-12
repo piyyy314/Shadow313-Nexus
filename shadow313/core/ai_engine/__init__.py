@@ -53,7 +53,20 @@ class AIEngine:
     def __init__(self, config: dict) -> None:
         self.backend:  str = config.get("backend", "ollama")
         self.model:    str = config.get("model", "mistral:7b")
-        raw_endpoint       = config.get("endpoint", "http://localhost:11434").rstrip("/")
+        configured_endpoint = config.get("endpoint")
+        local_defaults = {"http://localhost:11434", "http://ollama:11434"}
+        if self.backend == "gateway":
+            endpoint_default = "https://ai-gateway.vercel.sh/v1"
+        elif self.backend == "openai":
+            endpoint_default = "https://api.openai.com/v1"
+        else:
+            endpoint_default = "http://localhost:11434"
+        if not configured_endpoint or (
+            self.backend in {"openai", "gateway"}
+            and configured_endpoint.rstrip("/") in local_defaults
+        ):
+            configured_endpoint = endpoint_default
+        raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
         self.timeout:  int = int(config.get("timeout", 120))
         self.ctx_win:  int = int(config.get("context_window", 8192))
@@ -69,8 +82,6 @@ class AIEngine:
             )
         else:
             self._api_key = ""
-        if self.backend == "gateway" and "endpoint" not in config:
-            self.endpoint = "https://ai-gateway.vercel.sh/v1"
 
     def _validate_endpoint(self, endpoint: str) -> str:
         """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
