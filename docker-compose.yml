@@ -71,6 +71,8 @@ services:
     depends_on:
       ollama-init:
         condition: service_completed_successfully
+      shadow313-api:
+        condition: service_healthy
     environment:
     - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
     - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
