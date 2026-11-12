@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Legacy HMAC-signed plugin loader with explicit signing-key configuration."""
+
+from __future__ import annotations
 
 import hashlib
 import hmac
@@ -8,8 +8,9 @@ import importlib
 import json
 import os
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 PLUGIN_HOOKS = [
     "recon.post",
