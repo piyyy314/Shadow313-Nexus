@@ -142,10 +142,10 @@ def _parse_time(value: str | None) -> datetime:
 
 
 class ShiatoAliStore:
-    """SQLite-backed event and alert store with idempotent event ingestion."""
+    """SQLite/PostgreSQL event and alert store with idempotent ingestion."""
 
     def __init__(self, database_path: str | Path | None = None) -> None:
-        configured_url = os.getenv("SHIAATOALI_DATABASE_URL")
+        configured_url = None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
         self._engine: Any | None = None
         if configured_url:
             if not configured_url.startswith("postgresql+psycopg://"):
