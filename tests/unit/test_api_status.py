@@ -18,7 +18,7 @@ def test_status_distinguishes_local_modules_from_remote_api_capabilities():
     assert body["api_endpoints"]["vulnerability_scan"] == "unavailable"
     assert body["api_endpoints"]["detection"] == "available"
     assert body["api_endpoints"]["webshell_scan"] == "available"
-    assert "chat" not in body["api_endpoints"]
+    assert body["api_endpoints"]["chat"] == "requires_configured_ai_backend"
     assert body["api_endpoints"]["bind_receipts"] == "unsigned_demo_only"
 
 
