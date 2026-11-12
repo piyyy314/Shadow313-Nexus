@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Generator
-from urllib import error as urllib_error, request
+from urllib import error as urllib_error
+from urllib import request
 
 
 class AIEngine:
