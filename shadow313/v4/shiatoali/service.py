@@ -12,10 +12,10 @@ import os
 import re
 import sqlite3
 import uuid
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
-from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
