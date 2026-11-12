@@ -173,10 +173,15 @@ evtSource.onerror = () => {
 
 def _is_loopback_host(host: str) -> bool:
     """Return true only for loopback IPs and the localhost hostname."""
+    if not isinstance(host, str):
+        return False
+    normalized = host.strip().lower()
+    if normalized == "localhost":
+        return True
     try:
-        return ipaddress.ip_address(host).is_loopback
+        return ipaddress.ip_address(normalized).is_loopback
     except ValueError:
-        return host.strip().lower() == "localhost"
+        return False
 
 
 class DashboardModule:
