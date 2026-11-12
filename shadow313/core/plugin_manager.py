@@ -66,6 +66,8 @@ class PluginManager:
         return count
 
     def load(self, plugin_name: str) -> bool:
+        if plugin_name in self._plugins:
+            return True
         plugin_path = self._plugin_path(plugin_name)
         if plugin_path is None:
             return False
@@ -76,6 +78,8 @@ class PluginManager:
         try:
             manifest_bytes = manifest_path.read_bytes()
             manifest = json.loads(manifest_bytes)
+            if not isinstance(manifest, dict):
+                return False
             signature = sig_path.read_text(encoding="utf-8").strip()
         except (OSError, UnicodeError, json.JSONDecodeError):
             return False
