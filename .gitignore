@@ -91,3 +91,7 @@ public-site/
 
 # Local TLS private keys
 docker/nginx/ssl/*.key
+
+# Generated local TLS certificates and private keys
+docker/nginx/ssl/*.crt
+docker/nginx/ssl/*.key
