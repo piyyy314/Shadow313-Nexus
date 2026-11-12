@@ -28,15 +28,15 @@ Quick start:
 from __future__ import annotations
 
 import asyncio
+import datetime
 import html
 import json
 import logging
 import os
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
-from datetime import UTC, datetime
-from urllib.parse import urlsplit
 
 logger = logging.getLogger("shadow313.telegram")
 
@@ -68,7 +68,7 @@ def _tg_request(method: str, payload: dict) -> dict | None:
                                   headers={"Content-Type": "application/json"},
                                   method="POST")
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
+        with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310
             return json.loads(resp.read())
     except urllib.error.HTTPError as e:
         logger.error("Telegram API %s: %s", e.code, e.read().decode())
@@ -196,7 +196,7 @@ def send_alert(event: dict) -> bool:
     emoji     = SEVERITY_EMOJI.get(severity, "⚪")
     source    = event.get("source", event.get("module", "NEXUS"))
     message   = event.get("message", event.get("msg", str(event)))
-    ts        = event.get("timestamp", datetime.now(UTC).isoformat())
+    ts        = event.get("timestamp", datetime.datetime.now(datetime.UTC).isoformat())
     bind_id   = event.get("bind_id", "")
     technique = event.get("technique", event.get("tid", ""))
 
@@ -225,7 +225,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
     global EVENT_PROVIDER_WARNED
     if not API_URL:
         return []
-    parsed_api_url = urlsplit(API_URL)
+    parsed_api_url = urllib.parse.urlsplit(API_URL)
     if parsed_api_url.scheme not in {"http", "https"} or not parsed_api_url.hostname:
         logger.warning("Alert polling disabled: SHADOW313_API_URL must be an HTTP(S) URL")
         return []
@@ -241,7 +241,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
         headers={"Accept": "application/json", "X-API-Key": key},
     )
     try:
-        with urllib.request.urlopen(req, timeout=8) as resp:  # nosec B310
+        with urllib.request.urlopen(req, timeout=8) as resp:  # noqa: S310  # nosec B310
             data = json.loads(resp.read())
         if isinstance(data, dict) and data.get("status") == "unavailable":
             if not EVENT_PROVIDER_WARNED:
@@ -256,7 +256,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
             alert_id = str(alert.get("alert_id", ""))
             created_at = str(alert.get("created_at", ""))
             try:
-                created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                created = datetime.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
                 if created.tzinfo is None:
                     created = created.replace(tzinfo=UTC)
                 created_unix = created.timestamp()
@@ -291,7 +291,7 @@ def _severity_passes(event: dict) -> bool:
 def send_startup_message() -> None:
     text = (
         "⬡ <b>Shadow313 NEXUS Bot Online</b>\n"
-        f"<code>{datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>\n\n"
+        f"<code>{datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>\n\n"
         f"Monitoring: <code>{html.escape(API_URL)}</code>\n"
         f"Min severity: <b>{MIN_SEVERITY}</b>\n"
         f"Poll interval: <b>{POLL_INTERVAL}s</b>\n\n"
