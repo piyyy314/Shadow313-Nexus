@@ -75,7 +75,7 @@ services:
     - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
     - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
     - OLLAMA_URL=http://ollama:11434
-    - OLLAMA_MODEL=${OLLAMA_MODEL:-matarmohamad313/shadow313-nexus}
+    - OLLAMA_MODEL=${OLLAMA_MODEL:-${OLLAMA_DEFAULT_MODEL:-matarmohamad313/shadow313-nexus}}
     - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-2}
     - SHADOW313_API_URL=http://shadow313-api:8313
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
@@ -110,6 +110,10 @@ services:
     - /init.sh
     environment:
     - OLLAMA_HOST=http://ollama:11434
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - OLLAMA_DEFAULT_MODEL=${OLLAMA_DEFAULT_MODEL:-${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}}
+    - OLLAMA_EXTRA_MODELS=${OLLAMA_EXTRA_MODELS:-mistral:7b nomic-embed-text:latest}
     networks:
     - shadow313_internal
     restart: 'no'
@@ -133,7 +137,7 @@ services:
     - WEBUI_AUTH=true
     - WEBUI_NAME=Shadow313 NEXUS AI
     - WEBUI_URL=${WEBUI_URL:-http://localhost:8080}
-    - DEFAULT_MODELS=matarmohamad313/shadow313-nexus
+    - DEFAULT_MODELS=${OLLAMA_DEFAULT_MODEL:-matarmohamad313/shadow313-nexus}
     - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?WEBUI_SECRET_KEY must be set}
     - SCARF_NO_ANALYTICS=true
     - DO_NOT_TRACK=true
