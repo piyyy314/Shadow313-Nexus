@@ -1,25 +1,11 @@
-from __future__ import annotations
-"""
-shadow313.core.ai_engine  — v4
-AI Engine abstraction: Ollama (local) · OpenAI-compatible · Disabled.
+"""Unified AI inference engine for Ollama, OpenAI-compatible APIs, and gateways."""
 
-BUG FIXES vs v1:
-  - _ollama_stream() had an infinite loop risk: if 'done' key was missing
-    from a chunk the loop never terminated — added packet counter guard.
-  - _openai_chat() imported os inside function on every call — moved to top.
-  - is_available() swallowed all exceptions silently — now logs to stderr in
-    verbose mode.
-  - chat() with context= did not truncate context to avoid exceeding ctx_win —
-    added _truncate_context() helper.
-  - stream() fell back to chat() for non-ollama backends but ignored
-    system_prompt parameter — fixed.
-"""
+from __future__ import annotations
+
 import json
 import os
-import sys
-import time
-from typing import Any, Generator
-from urllib import request, error as urllib_error
+from collections.abc import Generator
+from urllib import error as urllib_error, request
 
 
 class AIEngine:
@@ -86,41 +72,42 @@ class AIEngine:
             self._api_key = ""
 
     def _validate_endpoint(self, endpoint: str) -> str:
-        """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
-        from urllib.parse import urlparse
+        """Validate an administrator-configured HTTP(S) AI endpoint."""
+        from ipaddress import IPv6Address, ip_address
+        from urllib.parse import urlsplit
+
+        parsed = urlsplit(endpoint)
+        scheme = parsed.scheme.lower()
+        host = parsed.hostname or ""
+        if scheme not in self._ALLOWED_SCHEMES:
+            raise ValueError("AI endpoint must use http or https")
+        if not host or parsed.username is not None or parsed.password is not None:
+            raise ValueError("AI endpoint must include a host and must not include user info")
+        # Accessing .port validates malformed port strings before any request.
+        _ = parsed.port
+        if host in self._BLOCKED_HOSTS:
+            raise ValueError(f"AI endpoint host '{host}' is blocked")
+
+        normalized_host = host
         try:
-            parsed = urlparse(endpoint)
-            scheme = parsed.scheme.lower()
-            host   = parsed.hostname or ""
-            if scheme not in self._ALLOWED_SCHEMES:
-                raise ValueError(
-                    f"AI endpoint scheme '{scheme}' is not allowed. Use http or https."
-                )
-            if host in self._BLOCKED_HOSTS:
-                raise ValueError(
-                    f"AI endpoint host '{host}' is blocked to prevent SSRF attacks."
-                )
-            # Normalize IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254)
-            normalized_host = host
-            try:
-                from ipaddress import IPv6Address
-                ipv6 = IPv6Address(host)
-                if ipv6.ipv4_mapped:
-                    normalized_host = str(ipv6.ipv4_mapped)
-            except Exception:
-                pass
-            if normalized_host in self._BLOCKED_HOSTS:
-                raise ValueError(
-                    f"AI endpoint host '{host}' is blocked (IPv4-mapped) to prevent SSRF attacks."
-                )
-            if normalized_host.startswith("169.254.") or host.startswith("169.254.") or host.startswith("fd00:"):
-                raise ValueError(
-                    f"AI endpoint host '{host}' is in a reserved/link-local range."
-                )
+            ipv6 = IPv6Address(host)
         except ValueError:
-            raise
-        except Exception:
-            pass  # Malformed URL — let the actual request fail naturally
+            ipv6 = None
+        if ipv6 and ipv6.ipv4_mapped:
+            normalized_host = str(ipv6.ipv4_mapped)
+
+        if (
+            normalized_host in self._BLOCKED_HOSTS
+            or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
+        ):
+            raise ValueError(f"AI endpoint host '{host}' is in a blocked link-local or metadata range")
+
+        try:
+            address = ip_address(normalized_host)
+        except ValueError:
+            address = None
+        if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
+            raise ValueError(f"AI endpoint IP '{host}' is not a permitted destination")
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -180,7 +167,7 @@ class AIEngine:
             return []
         try:
             req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:
+            with request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -216,7 +203,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib_error.URLError as exc:
@@ -242,7 +229,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -280,7 +267,11 @@ class AIEngine:
         }
         body = json.dumps(payload).encode()
         req  = request.Request(
-            f"{self.endpoint if self.endpoint.endswith('/v1') else self.endpoint + '/v1'}/chat/completions",
+            (
+                f"{self.endpoint}/chat/completions"
+                if self.endpoint.endswith("/v1")
+                else f"{self.endpoint}/v1/chat/completions"
+            ),
             data=body,
             headers={
                 "Content-Type":  "application/json",
@@ -289,7 +280,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:
