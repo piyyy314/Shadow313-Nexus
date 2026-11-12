@@ -195,8 +195,7 @@ docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.
 ```bash
 cp .env.example .env
 # Replace the example secrets before starting the API services.
-# Generate a local-only self-signed TLS pair (the private key is git-ignored).
-sh docker/nginx/gen-ssl.sh
+# Compose creates a local-only self-signed certificate in a Docker volume.
 docker compose up -d
 # Open WebUI through the nginx development listener: http://localhost:8080
 # Nginx HTTPS listener: https://localhost
