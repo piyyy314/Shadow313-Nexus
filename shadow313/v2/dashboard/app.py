@@ -1,10 +1,8 @@
+"""Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
+
 from __future__ import annotations
-"""
-shadow313.v2.dashboard.app  — v4
-FastAPI + HTMX security operations dashboard.
-Dark terminal aesthetic, SSE live feed, RAG-enhanced AI chat.
-Port: 7313
-"""
+
+import ipaddress
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -88,18 +86,18 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="chat">
     <div class="section-title">AI Security Assistant (RAG-Enhanced)</div>
     <div class="chat-box" id="chat-messages">
-      <div class="event-line"><span class="ts">NEXUS</span> Shadow313 AI ready. Ask me anything about your security posture.</div>
+      <div class="event-line"><span class="ts">NEXUS</span> AI assistant uses the configured backend; provider availability is checked per request.</div>
     </div>
     <div class="chat-input">
-      <input type="text" id="chat-input" placeholder="Ask a security question…" onkeydown="if(event.key==='Enter')sendChat()">  {# nosec S03 - HTML event handler, not credential comparison #}
-      <button onclick="sendChat()">Send</button>
+      <input type="text" id="chat-input" maxlength="20000" aria-label="Ask a security question" placeholder="Ask a security question…">
+      <button type="button" id="send-chat">Send</button>
     </div>
   </div>
 
   <div id="live">
-    <div class="section-title">Live Event Feed</div>
+    <div class="section-title">Connection Status</div>
     <div class="live-feed" id="live-feed">
-      <div class="event-line"><span class="ts">NEXUS</span> Connecting to event stream…</div>
+      <div class="event-line"><span class="ts">NEXUS</span> Connecting to dashboard heartbeat…</div>
     </div>
   </div>
 </main>
@@ -110,15 +108,31 @@ setInterval(() => {
   document.getElementById('clock').textContent = new Date().toUTCString();
 }, 1000);
 
+// Render all untrusted chat and stream content as text, never HTML.
+function appendLine(container, label, message, color) {
+  const row = document.createElement('div');
+  row.className = 'event-line';
+  const tag = document.createElement('span');
+  tag.className = 'ts';
+  if (color) tag.style.color = `var(${color})`;
+  tag.textContent = label;
+  row.appendChild(tag);
+  row.appendChild(document.createTextNode(` ${String(message ?? '')}`));
+  container.appendChild(row);
+  while (container.children.length > 200) {
+    container.removeChild(container.firstChild);
+  }
+  container.scrollTop = container.scrollHeight;
+}
+
 // Chat
 async function sendChat() {
   const input = document.getElementById('chat-input');
-  const msg   = input.value.trim();
+  const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
   const box = document.getElementById('chat-messages');
-  box.innerHTML += `<div class="event-line"><span class="ts">You</span> ${msg}</div>`;
-  box.scrollTop = box.scrollHeight;
+  appendLine(box, 'You', msg);
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
@@ -126,20 +140,31 @@ async function sendChat() {
       body: JSON.stringify({question: msg})
     });
     const data = await resp.json();
-    box.innerHTML += `<div class="event-line"><span class="ts" style="color:var(--accent)">AI</span> ${data.answer || data.error || 'No response'}</div>`;
-    box.scrollTop = box.scrollHeight;
-  } catch(e) {
-    box.innerHTML += `<div class="event-line"><span class="ts" style="color:var(--danger)">Error</span> ${e.message}</div>`;
+    appendLine(box, 'AI', data.answer || data.error || 'No response', '--accent');
+  } catch (error) {
+    appendLine(box, 'Error', error.message, '--danger');
   }
 }
 
-// SSE Live Feed
+document.getElementById('chat-input').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') sendChat();
+});
+document.getElementById('send-chat').addEventListener('click', sendChat);
+
+// SSE heartbeat stream. Security alerts are served by the ShiatoAli SOC API.
 const evtSource = new EventSource('/api/events');
-evtSource.onmessage = (e) => {
+let eventStreamErrorShown = false;
+evtSource.onopen = () => { eventStreamErrorShown = false; };
+evtSource.onmessage = (event) => {
   const feed = document.getElementById('live-feed');
-  const ts   = new Date().toISOString().slice(11,19);
-  feed.innerHTML += `<div class="event-line"><span class="ts">${ts}</span> ${e.data}</div>`;
-  feed.scrollTop = feed.scrollHeight;
+  const ts = new Date().toISOString().slice(11,19);
+  appendLine(feed, ts, event.data);
+};
+evtSource.onerror = () => {
+  if (!eventStreamErrorShown) {
+    appendLine(document.getElementById('live-feed'), 'WARN', 'Heartbeat stream disconnected; retrying', '--danger');
+    eventStreamErrorShown = true;
+  }
 };
 </script>
 </body>
