@@ -136,3 +136,20 @@ class TestAIEngineConfig:
 
         assert engine._openai_chat("system", "hello") == "ok"
         assert seen["authorization"] == "Bearer gateway-secret"
+
+def test_cloud_backends_select_their_provider_default_endpoint():
+    gateway = AIEngine({"backend": "gateway"})
+    openai = AIEngine({"backend": "openai"})
+
+    assert gateway.endpoint == "https://ai-gateway.vercel.sh/v1"
+    assert openai.endpoint == "https://api.openai.com/v1"
+
+
+def test_cloud_backend_replaces_compose_local_ollama_default():
+    gateway = AIEngine({
+        "backend": "gateway",
+        "endpoint": "http://ollama:11434",
+    })
+
+    assert gateway.endpoint == "https://ai-gateway.vercel.sh/v1"
+
