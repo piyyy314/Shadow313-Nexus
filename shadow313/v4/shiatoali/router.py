@@ -37,7 +37,7 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.post("/events", status_code=202)
     async def ingest_event(request: EventRequest) -> dict[str, Any]:
         try:
-            return store.ingest(EventInput(**request.model_dump()))
+            return store.ingest(EventInput(**request.dict()))
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
