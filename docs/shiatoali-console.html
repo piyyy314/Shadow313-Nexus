@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>ShiatoAli SOC Console | Shadow313 NEXUS</title>
+<style>
+:root{color-scheme:dark;--bg:#070b12;--surface:#0e1623;--surface2:#121e2e;--line:#243348;--text:#e6edf6;--muted:#91a1b6;--green:#35d07f;--cyan:#51c7e8;--amber:#f5b942;--red:#ff6875;--radius:12px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0%,#102338 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid var(--line);background:#080e18eF;position:sticky;top:0;z-index:2;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.08em}.mark{display:grid;place-items:center;width:34px;height:34px;background:var(--green);color:#04110a;font-weight:900;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.brand small{display:block;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:.12em}
+.header-actions{display:flex;align-items:center;gap:10px}.status{font:11px ui-monospace,monospace;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:7px}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+main{max-width:1440px;margin:auto;padding:24px}.intro{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:20px}.eyebrow{color:var(--green);font:11px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase}.intro h1{font-size:clamp(24px,4vw,34px);margin:5px 0}.intro p{margin:0;color:var(--muted);max-width:760px}
+button,input,select,textarea{font:inherit}button{border:1px solid #2c4960;background:#142438;color:var(--text);padding:9px 13px;border-radius:8px;cursor:pointer}button:hover{border-color:var(--cyan)}button.primary{background:#12653f;border-color:#20885a;color:white}button:disabled{opacity:.45;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.panel,.metric{background:linear-gradient(145deg,var(--surface),#0b121d);border:1px solid var(--line);border-radius:var(--radius)}.metric{padding:16px}.metric label{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}.metric strong{display:block;font:700 30px ui-monospace,monospace;margin-top:5px}.metric small{color:var(--muted)}
+.config{padding:16px;margin-bottom:16px}.config h2,.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;margin:0}.config-row{display:grid;grid-template-columns:minmax(200px,1.2fr) minmax(180px,1fr) auto auto;gap:10px;align-items:end;margin-top:12px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field input,.field select,.field textarea{width:100%;background:#08111d;border:1px solid #2a3a50;color:var(--text);padding:10px;border-radius:8px;min-width:0}.field textarea{min-height:76px;resize:vertical}
+.columns{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.panel{overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}.panel-head span{font-size:11px;color:var(--muted)}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:560px}th,td{text-align:left;padding:11px 14px;border-bottom:1px solid #1d2a3b;font-size:12px;vertical-align:top}th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.09em;background:#0a121e}td{color:#d7e2ef}.empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.pill{display:inline-block;border:1px solid #38506a;border-radius:999px;padding:2px 8px;font-size:10px;color:#b9c8d9}.pill.high,.pill.critical{border-color:#8f3947;color:#ff8993}.pill.medium,.pill.open{border-color:#8a6829;color:#ffd27b}.pill.low,.pill.closed{border-color:#286b4b;color:#7ee0a8}
+.stack{display:grid;gap:14px}.case-list{padding:8px 14px}.case{padding:12px 0;border-bottom:1px solid #1d2a3b}.case:last-child{border-bottom:0}.case-title{font-weight:650}.case-meta{font-size:11px;color:var(--muted);margin-top:4px}.case-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.case-actions button{font-size:11px;padding:5px 8px}
+.forms{padding:16px}.forms h3{font-size:12px;margin:0 0 12px}.forms .field{margin-bottom:10px}.notice{margin-top:12px;color:var(--muted);font-size:11px}.error{color:#ff8993}.success{color:#7ee0a8}
+footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.columns{grid-template-columns:1fr}.config-row{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){header{padding:12px 15px}main{padding:16px}.intro{align-items:start;flex-direction:column}.grid{gap:8px}.metric{padding:12px}.metric strong{font-size:24px}.config-row{grid-template-columns:1fr}.header-actions .status{display:none}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="mark">313</span><div>SHADOW313 NEXUS<small>SHIATOALI · SECURITY OPERATIONS</small></div></div><div class="header-actions"><span class="status" id="connection"><i class="dot"></i>NOT CONNECTED</span><button id="refresh">Refresh data</button></div></header>
+<main>
+<section class="intro"><div><div class="eyebrow">Defensive operations · v1 console</div><h1>ShiatoAli SOC Console</h1><p>Live event, alert, and analyst-case views backed by the ShiatoAli API. This console shows only records returned by your configured API; it does not fabricate demo telemetry.</p></div></section>
+<section class="panel config"><h2>API connection</h2><div class="config-row">
+<div class="field"><label for="apiBase">API base URL</label><input id="apiBase" type="url" placeholder="https://your-api.example.com" autocomplete="url"></div>
+<div class="field"><label for="apiKey">API key</label><input id="apiKey" type="password" placeholder="Enter SHADOW313_API_KEY" autocomplete="off"></div>
+<button class="primary" id="connect">Connect</button><button id="disconnect">Clear key</button>
+</div><div class="notice" id="message" role="status">The API key stays in this page's memory only and is not saved to browser storage. Use HTTPS. If this console is hosted on a different origin than the API, configure a strict CORS allowlist on the API server.</div></section>
+<section class="grid" aria-label="SOC summary">
+<div class="metric"><label>API status</label><strong id="mHealth">—</strong><small>ShiatoAli service</small></div>
+<div class="metric"><label>Events loaded</label><strong id="mEvents">—</strong><small>Current page</small></div>
+<div class="metric"><label>Alerts loaded</label><strong id="mAlerts">—</strong><small>Current page</small></div>
+<div class="metric"><label>Cases loaded</label><strong id="mCases">—</strong><small>Current page</small></div>
+</section>
+<section class="columns">
+<div class="stack">
+<div class="panel"><div class="panel-head"><h2>Recent alerts</h2><span id="alertCount">0 records</span></div><div class="table-wrap"><table><thead><tr><th>Severity</th><th>Detection</th><th>Host</th><th>Created</th></tr></thead><tbody id="alerts"><tr><td colspan="4" class="empty">Connect to load alert data.</td></tr></tbody></table></div></div>
+<div class="panel"><div class="panel-head"><h2>Recent events</h2><span id="eventCount">0 records</span></div><div class="table-wrap"><table><thead><tr><th>Time</th><th>Type</th><th>Host</th><th>Severity</th></tr></thead><tbody id="events"><tr><td colspan="4" class="empty">Connect to load event data.</td></tr></tbody></table></div></div>
+</div>
+<div class="stack">
+<div class="panel"><div class="panel-head"><h2>Analyst cases</h2><span id="caseCount">0 records</span></div><div class="case-list" id="cases"><div class="empty">Connect to load case data.</div></div></div>
+<div class="panel forms"><h3>Create analyst case</h3><form id="caseForm">
+<div class="field"><label for="caseTitle">Title</label><input id="caseTitle" maxlength="255" required placeholder="Investigate suspicious activity"></div>
+<div class="field"><label for="caseDescription">Description</label><textarea id="caseDescription" maxlength="10000" placeholder="Context and initial triage notes"></textarea></div>
+<div class="field"><label for="casePriority">Priority</label><select id="casePriority"><option>low</option><option selected>medium</option><option>high</option><option>critical</option></select></div>
+<div class="field"><label for="caseActor">Created by</label><input id="caseActor" maxlength="255" value="analyst"></div>
+<div class="field"><label for="caseAlert">Link alert ID (optional)</label><input id="caseAlert" placeholder="Alert ID from the alert list"></div>
+<button class="primary" type="submit">Create case</button></form><div class="notice" id="caseMessage" role="status"></div></div>
+</div>
+</section>
+<footer>SHADOW313 NEXUS · SHIATOALI SOC · Defensive triage only — detections are signals, not proof of compromise.</footer>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let apiBase = "";
+  let apiKey = "";
+  let busy = false;
+  const safe = (value) => value === null || value === undefined || value === "" ? "—" : String(value);
+  const fmt = (value) => { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? safe(value) : date.toLocaleString(); };
+  const setMessage = (value, kind = "") => { $("message").textContent = value; $("message").className = "notice " + kind; };
+  const setConnection = (value, kind = "") => { $("connection").innerHTML = ""; const dot = document.createElement("i"); dot.className = "dot " + kind; $("connection").append(dot, document.createTextNode(value)); };
+  const cell = (row, value, className) => { const td = document.createElement("td"); td.textContent = safe(value); if (className) { const pill = document.createElement("span"); pill.className = "pill " + String(className).toLowerCase(); pill.textContent = safe(value); td.textContent = ""; td.append(pill); } row.append(td); };
+  const emptyRow = (tbody, colspan, message) => { tbody.replaceChildren(); const row = document.createElement("tr"); const td = document.createElement("td"); td.colSpan = colspan; td.className = "empty"; td.textContent = message; row.append(td); tbody.append(row); };
+  async function request(path, options = {}) {
+    const response = await fetch(apiBase.replace(/\/$/, "") + path, { ...options, headers: { "Accept":"application/json", "Content-Type":"application/json", "X-API-Key":apiKey, ...(options.headers || {}) }, credentials:"omit" });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.detail || ("HTTP " + response.status));
+    return body;
+  }
+  function renderAlerts(items) {
+    const body = $("alerts"); if (!items.length) return emptyRow(body,4,"No alerts returned by the API.");
+    body.replaceChildren(); items.forEach(item => { const row=document.createElement("tr"); cell(row,item.severity,item.severity); cell(row,item.title || item.rule_name || item.detection || item.alert_type || item.id); cell(row,item.host); cell(row,fmt(item.created_at || item.timestamp)); body.append(row); });
+  }
+  function renderEvents(items) {
+    const body = $("events"); if (!items.length) return emptyRow(body,4,"No events returned by the API.");
+    body.replaceChildren(); items.forEach(item => { const row=document.createElement("tr"); cell(row,fmt(item.timestamp || item.created_at)); cell(row,item.event_type || item.type); cell(row,item.host); cell(row,item.severity,item.severity); body.append(row); });
+  }
+  function renderCases(items) {
+    const target=$("cases"); if (!items.length) { target.innerHTML='<div class="empty">No cases returned by the API.</div>'; return; }
+    target.replaceChildren(); items.forEach(item => {
+      const wrapper=document.createElement("article"); wrapper.className="case";
+      const title=document.createElement("div"); title.className="case-title"; title.textContent=safe(item.title);
+      const meta=document.createElement("div"); meta.className="case-meta"; meta.textContent=[item.case_id || item.id,item.priority,item.status,item.assignee ? "Assigned: "+item.assignee : ""].filter(Boolean).join(" · ");
+      const actions=document.createElement("div"); actions.className="case-actions";
+      const button=document.createElement("button"); button.type="button"; button.textContent=item.status==="closed"?"Reopen case":"Close case"; button.addEventListener("click",()=>updateCase(item.case_id || item.id,item.status==="closed"?"open":"closed"));
+      actions.append(button); wrapper.append(title,meta,actions); target.append(wrapper);
+    });
+  }
+  async function refresh() {
+    if (busy || !apiBase || !apiKey) return;
+    busy=true; $("refresh").disabled=true; setConnection("CONNECTING");
+    try {
+      const [health,events,alerts,cases]=await Promise.all([request("/api/shiatoali/health"),request("/api/shiatoali/events?limit=50"),request("/api/shiatoali/alerts?limit=50"),request("/api/shiatoali/cases?limit=50")]);
+      const eventItems=events.items || [], alertItems=alerts.items || [], caseItems=cases.items || [];
+      $("mHealth").textContent=safe(health.status || health.state || "OK").toUpperCase();
+      $("mEvents").textContent=eventItems.length; $("mAlerts").textContent=alertItems.length; $("mCases").textContent=caseItems.length;
+      $("eventCount").textContent=eventItems.length+" records"; $("alertCount").textContent=alertItems.length+" records"; $("caseCount").textContent=caseItems.length+" records";
+      renderEvents(eventItems); renderAlerts(alertItems); renderCases(caseItems);
+      setConnection("CONNECTED","ok"); setMessage("Connected. Data refreshed at "+new Date().toLocaleTimeString()+".","success");
+    } catch(error) {
+      $("mHealth").textContent="ERROR"; setConnection("API ERROR","bad"); setMessage(error.message + " — verify API URL, key, server availability, and CORS configuration.","error");
+    } finally { busy=false; $("refresh").disabled=false; }
+  }
+  async function updateCase(id,status) {
+    if (!id) return;
+    try { await request("/api/shiatoali/cases/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({actor:"analyst",status})}); await refresh(); }
+    catch(error) { setMessage("Case update failed: "+error.message,"error"); }
+  }
+  $("connect").addEventListener("click", async () => {
+    const raw=$("apiBase").value.trim();
+    if (!raw) { setMessage("Enter the base URL where the FastAPI service is running.","error"); return; }
+    try { const parsed=new URL(raw); if (!["https:","http:"].includes(parsed.protocol)) throw new Error("Use an HTTP or HTTPS API URL."); apiBase=parsed.origin + parsed.pathname.replace(/\/$/,""); }
+    catch(error) { setMessage("Invalid API URL: "+error.message,"error"); return; }
+    apiKey=$("apiKey").value.trim();
+    if (!apiKey) { setMessage("Enter the API key configured as SHADOW313_API_KEY.","error"); return; }
+    await refresh();
+  });
+  $("disconnect").addEventListener("click",()=>{apiKey="";$("apiKey").value="";$("mHealth").textContent="—";$("mEvents").textContent="—";$("mAlerts").textContent="—";$("mCases").textContent="—";setConnection("DISCONNECTED");setMessage("API key cleared from page memory.");});
+  $("refresh").addEventListener("click",refresh);
+  $("caseForm").addEventListener("submit",async(event)=>{
+    event.preventDefault(); if(!apiKey){$("caseMessage").textContent="Connect to the API first.";return;}
+    const payload={title:$("caseTitle").value.trim(),description:$("caseDescription").value,priority:$("casePriority").value,created_by:$("caseActor").value.trim() || "analyst"};
+    const alertId=$("caseAlert").value.trim(); if(alertId) payload.alert_id=alertId;
+    try { await request("/api/shiatoali/cases",{method:"POST",body:JSON.stringify(payload)}); $("caseForm").reset(); $("caseActor").value="analyst"; $("caseMessage").textContent="Case created."; $("caseMessage").className="notice success"; await refresh(); }
+    catch(error){$("caseMessage").textContent="Could not create case: "+error.message;$("caseMessage").className="notice error";}
+  });
+  $("apiBase").value=window.location.origin;
+})();
+</script>
+</body>
+</html>
