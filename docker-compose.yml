@@ -69,8 +69,8 @@ services:
           memory: 64M
     restart: unless-stopped
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     environment:
     - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
     - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
@@ -107,7 +107,7 @@ services:
     container_name: shadow313-ollama-init
     depends_on:
       ollama:
-        condition: service_healthy
+        condition: service_started
     volumes:
     - ollama_data:/root/.ollama
     - ./docker/ollama/init.sh:/init.sh:ro
@@ -197,8 +197,8 @@ services:
     - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_OUTPUT=rich
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     stdin_open: true
     tty: true
     networks:
@@ -246,8 +246,8 @@ services:
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
     - SHADOW313_ENV=production
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     networks:
     - shadow313_internal
     - shadow313_external
