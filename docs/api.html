@@ -51,6 +51,13 @@ Never put your API key in public browser code.
 <div style="display:flex;flex-direction:column;gap:12px">
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
+<span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/chat</span>
+</div>
+<p style="font-size:11px;color:var(--muted)">Authenticated AI chat. Uses SHADOW313_AI_BACKEND (Ollama, OpenAI-compatible, gateway, or disabled); returns 503 when disabled/unavailable. Cloud providers require their own API key.</p>
+</div>
+<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/status</span>
 </div>
@@ -61,14 +68,14 @@ Never put your API key in public browser code.
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/scan/recon</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Run recon scan. Body: {"target": "example.com", "mode": "full|passive|active"}</p>
+<p style="font-size:11px;color:var(--muted)">Reserved route only. No remote scan worker is connected; the API returns an explicit unavailable status until one is configured.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/detect</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Run ML detection on a SIEM event. Returns ATT&amp;CK mapping and ensemble score.</p>
+<p style="font-size:11px;color:var(--muted)">Run the configured web-shell and LOLBin rule detectors against one event. This is not a full ML ensemble or a complete SIEM.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -82,15 +89,19 @@ Never put your API key in public browser code.
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/bind/create</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Create a 313-BIND receipt. Returns bind_id, timestamp_ns, chain_hash, SLH-DSA signature.</p>
+<p style="font-size:11px;color:var(--muted)">Create an explicitly unsigned demo receipt. The current API returns UNSIGNED-SHA3-512-DEMO; it does not create or verify an SLH-DSA digital signature.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/attck/coverage</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Returns ATT&amp;CK coverage summary — 37 techniques across 11 tactics.</p>
+<p style="font-size:11px;color:var(--muted)">Returns a static, hard-coded coverage summary (currently 136 of 265 technique slots across 12 tactic labels). Verify against active detectors before using it as a measured coverage claim.</p>
 </div>
-</div></div></div>
+</div><section style="margin-top:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:18px">
+<h2 style="font-size:15px;margin-bottom:8px">ShiatoAli SOC API</h2>
+<p style="font-size:11px;color:var(--muted);line-height:1.7">Authenticated event ingestion, defensive alerts, and analyst case management are available under <code>/api/shiatoali/*</code>. See the <a href="/docs/shiatoali-soc.md" style="color:var(--green)">ShiatoAli service guide</a> and the machine-readable <a href="/api/openapi.json" style="color:var(--green)">OpenAPI schema</a> for the complete contract.</p>
+</section>
+</div></div>
 <footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>
