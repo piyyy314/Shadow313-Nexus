@@ -1,67 +1,136 @@
 from __future__ import annotations
-"""
-Shadow313 NEXUS — Plugin Manager
-Sandboxed plugin loading with HMAC-SHA256 signature verification.
-"""
-import importlib, hashlib, hmac, json
+
+"""Legacy HMAC-signed plugin loader with explicit signing-key configuration."""
+
+import hashlib
+import hmac
+import importlib
+import json
+import os
+import re
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Callable
+from typing import Any, Callable
 
 PLUGIN_HOOKS = [
-    "recon.post","vuln.post","exploit.pre","network.post",
-    "defense.post","quantum.post","alert.fire","session.close"
+    "recon.post",
+    "vuln.post",
+    "exploit.pre",
+    "network.post",
+    "defense.post",
+    "quantum.post",
+    "alert.fire",
+    "session.close",
 ]
+_PLUGIN_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
+
 
 class PluginManager:
-    def __init__(self, plugin_dir: str = "shadow313/plugins", secret: str = "shadow313-plugin-secret"):
-        self.plugin_dir = Path(plugin_dir)
-        self.secret     = secret.encode()
-        self._plugins:  Dict[str, Any] = {}
-        self._hooks:    Dict[str, List[Callable]] = {h: [] for h in PLUGIN_HOOKS}
+    """Load plugins only when their manifest has a valid HMAC signature.
+
+    Supply a unique signing key of at least 32 characters, or set
+    SHADOW313_PLUGIN_SIGNING_KEY. There is intentionally no built-in key.
+    """
+
+    def __init__(
+        self,
+        plugin_dir: str = "shadow313/plugins",
+        secret: str | None = None,
+    ) -> None:
+        configured_secret = secret or os.environ.get("SHADOW313_PLUGIN_SIGNING_KEY", "")
+        if len(configured_secret) < 32:
+            raise ValueError(
+                "Set SHADOW313_PLUGIN_SIGNING_KEY to a unique secret of at least 32 characters"
+            )
+        self.plugin_dir = Path(plugin_dir).expanduser().resolve()
+        self.secret = configured_secret.encode("utf-8")
+        self._plugins: dict[str, Any] = {}
+        self._hooks: dict[str, list[Callable]] = {hook: [] for hook in PLUGIN_HOOKS}
+
+    def _plugin_path(self, plugin_name: str) -> Path | None:
+        if not _PLUGIN_NAME.fullmatch(plugin_name):
+            return None
+        candidate = (self.plugin_dir / plugin_name).resolve()
+        if candidate.parent != self.plugin_dir:
+            return None
+        return candidate
 
     def load_all(self) -> int:
+        if not self.plugin_dir.is_dir():
+            return 0
         count = 0
-        for d in self.plugin_dir.iterdir():
-            if d.is_dir() and (d / "plugin.json").exists():
-                if self.load(d.name):
+        for directory in self.plugin_dir.iterdir():
+            if directory.is_dir() and (directory / "plugin.json").is_file():
+                if self.load(directory.name):
                     count += 1
         return count
 
     def load(self, plugin_name: str) -> bool:
-        plugin_path   = self.plugin_dir / plugin_name
-        manifest_path = plugin_path / "plugin.json"
-        sig_path      = plugin_path / "plugin.shadow313sig"
-        if not manifest_path.exists():
+        plugin_path = self._plugin_path(plugin_name)
+        if plugin_path is None:
             return False
-        manifest = json.loads(manifest_path.read_text())
-        if sig_path.exists():
-            sig      = sig_path.read_text().strip()
-            expected = hmac.new(self.secret, manifest_path.read_bytes(), hashlib.sha256).hexdigest()
-            if not hmac.compare_digest(sig, expected):
-                return False
+        manifest_path = plugin_path / "plugin.json"
+        sig_path = plugin_path / "plugin.shadow313sig"
+        if not manifest_path.is_file() or not sig_path.is_file():
+            return False
+        try:
+            manifest_bytes = manifest_path.read_bytes()
+            manifest = json.loads(manifest_bytes)
+            signature = sig_path.read_text(encoding="utf-8").strip()
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            return False
+
+        expected = hmac.new(self.secret, manifest_bytes, hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(signature, expected):
+            return False
+
         for hook in manifest.get("hooks", []):
             if hook in self._hooks:
-                self._hooks[hook].append(lambda data, n=plugin_name: self._dispatch(n, hook, data))
+                self._hooks[hook].append(
+                    lambda data, name=plugin_name, selected_hook=hook:
+                    self._dispatch(name, selected_hook, data)
+                )
         self._plugins[plugin_name] = manifest
         return True
 
-    def fire(self, hook: str, data: Dict[str, Any]) -> List[Any]:
-        return [h(data) for h in self._hooks.get(hook, []) if h(data)]
+    def fire(self, hook: str, data: dict[str, Any]) -> list[Any]:
+        """Dispatch each registered hook exactly once and retain falsey results."""
+        results = []
+        for callback in self._hooks.get(hook, []):
+            result = callback(data)
+            if result is not None:
+                results.append(result)
+        return results
 
-    def _dispatch(self, plugin_name: str, hook: str, data: Dict) -> Optional[Dict]:
+    def _dispatch(self, plugin_name: str, hook: str, data: dict) -> dict | None:
         try:
-            mod = importlib.import_module(f"shadow313.plugins.{plugin_name}.analyzer")
-            if hasattr(mod, "handle"):
-                return mod.handle(hook, data)
+            module = importlib.import_module(
+                f"shadow313.plugins.{plugin_name}.analyzer"
+            )
+            handler = getattr(module, "handle", None)
+            if callable(handler):
+                return handler(hook, data)
         except Exception:
-            pass
+            # Plugin failures are isolated from the host application.
+            return None
         return None
 
     def sign_plugin(self, plugin_name: str) -> str:
-        manifest_path = self.plugin_dir / plugin_name / "plugin.json"
-        sig = hmac.new(self.secret, manifest_path.read_bytes(), hashlib.sha256).hexdigest()
-        (self.plugin_dir / plugin_name / "plugin.shadow313sig").write_text(sig)
-        return sig
+        plugin_path = self._plugin_path(plugin_name)
+        if plugin_path is None:
+            raise ValueError("Invalid plugin name")
+        manifest_path = plugin_path / "plugin.json"
+        if not manifest_path.is_file():
+            raise FileNotFoundError(manifest_path)
+        signature = hmac.new(
+            self.secret, manifest_path.read_bytes(), hashlib.sha256
+        ).hexdigest()
+        (plugin_path / "plugin.shadow313sig").write_text(
+            signature, encoding="utf-8"
+        )
+        return signature
 
-    def list_plugins(self) -> List[Dict]:
-        return [{"name": n, "manifest": m} for n, m in self._plugins.items()]
+    def list_plugins(self) -> list[dict[str, Any]]:
+        return [
+            {"name": name, "manifest": manifest}
+            for name, manifest in self._plugins.items()
+        ]
