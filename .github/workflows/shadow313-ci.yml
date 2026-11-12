@@ -33,11 +33,11 @@ jobs:
       - name: Install dev dependencies
         run: pip install ruff black mypy pyyaml rich
       - name: Ruff lint
-        run: ruff check shadow313/ --output-format github || true
+        run: ruff check shadow313/ --output-format github
       - name: Black format check
-        run: black --check --diff shadow313/ || true
+        run: black --check --diff shadow313/
       - name: MyPy type check
-        run: mypy shadow313/ --ignore-missing-imports || true
+        run: mypy shadow313/ --ignore-missing-imports
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
@@ -93,10 +93,9 @@ jobs:
       - name: Bandit SAST scan
         run: |
           bandit -r shadow313/ -f json -o bandit-report.json \
-            --skip B101,B603,B607,B608,B311,B324 || true
-          echo "Bandit scan complete"
+            --skip B101,B603,B607,B608,B311,B324
       - name: Safety dependency check
-        run: safety check --json > safety-report.json || true
+        run: safety check --json > safety-report.json
       - name: Upload security artifacts
         uses: actions/upload-artifact@v7
         if: always()
@@ -150,7 +149,6 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
-        continue-on-error: true   # Don't fail CI if TestPyPI publish fails
 
 # ── Publish to PyPI (releases only) ──────────────────────────────────────────
   publish-pypi:
