@@ -1,50 +1,27 @@
-from __future__ import annotations
-"""
-shadow313.api.server
-FastAPI REST API for Shadow313 NEXUS v4.0.0
+"""FastAPI REST API for Shadow313 NEXUS v4.0.0."""
 
-Endpoints:
-  GET  /api/status          — health + version
-  GET  /api/modules         — list available modules
-  POST /api/scan/recon      — run recon scan
-  POST /api/scan/vuln       — run vuln scan
-  POST /api/detect          — run detection on event
-  POST /api/webshell/scan   — scan content for web shells
-  GET  /api/attck/coverage  — ATT&CK coverage summary
-  POST /api/bind/create     — create 313-BIND receipt
-  GET  /api/bind/{bind_id}  — retrieve receipt
-"""
+from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import logging
 import os
 import secrets
 import time
 from datetime import UTC, datetime
 from typing import Any
 
+import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import uvicorn
-HAS_FASTAPI = True
 
-from shadow313.api.access import authorize, install_limits
 from shadow313 import __version__
-import logging
+from shadow313.api.access import authorize, install_limits
+
+HAS_FASTAPI = True
 logger = logging.getLogger(__name__)
-
-
-# Intelligence modules (lazy import — graceful if not available)
-try:
-    from shadow313.v4.intelligence.honeypot_analyzer import HoneypotAnalyzer, WEForgeTracker
-    from shadow313.v4.intelligence.global_threat_sim_v2 import (
-        GlobalThreatSimulatorV2, GLOBAL_THREATS_2026, run_global_simulation_v2
-    )
-    HAS_INTELLIGENCE = True
-except ImportError:
-    HAS_INTELLIGENCE = False
 
 # ── Models ────────────────────────────────────────────────────────
 
