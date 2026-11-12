@@ -56,7 +56,9 @@ class AIEngine:
         configured_endpoint = config.get("endpoint")
         local_defaults = {"http://localhost:11434", "http://ollama:11434"}
         if self.backend == "gateway":
-            endpoint_default = "https://ai-gateway.vercel.sh/v1"
+            endpoint_default = os.environ.get(
+                "AI_GATEWAY_ENDPOINT", "https://ai-gateway.vercel.sh/v1"
+            )
         elif self.backend == "openai":
             endpoint_default = "https://api.openai.com/v1"
         else:
