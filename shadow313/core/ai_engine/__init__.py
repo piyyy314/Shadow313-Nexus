@@ -1,12 +1,12 @@
 """Unified AI inference engine for Ollama, OpenAI-compatible APIs, and gateways."""
+# ruff: noqa: S310  # All outbound URLs are validated as HTTP(S) in _validate_endpoint.
 
 from __future__ import annotations
 
 import json
 import os
 from collections.abc import Generator
-from urllib import error as urllib_error
-from urllib import request
+from urllib import error as urllib_error, request
 
 
 class AIEngine:
