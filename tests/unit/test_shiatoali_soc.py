@@ -58,3 +58,33 @@ def test_five_failed_authentications_raise_brute_force_alert(tmp_path):
         alert["rule_id"] == "SHIA-ID-001"
         for alert in result["alerts_created"]
     )
+
+
+
+def test_authenticated_api_ingestion_and_alert_query(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from shadow313.api.server import create_app
+
+    monkeypatch.setenv("SHIAATOALI_DB_PATH", str(tmp_path / "api.sqlite3"))
+    client = TestClient(create_app(api_key="shiatoali-test-key"))
+    headers = {"x-api-key": "shiatoali-test-key"}
+    response = client.post(
+        "/api/shiatoali/events",
+        headers=headers,
+        json={
+            "source": "windows",
+            "host": "endpoint-02",
+            "event_type": "process_creation",
+            "message": "powershell.exe -EncodedCommand <redacted>",
+            "event_id": "api-event-1",
+        },
+    )
+
+    assert response.status_code == 202
+    assert response.json()["status"] == "accepted"
+    alerts = client.get("/api/shiatoali/alerts", headers=headers)
+    assert alerts.status_code == 200
+    assert alerts.json()["items"][0]["rule_id"] == "SHIA-EXEC-001"
+
+    denied = client.get("/api/shiatoali/alerts")
+    assert denied.status_code == 401
