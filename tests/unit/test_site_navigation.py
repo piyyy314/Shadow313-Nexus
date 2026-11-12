@@ -51,6 +51,7 @@ class SiteNavigationTests(unittest.TestCase):
             ROOT / 'docs/shadow313-nexus-dashboard.html',
             ROOT / 'local_bundle/dashboard.html',
             ROOT / 'local_bundle/command-center.html',
+            ROOT / 'docs/shiatoali-console.html',
         )
         script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
         for path in dashboard_pages:
@@ -64,6 +65,18 @@ class SiteNavigationTests(unittest.TestCase):
                     ['node', '--check', '-'], input=code, capture_output=True, text=True,
                 )
                 self.assertEqual(result.returncode, 0, f'{path}:{index}: {result.stderr}')
+
+    def test_shiatoali_console_uses_authenticated_api_without_persisting_key(self):
+        path = ROOT / 'docs/shiatoali-console.html'
+        text = path.read_text()
+        for endpoint in ('/api/shiatoali/health', '/api/shiatoali/events',
+                         '/api/shiatoali/alerts', '/api/shiatoali/cases'):
+            with self.subTest(endpoint=endpoint):
+                self.assertIn(endpoint, text)
+        self.assertIn('"X-API-Key":apiKey', text)
+        self.assertIn('credentials:"omit"', text)
+        self.assertNotIn('localStorage', text)
+        self.assertNotIn('sessionStorage', text)
 
     def test_one_shared_primary_nav_without_injected_menus(self):
         for path in pages():
