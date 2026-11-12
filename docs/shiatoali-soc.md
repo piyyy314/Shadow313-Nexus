@@ -52,3 +52,21 @@ backup/restore procedure.
 - Detection rules are starter rules, not a full Sigma implementation.
 - This service does not claim to provide a complete SIEM or production SOC.
 - Keep the API behind authentication and TLS; do not expose the database file.
+
+## Analyst case management
+
+ShiatoAli also provides a basic analyst workflow. Cases can be created
+independently or linked to an existing alert. Case detail responses include
+linked alerts and an activity timeline.
+
+- `POST /api/shiatoali/cases` — create a case; optionally supply `alert_id`
+- `GET /api/shiatoali/cases` — list cases with alert counts
+- `GET /api/shiatoali/cases/{case_id}` — retrieve the case, linked alerts, and activity
+- `PATCH /api/shiatoali/cases/{case_id}` — update status/assignee and append a note
+
+Supported case statuses are `open`, `investigating`, `contained`, `resolved`,
+and `closed`. Priorities are `low`, `medium`, `high`, and `critical`.
+Status changes, assignment changes, notes, and case creation are recorded in
+the case activity table. This is an application-level activity history, not a
+tamper-proof audit ledger; production use should add immutable external audit
+storage and role-based authorization.
