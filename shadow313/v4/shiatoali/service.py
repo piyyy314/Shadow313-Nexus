@@ -37,7 +37,10 @@ RULES: tuple[dict[str, Any], ...] = (
     {
         "id": "SHIA-EXEC-001",
         "name": "Suspicious PowerShell command",
-        "pattern": r"powershell(?:\.exe)?[^\n]*(?:-enc(?:odedcommand)?\b|invoke-expression|downloadstring)",
+        "pattern": (
+            r"powershell(?:\.exe)?[^\n]*(?:-enc(?:odedcommand)?\b|"
+            r"invoke-expression|downloadstring)"
+        ),
         "severity": "high",
         "risk": 85,
         "tactic": "Execution",
