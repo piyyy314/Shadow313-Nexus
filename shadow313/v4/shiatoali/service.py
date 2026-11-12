@@ -145,7 +145,9 @@ class ShiatoAliStore:
     """SQLite/PostgreSQL event and alert store with idempotent ingestion."""
 
     def __init__(self, database_path: str | Path | None = None) -> None:
-        configured_url = None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
+        configured_url = (
+            None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
+        )
         self._engine: Any | None = None
         if configured_url:
             if not configured_url.startswith("postgresql+psycopg://"):
@@ -219,9 +221,19 @@ class ShiatoAliStore:
         if self._engine is not None:
             from sqlalchemy import inspect
 
-            if not inspect(self._engine).has_table("shiatoali_events"):
+            inspector = inspect(self._engine)
+            required_tables = {
+                "shiatoali_events",
+                "shiatoali_alerts",
+                "shiatoali_cases",
+                "shiatoali_case_alerts",
+                "shiatoali_case_activity",
+            }
+            missing_tables = required_tables.difference(inspector.get_table_names())
+            if missing_tables:
+                missing = ", ".join(sorted(missing_tables))
                 raise RuntimeError(
-                    "ShiatoAli PostgreSQL schema is missing; run "
+                    f"ShiatoAli PostgreSQL schema is incomplete ({missing}); run "
                     "'alembic -c alembic-shiatoali.ini upgrade head' first"
                 )
             return
