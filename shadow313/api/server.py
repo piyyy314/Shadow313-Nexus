@@ -62,6 +62,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
     api_key = api_key or os.environ.get("SHADOW313_API_KEY")
+    if api_key is not None:
+        api_key = api_key.strip()
     if os.environ.get("SHADOW313_ENV", "development") == "production":
         placeholder_keys = {
             "replace-with-a-random-api-key",
