@@ -7,7 +7,8 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Generator
-from urllib import error as urllib_error, request
+import urllib.error
+import urllib.request
 
 
 class AIEngine:
@@ -157,8 +158,8 @@ class AIEngine:
             return False
         try:
             if self.backend == "ollama":
-                req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with request.urlopen(req, timeout=5):  # nosec B310
+                req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+                with urllib.request.urlopen(req, timeout=5):  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -210,7 +211,7 @@ class AIEngine:
             with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
-        except urllib_error.URLError as exc:
+        except urllib.error.URLError as exc:
             return f"[AI error — Ollama unreachable: {exc.reason}]"
         except Exception as exc:
             return f"[AI error: {exc}]"
