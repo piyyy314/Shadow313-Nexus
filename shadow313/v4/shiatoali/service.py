@@ -12,10 +12,11 @@ import os
 import re
 import sqlite3
 import uuid
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 
 @dataclass(frozen=True)
@@ -98,8 +99,20 @@ class ShiatoAliStore:
         connection.execute("PRAGMA busy_timeout = 10000")
         return connection
 
+    @contextmanager
+    def _session(self) -> Iterator[sqlite3.Connection]:
+        db = self._connect()
+        try:
+            yield db
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
     def _initialize(self) -> None:
-        with self._connect() as db:
+        with self._session() as db:
             db.execute("PRAGMA journal_mode = WAL")
             db.executescript(
                 """
@@ -156,7 +169,7 @@ class ShiatoAliStore:
         created_at = _now().isoformat()
         inserted = False
         new_alerts: list[dict[str, Any]] = []
-        with self._connect() as db:
+        with self._session() as db:
             cursor = db.execute(
                 """INSERT OR IGNORE INTO shiatoali_events
                 (event_id, source, host, event_type, message, severity, username,
