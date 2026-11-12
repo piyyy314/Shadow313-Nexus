@@ -100,7 +100,9 @@ class AIEngine:
             normalized_host in self._BLOCKED_HOSTS
             or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
         ):
-            raise ValueError(f"AI endpoint host '{host}' is in a blocked link-local or metadata range")
+            raise ValueError(
+                f"AI endpoint host '{host}' is in a blocked link-local or metadata range"
+            )
 
         try:
             address = ip_address(normalized_host)
@@ -154,7 +156,7 @@ class AIEngine:
         try:
             if self.backend == "ollama":
                 req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with request.urlopen(req, timeout=5):
+                with request.urlopen(req, timeout=5):  # noqa: S310  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -167,7 +169,7 @@ class AIEngine:
             return []
         try:
             req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
+            with request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -203,7 +205,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib_error.URLError as exc:
@@ -229,7 +231,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -280,7 +282,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310 - endpoint validated at initialization
+            with request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:
