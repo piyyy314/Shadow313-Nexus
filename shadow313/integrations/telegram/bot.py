@@ -15,7 +15,7 @@ Environment variables (set in docker-compose.yml or .env):
   SHADOW313_AI_ENDPOINT    — Optional custom OpenAI-compatible endpoint
   SHADOW313_AI_MODEL       — Model name for the selected backend
   TELEGRAM_MIN_SEVERITY   — Minimum severity: LOW|MEDIUM|HIGH|CRITICAL (default: HIGH)
-  TELEGRAM_POLL_INTERVAL  — Seconds between polls (default: 10)
+  TELEGRAM_POLL_INTERVAL  — Seconds between polls (default: 2)
 
 Quick start:
   1. Message @BotFather → /newbot → copy token
@@ -42,7 +42,7 @@ logger = logging.getLogger("shadow313.telegram")
 
 BOT_TOKEN       = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID         = os.getenv("TELEGRAM_CHAT_ID", "")
-API_URL         = os.getenv("SHADOW313_API_URL", "")
+API_URL         = os.getenv("SHADOW313_API_URL", "http://shadow313-api:8313")
 OLLAMA_URL      = os.getenv("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL    = os.getenv("OLLAMA_MODEL", "matarmohamad313/shadow313-nexus")
 AI_BACKEND      = os.getenv("SHADOW313_AI_BACKEND", "ollama")
