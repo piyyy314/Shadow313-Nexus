@@ -152,6 +152,33 @@ class ShiatoAliStore:
                 );
                 CREATE INDEX IF NOT EXISTS idx_shia_alerts_created
                     ON shiatoali_alerts(created_at);
+                CREATE TABLE IF NOT EXISTS shiatoali_cases (
+                    case_id TEXT PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    description TEXT NOT NULL DEFAULT '',
+                    priority TEXT NOT NULL DEFAULT 'medium',
+                    status TEXT NOT NULL DEFAULT 'open',
+                    assignee TEXT,
+                    created_by TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_shia_cases_status_updated
+                    ON shiatoali_cases(status, updated_at);
+                CREATE TABLE IF NOT EXISTS shiatoali_case_alerts (
+                    case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+                    alert_id TEXT NOT NULL REFERENCES shiatoali_alerts(alert_id),
+                    linked_at TEXT NOT NULL,
+                    PRIMARY KEY (case_id, alert_id)
+                );
+                CREATE TABLE IF NOT EXISTS shiatoali_case_activity (
+                    activity_id TEXT PRIMARY KEY,
+                    case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+                    actor TEXT NOT NULL,
+                    action TEXT NOT NULL,
+                    details TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                );
                 """
             )
 
@@ -272,3 +299,130 @@ class ShiatoAliStore:
             alerts = db.execute("SELECT COUNT(*) FROM shiatoali_alerts").fetchone()[0]
         return {"service": "shiatoali-event-detection", "status": "ok",
                 "events": events, "alerts": alerts}
+
+    def create_case(
+        self, title: str, description: str = "", priority: str = "medium",
+        created_by: str = "system", alert_id: str | None = None,
+    ) -> dict[str, Any]:
+        title = title.strip()
+        if not title:
+            raise ValueError("case title is required")
+        if priority not in {"low", "medium", "high", "critical"}:
+            raise ValueError("priority must be low, medium, high, or critical")
+        now = _now().isoformat()
+        case_id = str(uuid.uuid4())
+        with self._session() as db:
+            if alert_id:
+                alert = db.execute(
+                    "SELECT alert_id FROM shiatoali_alerts WHERE alert_id = ?", (alert_id,)
+                ).fetchone()
+                if alert is None:
+                    raise ValueError("alert not found")
+            db.execute(
+                """INSERT INTO shiatoali_cases
+                (case_id, title, description, priority, status, created_by, created_at, updated_at)
+                VALUES (?, ?, ?, ?, 'open', ?, ?, ?)""",
+                (case_id, title, description, priority, created_by, now, now),
+            )
+            if alert_id:
+                db.execute(
+                    "INSERT INTO shiatoali_case_alerts (case_id, alert_id, linked_at) VALUES (?, ?, ?)",
+                    (case_id, alert_id, now),
+                )
+            self._record_case_activity(db, case_id, created_by, "created", title, now)
+            row = db.execute(
+                "SELECT * FROM shiatoali_cases WHERE case_id = ?", (case_id,)
+            ).fetchone()
+        return self._serialize_case(row)
+
+    @staticmethod
+    def _record_case_activity(
+        db: sqlite3.Connection, case_id: str, actor: str, action: str,
+        details: str, created_at: str,
+    ) -> None:
+        db.execute(
+            """INSERT INTO shiatoali_case_activity
+            (activity_id, case_id, actor, action, details, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)""",
+            (str(uuid.uuid4()), case_id, actor, action, details, created_at),
+        )
+
+    @staticmethod
+    def _serialize_case(row: sqlite3.Row) -> dict[str, Any]:
+        return dict(row)
+
+    def list_cases(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+        with self._session() as db:
+            rows = db.execute(
+                """SELECT c.*, COUNT(ca.alert_id) AS alert_count
+                FROM shiatoali_cases c
+                LEFT JOIN shiatoali_case_alerts ca ON ca.case_id = c.case_id
+                GROUP BY c.case_id ORDER BY c.updated_at DESC LIMIT ? OFFSET ?""",
+                (limit, offset),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def get_case(self, case_id: str) -> dict[str, Any] | None:
+        with self._session() as db:
+            case = db.execute(
+                "SELECT * FROM shiatoali_cases WHERE case_id = ?", (case_id,)
+            ).fetchone()
+            if case is None:
+                return None
+            alerts = db.execute(
+                """SELECT a.* FROM shiatoali_alerts a
+                JOIN shiatoali_case_alerts ca ON ca.alert_id = a.alert_id
+                WHERE ca.case_id = ? ORDER BY a.created_at DESC""",
+                (case_id,),
+            ).fetchall()
+            activity = db.execute(
+                """SELECT actor, action, details, created_at
+                FROM shiatoali_case_activity WHERE case_id = ?
+                ORDER BY created_at ASC""",
+                (case_id,),
+            ).fetchall()
+        result = dict(case)
+        result["alerts"] = [dict(row) for row in alerts]
+        result["activity"] = [dict(row) for row in activity]
+        return result
+
+    def update_case(
+        self, case_id: str, actor: str = "analyst",
+        status: str | None = None, assignee: str | None = None,
+        note: str | None = None,
+    ) -> dict[str, Any]:
+        allowed_statuses = {"open", "investigating", "contained", "resolved", "closed"}
+        if status is not None and status not in allowed_statuses:
+            raise ValueError("invalid case status")
+        if note is not None and len(note) > 5000:
+            raise ValueError("case note must be 5000 characters or fewer")
+        now = _now().isoformat()
+        with self._session() as db:
+            row = db.execute(
+                "SELECT * FROM shiatoali_cases WHERE case_id = ?", (case_id,)
+            ).fetchone()
+            if row is None:
+                raise KeyError("case not found")
+            if status is not None and status != row["status"]:
+                db.execute(
+                    "UPDATE shiatoali_cases SET status = ?, updated_at = ? WHERE case_id = ?",
+                    (status, now, case_id),
+                )
+                self._record_case_activity(
+                    db, case_id, actor, "status_changed",
+                    f'{row["status"]} -> {status}', now,
+                )
+            if assignee is not None and assignee != row["assignee"]:
+                db.execute(
+                    "UPDATE shiatoali_cases SET assignee = ?, updated_at = ? WHERE case_id = ?",
+                    (assignee, now, case_id),
+                )
+                self._record_case_activity(
+                    db, case_id, actor, "assigned", assignee or "unassigned", now,
+                )
+            if note:
+                self._record_case_activity(db, case_id, actor, "note", note, now)
+            updated = db.execute(
+                "SELECT * FROM shiatoali_cases WHERE case_id = ?", (case_id,)
+            ).fetchone()
+        return self._serialize_case(updated)
