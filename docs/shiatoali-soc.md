@@ -77,3 +77,14 @@ Status changes, assignment changes, notes, and case creation are recorded in
 the case activity table. This is an application-level activity history, not a
 tamper-proof audit ledger; production use should add immutable external audit
 storage and role-based authorization.
+
+## Analyst console
+
+A static browser console is available at `/docs/shiatoali-console.html` when
+served from the project website. It reads live health, events, alerts, and cases
+from the API and supports basic case creation and open/close transitions. The
+API URL and key are entered by the analyst; the key is held in page memory only
+and is not written to browser storage. Serve the console over HTTPS and keep
+the API behind TLS and authentication. If the website and API use different
+origins, configure the API's CORS allowlist for the exact console origin before
+connecting. Never embed a production API key in the HTML or source repository.
