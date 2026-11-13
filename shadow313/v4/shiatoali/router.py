@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -76,9 +77,22 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     async def list_alerts(
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
+        since: datetime | None = Query(default=None),
+        order: str = Query(default="desc", pattern="^(asc|desc)$"),
     ) -> dict[str, Any]:
-        items = store.list_alerts(limit=limit, offset=offset)
-        return {"items": items, "limit": limit, "offset": offset}
+        items = store.list_alerts(
+            limit=limit,
+            offset=offset,
+            since=since,
+            order=order,
+        )
+        return {
+            "items": items,
+            "limit": limit,
+            "offset": offset,
+            "since": since.isoformat() if since else None,
+            "order": order,
+        }
 
     @router.post("/cases", status_code=201)
     async def create_case(request: CaseCreateRequest) -> dict[str, Any]:
