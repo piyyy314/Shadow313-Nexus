@@ -222,7 +222,7 @@ def send_alert(event: dict) -> bool:
 
 
 def _fetch_events(since_ts: float) -> list[dict]:
-    """Fetch new ShiatoAli alerts; the generic /api/events route is not connected."""
+    """Fetch all new ShiatoAli alerts across API pages, oldest first."""
     global EVENT_PROVIDER_WARNED
     if not API_URL:
         return []
@@ -230,30 +230,46 @@ def _fetch_events(since_ts: float) -> list[dict]:
     if parsed_api_url.scheme not in {"http", "https"} or not parsed_api_url.hostname:
         logger.warning("Alert polling disabled: SHADOW313_API_URL must be an HTTP(S) URL")
         return []
-    url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?limit=500"
     key = os.environ.get("SHADOW313_API_KEY", "")
     if not key:
         if not EVENT_PROVIDER_WARNED:
             logger.warning("Alert polling disabled: configure SHADOW313_API_KEY")
             EVENT_PROVIDER_WARNED = True
         return []
-    req = urllib.request.Request(
-        url,
-        headers={"Accept": "application/json", "X-API-Key": key},
-    )
+
+    items: list[dict] = []
+    page_size = 500
+    max_pages = 20
     try:
-        with urllib.request.urlopen(req, timeout=8) as resp:  # noqa: S310  # nosec B310
-            data = json.loads(resp.read())
-        if isinstance(data, dict) and data.get("status") == "unavailable":
-            if not EVENT_PROVIDER_WARNED:
-                logger.warning("ShiatoAli alert provider is unavailable")
-                EVENT_PROVIDER_WARNED = True
-            return []
-        items = data.get("items", []) if isinstance(data, dict) else []
+        for page in range(max_pages):
+            query = urllib.parse.urlencode({"limit": page_size, "offset": page * page_size})
+            url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?{query}"
+            req = urllib.request.Request(
+                url,
+                headers={"Accept": "application/json", "X-API-Key": key},
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:  # noqa: S310  # nosec B310
+                data = json.loads(resp.read())
+            if isinstance(data, dict) and data.get("status") == "unavailable":
+                if not EVENT_PROVIDER_WARNED:
+                    logger.warning("ShiatoAli alert provider is unavailable")
+                    EVENT_PROVIDER_WARNED = True
+                return []
+            page_items = data.get("items", []) if isinstance(data, dict) else []
+            if not isinstance(page_items, list):
+                logger.warning("ShiatoAli alert API returned an invalid items payload")
+                return []
+            items.extend(item for item in page_items if isinstance(item, dict))
+            if len(page_items) < page_size:
+                break
+        else:
+            logger.warning(
+                "ShiatoAli alert backlog exceeded %s pages; remaining alerts will be polled next cycle",
+                max_pages,
+            )
+
         events = []
         for alert in items:
-            if not isinstance(alert, dict):
-                continue
             alert_id = str(alert.get("alert_id", ""))
             created_at = str(alert.get("created_at", ""))
             try:
@@ -262,8 +278,9 @@ def _fetch_events(since_ts: float) -> list[dict]:
                     created = created.replace(tzinfo=datetime.UTC)
                 created_unix = created.timestamp()
             except ValueError:
+                logger.warning("Skipping ShiatoAli alert with invalid timestamp: %s", alert_id)
                 continue
-            if created_unix <= since_ts or (alert_id and alert_id in PROCESSED_ALERT_IDS):
+            if created_unix < since_ts or (alert_id and alert_id in PROCESSED_ALERT_IDS):
                 continue
             host = str(alert.get("host") or "unknown host")
             title = str(alert.get("title") or "Security alert")
@@ -278,6 +295,7 @@ def _fetch_events(since_ts: float) -> list[dict]:
                 "technique": alert.get("technique", ""),
                 "host": host,
             })
+        events.sort(key=lambda event: (event["timestamp_unix"], event["alert_id"]))
         return events
     except Exception as exc:
         logger.debug("ShiatoAli alert poll failed (API may be starting): %s", exc)
@@ -341,8 +359,13 @@ async def run_bot() -> None:
                 else:
                     batch_failed = True
             if not batch_failed:
-                since_ts = batch_latest
-                PROCESSED_ALERT_IDS.clear()
+                if batch_latest > since_ts:
+                    since_ts = batch_latest
+                    PROCESSED_ALERT_IDS.intersection_update(
+                        str(event.get("alert_id") or event.get("id") or "")
+                        for event in events
+                        if event.get("timestamp_unix") == batch_latest
+                    )
         except Exception as e:
             logger.error("Polling loop error: %s", e)
         await asyncio.sleep(POLL_INTERVAL)
