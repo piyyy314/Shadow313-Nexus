@@ -93,6 +93,22 @@ class TestAIEngineConfig:
         engine = AIEngine({"endpoint": "http://localhost:11434/"})
         assert not engine.endpoint.endswith("/")
 
+    def test_gateway_uses_gateway_endpoint_with_default_ollama_config(self, monkeypatch):
+        monkeypatch.delenv("AI_GATEWAY_ENDPOINT", raising=False)
+        engine = AIEngine({
+            "backend": "gateway",
+            "endpoint": "http://localhost:11434",
+        })
+        assert engine.endpoint == "https://ai-gateway.vercel.sh/v1"
+
+    def test_gateway_endpoint_can_be_overridden_by_environment(self, monkeypatch):
+        monkeypatch.setenv("AI_GATEWAY_ENDPOINT", "https://gateway.example/v1")
+        engine = AIEngine({
+            "backend": "gateway",
+            "endpoint": "http://ollama:11434",
+        })
+        assert engine.endpoint == "https://gateway.example/v1"
+
     def test_gateway_key_does_not_fall_back_to_openai_key(self, monkeypatch):
         monkeypatch.setenv("OPENAI_API_KEY", "openai-secret")
         monkeypatch.delenv("AI_GATEWAY_API_KEY", raising=False)
@@ -107,7 +123,7 @@ class TestAIEngineConfig:
 
     def test_openai_compatible_backend_sends_selected_key(self, monkeypatch):
         import json
-        from shadow313.core.ai_engine import request
+        from shadow313.core import ai_engine
 
         seen = {}
 
@@ -127,7 +143,7 @@ class TestAIEngineConfig:
             seen["authorization"] = req.get_header("Authorization")
             return FakeResponse()
 
-        monkeypatch.setattr(request, "urlopen", fake_urlopen)
+        monkeypatch.setattr(ai_engine.urllib.request, "urlopen", fake_urlopen)
         engine = AIEngine({
             "backend": "gateway",
             "endpoint": "https://gateway.example/v1",
@@ -136,3 +152,20 @@ class TestAIEngineConfig:
 
         assert engine._openai_chat("system", "hello") == "ok"
         assert seen["authorization"] == "Bearer gateway-secret"
+
+def test_cloud_backends_select_their_provider_default_endpoint():
+    gateway = AIEngine({"backend": "gateway"})
+    openai = AIEngine({"backend": "openai"})
+
+    assert gateway.endpoint == "https://ai-gateway.vercel.sh/v1"
+    assert openai.endpoint == "https://api.openai.com/v1"
+
+
+def test_cloud_backend_replaces_compose_local_ollama_default():
+    gateway = AIEngine({
+        "backend": "gateway",
+        "endpoint": "http://ollama:11434",
+    })
+
+    assert gateway.endpoint == "https://ai-gateway.vercel.sh/v1"
+

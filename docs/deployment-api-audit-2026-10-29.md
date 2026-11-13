@@ -76,15 +76,18 @@ The API/layout tests below were run locally, not by CI. Do not merge before this
   `shadow313/api/audit_server.py` are separate Python services, not the Node website function.
   Hosting, authentication, persistent receipt storage and any proxy routing must be designed
   before enabling real scans or receipts. Do not put server API keys in browser JavaScript.
-- **AI chat is not implemented on the website backend.** SentinelOS requests `/api/chat` and
-  already catches failures with an explicitly labelled local fallback. The handler now returns
-  a clear 503. No provider credentials or external AI service were provisioned.
+- **The static website has no hosted AI backend.** SentinelOS requests `/api/chat` and
+  catches failures with an explicitly labelled local fallback. The static adapter returns an
+  explicit unavailable response; the separately hosted Python API now exposes an authenticated
+  `POST /api/chat` endpoint. No provider credentials or external AI service are provisioned
+  by default.
 - **Waitlist storage is not connected.** The homepage already redirects valid submissions to
   `/contact` and reports that signup is unavailable. This PR does not invent a subscriber store.
-- **Legacy page dependencies:** `docs/recon.html` references missing shared CSS/JS and three
-  nonexistent relative tool pages. Three archived saved pages also reference missing resources.
-  These are not missing Vercel rewrite destinations. They were recorded rather than rebuilding
-  an unrelated legacy page or modifying archived captures.
+- **Legacy page dependencies (rechecked 2026-11-12):** the current `docs/recon.html`
+  uses the published shared CSS files and existing Vercel routes; the earlier missing-resource
+  finding is stale. Its source link and an inaccurate "100% Offline Capable" claim were corrected.
+  Archived saved captures may still reference missing resources; they are outside the public
+  output allowlist and were not modified.
 - **Static publication boundary:** the project's default output is the repository root. Existing
   Python/environment rewrites are not a complete publication allowlist. A dedicated static output
   directory is recommended before treating all repository-only files as private. Actual public

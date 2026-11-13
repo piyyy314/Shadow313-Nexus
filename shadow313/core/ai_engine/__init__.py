@@ -1,25 +1,13 @@
-from __future__ import annotations
-"""
-shadow313.core.ai_engine  — v4
-AI Engine abstraction: Ollama (local) · OpenAI-compatible · Disabled.
+# ruff: noqa: S310
+"""Unified AI inference engine for Ollama, OpenAI-compatible APIs, and AI gateways."""
 
-BUG FIXES vs v1:
-  - _ollama_stream() had an infinite loop risk: if 'done' key was missing
-    from a chunk the loop never terminated — added packet counter guard.
-  - _openai_chat() imported os inside function on every call — moved to top.
-  - is_available() swallowed all exceptions silently — now logs to stderr in
-    verbose mode.
-  - chat() with context= did not truncate context to avoid exceeding ctx_win —
-    added _truncate_context() helper.
-  - stream() fell back to chat() for non-ollama backends but ignored
-    system_prompt parameter — fixed.
-"""
+from __future__ import annotations
+
+import collections.abc
 import json
 import os
-import sys
-import time
-from typing import Any, Generator
-from urllib import request, error as urllib_error
+import urllib.error
+import urllib.request
 
 
 class AIEngine:
@@ -28,6 +16,7 @@ class AIEngine:
     Backends:
       - "ollama"   → http://localhost:11434  (local, default)
       - "openai"   → OpenAI-compatible REST API
+      - "gateway"  → Vercel AI Gateway or a configured OpenAI-compatible gateway
       - "disabled" → returns stub messages (offline / CI mode)
     """
 
@@ -41,7 +30,8 @@ class AIEngine:
     # Maximum characters of context JSON to include in a prompt
     _MAX_CTX_CHARS = 12_000
 
-    # SSRF prevention (S313-CVE-2026-002)
+    # Restrict schemes and known metadata destinations.
+    # Endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
     _BLOCKED_HOSTS   = {
         "169.254.169.254",       # AWS/GCP/Azure instance metadata
@@ -53,7 +43,22 @@ class AIEngine:
     def __init__(self, config: dict) -> None:
         self.backend:  str = config.get("backend", "ollama")
         self.model:    str = config.get("model", "mistral:7b")
-        raw_endpoint       = config.get("endpoint", "http://localhost:11434").rstrip("/")
+        configured_endpoint = config.get("endpoint")
+        local_defaults = {"http://localhost:11434", "http://ollama:11434"}
+        if self.backend == "gateway":
+            endpoint_default = os.environ.get(
+                "AI_GATEWAY_ENDPOINT", "https://ai-gateway.vercel.sh/v1"
+            )
+        elif self.backend == "openai":
+            endpoint_default = "https://api.openai.com/v1"
+        else:
+            endpoint_default = "http://localhost:11434"
+        if not configured_endpoint or (
+            self.backend in {"openai", "gateway"}
+            and configured_endpoint.rstrip("/") in local_defaults
+        ):
+            configured_endpoint = endpoint_default
+        raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
         self.timeout:  int = int(config.get("timeout", 120))
         self.ctx_win:  int = int(config.get("context_window", 8192))
@@ -69,45 +74,48 @@ class AIEngine:
             )
         else:
             self._api_key = ""
-        if self.backend == "gateway" and "endpoint" not in config:
-            self.endpoint = "https://ai-gateway.vercel.sh/v1"
 
     def _validate_endpoint(self, endpoint: str) -> str:
-        """Validate AI endpoint URL to prevent SSRF (S313-CVE-2026-002)."""
-        from urllib.parse import urlparse
+        """Validate an administrator-configured HTTP(S) AI endpoint."""
+        from ipaddress import IPv6Address, ip_address
+        from urllib.parse import urlsplit
+
+        parsed = urlsplit(endpoint)
+        scheme = parsed.scheme.lower()
+        host = parsed.hostname or ""
+        if scheme not in self._ALLOWED_SCHEMES:
+            raise ValueError("AI endpoint must use http or https")
+        if not host or parsed.username is not None or parsed.password is not None:
+            raise ValueError("AI endpoint must include a host and must not include user info")
+        # Accessing .port validates malformed port strings before any urllib.request.
+        _ = parsed.port
+        if host in self._BLOCKED_HOSTS:
+            raise ValueError(f"AI endpoint host '{host}' is blocked")
+
+        normalized_host = host
         try:
-            parsed = urlparse(endpoint)
-            scheme = parsed.scheme.lower()
-            host   = parsed.hostname or ""
-            if scheme not in self._ALLOWED_SCHEMES:
-                raise ValueError(
-                    f"AI endpoint scheme '{scheme}' is not allowed. Use http or https."
-                )
-            if host in self._BLOCKED_HOSTS:
-                raise ValueError(
-                    f"AI endpoint host '{host}' is blocked to prevent SSRF attacks."
-                )
-            # Normalize IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254)
-            normalized_host = host
-            try:
-                from ipaddress import IPv6Address
-                ipv6 = IPv6Address(host)
-                if ipv6.ipv4_mapped:
-                    normalized_host = str(ipv6.ipv4_mapped)
-            except Exception:
-                pass
-            if normalized_host in self._BLOCKED_HOSTS:
-                raise ValueError(
-                    f"AI endpoint host '{host}' is blocked (IPv4-mapped) to prevent SSRF attacks."
-                )
-            if normalized_host.startswith("169.254.") or host.startswith("169.254.") or host.startswith("fd00:"):
-                raise ValueError(
-                    f"AI endpoint host '{host}' is in a reserved/link-local range."
-                )
+            ipv6 = IPv6Address(host)
         except ValueError:
-            raise
-        except Exception:
-            pass  # Malformed URL — let the actual request fail naturally
+            ipv6 = None
+        if ipv6 and ipv6.ipv4_mapped:
+            normalized_host = str(ipv6.ipv4_mapped)
+
+        if (
+            normalized_host in self._BLOCKED_HOSTS
+            or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
+        ):
+            raise ValueError(
+                f"AI endpoint host '{host}' is in a blocked link-local or metadata range"
+            )
+
+        try:
+            address = ip_address(normalized_host)
+        except ValueError:
+            address = None
+        if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
+            raise ValueError(
+                f"AI endpoint IP '{host}' is not a permitted destination"
+            )
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -136,8 +144,8 @@ class AIEngine:
         self,
         user_prompt: str,
         system_prompt: str | None = None,
-    ) -> Generator[str, None, None]:
-        """Stream response tokens (generator)."""
+    ) -> collections.abc.Generator[str, None, None]:
+        """Stream Ollama tokens; other compatible providers yield one full response chunk."""
         if self.backend == "disabled":
             yield "[AI disabled]"
             return
@@ -148,13 +156,13 @@ class AIEngine:
             yield self.chat(user_prompt, system_prompt=system_prompt)
 
     def is_available(self) -> bool:
-        """Probe the AI backend to check connectivity."""
+        """Check local Ollama connectivity or cloud-provider credential configuration."""
         if self.backend == "disabled":
             return False
         try:
             if self.backend == "ollama":
-                req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with request.urlopen(req, timeout=5):
+                req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+                with urllib.request.urlopen(req, timeout=5):  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -166,8 +174,8 @@ class AIEngine:
         if self.backend != "ollama":
             return []
         try:
-            req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:
+            req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -196,22 +204,24 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
-        except urllib_error.URLError as exc:
+        except urllib.error.URLError as exc:
             return f"[AI error — Ollama unreachable: {exc.reason}]"
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(self, system: str, user: str) -> Generator[str, None, None]:
+    def _ollama_stream(
+        self, system: str, user: str
+    ) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
@@ -222,14 +232,14 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -266,8 +276,12 @@ class AIEngine:
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req  = request.Request(
-            f"{self.endpoint if self.endpoint.endswith('/v1') else self.endpoint + '/v1'}/chat/completions",
+        req  = urllib.request.Request(
+            (
+                f"{self.endpoint}/chat/completions"
+                if self.endpoint.endswith("/v1")
+                else f"{self.endpoint}/v1/chat/completions"
+            ),
             data=body,
             headers={
                 "Content-Type":  "application/json",
@@ -276,7 +290,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:

@@ -134,7 +134,7 @@ def test_gateway_url_and_key_without_network(monkeypatch, endpoint):
     monkeypatch.setenv("AI_GATEWAY_API_KEY", "fixture")
     engine = AIEngine({"backend": "gateway", "endpoint": endpoint})
     with patch(
-        "shadow313.core.ai_engine.request.urlopen", side_effect=OSError("intercepted")
+        "urllib.request.urlopen", side_effect=OSError("intercepted")
     ) as send:
         engine.chat("test")
     req = send.call_args.args[0]
