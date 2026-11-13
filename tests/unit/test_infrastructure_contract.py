@@ -74,3 +74,22 @@ def test_local_tls_private_key_is_not_tracked_in_source_tree():
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
     assert "docker/nginx/ssl/*.key" in ignore
     assert "docker/nginx/ssl/*.crt" in ignore
+
+
+
+def test_postgres_compose_overlay_runs_migrations_before_api():
+    overlay = (ROOT / "docker-compose.postgres.yml").read_text(encoding="utf-8")
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    migration = overlay.split("  shiatoali-migrate:", 1)[1].split("  shadow313-api:", 1)[0]
+    api = overlay.split("  shadow313-api:", 1)[1].split("volumes:", 1)[0]
+
+    assert "image: postgres:16" in overlay
+    assert "pg_isready" in overlay
+    assert "ports:" not in overlay
+    assert "alembic" in migration and "upgrade" in migration and "head" in migration
+    assert "service_healthy" in migration
+    assert "service_completed_successfully" in api
+    assert "SHIAATOALI_DATABASE_URL" in migration
+    assert "SHIAATOALI_DATABASE_URL" in api
+    assert '"psycopg[binary]>=3.1"' in dockerfile
+    assert '"alembic>=1.13"' in dockerfile

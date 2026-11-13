@@ -37,6 +37,28 @@ to production. To inspect the current revision:
 alembic -c alembic-shiatoali.ini current
 ```
 
+## Docker Compose deployment
+
+The default Compose file keeps the local SQLite setup. To run the API with a
+dedicated PostgreSQL container and automatic one-shot migration, create a
+private .env file and set the four SHIAATOALI_POSTGRES_* / SHIAATOALI_DATABASE_URL
+values shown in .env.example. Generate a URL-safe password with
+`openssl rand -hex 32` and use the same value in POSTGRES_PASSWORD and the
+database URL. Do not commit .env.
+
+Start the stack with:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
+```
+
+Compose waits for PostgreSQL health, runs the Alembic migration service to
+completion, and only then starts the API. The database is not published on a
+host port. The Compose example is a single-host deployment baseline, not a
+managed production database or backup solution. For production, use a managed
+PostgreSQL service, separate migration and runtime roles, TLS verification,
+automated backups, retention, monitoring, and tested restores.
+
 ## Data representation and operations
 
 Timestamps are stored as normalized UTC ISO-8601 text so SQLite and PostgreSQL
