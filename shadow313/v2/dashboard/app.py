@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
-from datetime import UTC, datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 
