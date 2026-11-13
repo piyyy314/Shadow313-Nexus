@@ -76,9 +76,14 @@ linked alerts and an activity timeline.
 Supported case statuses are `open`, `investigating`, `contained`, `resolved`,
 and `closed`. Priorities are `low`, `medium`, `high`, and `critical`.
 Status changes, assignment changes, notes, and case creation are recorded in
-the case activity table. This is an application-level activity history, not a
-tamper-proof audit ledger; production use should add immutable external audit
-storage and role-based authorization.
+the case activity table. The API assigns the actor server-side (api-key when
+a shared API key is configured, or local-anonymous for localhost-only
+development); client-supplied created_by and actor values are rejected.
+A shared API key does not identify an individual human analyst, so this is not
+per-user attribution or role-based authorization. This is an application-level
+activity history, not a tamper-proof audit ledger; multi-analyst production use
+still requires per-user identity, role-based authorization, and immutable
+external audit storage.
 
 ## Analyst console
 

@@ -105,8 +105,11 @@ def create_app(api_key: str | None = None) -> FastAPI:
     _receipts: dict[str, dict] = {}
 
     # ── Auth dependency ───────────────────────────────────────────
-    def verify_api_key(request: Request):
+    def verify_api_key(request: Request) -> str:
         authorize(request, api_key)
+        # A shared API key authenticates the service credential, not a human.
+        # Case activity must never trust analyst identity from request payloads.
+        return "api-key" if api_key else "local-anonymous"
 
     # ShiatoAli SOC vertical slice: durable events + defensive alert generation.
     from shadow313.v4.shiatoali.router import build_router as build_shiatoali_router

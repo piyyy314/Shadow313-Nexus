@@ -68,7 +68,6 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
 <div class="field"><label for="caseTitle">Title</label><input id="caseTitle" maxlength="255" required placeholder="Investigate suspicious activity"></div>
 <div class="field"><label for="caseDescription">Description</label><textarea id="caseDescription" maxlength="10000" placeholder="Context and initial triage notes"></textarea></div>
 <div class="field"><label for="casePriority">Priority</label><select id="casePriority"><option>low</option><option selected>medium</option><option>high</option><option>critical</option></select></div>
-<div class="field"><label for="caseActor">Created by</label><input id="caseActor" maxlength="255" value="analyst"></div>
 <div class="field"><label for="caseAlert">Link alert ID (optional)</label><input id="caseAlert" placeholder="Alert ID from the alert list"></div>
 <button class="primary" type="submit">Create case</button></form><div class="notice" id="caseMessage" role="status"></div></div>
 </div>
@@ -129,7 +128,7 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
   }
   async function updateCase(id,status) {
     if (!id) return;
-    try { await request("/api/shiatoali/cases/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({actor:"analyst",status})}); await refresh(); }
+    try { await request("/api/shiatoali/cases/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({status})}); await refresh(); }
     catch(error) { setMessage("Case update failed: "+error.message,"error"); }
   }
   $("connect").addEventListener("click", async () => {
@@ -145,9 +144,9 @@ footer{padding:24px;text-align:center;color:#6f829a;font-size:11px}
   $("refresh").addEventListener("click",refresh);
   $("caseForm").addEventListener("submit",async(event)=>{
     event.preventDefault(); if(!apiKey){$("caseMessage").textContent="Connect to the API first.";return;}
-    const payload={title:$("caseTitle").value.trim(),description:$("caseDescription").value,priority:$("casePriority").value,created_by:$("caseActor").value.trim() || "analyst"};
+    const payload={title:$("caseTitle").value.trim(),description:$("caseDescription").value,priority:$("casePriority").value};
     const alertId=$("caseAlert").value.trim(); if(alertId) payload.alert_id=alertId;
-    try { await request("/api/shiatoali/cases",{method:"POST",body:JSON.stringify(payload)}); $("caseForm").reset(); $("caseActor").value="analyst"; $("caseMessage").textContent="Case created."; $("caseMessage").className="notice success"; await refresh(); }
+    try { await request("/api/shiatoali/cases",{method:"POST",body:JSON.stringify(payload)}); $("caseForm").reset(); $("caseMessage").textContent="Case created. Activity is attributed to the API credential."; $("caseMessage").className="notice success"; await refresh(); }
     catch(error){$("caseMessage").textContent="Could not create case: "+error.message;$("caseMessage").className="notice error";}
   });
 })();

@@ -149,3 +149,19 @@ def test_openapi_documents_soc_alert_cursor_parameters():
     order = next(parameter for parameter in parameters if parameter["name"] == "order")
     assert since["schema"]["format"] == "date-time"
     assert order["schema"]["enum"] == ["asc", "desc"]
+
+
+    
+def test_soc_case_actor_fields_are_server_assigned():
+    contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
+    create_schema = contract["paths"]["/api/shiatoali/cases"]["post"]["requestBody"][
+        "content"
+    ]["application/json"]["schema"]
+    update_schema = contract["paths"]["/api/shiatoali/cases/{case_id}"]["patch"][
+        "requestBody"
+    ]["content"]["application/json"]["schema"]
+
+    assert "created_by" not in create_schema["properties"]
+    assert "actor" not in update_schema["properties"]
+    assert create_schema["additionalProperties"] is False
+    assert update_schema["additionalProperties"] is False

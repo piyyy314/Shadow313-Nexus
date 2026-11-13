@@ -428,18 +428,32 @@ def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
     assert client.get("/api/shiatoali/events").status_code == 200
     assert client.get("/api/shiatoali/alerts").status_code == 200
 
+    spoofed_create = client.post(
+        "/api/shiatoali/cases",
+        json={"title": "Spoofed actor", "created_by": "attacker"},
+    )
+    assert spoofed_create.status_code == 422
+
     case_response = client.post(
         "/api/shiatoali/cases",
-        json={"title": "Threadpool regression", "created_by": "test"},
+        json={"title": "Threadpool regression"},
     )
     assert case_response.status_code == 201
+    assert case_response.json()["created_by"] == "api-key"
     case_id = case_response.json()["case_id"]
     assert client.get("/api/shiatoali/cases").status_code == 200
     assert client.get(f"/api/shiatoali/cases/{case_id}").status_code == 200
+    spoofed_update = client.patch(
+        f"/api/shiatoali/cases/{case_id}",
+        json={"actor": "attacker", "note": "spoofed"},
+    )
+    assert spoofed_update.status_code == 422
     assert client.patch(
         f"/api/shiatoali/cases/{case_id}",
         json={"note": "database call stayed off the event loop"},
     ).status_code == 200
+    detail = client.get(f"/api/shiatoali/cases/{case_id}").json()
+    assert detail["activity"][-1]["actor"] == "api-key"
 
     assert {
         "health",

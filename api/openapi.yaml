@@ -380,6 +380,7 @@ paths:
         "401": {description: Unauthorized}
     post:
       summary: Create an analyst case, optionally linked to an alert
+      description: The creator is assigned by the API from the authenticated credential. A shared API key does not identify an individual human analyst.
       operationId: shiatoaliCreateCase
       security:
         - ApiKeyAuth: []
@@ -389,12 +390,12 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               required: [title]
               properties:
                 title: {type: string, maxLength: 255}
                 description: {type: string, maxLength: 10000}
                 priority: {type: string, enum: [low, medium, high, critical]}
-                created_by: {type: string}
                 alert_id: {type: [string, "null"]}
       responses:
         "201": {description: Case created}
@@ -418,6 +419,7 @@ paths:
         "404": {description: Case not found}
     patch:
       summary: Update case status or assignee and append an analyst note
+      description: The activity actor is assigned by the API from the authenticated credential; client-supplied actor values are rejected.
       operationId: shiatoaliUpdateCase
       security:
         - ApiKeyAuth: []
@@ -432,8 +434,8 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
-                actor: {type: string}
                 status: {type: string, enum: [open, investigating, contained, resolved, closed]}
                 assignee: {type: [string, "null"]}
                 note: {type: [string, "null"], maxLength: 5000}

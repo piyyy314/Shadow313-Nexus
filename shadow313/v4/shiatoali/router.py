@@ -23,15 +23,19 @@ class CaseCreateRequest(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     description: str = Field(default="", max_length=10000)
     priority: str = "medium"
-    created_by: str = Field(default="analyst", max_length=255)
     alert_id: str | None = None
+
+    class Config:
+        extra = "forbid"
 
 
 class CaseUpdateRequest(BaseModel):
-    actor: str = Field(default="analyst", max_length=255)
     status: str | None = None
     assignee: str | None = Field(default=None, max_length=255)
     note: str | None = Field(default=None, max_length=5000)
+
+    class Config:
+        extra = "forbid"
 
 
 class EventRequest(BaseModel):
@@ -104,9 +108,13 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
         }
 
     @router.post("/cases", status_code=201)
-    async def create_case(request: CaseCreateRequest) -> dict[str, Any]:
+    async def create_case(
+        request: CaseCreateRequest,
+        actor: str = Depends(auth_dependency),
+    ) -> dict[str, Any]:
         try:
             payload = _model_payload(request)
+            payload["created_by"] = actor
             return await run_in_threadpool(store.create_case, **payload)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
@@ -131,9 +139,14 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
         return case
 
     @router.patch("/cases/{case_id}")
-    async def update_case(case_id: str, request: CaseUpdateRequest) -> dict[str, Any]:
+    async def update_case(
+        case_id: str,
+        request: CaseUpdateRequest,
+        actor: str = Depends(auth_dependency),
+    ) -> dict[str, Any]:
         try:
             payload = _model_payload(request)
+            payload["actor"] = actor
             return await run_in_threadpool(store.update_case, case_id, **payload)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="case not found") from exc
