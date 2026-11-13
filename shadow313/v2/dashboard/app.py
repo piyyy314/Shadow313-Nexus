@@ -1,7 +1,5 @@
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
 
-from __future__ import annotations
-
 import ipaddress
 from datetime import datetime, UTC
 from pathlib import Path
