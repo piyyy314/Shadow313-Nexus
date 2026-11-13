@@ -13,8 +13,7 @@ on:
     types: [published]
   schedule:
     - cron: "0 3 * * 1"       # Weekly Monday 03:00 UTC
-  workflow_dispatch:
-
+  workflow_dispatch: {}
 env:
   PYTHON_VERSION: "3.11"
   SHADOW313_AI_BACKEND: disabled
