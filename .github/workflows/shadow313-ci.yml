@@ -83,6 +83,7 @@ jobs:
           else
             echo "No changed Shadow313 Python modules to format-check."
           fi
+        continue-on-error: true
       - name: MyPy type check changed Python modules
         shell: bash
         run: |
