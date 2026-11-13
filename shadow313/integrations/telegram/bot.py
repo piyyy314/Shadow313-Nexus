@@ -360,7 +360,7 @@ def _load_delivery_state() -> tuple[float, set[str], dict[str, float]]:
         return since_ts, processed_ids, timestamps
     except FileNotFoundError:
         return time.time() - INITIAL_LOOKBACK_SECONDS, set(), {}
-    except (OSError, ValueError, TypeError, KeyError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
         logger.warning("Could not restore Telegram delivery state: %s", exc)
         return time.time() - INITIAL_LOOKBACK_SECONDS, set(), {}
 
