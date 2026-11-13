@@ -393,3 +393,62 @@ def test_alert_listing_supports_time_cursor_and_chronological_order(tmp_path):
 
     assert [alert["alert_id"] for alert in alerts] == [newer_id]
     assert store.list_alerts(order="asc")[0]["alert_id"] == older_id
+
+def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from shadow313.v4.shiatoali import router as soc_router
+
+    monkeypatch.setenv("SHIAATOALI_DB_PATH", str(tmp_path / "threadpool.sqlite3"))
+    original_run_in_threadpool = soc_router.run_in_threadpool
+    dispatched = []
+
+    async def track_threadpool(func, *args, **kwargs):
+        dispatched.append(func.__name__)
+        return await original_run_in_threadpool(func, *args, **kwargs)
+
+    monkeypatch.setattr(soc_router, "run_in_threadpool", track_threadpool)
+    app = FastAPI()
+    app.include_router(soc_router.build_router(lambda: None))
+    client = TestClient(app)
+
+    assert client.get("/api/shiatoali/health").status_code == 200
+    event_response = client.post(
+        "/api/shiatoali/events",
+        json={
+            "source": "windows",
+            "host": "threadpool-host",
+            "event_type": "process_creation",
+            "message": "benign process start",
+            "event_id": "threadpool-event-001",
+        },
+    )
+    assert event_response.status_code == 202
+    assert client.get("/api/shiatoali/events").status_code == 200
+    assert client.get("/api/shiatoali/alerts").status_code == 200
+
+    case_response = client.post(
+        "/api/shiatoali/cases",
+        json={"title": "Threadpool regression", "created_by": "test"},
+    )
+    assert case_response.status_code == 201
+    case_id = case_response.json()["case_id"]
+    assert client.get("/api/shiatoali/cases").status_code == 200
+    assert client.get(f"/api/shiatoali/cases/{case_id}").status_code == 200
+    assert client.patch(
+        f"/api/shiatoali/cases/{case_id}",
+        json={"note": "database call stayed off the event loop"},
+    ).status_code == 200
+
+    assert {
+        "health",
+        "ingest",
+        "list_events",
+        "list_alerts",
+        "create_case",
+        "list_cases",
+        "get_case",
+        "update_case",
+    } <= set(dispatched)
+
