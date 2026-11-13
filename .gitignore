@@ -89,9 +89,10 @@ scan_results.json
 # Generated public output (archives/source are never copied)
 public-site/
 
-# Local TLS private keys
+# Local TLS private keys and sensitive local fixtures
 docker/nginx/ssl/*.key
+docker/nginx/ssl/shadow313.key
+scripts/secret-fixtures.json
 
-# Generated local TLS certificates and private keys
+# Generated local TLS certificates
 docker/nginx/ssl/*.crt
-docker/nginx/ssl/*.key
