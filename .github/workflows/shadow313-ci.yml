@@ -43,8 +43,15 @@ jobs:
         shell: bash
         run: |
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            git fetch --no-tags origin "+refs/heads/$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF"
-            base="origin/$GITHUB_BASE_REF"
+            base_ref="$GITHUB_BASE_REF"
+          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
+            base_ref="master"
+          else
+            base_ref=""
+          fi
+          if [ -n "$base_ref" ]; then
+            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
+            base="origin/$base_ref"
           else
             base="$(git rev-parse HEAD^)"
           fi
@@ -58,8 +65,15 @@ jobs:
         shell: bash
         run: |
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            git fetch --no-tags origin "+refs/heads/$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF"
-            base="origin/$GITHUB_BASE_REF"
+            base_ref="$GITHUB_BASE_REF"
+          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
+            base_ref="master"
+          else
+            base_ref=""
+          fi
+          if [ -n "$base_ref" ]; then
+            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
+            base="origin/$base_ref"
           else
             base="$(git rev-parse HEAD^)"
           fi
@@ -73,8 +87,15 @@ jobs:
         shell: bash
         run: |
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            git fetch --no-tags origin "+refs/heads/$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF"
-            base="origin/$GITHUB_BASE_REF"
+            base_ref="$GITHUB_BASE_REF"
+          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
+            base_ref="master"
+          else
+            base_ref=""
+          fi
+          if [ -n "$base_ref" ]; then
+            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
+            base="origin/$base_ref"
           else
             base="$(git rev-parse HEAD^)"
           fi
