@@ -290,6 +290,7 @@ class RoutingABTestSimulation:
                 },
                 "expected": {
                     "routing_precision": config["routing_precision"],
+                    "fallback_rate":    config["fallback_rate"],
                     "e2e_p50":           config["e2e_p50"],
                     "e2e_p99":           config["e2e_p99"],
                 },
