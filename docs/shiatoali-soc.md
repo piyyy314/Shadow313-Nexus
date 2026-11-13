@@ -11,7 +11,8 @@ All endpoints require the existing Shadow313 API authentication dependency.
 - `GET /api/shiatoali/health` — service and record counts
 - `POST /api/shiatoali/events` — validate, persist, and evaluate one event
 - `GET /api/shiatoali/events?limit=100&offset=0` — newest events
-- `GET /api/shiatoali/alerts?limit=100&offset=0` — newest alerts
+- `GET /api/shiatoali/alerts?limit=100&offset=0` — newest alerts by default
+- `GET /api/shiatoali/alerts?since=2026-11-13T00:00:00Z&order=asc&limit=500&offset=0` — chronological alert pages from a UTC time cursor (used by the Telegram integration)
 
 Example event:
 
@@ -47,8 +48,9 @@ the schema is missing. Otherwise it continues using SQLite. The two settings
 are mutually exclusive in practice: an explicitly supplied SQLite path takes
 precedence for direct store construction.
 
-The PostgreSQL adapter provides transactional database access, but production
-readiness still requires real-PostgreSQL integration/concurrency testing,
+The PostgreSQL adapter provides transactional database access. CI now applies
+the migration to a real PostgreSQL 16 service and tests event/alert/case flows
+plus concurrent idempotent ingestion. Production readiness still requires
 distributed rate limits, retention policies, managed backups, monitoring,
 restore drills, and deployment health checks.
 
@@ -82,8 +84,8 @@ storage and role-based authorization.
 
 A static browser console is available at `/docs/shiatoali-console.html` when
 served from the project website. It reads live health, events, alerts, and cases
-from the API and supports basic case creation and open/close transitions. The
-The static website does not host the Python SOC API. Enter the base URL of a separately running Shadow313 FastAPI service and its API key; the key is held in page memory only
+from the API and supports basic case creation and open/close transitions. The static website
+does not host the Python SOC API. Enter the base URL of a separately running Shadow313 FastAPI service and its API key; the key is held in page memory only
 and is not written to browser storage. Serve the console over HTTPS and keep
 the API behind TLS and authentication. If the website and API use different
 origins, configure the API's CORS allowlist for the exact console origin before
