@@ -159,3 +159,20 @@ def test_alert_cursor_keeps_newer_successes_after_older_delivery_retry(monkeypat
     assert cursor == 200.0
     assert bot.PROCESSED_ALERT_IDS == {"newer-success"}
     assert bot.PROCESSED_ALERT_TIMESTAMPS == {"newer-success": 200.0}
+
+
+def test_delivery_state_persists_cursor_and_processed_alerts(tmp_path, monkeypatch):
+    monkeypatch.setattr(bot, "STATE_PATH", tmp_path / "telegram-state.json")
+    monkeypatch.setattr(bot, "PROCESSED_ALERT_IDS", {"alert-001", "alert-002"})
+    monkeypatch.setattr(
+        bot,
+        "PROCESSED_ALERT_TIMESTAMPS",
+        {"alert-001": 123.0, "alert-002": 123.0},
+    )
+
+    bot._save_delivery_state(120.0)
+    cursor, processed_ids, timestamps = bot._load_delivery_state()
+
+    assert cursor == 120.0
+    assert processed_ids == {"alert-001", "alert-002"}
+    assert timestamps == {"alert-001": 123.0, "alert-002": 123.0}
