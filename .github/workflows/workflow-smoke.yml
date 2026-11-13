@@ -1,0 +1,7 @@
+name: Workflow Trigger Smoke Test
+on: push
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "GitHub Actions workflow trigger is working"
