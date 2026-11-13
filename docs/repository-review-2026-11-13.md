@@ -78,9 +78,8 @@ a live deployment validation.
   PostgreSQL integration, security scanning, Docker build (including Nginx
   config validation), and package build.
 - Run `43421814142` on commit `4809dd2` passed Python 3.11/3.12 tests,
-  PostgreSQL integration, changed-module Ruff/MyPy, security scanning, and
-  package build. Docker image build was still running at the time of this
-  report; Compose validation and `nginx -t` had already passed.
+  PostgreSQL integration, changed-module Ruff/MyPy, security scanning,
+  package build, Docker image build, Compose validation, and `nginx -t`.
 - The full-repository Ruff baseline recorded 5,496 diagnostics. This is
   existing lint debt, not a count of runtime bugs. It includes import
   ordering, long lines, legacy typing, unused imports, and security-lint
