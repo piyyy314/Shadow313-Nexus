@@ -1,5 +1,6 @@
 # Shadow313 NEXUS — Python Dependencies
 # Core
+setuptools>=84.1.0
 requests>=2.32.5
 dnspython>=2.4.0
 python-whois>=0.8.0
