@@ -84,6 +84,9 @@ line-length = 100
 select = ["E","F","W","I","N","UP","S","B","A","C4"]
 ignore = ["S101","S603","S607","S608","S324","S311","S506","UP007"]
 
+[tool.ruff.lint.per-file-ignores]
+"shadow313/v2/dashboard/app.py" = ["E501"]
+
 [tool.mypy]
 python_version         = "3.11"
 strict                 = false
