@@ -113,13 +113,15 @@ a live deployment validation.
 
 - Pull request: #115
 - Base: `master`
-- Feature branch is 270 commits ahead and 41 commits behind the current base
+- Feature branch is 274 commits ahead and 41 commits behind the current base
   at the latest comparison snapshot.
 - Seven paths were changed on both sides of the merge base:
   `.github/workflows/shadow313-ci.yml`, `.gitignore`, `README.md`,
   `docker-compose.yml`, `docker/nginx/gen-ssl.sh`, `requirements.txt`,
-  and the local TLS key deletion. The SSL script and ignore rules need an
-  explicit three-way reconciliation before the PR can merge.
+  and the local TLS key deletion. The feature branch's ignore rules and SSL
+  generator have been aligned with current master where changes overlap, but
+  GitHub still reports the PR as dirty; a full base-branch reconciliation is
+  still required before merge.
 - GitHub reports the PR as `dirty` / not mergeable; base-branch divergence
   and overlapping infrastructure changes need reconciliation.
 - The PR remains draft and unmerged.
