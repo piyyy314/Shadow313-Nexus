@@ -166,29 +166,37 @@ def create_app(api_key: str | None = None) -> FastAPI:
 
     @app.post("/api/chat")
     async def chat(req: ChatRequest, _: str = Depends(verify_api_key)):
-        """Run a prompt through the configured Ollama/OpenAI/gateway backend."""
-        from shadow313.core.ai_engine import AIEngine
-        from shadow313.core.config import Config
+        """Run inference off the event loop so slow providers cannot block API traffic."""
+        from starlette.concurrency import run_in_threadpool
 
-        engine = AIEngine(Config().get("ai", default={}))
-        if engine.backend == "disabled":
-            raise HTTPException(503, detail="AI backend is disabled")
-        if not engine.is_available():
-            raise HTTPException(503, detail="AI backend is unavailable or its API key is missing")
+        def generate_response():
+            from shadow313.core.ai_engine import AIEngine
+            from shadow313.core.config import Config
 
-        answer = engine.chat(
-            req.prompt,
-            system_prompt=req.system_prompt,
-            context=req.context,
-        )
-        if answer.startswith("[AI error"):
-            raise HTTPException(502, detail="AI provider request failed")
-        return {
-            "status": "ok",
-            "backend": engine.backend,
-            "model": engine.model,
-            "response": answer,
-        }
+            engine = AIEngine(Config().get("ai", default={}))
+            if engine.backend == "disabled":
+                raise HTTPException(503, detail="AI backend is disabled")
+            if not engine.is_available():
+                raise HTTPException(
+                    503,
+                    detail="AI backend is unavailable or its API key is missing",
+                )
+
+            answer = engine.chat(
+                req.prompt,
+                system_prompt=req.system_prompt,
+                context=req.context,
+            )
+            if answer.startswith("[AI error"):
+                raise HTTPException(502, detail="AI provider request failed")
+            return {
+                "status": "ok",
+                "backend": engine.backend,
+                "model": engine.model,
+                "response": answer,
+            }
+
+        return await run_in_threadpool(generate_response)
 
     @app.post("/api/detect")
     async def detect(req: DetectRequest, _: str = Depends(verify_api_key)):
