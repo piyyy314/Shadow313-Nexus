@@ -14,9 +14,15 @@ function build() {
     if (!fs.statSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw new Error(`Not a regular file: ${relative}`);
     const dest = path.join(output, relative);
     fs.mkdirSync(path.dirname(dest), {recursive:true});
-    if (relative.startsWith('docs/') && relative.endsWith('.html')) {
-      const notice = '<aside role="note" style="padding:12px 24px;background:#100c24;color:#ded6ff;font:14px/1.6 system-ui">Reference / demo content. Static metrics and service labels are not live health, scan results, certifications, or signed receipts. Run and verify the local tools separately.</aside>';
-      const html = fs.readFileSync(file, 'utf8').replace(/(<nav id="site-nav"[\s\S]*?<\/nav>)/, '$1' + notice);
+    if (relative.endsWith('.html')) {
+      const notice = '<aside id="site-reference-notice" role="note" style="padding:12px 24px;background:#100c24;color:#ded6ff;font:14px/1.6 system-ui;text-align:center">Reference / demo notice: this static page may contain illustrative data, simulated events, or design mockups. Metrics, rankings, prices, service labels, and security claims are not live or independently verified unless explicitly linked to current evidence. Confirm capabilities and service health separately.</aside>';
+      let html = fs.readFileSync(file, 'utf8');
+      if (!html.includes('id="site-reference-notice"')) {
+        if (/<nav id="site-nav"[\s\S]*?<\/nav>/.test(html)) html = html.replace(/(<nav id="site-nav"[\s\S]*?<\/nav>)/, '$1' + notice);
+        else if (/<body\b[^>]*>/i.test(html)) html = html.replace(/<body\b[^>]*>/i, 'const html = fs.readFileSync(file, 'utf8').replace(/(<nav id="site-nav"[\s\S]*?<\/nav>)/, '$1' + notice);
+      fs.writeFileSync(dest, html);' + notice);
+        else html = notice + html;
+      }
       fs.writeFileSync(dest, html);
     } else {
       fs.copyFileSync(file, dest);
