@@ -67,3 +67,10 @@ def test_every_fastapi_api_route_has_an_explicit_nginx_upstream():
             continue
         sample_path = path.replace("{bind_id}", "sample-bind-id")
         assert shadow_api_pattern.fullmatch(sample_path), path
+
+
+def test_local_tls_private_key_is_not_tracked_in_source_tree():
+    assert not (ROOT / "docker/nginx/ssl/shadow313.key").exists()
+    ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+    assert "docker/nginx/ssl/*.key" in ignore
+    assert "docker/nginx/ssl/*.crt" in ignore
