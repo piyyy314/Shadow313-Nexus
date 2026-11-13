@@ -271,7 +271,8 @@ def _fetch_events(since_ts: float) -> list[dict]:
                 break
         else:
             logger.warning(
-                "ShiatoAli alert backlog exceeded %s pages; remaining alerts will be polled next cycle",
+                "ShiatoAli alert backlog exceeded %s pages; "
+                "remaining alerts will be polled next cycle",
                 max_pages,
             )
 
