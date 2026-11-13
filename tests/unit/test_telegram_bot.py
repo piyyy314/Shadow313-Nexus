@@ -144,3 +144,18 @@ def test_fetch_events_paginates_backlog_and_orders_alerts(monkeypatch):
     assert len(events) == 501
     assert events[0]["alert_id"] == "alert-000"
     assert events[-1]["alert_id"] == "alert-500"
+
+
+def test_alert_cursor_keeps_newer_successes_after_older_delivery_retry(monkeypatch):
+    monkeypatch.setattr(bot, "PROCESSED_ALERT_IDS", {"older-retry", "newer-success"})
+    monkeypatch.setattr(
+        bot,
+        "PROCESSED_ALERT_TIMESTAMPS",
+        {"older-retry": 100.0, "newer-success": 200.0},
+    )
+
+    cursor = bot._advance_alert_cursor(50.0)
+
+    assert cursor == 200.0
+    assert bot.PROCESSED_ALERT_IDS == {"newer-success"}
+    assert bot.PROCESSED_ALERT_TIMESTAMPS == {"newer-success": 200.0}
