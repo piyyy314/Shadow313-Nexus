@@ -78,8 +78,10 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
         since: datetime | None = Query(default=None),
-        order: str = Query(default="desc", pattern="^(asc|desc)$"),
+        order: str = Query(default="desc"),
     ) -> dict[str, Any]:
+        if order not in {"asc", "desc"}:
+            raise HTTPException(status_code=422, detail="order must be asc or desc")
         items = store.list_alerts(
             limit=limit,
             offset=offset,
