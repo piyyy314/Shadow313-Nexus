@@ -21,8 +21,8 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     2>/dev/null
 # Keep the private key owner-readable only. Compose uses its own named-volume
 # certificate initializer; this script is for manual local Nginx setups only.
-chmod 600 "$KEY"
 chmod 644 "$CERT"
+chmod 600 "$KEY"
 
 echo "✅ SSL cert generated: $CERT"
 echo "   Valid for: localhost, shadow313.local, 127.0.0.1"
