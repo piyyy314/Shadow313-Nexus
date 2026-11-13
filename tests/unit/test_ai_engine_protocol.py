@@ -58,7 +58,7 @@ def test_ollama_chat_serializes_system_context_and_options(monkeypatch):
 
 @pytest.mark.parametrize("error", [URLError("offline"), ValueError("bad JSON")])
 def test_ollama_errors_return_messages(monkeypatch, error):
-    monkeypatch.setattr(_MODULE.request, "urlopen", Mock(side_effect=error))
+    monkeypatch.setattr(urlrequest, "urlopen", Mock(side_effect=error))
     assert "AI error" in AIEngine({}).chat("question")
 
 
@@ -69,7 +69,7 @@ def test_stream_ignores_blank_and_malformed_chunks_and_stops_at_done(monkeypatch
         b'{"message":{"content":"must not appear"}}\n'
     )
     fetch = Mock(return_value=BytesIO(chunks))
-    monkeypatch.setattr(_MODULE.request, "urlopen", fetch)
+    monkeypatch.setattr(urlrequest, "urlopen", fetch)
     assert list(AIEngine({}).stream("question", "system")) == ["hello ", "world"]
     payload = json.loads(fetch.call_args.args[0].data)
     assert payload["stream"] is True
@@ -77,14 +77,14 @@ def test_stream_ignores_blank_and_malformed_chunks_and_stops_at_done(monkeypatch
 
 
 def test_stream_connection_error_yields_error_token(monkeypatch):
-    monkeypatch.setattr(_MODULE.request, "urlopen", Mock(side_effect=OSError("offline")))
+    monkeypatch.setattr(urlrequest, "urlopen", Mock(side_effect=OSError("offline")))
     assert list(AIEngine({}).stream("question")) == ["[AI stream error: offline]"]
 
 
 def test_openai_compatible_payload_and_nonollama_stream_fallback(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "synthetic-local-key")
     fetch = Mock(return_value=BytesIO(b'{"choices":[{"message":{"content":" result "}}]}'))
-    monkeypatch.setattr(_MODULE.request, "urlopen", fetch)
+    monkeypatch.setattr(urlrequest, "urlopen", fetch)
     engine = AIEngine(
         {"backend": "openai", "endpoint": "https://example.invalid", "context_window": 512}
     )
@@ -103,7 +103,7 @@ def test_openai_compatible_payload_and_nonollama_stream_fallback(monkeypatch):
 def test_disabled_and_missing_api_key_never_make_requests(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     fetch = Mock(side_effect=AssertionError("unexpected request"))
-    monkeypatch.setattr(_MODULE.request, "urlopen", fetch)
+    monkeypatch.setattr(urlrequest, "urlopen", fetch)
     disabled = AIEngine({"backend": "disabled"})
     assert "disabled" in disabled.chat("question")
     assert disabled.is_available() is False
@@ -121,7 +121,7 @@ def test_model_listing_and_availability_have_bounded_probe_timeouts(monkeypatch)
             OSError("offline"),
         ]
     )
-    monkeypatch.setattr(_MODULE.request, "urlopen", fetch)
+    monkeypatch.setattr(urlrequest, "urlopen", fetch)
     engine = AIEngine({})
     assert engine.is_available() is True
     assert engine.list_models() == ["one", "two"]
