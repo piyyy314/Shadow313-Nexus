@@ -47,7 +47,7 @@ def test_fetch_events_reads_authenticated_shiatoali_alerts(monkeypatch):
     monkeypatch.setattr(bot.urllib.request, "urlopen", fake_urlopen)
     events = bot._fetch_events(0)
 
-    assert seen["url"] == "http://shadow313-api:8313/api/shiatoali/alerts?limit=500&offset=0"
+    assert seen["url"] == "http://shadow313-api:8313/api/shiatoali/alerts?limit=500&offset=0&since=1970-01-01T00%3A00%3A00%2B00%3A00&order=asc"
     assert seen["headers"]["x-api-key"] == "test-api-key"
     assert seen["timeout"] == 8
     assert len(events) == 1
