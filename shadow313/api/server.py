@@ -205,8 +205,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "webshell" in req.detectors:
             try:
                 from shadow313.v4.detection.webshell_detector import WebShellDetector
-                det = WebShellDetector()
-                score = det.score_event(req.event)
+                webshell_detector = WebShellDetector()
+                score = webshell_detector.score_event(req.event)
                 results["webshell"] = {
                     "score":    round(score, 4),
                     "detected": score >= 0.65,
@@ -218,8 +218,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "lolbin" in req.detectors:
             try:
                 from shadow313.v4.detection.lolbin_detector import LOLBinDetector
-                det = LOLBinDetector()
-                alert = det.analyze_event(req.event)
+                lolbin_detector = LOLBinDetector()
+                alert = lolbin_detector.analyze_event(req.event)
                 results["lolbin"] = {
                     "score":    alert.risk_score if alert else 0.0,
                     "detected": alert is not None,
