@@ -42,9 +42,9 @@ jobs:
           import json
           from pathlib import Path
 
-          report = json.loads(Path("ruff-baseline.json").read_text(encoding="utf-8"))
-          files = {item["filename"] for item in report}
-          print(f"Repository Ruff baseline: {len(report)} diagnostics across {len(files)} files")
+          report = json.loads(Path('ruff-baseline.json').read_text(encoding='utf-8'))
+          files = {item['filename'] for item in report}
+          print(f'Repository Ruff baseline: {len(report)} diagnostics across {len(files)} files')
           PY
       - name: Ruff lint changed Python modules
         shell: bash
@@ -55,8 +55,48 @@ jobs:
           else
             base="$(git rev-parse HEAD^)"
           fi
-          mapfile -t files < <(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*\.py
-
+          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
+          if [ -n "$changed_files" ]; then
+            printf '%s\n' "$changed_files" | xargs -r ruff check --output-format github
+          else
+            echo "No changed Shadow313 Python modules to lint."
+          fi
+      - name: Black format check changed Python modules
+        shell: bash
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git fetch --no-tags origin "+refs/heads/$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF"
+            base="origin/$GITHUB_BASE_REF"
+          else
+            base="$(git rev-parse HEAD^)"
+          fi
+          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
+          if [ -n "$changed_files" ]; then
+            printf '%s\n' "$changed_files" | xargs -r black --check --diff
+          else
+            echo "No changed Shadow313 Python modules to format-check."
+          fi
+      - name: MyPy type check changed Python modules
+        shell: bash
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git fetch --no-tags origin "+refs/heads/$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF"
+            base="origin/$GITHUB_BASE_REF"
+          else
+            base="$(git rev-parse HEAD^)"
+          fi
+          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
+          if [ -n "$changed_files" ]; then
+            printf '%s\n' "$changed_files" | xargs -r mypy --ignore-missing-imports
+          else
+            echo "No changed Shadow313 Python modules to type-check."
+          fi
+      - name: Upload full-repository lint baseline
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ruff-repository-baseline
+          path: ruff-baseline.json
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
     name: Tests (Python ${{ matrix.python-version }} / ${{ matrix.os }})
