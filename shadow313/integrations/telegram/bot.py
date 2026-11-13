@@ -242,7 +242,13 @@ def _fetch_events(since_ts: float) -> list[dict]:
     max_pages = 20
     try:
         for page in range(max_pages):
-            query = urllib.parse.urlencode({"limit": page_size, "offset": page * page_size})
+            cursor = datetime.datetime.fromtimestamp(since_ts, datetime.UTC).isoformat()
+            query = urllib.parse.urlencode({
+                "limit": page_size,
+                "offset": page * page_size,
+                "since": cursor,
+                "order": "asc",
+            })
             url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?{query}"
             req = urllib.request.Request(
                 url,
