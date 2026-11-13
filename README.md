@@ -138,6 +138,30 @@ External service limits (including Snyk quotas), skipped jobs, and pending provi
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
 
+## API contract and service boundaries
+
+The canonical API contract is `api/openapi.yaml`; the Python FastAPI implementation is
+`shadow313/api/server.py`. The local backend listens on `http://localhost:8313`
+by default. The public static-site adapter in `api/index.js` is not that backend.
+It deliberately returns an explicit `unavailable` status for backend-dependent
+operations when no Python worker/service is connected.
+
+Implemented Python API routes include `GET /health`, `GET /api/status`,
+authenticated `GET /api/modules`, `POST /api/detect`,
+`POST /api/webshell/scan`, `GET /api/attck/coverage`, and the in-memory
+`/api/bind` receipt routes. Recon, vulnerability, mobile, event-stream, and
+persisted audit routes currently return an explicit unavailable response; they
+must not be described as completed remote scanning or persistent services.
+Use `X-API-Key` for protected routes. Production mode requires
+`SHADOW313_API_KEY`.
+
+Important limits: API-created 313-BIND receipts are explicitly unsigned
+SHA3-512 demo receipts, stored in process memory, and are not SLH-DSA-signed,
+IPFS-anchored, durable, or legal attestations. The ATT&CK coverage response is
+a static code-defined snapshot, not a live measurement of deployed detection
+coverage. Consult `api/openapi.yaml` and the implementation before building
+clients; do not infer an endpoint's behavior from a dashboard card.
+
 ## Package identity
 
 - Distribution name: `shadow313-nexus`
