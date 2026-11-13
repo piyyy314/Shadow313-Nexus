@@ -47,7 +47,7 @@ def test_fetch_events_reads_authenticated_shiatoali_alerts(monkeypatch):
     monkeypatch.setattr(bot.urllib.request, "urlopen", fake_urlopen)
     events = bot._fetch_events(0)
 
-    assert seen["url"] == "http://shadow313-api:8313/api/shiatoali/alerts?limit=500"
+    assert seen["url"] == "http://shadow313-api:8313/api/shiatoali/alerts?limit=500&offset=0"
     assert seen["headers"]["x-api-key"] == "test-api-key"
     assert seen["timeout"] == 8
     assert len(events) == 1
@@ -114,3 +114,33 @@ def test_send_alert_reports_delivery_result(monkeypatch):
 
     monkeypatch.setattr(bot, "send_message", lambda *args, **kwargs: None)
     assert bot.send_alert({"severity": "HIGH", "message": "test alert"}) is False
+
+
+def test_fetch_events_paginates_backlog_and_orders_alerts(monkeypatch):
+    from urllib.parse import parse_qs, urlsplit
+
+    monkeypatch.setattr(bot, "API_URL", "http://shadow313-api:8313")
+    monkeypatch.setattr(bot, "PROCESSED_ALERT_IDS", set())
+    monkeypatch.setenv("SHADOW313_API_KEY", "test-api-key")
+    created_at = datetime.now(timezone.utc).isoformat()
+    offsets = []
+
+    def fake_urlopen(request, timeout):
+        offset = int(parse_qs(urlsplit(request.full_url).query)["offset"][0])
+        offsets.append(offset)
+        if offset == 0:
+            alerts = [
+                {"alert_id": f"alert-{index:03}", "created_at": created_at}
+                for index in range(500)
+            ]
+        else:
+            alerts = [{"alert_id": "alert-500", "created_at": created_at}]
+        return FakeResponse({"items": alerts})
+
+    monkeypatch.setattr(bot.urllib.request, "urlopen", fake_urlopen)
+    events = bot._fetch_events(0)
+
+    assert offsets == [0, 500]
+    assert len(events) == 501
+    assert events[0]["alert_id"] == "alert-000"
+    assert events[-1]["alert_id"] == "alert-500"
