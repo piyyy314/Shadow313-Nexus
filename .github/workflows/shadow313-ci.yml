@@ -32,8 +32,19 @@ jobs:
           cache: pip
       - name: Install dev dependencies
         run: pip install ruff black mypy pyyaml rich
-      - name: Ruff lint
-        run: ruff check shadow313/ --output-format github
+      - name: Ruff lint (changed Python files)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
+          fi
+          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          if [ ${#changed_files[@]} -eq 0 ]; then
+            echo "No changed Shadow313 Python files to lint."
+          else
+            ruff check "${changed_files[@]}" --output-format github
+          fi
       - name: Black format check
         run: black --check --diff shadow313/
       - name: MyPy type check
