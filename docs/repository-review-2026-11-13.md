@@ -13,7 +13,7 @@ a live deployment validation.
 
 ## Repository and website integrity
 
-- Git tree snapshot: 1,206 entries (633 Python files and 190 HTML files).
+- Git tree snapshot: 1,207 entries (633 Python files and 190 HTML files).
 - Vercel rewrite destinations checked: 181; no missing destination files.
 - Public static-file allowlist checked: 170 entries; no missing source files.
 - The public-site build uses an explicit allowlist rather than publishing the
@@ -50,6 +50,8 @@ a live deployment validation.
    - Preserved alert IDs at the cursor timestamp to avoid duplicate sends.
    - Preserved successful deliveries across retry batches so a later failure
      does not move the cursor backwards or resend newer alerts.
+   - Persisted the alert cursor and processed IDs in the shared Docker data
+     volume; first-start lookback is configurable (default 15 minutes).
    - Added regression coverage for pagination, stale alerts, gateway-backed
      chat, and cursor retry behavior.
 
@@ -77,9 +79,11 @@ a live deployment validation.
 - A full validation run at `8ea8d3b` passed Python 3.11/3.12 tests,
   PostgreSQL integration, security scanning, Docker build (including Nginx
   config validation), and package build.
-- Run `43421814142` on commit `4809dd2` passed Python 3.11/3.12 tests,
-  PostgreSQL integration, changed-module Ruff/MyPy, security scanning,
-  package build, Docker image build, Compose validation, and `nginx -t`.
+- Run `43423303751` on commit `dc43569` passed Python 3.11/3.12 tests,
+  PostgreSQL integration, changed-module Ruff/MyPy, security scanning, and
+  package build. Docker Compose validation and `nginx -t` passed; the image
+  build was still running at the time of this report.
+- The preceding complete run `43421814142` also passed the Docker image build.
 - The full-repository Ruff baseline recorded 5,496 diagnostics. This is
   existing lint debt, not a count of runtime bugs. It includes import
   ordering, long lines, legacy typing, unused imports, and security-lint
@@ -113,7 +117,7 @@ a live deployment validation.
 
 - Pull request: #115
 - Base: `master`
-- Feature branch is 274 commits ahead and 41 commits behind the current base
+- Feature branch is 284 commits ahead and 41 commits behind the current base
   at the latest comparison snapshot.
 - Seven paths were changed on both sides of the merge base:
   `.github/workflows/shadow313-ci.yml`, `.gitignore`, `README.md`,
