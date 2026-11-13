@@ -112,13 +112,13 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - name: Install
-        run: pip install -e "." pyyaml rich bandit safety
+        run: pip install -e "." pyyaml rich bandit pip-audit
       - name: Bandit SAST scan
         run: |
           bandit -r shadow313/ -f json -o bandit-report.json \
             --severity-level high --skip B101,B603,B607,B608,B311,B324
-      - name: Safety dependency check
-        run: safety check --json > safety-report.json
+      - name: Dependency vulnerability audit
+        run: pip-audit --local --format json --output pip-audit-report.json
       - name: Upload security artifacts
         uses: actions/upload-artifact@v7
         if: always()
@@ -126,7 +126,7 @@ jobs:
           name: security-reports
           path: |
             bandit-report.json
-            safety-report.json
+            pip-audit-report.json
 
 # ── Build Package ─────────────────────────────────────────────────────────────
   build:
