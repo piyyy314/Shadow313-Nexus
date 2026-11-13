@@ -81,8 +81,8 @@ a live deployment validation.
   config validation), and package build.
 - Run `43423303751` on commit `dc43569` passed Python 3.11/3.12 tests,
   PostgreSQL integration, changed-module Ruff/MyPy, security scanning, and
-  package build. Docker Compose validation and `nginx -t` passed; the image
-  build was still running at the time of this report.
+  package build. Docker Compose validation, `nginx -t`, and the Docker image
+  build step also passed; only post-build action cleanup remained in progress.
 - The preceding complete run `43421814142` also passed the Docker image build.
 - The full-repository Ruff baseline recorded 5,496 diagnostics. This is
   existing lint debt, not a count of runtime bugs. It includes import
@@ -117,7 +117,7 @@ a live deployment validation.
 
 - Pull request: #115
 - Base: `master`
-- Feature branch is 284 commits ahead and 41 commits behind the current base
+- Feature branch is 285 commits ahead and 41 commits behind the current base
   at the latest comparison snapshot.
 - Seven paths were changed on both sides of the merge base:
   `.github/workflows/shadow313-ci.yml`, `.gitignore`, `README.md`,
