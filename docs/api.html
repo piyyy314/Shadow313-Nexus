@@ -47,49 +47,49 @@ Never put your API key in public browser code.
 <a class="sidebar-link" href="/platform/quantum">Quantum Module</a>
 </div><div class="docs-content" style="flex:1;padding:40px;max-width:800px">
 <h1 style="font-size:28px;font-weight:800;margin-bottom:8px">API Reference</h1>
-<p style="color:var(--muted);margin-bottom:28px">Shadow313 NEXUS FastAPI REST endpoints.</p>
+<p style="color:var(--muted);margin-bottom:18px">Python FastAPI backend contract. Default local base URL: <code>http://localhost:8313</code>. The public website adapter is separate and does not run this backend.</p><p style="background:#0b1329;border:1px solid #334155;padding:14px;border-radius:8px;margin-bottom:24px;color:#cbd5e1;font-size:12px">Protected routes require the <code>X-API-Key</code> header. In production, <code>SHADOW313_API_KEY</code> is mandatory. Recon, vulnerability, mobile, event-stream, and persisted-audit routes currently return an explicit unavailable status because their remote workers or persistent backends are not connected. See <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/fix/ci-audit-blockers/api/openapi.yaml">api/openapi.yaml</a> and <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/fix/ci-audit-blockers/shadow313/api/server.py">server implementation</a>.</p>
 <div style="display:flex;flex-direction:column;gap:12px">
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/status</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Health check — returns version, uptime, and module status.</p>
+<p style="font-size:11px;color:var(--muted)">Returns API version, service identifier, timestamp, and code-defined module flags. It does not prove that every optional module or external dependency is healthy.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/scan/recon</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Run recon scan. Body: {"target": "example.com", "mode": "full|passive|active"}</p>
+<p style="font-size:11px;color:var(--muted)">Currently returns {"status":"unavailable"}: no remote scan worker is connected. Use the local CLI for reconnaissance. This is not a remote scan endpoint yet.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/detect</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Run ML detection on a SIEM event. Returns ATT&amp;CK mapping and ensemble score.</p>
+<p style="font-size:11px;color:var(--muted)">Accepts an event object and optional detector names (default: all). Current web-shell and LOLBin detector adapters return their own scores; this is not an ML ensemble or a guarantee of ATT&amp;CK mapping.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/webshell/scan</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Scan content for web shells. 45 signatures across PHP, JSP, ASP, Node.js, Ruby, ColdFusion.</p>
+<p style="font-size:11px;color:var(--muted)">Accepts content, optional file_path, and mode (content or access_log). Results depend on the detector implementation; do not assume a fixed signature count.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/bind/create</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Create a 313-BIND receipt. Returns bind_id, timestamp_ns, chain_hash, SLH-DSA signature.</p>
+<p style="font-size:11px;color:var(--muted)">Creates an unsigned SHA3-512 demo receipt in a process-local store. It is not SLH-DSA-signed, persisted, or IPFS-anchored. The store is capped at 1,000 receipts.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/attck/coverage</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Returns ATT&amp;CK coverage summary — 37 techniques across 11 tactics.</p>
+<p style="font-size:11px;color:var(--muted)">Returns a code-defined coverage snapshot (136 of 265 techniques; 51.4% in the current implementation). This is not live deployment telemetry or independently validated coverage.</p>
 </div>
 </div></div></div>
 <footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
