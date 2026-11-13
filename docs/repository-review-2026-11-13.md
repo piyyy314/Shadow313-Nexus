@@ -77,10 +77,10 @@ a live deployment validation.
 - A full validation run at `8ea8d3b` passed Python 3.11/3.12 tests,
   PostgreSQL integration, security scanning, Docker build (including Nginx
   config validation), and package build.
-- The latest run at `4809dd2` is validating the newest Open WebUI gateway and
-  SOC worker-thread changes. The changed-module Ruff/MyPy gate has passed;
-  Python tests and PostgreSQL integration are still running at the time of
-  this report.
+- Run `43421814142` on commit `4809dd2` passed Python 3.11/3.12 tests,
+  PostgreSQL integration, changed-module Ruff/MyPy, security scanning, and
+  package build. Docker image build was still running at the time of this
+  report; Compose validation and `nginx -t` had already passed.
 - The full-repository Ruff baseline recorded 5,496 diagnostics. This is
   existing lint debt, not a count of runtime bugs. It includes import
   ordering, long lines, legacy typing, unused imports, and security-lint
@@ -114,8 +114,13 @@ a live deployment validation.
 
 - Pull request: #115
 - Base: `master`
-- Feature branch is 259 commits ahead and 41 commits behind the current base
+- Feature branch is 268 commits ahead and 41 commits behind the current base
   at the latest comparison snapshot.
+- Seven paths were changed on both sides of the merge base:
+  `.github/workflows/shadow313-ci.yml`, `.gitignore`, `README.md`,
+  `docker-compose.yml`, `docker/nginx/gen-ssl.sh`, `requirements.txt`,
+  and the local TLS key deletion. The SSL script and ignore rules need an
+  explicit three-way reconciliation before the PR can merge.
 - GitHub reports the PR as `dirty` / not mergeable; base-branch divergence
   and overlapping infrastructure changes need reconciliation.
 - The PR remains draft and unmerged.
@@ -123,11 +128,10 @@ a live deployment validation.
 
 ## Next validation sequence
 
-1. Reconcile the feature branch with current `master` and resolve the
-   mergeability state without rewriting shared history.
-2. Run the full Python 3.11/3.12 test matrix, PostgreSQL integration job,
-   Ruff/Black/MyPy, Docker build, and static-site build against the new head.
+1. Reconcile the feature branch with current `master` and resolve the seven
+   overlapping paths without rewriting shared history.
+2. Decide whether to apply Black formatting to the seven reported modules.
 3. Review the remaining repository-wide lint/security baseline in focused
    batches rather than suppressing findings globally.
-4. Rotate any deployment that used the exposed local TLS key.
+4. Rotate any deployment that used the historically exposed local TLS key.
 5. Recheck GitGuardian history handling before considering the PR merge.
