@@ -410,7 +410,7 @@ def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
 
     monkeypatch.setattr(soc_router, "run_in_threadpool", track_threadpool)
     app = FastAPI()
-    app.include_router(soc_router.build_router(lambda: None))
+    app.include_router(soc_router.build_router(lambda: "test-principal"))
     client = TestClient(app)
 
     assert client.get("/api/shiatoali/health").status_code == 200
@@ -439,7 +439,7 @@ def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
         json={"title": "Threadpool regression"},
     )
     assert case_response.status_code == 201
-    assert case_response.json()["created_by"] == "api-key"
+    assert case_response.json()["created_by"] == "test-principal"
     case_id = case_response.json()["case_id"]
     assert client.get("/api/shiatoali/cases").status_code == 200
     assert client.get(f"/api/shiatoali/cases/{case_id}").status_code == 200
@@ -453,7 +453,7 @@ def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
         json={"note": "database call stayed off the event loop"},
     ).status_code == 200
     detail = client.get(f"/api/shiatoali/cases/{case_id}").json()
-    assert detail["activity"][-1]["actor"] == "api-key"
+    assert detail["activity"][-1]["actor"] == "test-principal"
 
     assert {
         "health",

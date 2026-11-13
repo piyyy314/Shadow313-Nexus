@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
 
 from shadow313.v4.shiatoali.service import EventInput, ShiatoAliStore
@@ -25,8 +25,7 @@ class CaseCreateRequest(BaseModel):
     priority: str = "medium"
     alert_id: str | None = None
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class CaseUpdateRequest(BaseModel):
@@ -34,8 +33,7 @@ class CaseUpdateRequest(BaseModel):
     assignee: str | None = Field(default=None, max_length=255)
     note: str | None = Field(default=None, max_length=5000)
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class EventRequest(BaseModel):
