@@ -5,8 +5,7 @@ on:
     branches: ["feat/**", "feature/**"]
   pull_request:
     branches: [main, master]
-  workflow_dispatch:
-
+  workflow_dispatch: {}
 permissions:
   contents: read
 
