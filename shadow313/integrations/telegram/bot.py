@@ -35,6 +35,7 @@ import json
 import logging
 import os
 import time
+from pathlib import Path
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -51,6 +52,18 @@ AI_ENDPOINT     = os.getenv("SHADOW313_AI_ENDPOINT", OLLAMA_URL)
 AI_MODEL        = os.getenv("SHADOW313_AI_MODEL", OLLAMA_MODEL)
 PROCESSED_ALERT_IDS: set[str] = set()
 PROCESSED_ALERT_TIMESTAMPS: dict[str, float] = {}
+STATE_PATH = Path(
+    os.getenv(
+        "TELEGRAM_STATE_PATH",
+        "/home/shadow313/.shadow313/telegram-state.json",
+    )
+).expanduser()
+try:
+    INITIAL_LOOKBACK_SECONDS = max(
+        0, int(os.getenv("TELEGRAM_INITIAL_LOOKBACK_SECONDS", "900"))
+    )
+except ValueError:
+    INITIAL_LOOKBACK_SECONDS = 900
 EVENT_PROVIDER_WARNED = False
 MIN_SEVERITY    = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
 POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
@@ -328,6 +341,43 @@ def _advance_alert_cursor(since_ts: float) -> float:
     return latest
 
 
+
+def _load_delivery_state() -> tuple[float, set[str], dict[str, float]]:
+    """Restore the delivery cursor so bot restarts do not skip SOC alerts."""
+    try:
+        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        since_ts = float(state["since_ts"])
+        timestamps = {
+            str(alert_id): float(timestamp)
+            for alert_id, timestamp in state.get("processed_alert_timestamps", {}).items()
+        }
+        processed_ids = {
+            str(alert_id)
+            for alert_id in state.get("processed_alert_ids", [])
+            if alert_id
+        }
+        processed_ids.update(timestamps)
+        return since_ts, processed_ids, timestamps
+    except FileNotFoundError:
+        return time.time() - INITIAL_LOOKBACK_SECONDS, set(), {}
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        logger.warning("Could not restore Telegram delivery state: %s", exc)
+        return time.time() - INITIAL_LOOKBACK_SECONDS, set(), {}
+
+
+def _save_delivery_state(since_ts: float) -> None:
+    """Atomically persist the cursor and IDs already delivered in its batch."""
+    STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    state = {
+        "since_ts": since_ts,
+        "processed_alert_ids": sorted(PROCESSED_ALERT_IDS),
+        "processed_alert_timestamps": PROCESSED_ALERT_TIMESTAMPS,
+    }
+    temporary_path = STATE_PATH.with_suffix(STATE_PATH.suffix + ".tmp")
+    temporary_path.write_text(json.dumps(state), encoding="utf-8")
+    os.replace(temporary_path, STATE_PATH)
+
+
 def _severity_passes(event: dict) -> bool:
     sev = str(event.get("severity", "LOW")).upper()
     return SEVERITY_ORDER.get(sev, 0) >= SEVERITY_ORDER.get(MIN_SEVERITY, 2)
@@ -360,7 +410,13 @@ async def run_bot() -> None:
     logger.info("Shadow313 Telegram Bot starting — min_severity=%s poll=%ss",
                 MIN_SEVERITY, POLL_INTERVAL)
     send_startup_message()
-    since_ts = time.time()
+    since_ts, saved_ids, saved_timestamps = _load_delivery_state()
+    PROCESSED_ALERT_IDS.update(saved_ids)
+    PROCESSED_ALERT_TIMESTAMPS.update(saved_timestamps)
+    logger.info(
+        "Restored Telegram alert cursor; pending IDs at cursor: %s",
+        len(PROCESSED_ALERT_IDS),
+    )
     update_offset = 0
 
     while True:
@@ -382,8 +438,13 @@ async def run_bot() -> None:
                         PROCESSED_ALERT_TIMESTAMPS[alert_id] = float(event_ts)
                 elif not delivered:
                     batch_failed = True
-            if not batch_failed:
-                since_ts = _advance_alert_cursor(since_ts)
+            if events:
+                if not batch_failed:
+                    since_ts = _advance_alert_cursor(since_ts)
+                try:
+                    _save_delivery_state(since_ts)
+                except OSError as state_error:
+                    logger.error("Could not persist Telegram delivery state: %s", state_error)
         except Exception as e:
             logger.error("Polling loop error: %s", e)
         await asyncio.sleep(POLL_INTERVAL)
