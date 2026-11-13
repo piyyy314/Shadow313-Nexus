@@ -307,7 +307,10 @@ jobs:
         run: |
           export WEBUI_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
           export SHADOW313_API_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
+          export SHIAATOALI_POSTGRES_PASSWORD="$(openssl rand -hex 32)"
+          export SHIAATOALI_DATABASE_URL="postgresql+psycopg://shiatoali:${SHIAATOALI_POSTGRES_PASSWORD}@shiatoali-postgres:5432/shiatoali"
           docker compose --env-file .env.example config --quiet
+          docker compose --env-file .env.example -f docker-compose.yml -f docker-compose.postgres.yml config --quiet
       - name: Validate Nginx routing configuration
         run: |
           mkdir -p "$RUNNER_TEMP/shadow313-ssl"
