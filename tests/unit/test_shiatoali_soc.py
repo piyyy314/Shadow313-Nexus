@@ -174,6 +174,17 @@ def test_authenticated_api_ingestion_and_alert_query(tmp_path, monkeypatch):
     assert alerts.status_code == 200
     assert alerts.json()["items"][0]["rule_id"] == "SHIA-EXEC-001"
 
+    ordered = client.get(
+        "/api/shiatoali/alerts?order=asc&since=2000-01-01T00%3A00%3A00%2B00%3A00",
+        headers=headers,
+    )
+    assert ordered.status_code == 200
+    assert ordered.json()["order"] == "asc"
+    assert ordered.json()["since"].startswith("2000-01-01")
+
+    invalid_order = client.get("/api/shiatoali/alerts?order=random", headers=headers)
+    assert invalid_order.status_code == 422
+
     denied = client.get("/api/shiatoali/alerts")
     assert denied.status_code == 401
 
@@ -344,3 +355,41 @@ def test_postgresql_configuration_refuses_an_unmigrated_database(monkeypatch):
         assert "schema is incomplete" in str(exc)
     finally:
         engine.dispose()
+
+
+def test_alert_listing_supports_time_cursor_and_chronological_order(tmp_path):
+    from datetime import datetime, timezone
+
+    store = make_store(tmp_path)
+    older = store.ingest(EventInput(
+        source="windows",
+        host="older-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="cursor-alert-older",
+    ))
+    newer = store.ingest(EventInput(
+        source="windows",
+        host="newer-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand BBBB",
+        event_id="cursor-alert-newer",
+    ))
+    older_id = older["alerts_created"][0]["alert_id"]
+    newer_id = newer["alerts_created"][0]["alert_id"]
+
+    with store._session() as db:
+        db.execute(
+            "UPDATE shiatoali_alerts SET created_at = ? WHERE alert_id = ?",
+            ("2026-01-01T01:00:00+00:00", older_id),
+        )
+        db.execute(
+            "UPDATE shiatoali_alerts SET created_at = ? WHERE alert_id = ?",
+            ("2026-01-01T02:00:00+00:00", newer_id),
+        )
+
+    since = datetime(2026, 1, 1, 1, 30, tzinfo=timezone.utc)
+    alerts = store.list_alerts(limit=10, since=since, order="asc")
+
+    assert [alert["alert_id"] for alert in alerts] == [newer_id]
+    assert store.list_alerts(order="asc")[0]["alert_id"] == older_id
