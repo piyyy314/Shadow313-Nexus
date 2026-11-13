@@ -6,13 +6,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_nginx_routes_general_soc_and_versioned_api_to_fastapi():
+def test_nginx_preserves_open_webui_api_and_routes_shadow313_endpoints():
     config = (ROOT / "nginx.conf").read_text(encoding="utf-8")
-    assert "location /api/ {" in config
-    assert "proxy_pass         http://shadow313_api;" in config
-    assert "location /api/shiatoali/ {" in config
+    webui_api = config.split("location /api/ {", 1)[1].split("}", 1)[0]
+
+    assert "proxy_pass         http://openwebui;" in webui_api
+    assert "location ^~ /api/shiatoali/ {" in config
     assert "location /api/s313/ {" in config
     assert "proxy_pass         http://shadow313_api/api/;" in config
+    assert "location ~ ^/api/(?:status|modules|chat|detect|" in config
+    assert "proxy_pass         http://shadow313_api;" in config
+    assert "location /api/ {\n            limit_req zone=ui" in config
 
 
 def test_compose_manages_nginx_tls_volume_and_permissions():
