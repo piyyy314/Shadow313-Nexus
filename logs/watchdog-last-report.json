@@ -1,27 +1,26 @@
 {
-  "failures": [
-    "Profile MISSING required setting: 'OLLAMA_HOST'",
-    "Ollama var MISSING: OLLAMA_HOST (expected: 127.0.0.1:11434)"
-  ],
-  "autoRepaired": [
-    "Restored 1 Ollama environment variables",
-    "Started Ollama silently"
-  ],
-  "passed": 46,
-  "failed": 2,
-  "score": 84.0,
-  "total": 55,
-  "timestamp": "2026-11-10 18:54:07",
-  "repaired": 2,
-  "warned": 7,
   "warnings": [
-    "Profile contains problematic setting: 'System32'",
-    "Ghost 'Ubuntu' profile visible in terminal (should be deleted or hidden)",
+    "Ollama var CHANGED: OLLAMA_MAX_LOADED_MODELS = '1' (expected: '2')",
+    "Ollama var CHANGED: OLLAMA_KEEP_ALIVE = '24h' (expected: '10m')",
     "WSL2 distro: Ubuntu-24.04 NOT found",
     "WSL2 distro: kali-linux NOT found",
     "Ollama NOT running — auto-starting...",
-    "Uncommitted changes in repo (7 files)",
-    "Repo is 9 commits behind origin/master — run: git pull origin master"
+    "Uncommitted changes in repo (4 files)",
+    "Repo is 14 commits behind origin/master — run: git pull origin master"
   ],
-  "status": "DEGRADED"
+  "repaired": 2,
+  "warned": 7,
+  "failures": [
+    "Ollama var MISSING: OLLAMA_HOST (expected: 127.0.0.1:11434)"
+  ],
+  "total": 55,
+  "passed": 47,
+  "autoRepaired": [
+    "Restored 3 Ollama environment variables",
+    "Started Ollama silently"
+  ],
+  "score": 85.0,
+  "status": "DEGRADED",
+  "timestamp": "2026-11-13 00:00:24",
+  "failed": 1
 }
