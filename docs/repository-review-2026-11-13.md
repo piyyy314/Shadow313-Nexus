@@ -38,10 +38,15 @@ a live deployment validation.
    - Kept API-key authentication on `POST /api/chat` and aligned the request
      contract with the configured Ollama/OpenAI-compatible/gateway engine.
 
-3. **Telegram alert delivery**
-   - Replaced polling of the unavailable generic `/api/events` adapter with
+3. **AI gateway and Telegram integration**
+   - Wired the optional OpenAI-compatible gateway into Open WebUI as well as
+     the API, CLI, and Telegram bot. Open WebUI remains Ollama-only by default.
+   - Replaced Telegram polling of the unavailable generic `/api/events` adapter with
      authenticated ShiatoAli alert polling.
    - Added chronological pagination and an ISO-8601 time cursor.
+   - Moved synchronous SQLite/PostgreSQL operations in every SOC route to a
+     worker thread so slow database calls do not block health checks or other
+     API requests.
    - Preserved alert IDs at the cursor timestamp to avoid duplicate sends.
    - Preserved successful deliveries across retry batches so a later failure
      does not move the cursor backwards or resend newer alerts.
