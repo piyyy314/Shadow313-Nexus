@@ -71,33 +71,26 @@ a live deployment validation.
 
 ## CI and quality status
 
-The latest available full PR Actions run was against commit
-`96669ef67266d36595e81f7234ad11515d400689`, before the fixes listed above.
-
-- Real PostgreSQL 16 migration and integration job: **passed** on that run.
-- Unit tests: failed early on an AI-engine test patching a nonexistent
-  `shadow313.core.ai_engine.request` attribute. The test now patches the
-  public `urllib.request` module directly.
-- Other deterministic test failures identified by automated review were
-  corrected: healthcheck argv indexing, Telegram stale-alert cutoff, and
-  missing responsive CSS.
-- Vercel automated review findings have been corrected and their review
-  threads resolved, including the Nginx/Open WebUI routing regression.
-- A full validation run on commit `8ea8d3b` passed Python 3.11/3.12 tests,
+- The initial PR validation run at `96669ef` exposed deterministic test
+  failures in AI request patching, healthcheck argv indexing, Telegram alert
+  cutoff, and dashboard layout. Those defects were corrected.
+- A full validation run at `8ea8d3b` passed Python 3.11/3.12 tests,
   PostgreSQL integration, security scanning, Docker build (including Nginx
   config validation), and package build.
-- The newest run at commit `4e3b3e4` has passed the changed-module Ruff and
-  MyPy gates and the PostgreSQL integration job; Python 3.11/3.12 suites are
-  still running at the time of this report.
-- The latest full-repository Ruff baseline recorded 5,496 diagnostics.
-  This is broad existing lint debt, not a count of runtime bugs. It includes
-  import ordering, long lines, legacy typing, unused imports, and security
-  lint findings.
-- The CI gate now enforces Ruff and MyPy on every changed Shadow313 Python
-  module against the full feature-branch diff. Both passed on the latest run
-  at the time of this report. Black reports seven changed modules that would
-  be reformatted; that style-only step is currently non-blocking while the
-  existing formatting debt is assessed.
+- The latest run at `4809dd2` is validating the newest Open WebUI gateway and
+  SOC worker-thread changes. The changed-module Ruff/MyPy gate has passed;
+  Python tests and PostgreSQL integration are still running at the time of
+  this report.
+- The full-repository Ruff baseline recorded 5,496 diagnostics. This is
+  existing lint debt, not a count of runtime bugs. It includes import
+  ordering, long lines, legacy typing, unused imports, and security-lint
+  findings.
+- CI enforces Ruff and MyPy against the complete feature-branch diff for
+  changed Shadow313 Python modules. Black reports seven changed modules that
+  would be reformatted; that style-only step is visible but currently
+  non-blocking while the existing formatting debt is assessed.
+- The setuptools dependency findings were addressed by requiring
+  `setuptools>=84.1.0` and upgrading setuptools before the CI audit.
 
 ## Security items requiring attention
 
@@ -106,11 +99,13 @@ The latest available full PR Actions run was against commit
   workflow no longer contains it and uses trust authentication only for its
   ephemeral PostgreSQL test service. The finding remains because the commit
   is still in PR history. No production credential was used.
-- The base `master` branch still contains the tracked local TLS private-key
-  file `docker/nginx/ssl/shadow313.key`; this feature branch removes it.
-  Treat that key as exposed. If it has been used outside local development,
-  issue a replacement certificate/key and update any deployed copy. The
-  branch change alone does not remove the file from `master` before merge.
+- The current `master` and feature-branch trees no longer track
+  `docker/nginx/ssl/shadow313.key`. Git history still contains the earlier
+  commit `7703717f94f1606646ccf23d8d816e2d0d62e733` that added it; it was
+  removed from the default branch by `38aad78970b67592026cbedfb137a09d89d3f15e`.
+  Treat the historical key as exposed. If it was ever used outside local
+  development, issue a replacement certificate/key and update deployed copies.
+  Removing a file from the current tree does not erase its historical blob.
 - Production SOC readiness still requires distributed rate limiting,
   retention policies, managed backups and restore drills, monitoring,
   deployment health checks, and operational access controls.
