@@ -1,50 +1,27 @@
-from __future__ import annotations
-"""
-shadow313.api.server
-FastAPI REST API for Shadow313 NEXUS v4.0.0
+"""FastAPI REST API for Shadow313 NEXUS v4.0.0."""
 
-Endpoints:
-  GET  /api/status          — health + version
-  GET  /api/modules         — list available modules
-  POST /api/scan/recon      — run recon scan
-  POST /api/scan/vuln       — run vuln scan
-  POST /api/detect          — run detection on event
-  POST /api/webshell/scan   — scan content for web shells
-  GET  /api/attck/coverage  — ATT&CK coverage summary
-  POST /api/bind/create     — create 313-BIND receipt
-  GET  /api/bind/{bind_id}  — retrieve receipt
-"""
+from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import logging
 import os
 import secrets
 import time
 from datetime import UTC, datetime
 from typing import Any
 
+import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import uvicorn
-HAS_FASTAPI = True
+from pydantic import BaseModel, Field
 
-from shadow313.api.access import authorize, install_limits
 from shadow313 import __version__
-import logging
+from shadow313.api.access import authorize, install_limits
+
+HAS_FASTAPI = True
 logger = logging.getLogger(__name__)
-
-
-# Intelligence modules (lazy import — graceful if not available)
-try:
-    from shadow313.v4.intelligence.honeypot_analyzer import HoneypotAnalyzer, WEForgeTracker
-    from shadow313.v4.intelligence.global_threat_sim_v2 import (
-        GlobalThreatSimulatorV2, GLOBAL_THREATS_2026, run_global_simulation_v2
-    )
-    HAS_INTELLIGENCE = True
-except ImportError:
-    HAS_INTELLIGENCE = False
 
 # ── Models ────────────────────────────────────────────────────────
 
@@ -52,6 +29,11 @@ if HAS_FASTAPI:
     class DetectRequest(BaseModel):
         event: dict[str, Any]
         detectors: list[str] = ["all"]
+
+    class ChatRequest(BaseModel):
+        prompt: str = Field(min_length=1, max_length=20000)
+        system_prompt: str | None = Field(default=None, max_length=4000)
+        context: dict[str, Any] | None = None
 
     class WebShellScanRequest(BaseModel):
         content: str
@@ -80,8 +62,19 @@ def create_app(api_key: str | None = None) -> FastAPI:
         raise ImportError("fastapi and uvicorn are required: pip install fastapi uvicorn")
 
     api_key = api_key or os.environ.get("SHADOW313_API_KEY")
-    if os.environ.get("SHADOW313_ENV", "development") == "production" and not api_key:
-        raise RuntimeError("SHADOW313_API_KEY must be set in production")
+    if api_key is not None:
+        api_key = api_key.strip()
+    if os.environ.get("SHADOW313_ENV", "development") == "production":
+        placeholder_keys = {
+            "replace-with-a-random-api-key",
+            "change-me",
+            "your-api-key",
+        }
+        if not api_key or api_key.strip().lower() in placeholder_keys or len(api_key) < 32:
+            raise RuntimeError(
+                "SHADOW313_API_KEY must be a non-placeholder value "
+                "of at least 32 characters in production"
+            )
 
     app = FastAPI(
         title="Shadow313 NEXUS API",
@@ -112,8 +105,15 @@ def create_app(api_key: str | None = None) -> FastAPI:
     _receipts: dict[str, dict] = {}
 
     # ── Auth dependency ───────────────────────────────────────────
-    def verify_api_key(request: Request):
+    def verify_api_key(request: Request) -> str:
         authorize(request, api_key)
+        # A shared API key authenticates the service credential, not a human.
+        # Case activity must never trust analyst identity from request payloads.
+        return "api-key" if api_key else "local-anonymous"
+
+    # ShiatoAli SOC vertical slice: durable events + defensive alert generation.
+    from shadow313.v4.shiatoali.router import build_router as build_shiatoali_router
+    app.include_router(build_shiatoali_router(verify_api_key))
 
     install_limits(app)
 
@@ -134,6 +134,16 @@ def create_app(api_key: str | None = None) -> FastAPI:
                 "quantum":  True,
                 "detection": True,
                 "webshell": True,
+            },
+            # These describe the HTTP API surface, not local CLI module availability.
+            "api_endpoints": {
+                "chat": "requires_configured_ai_backend",
+                "recon_scan": "unavailable",
+                "vulnerability_scan": "unavailable",
+                "detection": "available",
+                "webshell_scan": "available",
+                "shiatoali_soc": "available",
+                "bind_receipts": "unsigned_demo_only",
             },
         }
 
@@ -157,6 +167,40 @@ def create_app(api_key: str | None = None) -> FastAPI:
             ]
         }
 
+    @app.post("/api/chat")
+    async def chat(req: ChatRequest, _: str = Depends(verify_api_key)):
+        """Run inference off the event loop so slow providers cannot block API traffic."""
+        from starlette.concurrency import run_in_threadpool
+
+        def generate_response():
+            from shadow313.core.ai_engine import AIEngine
+            from shadow313.core.config import Config
+
+            engine = AIEngine(Config().get("ai", default={}))
+            if engine.backend == "disabled":
+                raise HTTPException(503, detail="AI backend is disabled")
+            if not engine.is_available():
+                raise HTTPException(
+                    503,
+                    detail="AI backend is unavailable or its API key is missing",
+                )
+
+            answer = engine.chat(
+                req.prompt,
+                system_prompt=req.system_prompt,
+                context=req.context,
+            )
+            if answer.startswith("[AI error"):
+                raise HTTPException(502, detail="AI provider request failed")
+            return {
+                "status": "ok",
+                "backend": engine.backend,
+                "model": engine.model,
+                "response": answer,
+            }
+
+        return await run_in_threadpool(generate_response)
+
     @app.post("/api/detect")
     async def detect(req: DetectRequest, _: str = Depends(verify_api_key)):
         results = {}
@@ -164,8 +208,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "webshell" in req.detectors:
             try:
                 from shadow313.v4.detection.webshell_detector import WebShellDetector
-                det = WebShellDetector()
-                score = det.score_event(req.event)
+                webshell_detector = WebShellDetector()
+                score = webshell_detector.score_event(req.event)
                 results["webshell"] = {
                     "score":    round(score, 4),
                     "detected": score >= 0.65,
@@ -177,8 +221,8 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "lolbin" in req.detectors:
             try:
                 from shadow313.v4.detection.lolbin_detector import LOLBinDetector
-                det = LOLBinDetector()
-                alert = det.analyze_event(req.event)
+                lolbin_detector = LOLBinDetector()
+                alert = lolbin_detector.analyze_event(req.event)
                 results["lolbin"] = {
                     "score":    alert.risk_score if alert else 0.0,
                     "detected": alert is not None,
@@ -324,9 +368,9 @@ def main():
     app = create_app(api_key=api_key)
 
     print(f"Shadow313 NEXUS API v{__version__}")
-    logger.debug("  Listening: http://{args.host}:{args.port}")
-    logger.debug("  Docs:      http://{args.host}:{args.port}/api/docs")
-    logger.debug("  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
+    logger.debug(f"  Listening: http://{args.host}:{args.port}")
+    logger.debug(f"  Docs:      http://{args.host}:{args.port}/api/docs")
+    logger.debug(f"  Auth:      {'API key required' if api_key else 'No auth (dev mode)'}")
 
     uvicorn.run(
         app,

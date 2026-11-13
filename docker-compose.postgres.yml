@@ -1,0 +1,52 @@
+# Optional PostgreSQL overlay for the ShiatoAli API.
+# Keep the database on the internal Docker network; no host port is published.
+services:
+  shiatoali-postgres:
+    image: postgres:16
+    container_name: shadow313-shiatoali-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${SHIAATOALI_POSTGRES_DB:-shiatoali}
+      POSTGRES_USER: ${SHIAATOALI_POSTGRES_USER:-shiatoali}
+      POSTGRES_PASSWORD: ${SHIAATOALI_POSTGRES_PASSWORD:?Set SHIAATOALI_POSTGRES_PASSWORD in .env}
+    volumes:
+      - shiatoali_postgres_data:/var/lib/postgresql/data
+    networks:
+      - shadow313_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  shiatoali-migrate:
+    image: piyyy314/shadow313-nexus:4.0.0
+    build:
+      context: .
+      target: nexus
+    container_name: shadow313-shiatoali-migrate
+    restart: "no"
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace:ro
+    entrypoint: []
+    command: ["alembic", "-c", "alembic-shiatoali.ini", "upgrade", "head"]
+    environment:
+      SHIAATOALI_DATABASE_URL: ${SHIAATOALI_DATABASE_URL:?Set SHIAATOALI_DATABASE_URL in .env}
+    depends_on:
+      shiatoali-postgres:
+        condition: service_healthy
+    networks:
+      - shadow313_internal
+
+  shadow313-api:
+    environment:
+      SHIAATOALI_DATABASE_URL: ${SHIAATOALI_DATABASE_URL:?Set SHIAATOALI_DATABASE_URL in .env}
+    depends_on:
+      shiatoali-migrate:
+        condition: service_completed_successfully
+
+volumes:
+  shiatoali_postgres_data:
+    driver: local
