@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scan tracked files, allowing only reviewed fixture fingerprints at exact paths.
 
-Fingerprints avoid duplicating token-shaped test data in the scanner config.
+Fingerprints avoid duplicating token-shaped test data in the scanner config.\nThe fixture file starts empty; add only reviewed, path-specific fingerprints.
 Adding a fixture requires reviewing both the exact source line and its specific path.
 No candidate values are printed in diagnostics.
 """
