@@ -50,6 +50,7 @@ AI_BACKEND      = os.getenv("SHADOW313_AI_BACKEND", "ollama")
 AI_ENDPOINT     = os.getenv("SHADOW313_AI_ENDPOINT", OLLAMA_URL)
 AI_MODEL        = os.getenv("SHADOW313_AI_MODEL", OLLAMA_MODEL)
 PROCESSED_ALERT_IDS: set[str] = set()
+PROCESSED_ALERT_TIMESTAMPS: dict[str, float] = {}
 EVENT_PROVIDER_WARNED = False
 MIN_SEVERITY    = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
 POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
@@ -308,6 +309,24 @@ def _fetch_events(since_ts: float) -> list[dict]:
         return []
 
 
+
+def _advance_alert_cursor(since_ts: float) -> float:
+    """Advance only after successful delivery, retaining IDs tied to the cursor."""
+    global PROCESSED_ALERT_IDS, PROCESSED_ALERT_TIMESTAMPS
+    if not PROCESSED_ALERT_TIMESTAMPS:
+        return since_ts
+    latest = max(PROCESSED_ALERT_TIMESTAMPS.values())
+    if latest <= since_ts:
+        return since_ts
+    PROCESSED_ALERT_TIMESTAMPS = {
+        alert_id: timestamp
+        for alert_id, timestamp in PROCESSED_ALERT_TIMESTAMPS.items()
+        if timestamp == latest
+    }
+    PROCESSED_ALERT_IDS = set(PROCESSED_ALERT_TIMESTAMPS)
+    return latest
+
+
 def _severity_passes(event: dict) -> bool:
     sev = str(event.get("severity", "LOW")).upper()
     return SEVERITY_ORDER.get(sev, 0) >= SEVERITY_ORDER.get(MIN_SEVERITY, 2)
@@ -349,29 +368,21 @@ async def run_bot() -> None:
                 update_offset = max(update_offset, int(update.get("update_id", 0)) + 1)
                 _handle_update(update)
             events = _fetch_events(since_ts) if API_URL else []
-            batch_latest = since_ts
             batch_failed = False
             for event in events:
                 alert_id = str(event.get("alert_id") or event.get("id") or "")
                 if alert_id and alert_id in PROCESSED_ALERT_IDS:
                     continue
                 delivered = not _severity_passes(event) or send_alert(event)
-                if delivered:
-                    if alert_id:
-                        PROCESSED_ALERT_IDS.add(alert_id)
+                if delivered and alert_id:
+                    PROCESSED_ALERT_IDS.add(alert_id)
                     event_ts = event.get("timestamp_unix")
                     if isinstance(event_ts, (int, float)):
-                        batch_latest = max(batch_latest, event_ts)
-                else:
+                        PROCESSED_ALERT_TIMESTAMPS[alert_id] = float(event_ts)
+                elif not delivered:
                     batch_failed = True
             if not batch_failed:
-                if batch_latest > since_ts:
-                    since_ts = batch_latest
-                    PROCESSED_ALERT_IDS.intersection_update(
-                        str(event.get("alert_id") or event.get("id") or "")
-                        for event in events
-                        if event.get("timestamp_unix") == batch_latest
-                    )
+                since_ts = _advance_alert_cursor(since_ts)
         except Exception as e:
             logger.error("Polling loop error: %s", e)
         await asyncio.sleep(POLL_INTERVAL)
