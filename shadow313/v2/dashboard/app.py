@@ -1,12 +1,11 @@
+# ruff: noqa: E501
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
 
 from __future__ import annotations
 
 import ipaddress
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 
 DASHBOARD_HTML = """<!DOCTYPE html>
@@ -249,9 +248,9 @@ class DashboardModule:
         return {"host": host, "port": port}
 
     def _start_fastapi(self, host: str, port: int, no_browser: bool) -> None:
+        import uvicorn
         from fastapi import FastAPI
         from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
-        import uvicorn
 
         app    = FastAPI(title="Shadow313 NEXUS Dashboard")
         kernel = self.kernel
@@ -316,7 +315,7 @@ class DashboardModule:
                 max_heartbeats = 10000  # FIX: prevent infinite loop — ~14 hours at 5s interval
                 for _ in range(max_heartbeats):
                     await asyncio.sleep(5)
-                    yield f"data: Heartbeat — {datetime.now(timezone.utc).isoformat()}\n\n"
+                    yield f"data: Heartbeat — {datetime.now(UTC).isoformat()}\n\n"
                 yield "data: Stream ended\n\n"
 
             return StreamingResponse(generate(), media_type="text/event-stream")
@@ -331,10 +330,6 @@ class DashboardModule:
     def _serve_static(self, host: str, port: int) -> None:
         """Fallback: serve static HTML with Python's built-in HTTP server."""
         import http.server
-        import threading
-
-        html_path = Path("/tmp/shadow313_dashboard.html")
-        html_path.write_text(DASHBOARD_HTML)
 
         class Handler(http.server.SimpleHTTPRequestHandler):
             def do_GET(self):
