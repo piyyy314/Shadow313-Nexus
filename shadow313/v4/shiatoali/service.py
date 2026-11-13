@@ -409,15 +409,31 @@ class ShiatoAliStore:
             ).fetchall()
         return [self._serialize_event(row) for row in rows]
 
-    def list_alerts(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def list_alerts(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+        since: datetime | None = None,
+        order: str = "desc",
+    ) -> list[dict[str, Any]]:
+        """List alerts with a stable time cursor and explicit sort direction."""
+        direction = order.lower()
+        if direction not in {"asc", "desc"}:
+            raise ValueError("order must be asc or desc")
+        query = """SELECT alerts.*, events.host
+            FROM shiatoali_alerts AS alerts
+            JOIN shiatoali_events AS events ON events.event_id = alerts.event_id"""
+        params: list[Any] = []
+        if since is not None:
+            cursor = since
+            if cursor.tzinfo is None:
+                cursor = cursor.replace(tzinfo=UTC)
+            query += " WHERE alerts.created_at >= ?"
+            params.append(cursor.astimezone(UTC).isoformat())
+        query += f" ORDER BY alerts.created_at {direction.upper()} LIMIT ? OFFSET ?"
+        params.extend((limit, offset))
         with self._session() as db:
-            rows = db.execute(
-                """SELECT alerts.*, events.host
-                FROM shiatoali_alerts AS alerts
-                JOIN shiatoali_events AS events ON events.event_id = alerts.event_id
-                ORDER BY alerts.created_at DESC LIMIT ? OFFSET ?""",
-                (limit, offset),
-            ).fetchall()
+            rows = db.execute(query, tuple(params)).fetchall()
         return [dict(row) for row in rows]
 
     def health(self) -> dict[str, Any]:
