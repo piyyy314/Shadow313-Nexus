@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -77,8 +77,8 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     async def list_alerts(
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
-        since: datetime | None = Query(default=None),
-        order: str = Query(default="desc"),
+        since: Annotated[datetime | None, Query()] = None,
+        order: Annotated[str, Query()] = "desc",
     ) -> dict[str, Any]:
         if order not in {"asc", "desc"}:
             raise HTTPException(status_code=422, detail="order must be asc or desc")
