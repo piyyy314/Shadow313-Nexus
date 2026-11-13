@@ -78,13 +78,21 @@ The latest available full PR Actions run was against commit
   missing responsive CSS.
 - Vercel automated review findings have been corrected and their review
   threads resolved, including the Nginx/Open WebUI routing regression.
-- GitHub Actions did not create a new run for the subsequent connector-made
-  commits, so the latest changes remain **unverified by a fresh full CI run**.
-- A repository-wide Ruff run on the earlier snapshot reported 5,523
-  diagnostics across 360 Python files. This is broad existing lint debt,
-  not a count of runtime bugs. It includes import ordering, long lines,
-  legacy typing, unused imports, and security-lint findings. The check has
-  not been weakened to hide that debt.
+- A full validation run on commit `8ea8d3b` passed Python 3.11/3.12 tests,
+  PostgreSQL integration, security scanning, Docker build (including Nginx
+  config validation), and package build.
+- The newest run at commit `4e3b3e4` has passed the changed-module Ruff and
+  MyPy gates and the PostgreSQL integration job; Python 3.11/3.12 suites are
+  still running at the time of this report.
+- The latest full-repository Ruff baseline recorded 5,496 diagnostics.
+  This is broad existing lint debt, not a count of runtime bugs. It includes
+  import ordering, long lines, legacy typing, unused imports, and security
+  lint findings.
+- The CI gate now enforces Ruff and MyPy on every changed Shadow313 Python
+  module against the full feature-branch diff. Both passed on the latest run
+  at the time of this report. Black reports seven changed modules that would
+  be reformatted; that style-only step is currently non-blocking while the
+  existing formatting debt is assessed.
 
 ## Security items requiring attention
 
@@ -106,8 +114,8 @@ The latest available full PR Actions run was against commit
 
 - Pull request: #115
 - Base: `master`
-- Feature branch is 210 commits ahead and 41 commits behind the current base
-  at the comparison snapshot.
+- Feature branch is 259 commits ahead and 41 commits behind the current base
+  at the latest comparison snapshot.
 - GitHub reports the PR as `dirty` / not mergeable; base-branch divergence
   and overlapping infrastructure changes need reconciliation.
 - The PR remains draft and unmerged.
