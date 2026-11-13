@@ -74,7 +74,7 @@ with `SHADOW313_AI_BACKEND=ollama`, and configure `SHADOW313_AI_MODEL` and
 to `https://ai-gateway.vercel.sh/v1`; the OpenAI backend defaults to
 `https://api.openai.com/v1` and uses `OPENAI_API_KEY`. Set
 `SHADOW313_AI_MODEL` to a model identifier supported by the selected provider.
-The Docker Compose stack passes these settings through to the CLI, authenticated Python API (`POST /api/chat`), and optional Telegram bot. The Telegram bot polls authenticated ShiatoAli SOC alerts; it does not use the static website's unavailable event adapter.
+The Docker Compose stack passes these settings through to the CLI, authenticated Python API (`POST /api/chat`), and optional Telegram bot. Open WebUI can also expose an OpenAI-compatible gateway provider using `OPENWEBUI_OPENAI_API_BASE_URLS` and `OPENWEBUI_OPENAI_API_KEYS`; if unset, it continues to use local Ollama only. The Telegram bot polls authenticated ShiatoAli SOC alerts; it does not use the static website's unavailable event adapter.
 
 The Python API listens on port `8313` when run in Docker Compose. Compose keeps
 the API internal to its Docker network; the static site adapter does not host
