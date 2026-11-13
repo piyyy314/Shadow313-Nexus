@@ -1,5 +1,5 @@
-# ruff: noqa: E501
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
+# ruff: noqa: E501
 
 from __future__ import annotations
 
