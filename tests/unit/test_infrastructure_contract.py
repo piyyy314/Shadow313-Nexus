@@ -1,6 +1,7 @@
 """Infrastructure contract tests for local Docker/Nginx routing."""
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -46,3 +47,23 @@ def test_static_site_publishes_shiatoali_console():
     assert "docs/shiatoali-console.html" in public_files
     build_script = (ROOT / "scripts/build-public-site.cjs").read_text(encoding="utf-8")
     assert "relative !== 'docs/shiatoali-console.html'" in build_script
+
+
+def test_every_fastapi_api_route_has_an_explicit_nginx_upstream():
+    from shadow313.api.server import create_app
+
+    config = (ROOT / "nginx.conf").read_text(encoding="utf-8")
+    match = re.search(r"location ~ (\^/api/[^ ]+) \{", config)
+    assert match is not None
+    shadow_api_pattern = re.compile(match.group(1))
+    app = create_app(api_key="nginx-route-test-key")
+
+    for route in app.routes:
+        path = getattr(route, "path", "")
+        if not path.startswith("/api/"):
+            continue
+        if path.startswith("/api/shiatoali/"):
+            assert "location ^~ /api/shiatoali/ {" in config
+            continue
+        sample_path = path.replace("{bind_id}", "sample-bind-id")
+        assert shadow_api_pattern.fullmatch(sample_path), path
