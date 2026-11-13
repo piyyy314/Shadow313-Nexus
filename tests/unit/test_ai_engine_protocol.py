@@ -1,13 +1,12 @@
 """AI request/response protocol tests for the new core engine, fully offline."""
 
 import json
-from importlib.util import module_from_spec, spec_from_file_location
 from io import BytesIO
-from pathlib import Path
 from unittest.mock import Mock
 from urllib.error import URLError
 
 import pytest
+import urllib.request as urlrequest
 
 # Exercise the implementation used by normal runtime imports, not a shadowed file.
 import shadow313.core.ai_engine as _MODULE
@@ -34,7 +33,7 @@ def test_reserved_endpoints_and_non_http_schemes_are_rejected(endpoint):
 
 def test_ollama_chat_serializes_system_context_and_options(monkeypatch):
     fetch = Mock(return_value=BytesIO(b'{"message":{"content":"  answer  "}}'))
-    monkeypatch.setattr(_MODULE.request, "urlopen", fetch)
+    monkeypatch.setattr(urlrequest, "urlopen", fetch)
     engine = AIEngine(
         {
             "endpoint": "http://localhost:11434/",
