@@ -49,6 +49,30 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   .event-line { padding: 4px 0; border-bottom: 1px solid var(--border); }
   .event-line .ts { color: #6e7681; margin-right: 8px; }
   .section-title { font-size: 1.1em; color: var(--accent); margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  @media (max-width: 760px) {
+    header { padding: 12px 16px; flex-wrap: wrap; }
+    header h1 { font-size: 1em; }
+    nav {
+      position: static;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    nav a { padding: 10px 12px; flex: 0 0 auto; }
+    main { margin-left: 0; padding: 16px; }
+    .grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .card { padding: 14px; min-width: 0; }
+    .card .value { font-size: 1.5em; }
+    .chat-box { height: min(50vh, 400px); }
+    .chat-input { align-items: stretch; }
+    .chat-input button { padding: 10px 14px; }
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
 </style>
 </head>
 <body>
