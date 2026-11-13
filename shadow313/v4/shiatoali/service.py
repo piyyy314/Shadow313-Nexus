@@ -149,6 +149,8 @@ class ShiatoAliStore:
             None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
         )
         self._engine: Any | None = None
+        self._memory_uri: str | None = None
+        self._memory_anchor: sqlite3.Connection | None = None
         if configured_url:
             if not configured_url.startswith("postgresql+psycopg://"):
                 raise ValueError(
@@ -163,17 +165,14 @@ class ShiatoAliStore:
             self._engine = create_engine(configured_url, pool_pre_ping=True)
             self._sql_text = text
             self.database_path = "<postgresql>"
-            self._memory_uri = None
-            self._memory_anchor = None
             self._initialize()
             return
 
-        configured = database_path or os.getenv(
-            "SHIAATOALI_DB_PATH",
-            str(Path.home() / ".shadow313" / "shiatoali.sqlite3"),
+        configured = (
+            database_path
+            or os.getenv("SHIAATOALI_DB_PATH")
+            or str(Path.home() / ".shadow313" / "shiatoali.sqlite3")
         )
-        self._memory_uri: str | None = None
-        self._memory_anchor: sqlite3.Connection | None = None
         if str(configured) == ":memory:":
             # Each sqlite3.connect(":memory:") call creates a different database.
             # A shared-cache URI plus a keeper connection preserves the database
