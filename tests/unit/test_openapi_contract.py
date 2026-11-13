@@ -139,10 +139,12 @@ def test_openapi_auth_and_request_schemas_match_api_behavior():
 def test_openapi_documents_soc_alert_cursor_parameters():
     contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
     parameters = contract["paths"]["/api/shiatoali/alerts"]["get"]["parameters"]
+    event_parameters = contract["paths"]["/api/shiatoali/events"]["get"]["parameters"]
 
     assert {parameter["name"] for parameter in parameters} == {
         "limit", "offset", "since", "order"
     }
+    assert {parameter["name"] for parameter in event_parameters} == {"limit", "offset"}
     since = next(parameter for parameter in parameters if parameter["name"] == "since")
     order = next(parameter for parameter in parameters if parameter["name"] == "order")
     assert since["schema"]["format"] == "date-time"
