@@ -34,8 +34,8 @@ import html
 import json
 import logging
 import os
-import time
 from pathlib import Path
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
