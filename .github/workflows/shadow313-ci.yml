@@ -122,7 +122,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - name: Install
-        run: pip install -e "." pyyaml rich bandit pip-audit
+        run: |
+          pip install --upgrade "setuptools>=84.1.0"
+          pip install -e "." pyyaml rich bandit pip-audit
       - name: Bandit SAST scan
         run: |
           bandit -r shadow313/ -f json -o bandit-report.json --exit-zero \
