@@ -786,6 +786,7 @@ updateClock();
 setInterval(updateClock, 1000);
 
 // Live feed
+// Synthetic demonstration events only; this feed is not connected to sensors, APIs, or production telemetry.
 const FEED_EVENTS = [
   {sev:'CRITICAL', title:'Firmware hash mismatch — edge-node-04', asset:'edge-node-04', time:''},
   {sev:'CRITICAL', title:'China Chopper web shell in uploads/', asset:'web-app-01', time:''},
@@ -833,17 +834,17 @@ setInterval(addFeedEvent, 2200);
 function downloadExport() {
   const data = {
     exported: new Date().toISOString(),
-    source: 'SHADOW313 NEXUS Master Intelligence Dashboard v4.0.0',
+    source: 'Shadow313 NEXUS illustrative dashboard; synthetic demonstration data, not live telemetry',
     version: '4.0.0',
-    composite_score: 96.2,
-    mttd_minutes: 1.2,
-    roi_3yr: '847%',
-    breach_cost_reduction: '94.1%',
+    composite_score: null, // Not measured; sample dashboard data removed.
+    mttd_minutes: null,
+    roi_3yr: null,
+    breach_cost_reduction: null,
     test_status: 'See live CI results',
     attck_techniques: 37,
     active_techniques: 26,
     pqc_standard: 'FIPS 203/204/205',
-    ml_ensemble: ['IsolationForest(30%)', 'RandomForest(35%)', 'GradientBoosting(25%)', 'QuantumWeighter(10%)', 'LSTM(boost)'],
+    ml_ensemble: [],
     soar_playbooks: 5,
     apt_profiles: 6,
     location: 'Ottawa, Ontario, Canada',
