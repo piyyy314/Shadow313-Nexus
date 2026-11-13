@@ -56,7 +56,7 @@ $BASELINE = @{
 
     # Ollama environment variables — exact expected values
     OllamaVars = @{
-        "OLLAMA_HOST"              = "0.0.0.0:11434"
+        "OLLAMA_HOST"              = "127.0.0.1:11434"
         "OLLAMA_NUM_PARALLEL"      = "2"
         "OLLAMA_MAX_QUEUE"         = "20"
         "OLLAMA_KEEP_ALIVE"        = "10m"
@@ -195,48 +195,62 @@ function Auto-Repair {
 # INSTALL MODE — Register scheduled task
 # ─────────────────────────────────────────────────────────────────
 if ($Install) {
-    Write-Host "`n[INSTALL] Registering Shadow313 Watchdog as scheduled task..." -ForegroundColor Cyan
-    
-    if (-not $scriptPath) {
-        Write-Host "  ❌ Cannot determine script path. Save the script first, then run with -Install" -ForegroundColor Red
+    Write-Host "`n[INSTALL] Setting up the current-user watchdog..." -ForegroundColor Cyan
+
+    if (-not $scriptPath -or -not (Test-Path -LiteralPath $scriptPath)) {
+        Write-Host "  ❌ Save the watchdog script before installing it." -ForegroundColor Red
         exit 1
     }
-    
-    # Remove existing task
-    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
-    
-    # Create task — runs at login + every 4 hours
-    $action   = New-ScheduledTaskAction -Execute "pwsh.exe" `
-                    -Argument "-NoProfile -WindowStyle Hidden -File `"$scriptPath`" -Check"
-    
-    $triggers = @(
-        $(New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME),
-        $(New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Hours 4) -Once -At (Get-Date))
-    )
-    
-    $settings  = New-ScheduledTaskSettingsSet `
-                    -ExecutionTimeLimit (New-TimeSpan -Minutes 5) `
-                    -StartWhenAvailable `
-                    -MultipleInstances IgnoreNew
-    
-    $principal = New-ScheduledTaskPrincipal `
-                    -UserId $env:USERNAME `
-                    -LogonType Interactive `
-                    -RunLevel Limited
-    
-    Register-ScheduledTask `
-        -TaskName $taskName `
-        -Action $action `
-        -Trigger $triggers `
-        -Settings $settings `
-        -Principal $principal `
-        -Description "Shadow313 NEXUS: Detect and alert on environment drift" `
-        -Force | Out-Null
-    
-    Write-Host "  ✅ Watchdog installed — runs at login + every 4 hours" -ForegroundColor Green
-    Write-Host "  ✅ Logs: $logFile" -ForegroundColor Green
-    Write-Host "  ✅ Manual check: .\shadow313-watchdog.ps1 -Check" -ForegroundColor Green
-    Write-Host "  ✅ View report:  .\shadow313-watchdog.ps1 -Report" -ForegroundColor Green
+
+    $installed = $false
+    try {
+        $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
+            -Argument "-NoProfile -WindowStyle Hidden -File `"$scriptPath`" -Check"
+        $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+        $settings = New-ScheduledTaskSettingsSet `
+            -ExecutionTimeLimit (New-TimeSpan -Minutes 5) `
+            -StartWhenAvailable `
+            -MultipleInstances IgnoreNew
+        $principal = New-ScheduledTaskPrincipal `
+            -UserId "$env:USERDOMAIN\$env:USERNAME" `
+            -LogonType Interactive `
+            -RunLevel Limited
+
+        Register-ScheduledTask `
+            -TaskName $taskName `
+            -Action $action `
+            -Trigger $trigger `
+            -Settings $settings `
+            -Principal $principal `
+            -Description "Shadow313 NEXUS: Detect and alert on environment drift" `
+            -Force -ErrorAction Stop | Out-Null
+
+        $installed = $null -ne (Get-ScheduledTask -TaskName $taskName -ErrorAction Stop)
+        if (-not $installed) { throw "Task Scheduler did not return the registered task." }
+        Write-Host "  ✅ Verified scheduled task: $taskName" -ForegroundColor Green
+    } catch {
+        Write-Warning "Task Scheduler registration failed: $($_.Exception.Message)"
+        $startupDir = [Environment]::GetFolderPath('Startup')
+        $shortcutPath = Join-Path $startupDir "Shadow313-Watchdog.lnk"
+        try {
+            $shell = New-Object -ComObject WScript.Shell
+            $shortcut = $shell.CreateShortcut($shortcutPath)
+            $shortcut.TargetPath = (Get-Command pwsh.exe -ErrorAction Stop).Source
+            $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$scriptPath`" -Check"
+            $shortcut.WorkingDirectory = Split-Path -Parent $scriptPath
+            $shortcut.Save()
+            if (-not (Test-Path -LiteralPath $shortcutPath)) { throw "Startup shortcut was not created." }
+            $installed = $true
+            Write-Host "  ✅ Verified per-user Startup shortcut: $shortcutPath" -ForegroundColor Green
+        } catch {
+            Write-Error "Could not install startup fallback: $($_.Exception.Message)"
+            exit 1
+        }
+    }
+
+    Write-Host "  Logs: $logFile" -ForegroundColor Green
+    Write-Host "  Manual check: & `"$scriptPath`" -Check" -ForegroundColor Green
+    Write-Host "  View report:  & `"$scriptPath`" -Report" -ForegroundColor Green
     exit 0
 }
 
@@ -245,7 +259,9 @@ if ($Install) {
 # ─────────────────────────────────────────────────────────────────
 if ($Uninstall) {
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
-    Write-Host "  ✅ Watchdog uninstalled" -ForegroundColor Green
+    $shortcutPath = Join-Path ([Environment]::GetFolderPath('Startup')) "Shadow313-Watchdog.lnk"
+    Remove-Item -LiteralPath $shortcutPath -Force -ErrorAction SilentlyContinue
+    Write-Host "Removed current-user watchdog task/Startup shortcut where present." -ForegroundColor Green
     exit 0
 }
 

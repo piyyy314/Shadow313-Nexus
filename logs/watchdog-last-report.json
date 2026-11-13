@@ -1,0 +1,26 @@
+{
+  "warnings": [
+    "Ollama var CHANGED: OLLAMA_MAX_LOADED_MODELS = '1' (expected: '2')",
+    "Ollama var CHANGED: OLLAMA_KEEP_ALIVE = '24h' (expected: '10m')",
+    "WSL2 distro: Ubuntu-24.04 NOT found",
+    "WSL2 distro: kali-linux NOT found",
+    "Ollama NOT running — auto-starting...",
+    "Uncommitted changes in repo (4 files)",
+    "Repo is 14 commits behind origin/master — run: git pull origin master"
+  ],
+  "repaired": 2,
+  "warned": 7,
+  "failures": [
+    "Ollama var MISSING: OLLAMA_HOST (expected: 127.0.0.1:11434)"
+  ],
+  "total": 55,
+  "passed": 47,
+  "autoRepaired": [
+    "Restored 3 Ollama environment variables",
+    "Started Ollama silently"
+  ],
+  "score": 85.0,
+  "status": "DEGRADED",
+  "timestamp": "2026-11-13 00:00:24",
+  "failed": 1
+}

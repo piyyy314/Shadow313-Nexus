@@ -49,6 +49,7 @@ does not publish a fixed test count or claim a passing result.
 | `shadow313_sdk/`, `shadow313_platform/`, `nexus_toolkit/` | SDK, platform, and toolkit packages |
 | `tests/` | Unit, integration, and simulation tests |
 | `docs/`, `assets/`, `index.html` | Static website and documentation |
+| `docs/PLATFORM_INTEGRATION_STATUS.md` | Canonical cross-repository integration map, current SOC review status, and release gates |
 | `api/` | Static-site API adapter and OpenAPI contract; backend-dependent website routes return `200` with an explicit unavailable status |
 | `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
 | `scripts/` | Repository checks, site generation, and maintenance utilities |
