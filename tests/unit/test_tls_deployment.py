@@ -80,3 +80,12 @@ def test_open_webui_can_connect_to_configured_openai_compatible_gateway():
     assert any(value.startswith("OPENAI_API_KEYS=") for value in environment)
     assert any("OPENWEBUI_OPENAI_API_BASE_URLS" in value for value in environment)
     assert any("OPENWEBUI_OPENAI_API_KEYS" in value for value in environment)
+
+
+def test_telegram_bot_persists_delivery_cursor_in_shared_volume():
+    compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
+    service = compose["services"]["telegram-bot"]
+    assert "shadow313_data:/home/shadow313/.shadow313:rw" in service["volumes"]
+    environment = service["environment"]
+    assert any(value.startswith("TELEGRAM_STATE_PATH=") for value in environment)
+    assert any(value.startswith("TELEGRAM_INITIAL_LOOKBACK_SECONDS=") for value in environment)
