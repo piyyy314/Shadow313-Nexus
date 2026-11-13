@@ -73,7 +73,11 @@ services:
         condition: service_completed_successfully
       shadow313-api:
         condition: service_healthy
+    volumes:
+    - shadow313_data:/home/shadow313/.shadow313:rw
     environment:
+    - TELEGRAM_STATE_PATH=/home/shadow313/.shadow313/telegram-state.json
+    - TELEGRAM_INITIAL_LOOKBACK_SECONDS=${TELEGRAM_INITIAL_LOOKBACK_SECONDS:-900}
     - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
     - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
     - OLLAMA_URL=http://ollama:11434
