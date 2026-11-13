@@ -34,11 +34,11 @@ import html
 import json
 import logging
 import os
-from pathlib import Path
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 logger = logging.getLogger("shadow313.telegram")
 
