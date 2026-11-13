@@ -326,13 +326,6 @@ paths:
         - name: offset
           in: query
           schema: {type: integer, minimum: 0, default: 0}
-        - name: since
-          in: query
-          description: Return alerts created at or after this ISO-8601 timestamp
-          schema: {type: string, format: date-time}
-        - name: order
-          in: query
-          schema: {type: string, enum: [asc, desc], default: desc}
       responses:
         "200":
           description: Stored event page
@@ -463,6 +456,13 @@ paths:
         - name: offset
           in: query
           schema: {type: integer, minimum: 0, default: 0}
+        - name: since
+          in: query
+          description: Return alerts created at or after this ISO-8601 timestamp
+          schema: {type: string, format: date-time}
+        - name: order
+          in: query
+          schema: {type: string, enum: [asc, desc], default: desc}
       responses:
         "200":
           description: Stored alert page
