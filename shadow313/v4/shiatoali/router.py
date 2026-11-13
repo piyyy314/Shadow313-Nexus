@@ -7,6 +7,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from shadow313.v4.shiatoali.service import EventInput, ShiatoAliStore
 
@@ -56,12 +57,13 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
 
     @router.get("/health")
     async def health() -> dict[str, Any]:
-        return store.health()
+        return await run_in_threadpool(store.health)
 
     @router.post("/events", status_code=202)
     async def ingest_event(request: EventRequest) -> dict[str, Any]:
         try:
-            return store.ingest(EventInput(**_model_payload(request)))
+            event = EventInput(**_model_payload(request))
+            return await run_in_threadpool(store.ingest, event)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -70,7 +72,11 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
     ) -> dict[str, Any]:
-        items = store.list_events(limit=limit, offset=offset)
+        items = await run_in_threadpool(
+            store.list_events,
+            limit=limit,
+            offset=offset,
+        )
         return {"items": items, "limit": limit, "offset": offset}
 
     @router.get("/alerts")
@@ -82,7 +88,8 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     ) -> dict[str, Any]:
         if order not in {"asc", "desc"}:
             raise HTTPException(status_code=422, detail="order must be asc or desc")
-        items = store.list_alerts(
+        items = await run_in_threadpool(
+            store.list_alerts,
             limit=limit,
             offset=offset,
             since=since,
@@ -99,7 +106,8 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.post("/cases", status_code=201)
     async def create_case(request: CaseCreateRequest) -> dict[str, Any]:
         try:
-            return store.create_case(**_model_payload(request))
+            payload = _model_payload(request)
+            return await run_in_threadpool(store.create_case, **payload)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -108,12 +116,16 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
         limit: int = Query(default=100, ge=1, le=500),
         offset: int = Query(default=0, ge=0),
     ) -> dict[str, Any]:
-        items = store.list_cases(limit=limit, offset=offset)
+        items = await run_in_threadpool(
+            store.list_cases,
+            limit=limit,
+            offset=offset,
+        )
         return {"items": items, "limit": limit, "offset": offset}
 
     @router.get("/cases/{case_id}")
     async def get_case(case_id: str) -> dict[str, Any]:
-        case = store.get_case(case_id)
+        case = await run_in_threadpool(store.get_case, case_id)
         if case is None:
             raise HTTPException(status_code=404, detail="case not found")
         return case
@@ -121,7 +133,8 @@ def build_router(auth_dependency: Callable[..., Any]) -> APIRouter:
     @router.patch("/cases/{case_id}")
     async def update_case(case_id: str, request: CaseUpdateRequest) -> dict[str, Any]:
         try:
-            return store.update_case(case_id, **_model_payload(request))
+            payload = _model_payload(request)
+            return await run_in_threadpool(store.update_case, case_id, **payload)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="case not found") from exc
         except ValueError as exc:
