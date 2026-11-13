@@ -5,7 +5,7 @@ name: Shadow313 CI/CD
 
 on:
   push:
-    branches: [main, master, develop, "feature/**"]
+    branches: [main, master, develop, "feature/**", "feat/**"]
     tags: ["v*.*.*"]          # triggers PyPI publish
   pull_request:
     branches: [main, master]
@@ -13,6 +13,7 @@ on:
     types: [published]
   schedule:
     - cron: "0 3 * * 1"       # Weekly Monday 03:00 UTC
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.11"
@@ -232,6 +233,20 @@ jobs:
           export WEBUI_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
           export SHADOW313_API_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
           docker compose --env-file .env.example config --quiet
+      - name: Validate Nginx routing configuration
+        run: |
+          mkdir -p "$RUNNER_TEMP/shadow313-ssl"
+          openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -keyout "$RUNNER_TEMP/shadow313-ssl/shadow313.key" \
+            -out "$RUNNER_TEMP/shadow313-ssl/shadow313.crt" \
+            -subj "/CN=localhost"
+          docker run --rm \
+            --add-host open-webui:127.0.0.1 \
+            --add-host shadow313-api:127.0.0.1 \
+            --add-host ollama:127.0.0.1 \
+            -v "$PWD/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            -v "$RUNNER_TEMP/shadow313-ssl:/etc/nginx/ssl:ro" \
+            nginx:alpine nginx -t
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: Build image (no push on PR)
