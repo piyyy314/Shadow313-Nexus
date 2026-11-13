@@ -74,7 +74,8 @@ def test_fetch_events_skips_processed_and_old_alerts(monkeypatch):
         }),
     )
 
-    assert bot._fetch_events(1) == []
+    cutoff = datetime(2021, 1, 1, tzinfo=timezone.utc).timestamp()
+    assert bot._fetch_events(cutoff) == []
 
 
 def test_telegram_ai_uses_the_configured_gateway(monkeypatch):
