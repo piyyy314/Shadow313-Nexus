@@ -70,3 +70,13 @@ def test_api_healthcheck_uses_runtime_python_not_missing_curl():
     assert "urllib.request.urlopen" in healthcheck["test"][3]
     assert "curl" not in healthcheck["test"]
 
+
+
+def test_open_webui_can_connect_to_configured_openai_compatible_gateway():
+    compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
+    environment = compose["services"]["open-webui"]["environment"]
+
+    assert any(value.startswith("OPENAI_API_BASE_URLS=") for value in environment)
+    assert any(value.startswith("OPENAI_API_KEYS=") for value in environment)
+    assert any("OPENWEBUI_OPENAI_API_BASE_URLS" in value for value in environment)
+    assert any("OPENWEBUI_OPENAI_API_KEYS" in value for value in environment)
