@@ -66,6 +66,7 @@ def test_api_healthcheck_uses_runtime_python_not_missing_curl():
     healthcheck = compose["services"]["shadow313-api"]["healthcheck"]
 
     assert healthcheck["test"][0:2] == ["CMD", "python"]
-    assert "urllib.request.urlopen" in healthcheck["test"][2]
+    assert healthcheck["test"][2] == "-c"
+    assert "urllib.request.urlopen" in healthcheck["test"][3]
     assert "curl" not in healthcheck["test"]
 
