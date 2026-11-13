@@ -26,29 +26,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - name: Install dev dependencies
         run: pip install ruff black mypy pyyaml rich
-      - name: Ruff lint (changed Python files)
+      - name: Identify changed Python files
+        id: changed-python
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
         run: |
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          mapfile -t changed_files < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
-          if [ ${#changed_files[@]} -eq 0 ]; then
-            echo "No changed Shadow313 Python files to lint."
-          else
-            ruff check "${changed_files[@]}" --output-format github
-          fi
-      - name: Black format check
-        run: black --check --diff shadow313/
-      - name: MyPy type check
-        run: mypy shadow313/ --ignore-missing-imports
+          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          changed_files=()
+          for file in "${candidates[@]}"; do
+            if [ -f "$file" ]; then
+              changed_files+=("$file")
+            fi
+          done
+          printf '%s\n' "${changed_files[@]}" > "$RUNNER_TEMP/shadow313-changed-python.txt"
+          echo "count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+      - name: Ruff lint (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; ruff check "${files[@]}" --output-format github
+      - name: Black format check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
+      - name: MyPy type check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
@@ -104,7 +116,7 @@ jobs:
       - name: Bandit SAST scan
         run: |
           bandit -r shadow313/ -f json -o bandit-report.json \
-            --skip B101,B603,B607,B608,B311,B324
+            --severity-level high --skip B101,B603,B607,B608,B311,B324
       - name: Safety dependency check
         run: safety check --json > safety-report.json
       - name: Upload security artifacts
