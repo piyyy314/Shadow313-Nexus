@@ -131,8 +131,8 @@ class TestRoutingABTestSimulation:
         result = sim.run(n_requests=500)
         # Compare configured expectations, not noisy finite-sample estimates.
         assert (
-            result["hybrid"]["expected"]["routing_precision"]
-            > result["baseline"]["expected"]["routing_precision"]
+            sim.HYBRID["routing_precision"]
+            > sim.BASELINE["routing_precision"]
         )
 
     def test_delta_computed(self):
@@ -147,10 +147,7 @@ class TestRoutingABTestSimulation:
     def test_fallback_rate_lower_in_hybrid(self):
         sim    = RoutingABTestSimulation()
         result = sim.run(n_requests=500)
-        assert (
-            result["hybrid"]["expected"]["fallback_rate"]
-            < result["baseline"]["expected"]["fallback_rate"]
-        )
+        assert sim.HYBRID["fallback_rate"] < sim.BASELINE["fallback_rate"]
 
 
 class TestCircuitBreakerSimulation:
