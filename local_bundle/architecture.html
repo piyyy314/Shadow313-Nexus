@@ -137,13 +137,14 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <span class="badge badge-purple">Post-Quantum</span>
 </div>
 </div>
+<div role="note" style="margin:16px 24px;padding:12px 16px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px">Architecture view only. Counts and component states are not live telemetry or verified deployment measurements; use the repository source and current CI for evidence.</div>
 <div class="main">
 <!-- ── STATS ── -->
 <div class="stats-row">
-<div class="stat-card"><div class="stat-num" style="color:var(--green)">2648</div><div class="stat-label">Tests Passing</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--cyan)">29</div><div class="stat-label">Active Detectors</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--amber)">35</div><div class="stat-label">Security Tools</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--purple)">28</div><div class="stat-label">CLI Modules</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">—</div><div class="stat-label">CI status · see commit checks</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--cyan)">—</div><div class="stat-label">Detector count · verify source</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--amber)">—</div><div class="stat-label">Tool count · verify source</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--purple)">—</div><div class="stat-label">Module count · verify source</div></div>
 <div class="stat-card"><div class="stat-num" style="color:var(--green)">4</div><div class="stat-label">AI Models</div></div>
 <div class="stat-card"><div class="stat-num" style="color:var(--blue)">16GB</div><div class="stat-label">RAM Available</div></div>
 </div>
@@ -550,7 +551,7 @@ const DETAILS = {
   'shadow313-cli': { title: '⬡ Shadow313 CLI v4', items: [
     {label:'Version', value:'4.0.0'},
     {label:'Location', value:'/workspace/'},
-    {label:'Tests', value:'2648 passing / 0 failing'},
+    {label:'CI status', value:'Not reported here; see commit-specific GitHub Actions'},
     {label:'Modules', value:'28 (v1+v2) + v3/v4 NEXUS stack'},
     {label:'Detectors', value:'29 active (FIX-12 → IDENTITY-8)'},
     {label:'Tools', value:'35 (red/blue/purple/AI categories)'},

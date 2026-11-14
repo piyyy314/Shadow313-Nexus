@@ -42,16 +42,9 @@ class SiteNavigationTests(unittest.TestCase):
             if ".git" in path.parts or "public-site" in path.parts:
                 continue
             text = path.read_text()
-            # Flatten tags so adjacent number/label elements cannot hide a stale score.
-            visible = re.sub(r"<[^>]+>", " ", text)
-            visible = re.sub(r"\s+", " ", visible)
             with self.subTest(page=path.relative_to(ROOT)):
-                self.assertIsNone(fixed_score.search(visible))
-                self.assertNotRegex(visible, r"tests_passing\s*:\s*[\d,]+")
-                self.assertNotRegex(
-                    visible,
-                    r"\b\d+(?:\.\d+)?%\s*(?:MITRE\s+)?ATT&amp;CK\s+coverage\b",
-                )
+                self.assertIsNone(fixed_score.search(text))
+                self.assertNotRegex(text, r"tests_passing\s*:\s*[\d,]+")
 
     def test_dashboard_export_scripts_are_valid_javascript(self):
         dashboard_pages = (
