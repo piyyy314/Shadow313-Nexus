@@ -1223,7 +1223,7 @@ footer {
             <div class="term-cmd-btn" data-cmd="verify" id="tcb-verify">
                 <span class="tcb-icon">🔐</span>
                 <div class="tcb-text">
-                    <span class="tcb-cmd">shadow313 verify 313-BIND-7a2f</span>
+                    <span class="tcb-cmd">shadow313 temporal --verify 313-BIND-7a2f</span>
                     <span class="tcb-desc">Verify a temporal binding</span>
                 </div>
             </div>
@@ -1720,7 +1720,7 @@ const termOutputs = {
         {t:'kv', k:'  IPFS CID', v:'No live CID · sample only'},
     ],
     verify: [
-        {t:'prompt', c:'$ shadow313 verify 313-BIND-7a2f'},
+        {t:'prompt', c:'$ shadow313 temporal --verify 313-BIND-7a2f'},
         {t:'out', c:''},
         {t:'out', c:'  [313] Fetching IPFS record...'},
         {t:'out', c:'  [313] Verifying SHA-3 signature...'},
