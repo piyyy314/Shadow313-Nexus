@@ -327,7 +327,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div class="bind-step">
 <div class="bind-step-num">STEP 2</div>
 <div class="bind-step-name">Timestamp ...313</div>
-<div class="bind-step-detail">time.time_ns() nudged to end in ...313 (~1ms entropy)</div>
+<div class="bind-step-detail">Display suffix convention only; not a trusted timestamp or entropy source</div>
 </div>
 <div class="bind-arrow">→</div>
 <div class="bind-step">
@@ -345,7 +345,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div class="bind-step">
 <div class="bind-step-num">STEP 5</div>
 <div class="bind-step-name">SLH-DSA Sign</div>
-<div class="bind-step-detail">FIPS 205 signature over chain_hash (pyspx or HMAC fallback)</div>
+<div class="bind-step-detail">Proposed signing step only; current API receipt is unsigned SHA3-512 demo, process-local</div>
 </div>
 <div class="bind-arrow">→</div>
 <div class="bind-step">
@@ -453,7 +453,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <span style="color:var(--green)">313-BIND</span> ts...313 + SHA3-512 + IPFS<br/>
 <span style="color:var(--amber)">HNDL</span> Harvest-Now-Decrypt-Later defense<br/>
 <span style="color:var(--red)">CRQC</span> Timeline: 2030-2035 (plan NOW)<br/>
-<span style="color:var(--green)">pyspx</span> SLH-DSA signing (installed)<br/>
+<span style="color:var(--green)">pyspx</span> Optional pyspx dependency; API signing is not connected<br/>
 <span style="color:var(--amber)">DW-1</span> liboqs ML-DSA-65 → Q4 2026
       </div>
 </div>
