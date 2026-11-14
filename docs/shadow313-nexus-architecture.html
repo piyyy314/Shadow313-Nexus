@@ -157,8 +157,8 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 </div>
 <div class="header-badges">
 <span class="badge badge-green">Test status: see live CI results</span>
-<span class="badge badge-cyan">29 Detectors</span>
-<span class="badge badge-amber">313-BIND Active</span>
+<span class="badge badge-cyan">DEMO DETECTORS</span>
+<span class="badge badge-amber">313-BIND CONCEPT</span>
 <span class="badge badge-purple">Post-Quantum</span>
 </div>
 </div>
@@ -170,8 +170,8 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="stat-card"><div class="stat-num" style="color:var(--cyan)">—</div><div class="stat-label">Detector count · verify source</div></div>
 <div class="stat-card"><div class="stat-num" style="color:var(--amber)">—</div><div class="stat-label">Tool count · verify source</div></div>
 <div class="stat-card"><div class="stat-num" style="color:var(--purple)">—</div><div class="stat-label">Module count · verify source</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--green)">4</div><div class="stat-label">AI Models</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--blue)">16GB</div><div class="stat-label">RAM Available</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">—</div><div class="stat-label">AI model count · not verified</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--blue)">—</div><div class="stat-label">Host RAM · not measured</div></div>
 </div>
 <!-- ── ARCHITECTURE CANVAS ── -->
 <div class="section-title">Trust Boundary Architecture</div>
@@ -188,7 +188,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">This chat. Cloud AI. No security data transmitted.</div>
 </div>
 <div class="comp" onclick="showDetail('ollama-com')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🦙</div>
 <div class="comp-name">Ollama.com Registry</div>
 <div class="comp-port">ollama.com:443</div>
@@ -202,7 +202,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">piyyy314/Shadow313-Nexus repo. CI/CD via Actions.</div>
 </div>
 <div class="comp" onclick="showDetail('ipfs')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🌐</div>
 <div class="comp-name">IPFS Network</div>
 <div class="comp-port">ipfs.io:443</div>
@@ -222,7 +222,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">🪟 Windows 11 Pro Host — Dell Latitude 5490 (16GB RAM)</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('ollama')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🦙</div>
 <div class="comp-name">Ollama Engine</div>
 <div class="comp-port">localhost:11434</div>
@@ -236,21 +236,21 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">Encrypted tunnel to Hetzner VPS. Kill-switch capable.</div>
 </div>
 <div class="comp" onclick="showDetail('docker-desktop')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🐳</div>
 <div class="comp-name">Docker Desktop</div>
 <div class="comp-port">host.docker.internal</div>
 <div class="comp-desc">WSL2 backend. Manages all containers.</div>
 </div>
 <div class="comp" onclick="showDetail('burp')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔍</div>
 <div class="comp-name">Burp Suite 2026</div>
 <div class="comp-port">localhost:8080</div>
 <div class="comp-desc">HTTP proxy for web app security testing.</div>
 </div>
 <div class="comp" onclick="showDetail('dns')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔐</div>
 <div class="comp-name">Quad9 DoH DNS</div>
 <div class="comp-port">9.9.9.9:443</div>
@@ -263,42 +263,42 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">🐧 WSL2 — Ubuntu 24.04 + Kali Linux 2026.2</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('shadow313-cli')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">⬡</div>
 <div class="comp-name">Shadow313 CLI v4</div>
 <div class="comp-port">/workspace/</div>
 <div class="comp-desc">Illustrative architecture map. Component indicators are not live service health; module and detector availability must be verified from the running backend and exact-commit tests.</div>
 </div>
 <div class="comp" onclick="showDetail('fastapi')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">⚡</div>
 <div class="comp-name">FastAPI Event Bus</div>
 <div class="comp-port">localhost:8000</div>
 <div class="comp-desc">NEXUS detection pipeline REST API. Audit server.</div>
 </div>
 <div class="comp" onclick="showDetail('nexus-engine')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🧠</div>
 <div class="comp-name">NEXUS ML Engine</div>
 <div class="comp-port">Internal</div>
 <div class="comp-desc">Isolation Forest + RF + Quantum scorer. 29 detectors.</div>
 </div>
 <div class="comp" onclick="showDetail('313-bind')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔗</div>
 <div class="comp-name">313-BIND Protocol</div>
 <div class="comp-port">Internal + IPFS</div>
 <div class="comp-desc">SLH-DSA + SHA3-512 + nanosecond ...313 timestamp.</div>
 </div>
 <div class="comp" onclick="showDetail('kali')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🐉</div>
 <div class="comp-name">Kali Linux 2026.2</div>
 <div class="comp-port">wsl -d kali-linux</div>
 <div class="comp-desc">Metasploit, nmap 7.99, wordlists. shia313 user.</div>
 </div>
 <div class="comp" onclick="showDetail('ollama-wsl')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔌</div>
 <div class="comp-name">Ollama API Access</div>
 <div class="comp-port">host.docker.internal:11434</div>
@@ -318,14 +318,14 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">ChatGPT-like UI for local Ollama models. Install pending.</div>
 </div>
 <div class="comp" onclick="showDetail('shadow313-api')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔌</div>
 <div class="comp-name">Shadow313 API</div>
 <div class="comp-port">localhost:8000</div>
 <div class="comp-desc">FastAPI audit server. 6 routes. 313-BIND receipts.</div>
 </div>
 <div class="comp" onclick="showDetail('postgres')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🗄️</div>
 <div class="comp-name">PostgreSQL</div>
 <div class="comp-port">localhost:5432</div>
@@ -571,18 +571,18 @@ const DETAILS = {
     {label:'Protocol', value:'DNS-over-HTTPS (encrypted)'},
     {label:'Features', value:'Malware blocking, privacy, no logging'},
     {label:'IPv6', value:'2620:fe::fe'},
-    {label:'Status', value:'✅ Active on all adapters'},
+    {label:'Status', value:'Illustrative configuration; not detected by this page'},
   ]},
   'shadow313-cli': { title: '⬡ Shadow313 CLI v4', items: [
     {label:'Version', value:'4.0.0'},
     {label:'Location', value:'/workspace/'},
     {label:'CI status', value:'Not reported here; see commit-specific GitHub Actions'},
-    {label:'Modules', value:'28 (v1+v2) + v3/v4 NEXUS stack'},
-    {label:'Detectors', value:'29 active (FIX-12 → IDENTITY-8)'},
-    {label:'Tools', value:'35 (red/blue/purple/AI categories)'},
+    {label:'Modules', value:'Review source tree; count not verified'},
+    {label:'Detectors', value:'Not measured by this page'},
+    {label:'Tools', value:'Not measured by this page'},
   ]},
   'fastapi': { title: '⚡ FastAPI Event Bus', items: [
-    {label:'Port', value:'localhost:8000'},
+    {label:'Port', value:'localhost:8313'},
     {label:'Routes', value:'POST /api/audit-code, GET /api/audit/chain, POST /api/link-budget'},
     {label:'Purpose', value:'313-BIND audit server + NEXUS event bus'},
     {label:'Auth', value:'None (localhost only)'},
