@@ -60,7 +60,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--green)}
 /* Progress bar */
 .prog-wrap{background:rgba(26,46,26,.5);border-radius:4px;height:8px;overflow:hidden;margin-top:4px}
-.prog{height:DEMO;border-radius:4px;transition:.3s}
+.prog{height:8px;border-radius:4px;transition:.3s}
 /* Ring chart */
 .rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
 .ring-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
@@ -89,7 +89,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .gap-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .gap-label{font-size:11px;min-width:80px;color:var(--muted)}
 .gap-bar-wrap{flex:1;background:rgba(26,46,26,.5);border-radius:4px;height:16px;overflow:hidden;position:relative}
-.gap-bar-fill{height:DEMO;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
+.gap-bar-fill{height:8px;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
 .gap-pct{font-size:11px;min-width:36px;text-align:right}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -379,7 +379,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="gap-row"><div class="gap-label" style="min-width:140px">NIST 800-53 Rev 5</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
 <div class="gap-row"><div class="gap-label" style="min-width:140px">FedRAMP control mapping</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
 <div class="gap-row"><div class="gap-label" style="min-width:140px">CMMC Level 2</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct cyan">Not assessed</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">Within 9 Families</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--green)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">Within 9 Families</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
 <div class="gap-row"><div class="gap-label" style="min-width:140px">PQC (FIPS 203/4/5)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct green">Not assessed</div></div>
 </div>
 </div>
