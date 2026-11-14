@@ -243,12 +243,12 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="col-4">
 <div class="panel">
 <div class="panel-title">CRQC Migration Status</div>
-<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-002 SHA-256</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-003 Ledger</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-004-008</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-007 PBKDF2</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-012 HMAC</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA · example</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val green">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-002 SHA-256 · example</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-003 Ledger · example</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-004-008 · example</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-007 PBKDF2 · example</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-012 HMAC · example</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
 <div class="prog-row"><div class="prog-label">DW-1 liboqs</div><div class="prog-wrap"><div class="prog-fill" style="width:15%;background:var(--amber)"></div></div><div class="prog-val amber">Q4'26</div></div>
 <div class="prog-row"><div class="prog-label">DW-2 HSM</div><div class="prog-wrap"><div class="prog-fill" style="width:5%;background:var(--amber)"></div></div><div class="prog-val amber">Q1'27</div></div>
 </div>
@@ -256,25 +256,25 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="col-4">
 <div class="panel">
 <div class="panel-title">Interconnections</div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green">DEMO</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">Secrets FIPS HSM</div><div class="ic-status green">DEMO</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static assets TLS 1.3</div><div class="ic-status green">DEMO</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C · not connected</div><div class="ic-flow">No connection verified</div><div class="ic-status green">DEMO</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault · not connected</div><div class="ic-flow">Illustrative architecture only</div><div class="ic-status green">DEMO</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN · not verified</div><div class="ic-flow">Deployment not verified</div><div class="ic-status green">DEMO</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--amber)"></div><div class="ic-name">IPFS Network</div><div class="ic-flow">Receipt anchors SHA3-256</div><div class="ic-status amber">NO-IPFS</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--cyan)"></div><div class="ic-name">OpenAI API</div><div class="ic-flow">Chat only — no sec data</div><div class="ic-status cyan">OPTIONAL</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">relay.js port 3133</div><div class="ic-status green">LOCAL</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy · not verified</div><div class="ic-flow">No integration health check</div><div class="ic-status green">LOCAL</div></div>
 </div>
 </div>
 <div class="col-6">
 <div class="panel">
 <div class="panel-title">CMMC Level 2 Domain Coverage</div>
-<div class="prog-row"><div class="prog-label">IR Incident</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">3/3</div></div>
-<div class="prog-row"><div class="prog-label">AU Audit</div><div class="prog-wrap"><div class="prog-fill" style="width:56%;background:var(--cyan)"></div></div><div class="prog-val cyan">5/9</div></div>
-<div class="prog-row"><div class="prog-label">RA Risk</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--cyan)"></div></div><div class="prog-val cyan">2/3</div></div>
-<div class="prog-row"><div class="prog-label">SI Integrity</div><div class="prog-wrap"><div class="prog-fill" style="width:43%;background:var(--amber)"></div></div><div class="prog-val amber">3/7</div></div>
-<div class="prog-row"><div class="prog-label">CM Config</div><div class="prog-wrap"><div class="prog-fill" style="width:44%;background:var(--amber)"></div></div><div class="prog-val amber">4/9</div></div>
-<div class="prog-row"><div class="prog-label">AC Access</div><div class="prog-wrap"><div class="prog-fill" style="width:23%;background:var(--amber)"></div></div><div class="prog-val amber">5/22</div></div>
-<div class="prog-row"><div class="prog-label">AT Training</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
-<div class="prog-row"><div class="prog-label">PS Personnel</div><div class="prog-wrap"><div class="prog-fill" style="width:75%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
+<div class="prog-row"><div class="prog-label">IR Incident</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">AU Audit</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val cyan">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">RA Risk</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val cyan">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">SI Integrity</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">CM Config</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">AC Access</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">AT Training</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--green)"></div></div><div class="prog-val green">DEMO</div></div>
+<div class="prog-row"><div class="prog-label">PS Personnel</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val green">Wave1✅</div></div>
 </div>
 </div>
 <div class="col-6">
@@ -481,7 +481,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="t-amber">[VSAT] Illustrative TR-069/CWMP scenario TR-069 CWMP — EXAMPLE ONLY</div>
 <div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — DEMO</div>
 <div class="t-green">[313]  Temporal binding chain — INTACT</div>
-<div class="t-green">[CMMC] Wave 1 documentation — COMPLETE</div>
+<div class="t-green">[CMMC] Documentation examples — not assessed</div>
 <div class="t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
 <div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>
 </div>
@@ -519,10 +519,10 @@ const COMMANDS={
   'help':'Available: status, tests, crqc, pqc, vsat, cmmc, clear',
   'status':'Posture: SAMPLE COUNTERS | Test status: see live CI results | PQC status: not assessed by this demo',
   'tests':'[PASS] Test status: see live CI results',
-  'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
+  'crqc':'CRQC workstream examples only; completion not verified | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
   'pqc':'Reference algorithm labels only; no connected signing service or PQC attestation',
   'vsat':'7 CRITICAL findings: Telnet/FTP/HTTP/Illustrative TR-069/CWMP scenario/Firmware/UART/sample QKD anomaly (not measured)',
-  'cmmc':'Wave 1 DONE: AT-Policy ✅ AT-Records ✅ PS-Policy ✅ PS-AUA ✅ IR-Plan ✅ CA-Readiness ✅',
+  'cmmc':'Documentation examples only; evidence and control effectiveness not assessed',
   'clear':'__CLEAR__',
 };
 
