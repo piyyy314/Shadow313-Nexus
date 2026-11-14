@@ -104,6 +104,37 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertNotIn('CVE-2026-3392', (ROOT / 'docs/careers.html').read_text())
         self.assertNotIn('CVE-2026-3392', (ROOT / 'blog/index.html').read_text())
 
+        command_center = (ROOT / 'docs/s313-command-center-v6.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', command_center)
+        self.assertNotIn('SLH-DSA signed', command_center)
+        self.assertNotIn('IPFS: Qm', command_center)
+        self.assertNotIn('chain intact', command_center.lower())
+
+        adversarial = (ROOT / 'docs/adversarial-pivot-dashboard.html').read_text()
+        self.assertIn('SYNTHETIC SCENARIO MODEL ONLY', adversarial)
+        analysis = (ROOT / 'docs/adversarial-pivot-analysis.html').read_text()
+        self.assertIn('SYNTHETIC SCENARIO ANALYSIS ONLY', analysis)
+
+        soc = (ROOT / 'docs/blue-team-soc.html').read_text()
+        self.assertIn('STATIC PRODUCT OVERVIEW', soc)
+        self.assertNotIn('29 active detectors', soc)
+        cognitive = (ROOT / 'docs/soc-analyst-cognitive-load.html').read_text()
+        self.assertNotIn('available on the live platform', cognitive.lower())
+
+        nvsm = (ROOT / 'docs/nvsm-chain-score-dashboard.html').read_text()
+        self.assertIn('not been validated against observed incidents', nvsm)
+        self.assertNotIn('Mathematical Proof', nvsm)
+
+        bundle_dashboard = (ROOT / 'local_bundle/dashboard-v3.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', bundle_dashboard)
+        self.assertNotIn('CRIT=0 HIGH=0', bundle_dashboard)
+        self.assertNotIn('pyspx active', bundle_dashboard.lower())
+        self.assertNotIn('HybridAnchor active', bundle_dashboard)
+
+        bundle_platform = (ROOT / 'local_bundle/platform.html').read_text()
+        self.assertIn('STATIC REFERENCE / SIMULATION ONLY', bundle_platform)
+        self.assertNotIn('3,4,140 TESTS', bundle_platform)
+
     def test_dashboard_export_scripts_are_valid_javascript(self):
         dashboard_pages = (
             ROOT / 'docs/shadow313-nexus-dashboard.html',
