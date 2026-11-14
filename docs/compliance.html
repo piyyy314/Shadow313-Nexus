@@ -65,107 +65,34 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">⬡ NIST FIPS 203/204/205 · FedRAMP · CMMC · PIPEDA</div>
-  <h1>Compliance &amp; <span>Certifications</span></h1>
-  <p>Shadow313 NEXUS compliance posture across NIST, FedRAMP, CMMC Level 2, and Canadian privacy law.</p>
-</div>
-<div class="main">
-
-<div class="section">
-  <h2>Cryptographic Standards</h2>
-  <div class="grid-3">
-    <div class="panel" style="border-color:rgba(34,197,94,0.3)">
-      <div class="badge badge-green" style="margin-bottom:12px">FIPS 203</div>
-      <h3>ML-KEM-768</h3>
-      <p>Module-Lattice-Based Key-Encapsulation Mechanism. Replaces RSA and ECDH for quantum-safe key exchange. Implemented via liboqs (proxy) and quantcrypt.</p>
-      <div style="margin-top:12px"><span class="badge badge-green">✅ IMPLEMENTED</span></div>
-    </div>
-    <div class="panel" style="border-color:rgba(34,197,94,0.3)">
-      <div class="badge badge-green" style="margin-bottom:12px">FIPS 204</div>
-      <h3>ML-DSA-65</h3>
-      <p>Module-Lattice-Based Digital Signature Algorithm. Replaces ECDSA for digital signatures. Currently implemented as HMAC-SHA256 proxy; full liboqs migration planned Q4 2026.</p>
-      <div style="margin-top:12px"><span class="badge badge-amber">⚠ PROXY (DW-1)</span></div>
-    </div>
-    <div class="panel" style="border-color:rgba(34,197,94,0.3)">
-      <div class="badge badge-green" style="margin-bottom:12px">FIPS 205</div>
-      <h3>SLH-DSA-SHAKE-128f</h3>
-      <p>Stateless Hash-Based Digital Signature Standard. Used for 313-BIND receipt signing and root of trust. Implemented via pyspx. Quantum-safe by design.</p>
-      <div style="margin-top:12px"><span class="badge badge-green">✅ IMPLEMENTED</span></div>
-    </div>
+  <div class="hero-badge">SECURITY ENGINEERING NOTES · NOT A CERTIFICATION</div>
+  <h1>Security &amp; <span>Standards Notes</span></h1>
+  <p>Implementation notes for selected cryptographic and security controls in the Shadow313 NEXUS source repository.</p>
+ </div>
+ <div class="main">
+  <div class="section">
+   <div class="panel" style="border:1px solid rgba(245,158,11,.5);padding:20px;margin-bottom:24px">
+    <h2>Important scope limitation</h2>
+    <p>This page is not a compliance assessment, certification, attestation, authorization, or statement of conformity. Shadow313 NEXUS is not represented as FIPS-validated, FedRAMP-authorized, CMMC-certified, SOC 2-audited, or PIPEDA-certified. Previously displayed coverage figures and green control statuses were not independently assessed and are withdrawn.</p>
+   </div>
+   <h2>Cryptographic implementation boundaries</h2>
+   <div class="panel">
+    <p><strong>NIST FIPS 203 (ML-KEM):</strong> defines a key-encapsulation mechanism. The presence of a dependency or documentation does not establish that the application uses a validated module or negotiates ML-KEM in production.</p>
+    <p><strong>NIST FIPS 204 (ML-DSA):</strong> defines a digital-signature algorithm. The API demo receipt is not ML-DSA-signed. Do not label HMAC or a placeholder adapter as ML-DSA.</p>
+    <p><strong>NIST FIPS 205 (SLH-DSA):</strong> defines a stateless hash-based signature algorithm. The API receipt route explicitly labels its output <code>UNSIGNED-SHA3-512-DEMO</code>; it does not create an SLH-DSA signature.</p>
+    <p>Algorithm support must be established from the exact code path, installed implementation, test vectors, key lifecycle, and independent validation—not from a badge or package dependency.</p>
+   </div>
   </div>
-</div>
-<div class="section">
-  <h2>NIST SP 800-53 Rev 5</h2>
-  <div class="panel">
-    <p>Estimated coverage: ~23% of the full Moderate baseline (31 documented / ~300+ required). The primary gap is documentation and governance, not technical security.</p>
-    <table>
-      <thead><tr><th>Control Family</th><th>Status</th><th>Key Controls</th></tr></thead>
-      <tbody>
-        <tr><td>AU — Audit &amp; Accountability</td><td><span class="badge badge-green">EXCEEDS</span></td><td>AU-9, AU-10 via 313-BIND + SLH-DSA + IPFS</td></tr>
-        <tr><td>SC — System &amp; Comms Protection</td><td><span class="badge badge-green">EXCEEDS</span></td><td>SC-12, SC-13 via FIPS 203/204/205</td></tr>
-        <tr><td>SI — System &amp; Info Integrity</td><td><span class="badge badge-green">EXCEEDS</span></td><td>SI-2: Test status: see live CI results · SDS=0</td></tr>
-        <tr><td>AC — Access Control</td><td><span class="badge badge-amber">PARTIAL</span></td><td>AC-2, AC-3, AC-6, AC-17 implemented</td></tr>
-        <tr><td>IA — Identification &amp; Auth</td><td><span class="badge badge-amber">PARTIAL</span></td><td>IA-2, IA-5, IA-7 implemented</td></tr>
-        <tr><td>AT — Awareness &amp; Training</td><td><span class="badge badge-red">GAP</span></td><td>No formal training program — P1 priority</td></tr>
-        <tr><td>CA — Assessment &amp; Authorization</td><td><span class="badge badge-red">GAP</span></td><td>No 3PAO engagement yet — P1 priority</td></tr>
-      </tbody>
-    </table>
+  <div class="section">
+   <h2>What is required for a real assessment</h2>
+   <ul><li>Define the system boundary, deployment architecture, assets, data flows, and control owner.</li><li>Map implemented controls to the applicable baseline using evidence.</li><li>Test identity, authorization, secrets, logging, retention, backup, incident response, and operational procedures.</li><li>Have the appropriate independent assessor or authorizing body perform the required review.</li><li>Publish scope, evidence date, exceptions, and assessment status without implying certification.</li></ul>
   </div>
-</div>
-<div class="section">
-  <h2>CMMC Level 2</h2>
-  <div class="panel">
-    <p>Estimated coverage: ~38–45% of the 110 required practices across 14 domains. C3PAO third-party assessment is mandatory for Level 2 certification.</p>
-    <table>
-      <thead><tr><th>Domain</th><th>Coverage</th><th>Gap</th></tr></thead>
-      <tbody>
-        <tr><td>IR — Incident Response</td><td><span class="badge badge-green">100%</span></td><td>IR-4, IR-5, IR-6 all implemented</td></tr>
-        <tr><td>AU — Audit &amp; Accountability</td><td><span class="badge badge-green">~56%</span></td><td>AU-1, AU-4–AU-8, AU-12 missing</td></tr>
-        <tr><td>SC — System &amp; Comms</td><td><span class="badge badge-amber">~25%</span></td><td>SC-1, SC-2, SC-4, SC-5, SC-7 missing</td></tr>
-        <tr><td>AC — Access Control</td><td><span class="badge badge-amber">~23%</span></td><td>17 of 22 practices missing</td></tr>
-        <tr><td>AT — Awareness &amp; Training</td><td><span class="badge badge-red">0%</span></td><td>All 3 practices missing — P1</td></tr>
-        <tr><td>MA — Maintenance</td><td><span class="badge badge-red">0%</span></td><td>All 6 practices missing — P1</td></tr>
-        <tr><td>MP — Media Protection</td><td><span class="badge badge-red">0%</span></td><td>All 9 practices missing — P1</td></tr>
-      </tbody>
-    </table>
+  <div class="section">
+   <h2>Evidence sources</h2>
+   <p>Use the <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/fix/ci-audit-blockers/api/openapi.yaml">API contract</a>, <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/fix/ci-audit-blockers/shadow313/api/server.py">API implementation</a>, <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/fix/ci-audit-blockers/README.md">README</a>, and exact-commit <a href="https://github.com/piyyy314/Shadow313-Nexus/actions">CI results</a>. Passing CI is software test evidence, not a compliance certification.</p>
   </div>
-</div>
-<div class="section">
-  <h2>CRQC Patch Status</h2>
-  <div class="panel">
-    <table>
-      <thead><tr><th>Item</th><th>Status</th><th>Timeline</th></tr></thead>
-      <tbody>
-        <tr><td>CRQC-001 plugin_signer.py (ECDSA → ML-DSA)</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-002 temporal chain (SHA-256 → SHA3-512)</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-003 cosign ECDSA → SLH-DSA</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-007 crypto_store RSA → ML-KEM-768</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-012 pyspx SLH-DSA fallback</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-013 IPFS anchor signing</td><td><span class="badge badge-green">✅ PATCHED</span></td><td>v4.0.0</td></tr>
-        <tr><td>DW-1 liboqs real ML-DSA-65 implementation</td><td><span class="badge badge-amber">🔄 PLANNED</span></td><td>Q4 2026</td></tr>
-        <tr><td>DW-2 HSM key storage migration</td><td><span class="badge badge-amber">🔄 PLANNED</span></td><td>Q1 2027</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="section">
-  <h2>Privacy &amp; Canadian Law</h2>
-  <div class="panel">
-    <table>
-      <thead><tr><th>Requirement</th><th>Status</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td>PIPEDA (Canada)</td><td><span class="badge badge-green">✅ COMPLIANT</span></td><td>Zero PII collected · Ottawa, ON jurisdiction</td></tr>
-        <tr><td>NSA CNSA 2.0</td><td><span class="badge badge-green">✅ ALIGNED</span></td><td>SLH-DSA deployed · ML-KEM-768 active</td></tr>
-        <tr><td>NIST IR 8547</td><td><span class="badge badge-green">✅ MIGRATED</span></td><td>RSA/ECC deprecated · PQC active</td></tr>
-        <tr><td>OWASP ASVS Level 2</td><td><span class="badge badge-amber">~84%</span></td><td>Input validation, session security implemented</td></tr>
-        <tr><td>CIS Controls v8 IG2</td><td><span class="badge badge-amber">~82%</span></td><td>Asset inventory, vulnerability management active</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-</div>
-<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
+ </div>
+ <div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
 <script>function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=location.pathname.split('/').pop()||'page.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}</script>
 </body>
 </html>
