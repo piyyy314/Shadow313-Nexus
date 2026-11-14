@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Performance Load Test Report — Shadow313 NEXUS</title>
+<title>Illustrative Performance Review — Shadow313 NEXUS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;}
@@ -450,20 +450,20 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="panel-hdr"><span class="panel-title" style="color:var(--red);">&#9888; Performance Findings</span></div>
     <div style="padding:14px;">
       <div class="insight">
-        <div class="insight-title" style="color:var(--red);">Finding 1: Threat Board Is the Only High-Cost Page (Score: 78.7)</div>
-        <div class="insight-body">s313-threat-board.html (83.6KB) has 3 setInterval animation loops and 30KB of inline ATT&CK DRILLDOWN data. Under concurrent load, the 3 animation loops each consume a separate JS thread. A proposed Visibility API approach can pause background animation loops; no reproducible CPU benchmark is published here.</div>
+        <div class="insight-title" style="color:var(--red);">Unverified historical note: Threat Board page complexity</div>
+        <div class="insight-body">s313-threat-board.html (83.6KB) has 3 setInterval animation loops and 30KB of inline ATT&CK DRILLDOWN data. The page contains browser-side animation loops; actual CPU and concurrency impact has not been measured here. A proposed Visibility API approach can pause background animation loops; no reproducible CPU benchmark is published here.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--amber);">Finding 2: Project Roadmap Is Medium Cost (Score: 47.2)</div>
-        <div class="insight-body">project-roadmap.html (55.4KB) has 1 canvas element and 12KB of JS for the effort/impact scatter chart. No animation loops. Under concurrent load this performs well — the canvas is only drawn once on load, not continuously. No action needed.</div>
+        <div class="insight-title" style="color:var(--amber);">Unverified historical note: Project Roadmap page complexity</div>
+        <div class="insight-body">project-roadmap.html (55.4KB) has 1 canvas element and 12KB of JS for the effort/impact scatter chart. No animation loops. The page contains a canvas chart. No controlled concurrent-load test or performance conclusion is published here.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Finding 3: All 5 Priority Pages Are Low Cost (Score: 5-7)</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: priority-page complexity</div>
         <div class="insight-body">Ghost-Watch Threat Map, ML Predictor, Threat Actor Map, Plugin Studio, and SOAR Playbook Builder all score 5-7 — well within acceptable range. No canvas, no animation loops, no external JS dependencies. These pages will handle high concurrent load without degradation.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Finding 4: All Pages Respond in &lt;0.02ms Locally</div>
-        <div class="insight-body">All 15 pages respond in under 0.02ms for local file reads under 50 concurrent requests. On Vercel's CDN edge network, these will be served from cache with typical TTFB of 20-50ms globally. No server-side bottlenecks exist — all pages are static HTML.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical response-time claim — do not use as a benchmark</div>
+        <div class="insight-body">No reproducible timing dataset, test harness, CDN trace, or concurrency evidence is attached. Static HTML alone does not establish edge latency or the absence of all bottlenecks.</div>
       </div>
     </div>
   </div>
@@ -471,16 +471,16 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="panel-hdr"><span class="panel-title" style="color:var(--green);">&#9989; Optimizations Applied &amp; Recommendations</span></div>
     <div style="padding:14px;">
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: Visibility API (Threat Board)</div>
+        <div class="insight-title" style="color:var(--green);">Suggested: Visibility API (Threat Board)</div>
         <div class="insight-body">Design note: pause background animation loops with the Visibility API. Performance impact requires measurement in a controlled browser benchmark.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: will-change CSS Hints</div>
-        <div class="insight-body">Added will-change: transform to canvas elements and contain: content to live feed containers. Enables GPU compositing for animated elements, reducing main thread paint operations by ~40%.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: will-change CSS hints</div>
+        <div class="insight-body">The suggested CSS hints may affect compositing and paint behavior. No before/after browser profile is published to quantify an improvement.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: Google Fonts Preconnect</div>
-        <div class="insight-body">Added &lt;link rel="preconnect"&gt; for fonts.googleapis.com and fonts.gstatic.com. Eliminates DNS lookup latency for font loading — reduces First Contentful Paint by ~150ms on first visit.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: Google Fonts preconnect</div>
+        <div class="insight-body">Added &lt;link rel="preconnect"&gt; for fonts.googleapis.com and fonts.gstatic.com. Preconnect may reduce connection setup time in some environments. No measured First Contentful Paint result is supplied.</div>
       </div>
       <div class="insight">
         <div class="insight-title" style="color:var(--amber);">Recommended: Lazy-Load ATT&CK Data (Threat Board)</div>
