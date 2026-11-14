@@ -149,7 +149,7 @@
     @media(max-width:600px) { .elements-grid{grid-template-columns:1fr;} .kpi-row{grid-template-columns:repeat(2,1fr);} }
   </style>
 </head>
-<body>
+<body><aside role="note" aria-label="Local bundle demonstration notice" style="margin:14px 20px;padding:12px 16px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font:12px/1.6 system-ui,sans-serif"><strong>STATIC REFERENCE / SIMULATION ONLY.</strong> This standalone page is a browser-side interface demonstration. Metrics, findings, CVEs, RF readings, compliance states, cryptographic labels, event feeds, and receipt records are illustrative unless independently verified in source and current test evidence. No live target, customer system, sensor, production service, signature, IPFS anchor, or compliance certification is established here.</aside>
 
 <!-- Site Nav -->
 <nav class="site-nav">
@@ -191,7 +191,7 @@
 
 <!-- Disclaimer -->
 <div class="disclaimer">
-  <strong>⚠ AUTHORIZED USE ONLY</strong> — This platform is an interactive simulation for authorized cybersecurity operations and training only. Unauthorized use is strictly prohibited. NSA-CISA Joint Directive compliant. All activities are logged and 313-BIND anchored.
+  <strong>⚠ AUTHORIZED USE ONLY</strong> — This platform is an interactive simulation for authorized cybersecurity operations and training only. Unauthorized use is strictly prohibited. No real target is scanned; logs and receipt panels are browser-side demonstration data.
 </div>
 
 <div class="layout">
@@ -228,16 +228,16 @@
     <div class="kpi red">
       <div class="kpi-label">CISA KEV Matches</div>
       <div class="kpi-value" style="color:var(--red)">2</div>
-      <div class="kpi-sub">CVE-2026-3392 · CVE-2024-6199</div>
+      <div class="kpi-sub">Synthetic CWMP / firmware scenarios</div>
     </div>
     <div class="kpi green">
       <div class="kpi-label">Telemetry Accuracy</div>
       <div class="kpi-value" style="color:var(--green)">99.85%</div>
-      <div class="kpi-sub">313-BIND verified</div>
+      <div class="kpi-sub">Sample receipt · not verified</div>
     </div>
     <div class="kpi cyan">
       <div class="kpi-label">NSA Compliance</div>
-      <div class="kpi-value" style="color:var(--cyan)">100%</div>
+      <div class="kpi-value" style="color:var(--cyan)">DEMO</div>
       <div class="kpi-sub">CNSA 2.0 aligned</div>
     </div>
     <div class="kpi amber">
@@ -274,7 +274,7 @@
   <div class="elements-grid">
     <div class="element-card active" onclick="activateElement(this,'vuln')">
       <div class="element-header"><span class="element-icon">🔍</span><span class="element-num">01</span><span class="element-title">Vulnerability Scanner</span></div>
-      <div class="element-desc">CVE-2026-3392 TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
+      <div class="element-desc">Illustrative TR-069/CWMP scenario · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
       <span class="element-badge badge-red">7 CRITICAL</span>
     </div>
     <div class="element-card" onclick="activateElement(this,'pentest')">
@@ -335,20 +335,20 @@
       <div class="terminal-dot" style="background:#ef4444"></div>
       <div class="terminal-dot" style="background:#f59e0b"></div>
       <div class="terminal-dot" style="background:#22c55e"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">vsat-tactical · ground-sweep · 192.168.100.1/24</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">vsat-tactical · ground-sweep · Lab router (synthetic)/24</span>
     </div>
     <div class="terminal-body" id="terminal-body">
       <div class="log-info">[*] VSAT Tactical Security Suite v5.0 Ultra initialized</div>
-      <div class="log-info">[*] Target: 192.168.100.1/24 | Profile: DEEP | Satellite: Telstar 11N</div>
-      <div class="log-ok">[+] Host 192.168.100.1 — VSAT Ground Terminal Modulator Hub</div>
-      <div class="log-ok">[+] Host 192.168.100.15 — Network Operations Center Console</div>
+      <div class="log-info">[*] Target: Lab router (synthetic)/24 | Profile: DEEP | Satellite: Telstar 11N</div>
+      <div class="log-ok">[+] Host Lab router (synthetic) — VSAT Ground Terminal Modulator Hub</div>
+      <div class="log-ok">[+] Host Lab router (synthetic)5 — Network Operations Center Console</div>
       <div class="log-crit">[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!</div>
       <div class="log-crit">[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!</div>
-      <div class="log-crit">[!!!] CVE-2026-3392: Unsigned CWMP provisioning — VULNERABLE!</div>
+      <div class="log-crit">[!!!] Synthetic CWMP scenario — not a verified finding</div>
       <div class="log-crit">[!!!] Firmware hash mismatch — Arbitrary partition overwrite threat!</div>
       <div class="log-warn">[!] SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)</div>
       <div class="log-warn">[!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)</div>
-      <div class="log-ok">[✓] 313-BIND receipt anchored: QmX7k9... chain intact</div>
+      <div class="log-ok">[✓] Sample receipt placeholder; no IPFS CID or chain verification</div>
       <div class="log-dim">[~] Sweep complete. 7 critical findings. Awaiting operator action.</div>
     </div>
   </div>
@@ -358,7 +358,7 @@
 
 <div class="tac-footer">
   <span>VSAT Tactical Security Suite v5.0 Ultra · Shadow313 NEXUS · Ottawa, ON, Canada</span>
-  <span>313-BIND: INTACT · NSA CNSA 2.0 · FIPS 203/204/205</span>
+  <span>PQC reference labels only; no compliance verification</span>
   <span id="footer-clock" class="mono"></span>
 </div>
 
@@ -411,9 +411,9 @@ function addLog(type, msg) {
 // Actions
 function runSweep() {
   addLog('info', '[*] Initiating ground segment sweep...');
-  setTimeout(() => addLog('crit', '[!!!] CVE-2026-3392 confirmed — TR-069 CWMP unsigned'), 800);
+  setTimeout(() => addLog('crit', '[!!!] Illustrative scenario only — no CVE verification'), 800);
   setTimeout(() => addLog('warn', '[!] SNR degradation detected — 5.9 dB'), 1400);
-  setTimeout(() => addLog('ok', '[+] 313-BIND receipt generated: 313-SWEEP-' + Math.random().toString(16).slice(2,10).toUpperCase()), 2000);
+  setTimeout(() => addLog('ok', '[+] Sample receipt placeholder generated: 313-SWEEP-' + Math.random().toString(16).slice(2,10).toUpperCase()), 2000);
 }
 
 function runHardening() {
@@ -433,16 +433,16 @@ function exportReport() {
   const report = {
     exported: new Date().toISOString(),
     source: 'VSAT Tactical Security Suite v5.0 Ultra',
-    target: '192.168.100.1/24',
+    target: 'Lab router (synthetic)/24',
     satellite: 'Telstar 11N (37.5°W)',
     snr_db: 5.9, clock_skew_hz: 55.1,
     critical_findings: 7,
     findings: [
-      {sev:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'192.168.100.1', cve:'T1040'},
-      {sev:'CRITICAL', title:'FTP Anonymous Write', host:'192.168.100.15', cve:'T1190'},
-      {sev:'CRITICAL', title:'CVE-2026-3392 TR-069 CWMP', host:'192.168.100.1', cve:'T1542.001'},
-      {sev:'CRITICAL', title:'Unsigned Firmware', host:'192.168.100.1', cve:'T1542.001'},
-      {sev:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', cve:'T1200'},
+      {sev:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'Lab router (synthetic)', cve:'T1040'},
+      {sev:'CRITICAL', title:'FTP Anonymous Write', host:'Lab router (synthetic)5', cve:'T1190'},
+      {sev:'CRITICAL', title:'Illustrative TR-069/CWMP scenario', host:'Lab router (synthetic)', cve:'T1542.001'},
+      {sev:'CRITICAL', title:'Unsigned Firmware', host:'Lab router (synthetic)', cve:'T1542.001'},
+      {sev:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'Lab router (synthetic)', cve:'T1200'},
       {sev:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', cve:'T1565.001'},
     ],
     bind_receipt: '313-VSAT-' + Math.random().toString(16).slice(2,10).toUpperCase(),
@@ -452,7 +452,7 @@ function exportReport() {
   a.href = URL.createObjectURL(blob);
   a.download = 'vsat-report-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
-  addLog('ok', '[+] Report exported with 313-BIND receipt');
+  addLog('ok', '[+] Demo report exported; unsigned sample only');
 }
 
 function showSection(name) {
