@@ -138,9 +138,10 @@
   <div class="nav-right">
     <div class="pulse"></div>
     <span id="clock" class="mono"></span>
-    &nbsp;|&nbsp; <span style="color:var(--green)">MESH ACTIVE</span>
+    &nbsp;|&nbsp; <span style="color:var(--green)">MESH DEMO</span>
   </div>
 </nav>
+<aside role="note" aria-label="Reference and simulation notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>REFERENCE / SIMULATION ONLY.</strong> This static page illustrates a workflow or interface. Feed status, peers, nodes, trust scores, CVE enrichment, RF/satellite readings, and events are not live or independently verified unless linked to current evidence. No external system is operated by this page.</aside>
 
 <!-- Hero -->
 <div class="hero">
@@ -192,7 +193,7 @@
     <div class="feature-card purple">
       <div class="feature-icon">🔐</div>
       <div class="feature-title">Trust Model</div>
-      <div class="feature-desc">Every intel package is cosign-signed before emission. Peers maintain a reputation score for each neighbour. Low-trust or malformed packages are silently rejected; repeated offenders are automatically quarantined.</div>
+      <div class="feature-desc">Design concept only: package signing, peer reputation, rejection, and quarantine require a configured runtime and independent verification. This page does not perform those actions.</div>
       <div class="feature-tags">
         <span class="tag tag-purple">cosign</span>
         <span class="tag tag-amber">Reputation Score</span>
@@ -213,26 +214,26 @@
     </div>
   </div>
 
-  <!-- Live Peer Network -->
-  <div class="sec-title">📡 Live Peer Network</div>
+  <!-- Sample Peer Network -->
+  <div class="sec-title">📡 Sample Peer Network</div>
   <div class="peer-grid" id="peer-grid">
-    <div class="peer-node active" onclick="selectPeer(this,'Ottawa-Alpha')"><div class="peer-icon">🖥️</div><div class="peer-name">Ottawa-Alpha</div><div class="peer-status ok">● SYNCED</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'London-Beta')"><div class="peer-icon">🖥️</div><div class="peer-name">London-Beta</div><div class="peer-status ok">● SYNCED</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'Tokyo-Gamma')"><div class="peer-icon">🖥️</div><div class="peer-name">Tokyo-Gamma</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Ottawa-Alpha')"><div class="peer-icon">🖥️</div><div class="peer-name">Ottawa-Alpha</div><div class="peer-status ok">● DEMO</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'London-Beta')"><div class="peer-icon">🖥️</div><div class="peer-name">London-Beta</div><div class="peer-status ok">● DEMO</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Tokyo-Gamma')"><div class="peer-icon">🖥️</div><div class="peer-name">Tokyo-Gamma</div><div class="peer-status ok">● DEMO</div></div>
     <div class="peer-node warning" onclick="selectPeer(this,'Berlin-Delta')"><div class="peer-icon">🖥️</div><div class="peer-name">Berlin-Delta</div><div class="peer-status warn">⚠ LOW TRUST</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'Sydney-Epsilon')"><div class="peer-icon">🖥️</div><div class="peer-name">Sydney-Epsilon</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Sydney-Epsilon')"><div class="peer-icon">🖥️</div><div class="peer-name">Sydney-Epsilon</div><div class="peer-status ok">● DEMO</div></div>
     <div class="peer-node" onclick="selectPeer(this,'Mumbai-Zeta')"><div class="peer-icon">🖥️</div><div class="peer-name">Mumbai-Zeta</div><div class="peer-status off">○ OFFLINE</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'NYC-Eta')"><div class="peer-icon">🖥️</div><div class="peer-name">NYC-Eta</div><div class="peer-status ok">● SYNCED</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'Seoul-Theta')"><div class="peer-icon">🖥️</div><div class="peer-name">Seoul-Theta</div><div class="peer-status ok">● SYNCED</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'Dubai-Iota')"><div class="peer-icon">🖥️</div><div class="peer-name">Dubai-Iota</div><div class="peer-status ok">● SYNCED</div></div>
-    <div class="peer-node active" onclick="selectPeer(this,'São Paulo-Kappa')"><div class="peer-icon">🖥️</div><div class="peer-name">SP-Kappa</div><div class="peer-status ok">● SYNCED</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'NYC-Eta')"><div class="peer-icon">🖥️</div><div class="peer-name">NYC-Eta</div><div class="peer-status ok">● DEMO</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Seoul-Theta')"><div class="peer-icon">🖥️</div><div class="peer-name">Seoul-Theta</div><div class="peer-status ok">● DEMO</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'Dubai-Iota')"><div class="peer-icon">🖥️</div><div class="peer-name">Dubai-Iota</div><div class="peer-status ok">● DEMO</div></div>
+    <div class="peer-node active" onclick="selectPeer(this,'São Paulo-Kappa')"><div class="peer-icon">🖥️</div><div class="peer-name">SP-Kappa</div><div class="peer-status ok">● DEMO</div></div>
   </div>
 
   <!-- Intel Feed + Trust Model -->
   <div class="g2" style="margin-bottom:32px">
     <div class="intel-feed">
       <div class="intel-feed-hdr">
-        <span class="intel-feed-title">⚡ Live Intel Feed</span>
+        <span class="intel-feed-title">⚡ Sample Intel Feed</span>
         <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.2);border-radius:4px;padding:2px 8px" id="feed-count">0 packages</span>
       </div>
       <div class="intel-feed-body" id="intel-body"></div>
