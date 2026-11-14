@@ -57,18 +57,18 @@ class SiteNavigationTests(unittest.TestCase):
             visible = re.sub(r"\s+", " ", visible)
             with self.subTest(page=path.relative_to(ROOT)):
                 self.assertIsNone(fixed_score.search(visible))
-                self.assertNotRegex(visible, r"tests_passing\\s*:\\s*[\\d,]+")
+                self.assertNotRegex(visible, r"tests_passing\s*:\s*[\d,]+")
                 self.assertNotRegex(
                     visible,
-                    r"\\b\\d+(?:\\.\\d+)?%\\s*(?:MITRE\\s+)?ATT&amp;CK\\s+coverage\\b",
+                    r"\b\d+(?:\.\d+)?%\s*(?:MITRE\s+)?ATT&amp;CK\s+coverage\b",
                 )
-                self.assertRegex(text, r"<title(?:\\s|>)")
-                self.assertRegex(text, r"<meta[^>]+charset\\s*=")
-                self.assertRegex(text, r"<meta[^>]+name\\s*=\\s*[\"']viewport")
-                self.assertRegex(text, r"<body(?:\\s|>)")
+                self.assertRegex(text, r"<title(?:\s|>)")
+                self.assertRegex(text, r"<meta[^>]+charset\s*=")
+                self.assertRegex(text, r"<meta[^>]+name\s*=\s*[\"']viewport")
+                self.assertRegex(text, r"<body(?:\s|>)")
                 self.assertNotRegex(
                     text,
-                    r"(?:^|[;{])\\s*(?:width|height|margin|padding|font-size|opacity|gap|top|left|right|bottom)\\s*:\\s*(?:DEMO|NOT ASSESSED)\\b",
+                    r"(?:^|[;{])\s*(?:width|height|margin|padding|font-size|opacity|gap|top|left|right|bottom)\s*:\s*(?:DEMO|NOT ASSESSED)\b",
                 )
 
     def test_public_pages_disclose_demo_and_unverified_assurance_limits(self):
