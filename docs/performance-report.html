@@ -57,7 +57,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">shadow313.dev &nbsp;|&nbsp; Ottawa, ON</div>
 </nav>
 <div role="note" style="margin:18px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:12px;line-height:1.6"><strong>Evidence notice:</strong> This is a historical, repository-hosted performance report, not a current benchmark certification. Treat figures as unverified until the test harness, environment, raw results, date, and reproducible run are supplied. Check exact-commit GitHub Actions for current CI status.</div><div class="main" role="main" aria-label="Illustrative Performance Review">
-<div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px;">Performance Load Test Report</div>
+<div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px;">Illustrative Performance Review</div>
 <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">15 pages &nbsp;|&nbsp; 50 concurrent reads per page &nbsp;|&nbsp; Render complexity scoring &nbsp;|&nbsp; 2026-10-16 &nbsp;|&nbsp; Ottawa, ON</div>
 
 <div class="kpi-strip">
@@ -120,10 +120,10 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <div style="width:60px;background:rgba(0,0,0,0.3);border-radius:3px;height:6px;">
             <div style="width:47%;background:#f59e0b;height:6px;border-radius:3px;"></div>
           </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">47.2</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">N/A</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.018ms<br><span style="color:#64748b;">p95:0.02ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;"Not measured<br><span style="color:#64748b;">No p95 data</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -484,18 +484,18 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
       </div>
       <div class="insight">
         <div class="insight-title" style="color:var(--amber);">Recommended: Lazy-Load ATT&CK Data (Threat Board)</div>
-        <div class="insight-body">The 30KB DRILLDOWN constant in s313-threat-board.html could be moved to a separate JSON file loaded on first user interaction with the ATT&CK matrix. Would reduce initial JS parse time by ~40% and improve Time to Interactive by ~200ms on mobile.</div>
+        <div class="insight-body">The 30KB DRILLDOWN constant in s313-threat-board.html could be moved to a separate JSON file loaded on first user interaction with the ATT&CK matrix. Potential optimization only; no before/after profile or mobile benchmark is available.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--cyan);">Vercel CDN Performance Estimate</div>
-        <div class="insight-body">All pages are static HTML served from Vercel's edge CDN. Expected real-world performance: TTFB 15-40ms (edge cache hit), FCP 200-400ms, LCP 300-600ms. The Threat Board's 83KB size adds ~50ms on 3G connections — acceptable for a security operations tool targeting enterprise users on fast connections.</div>
+        <div class="insight-title" style="color:var(--cyan);">CDN performance — not measured</div>
+        <div class="insight-body">The repository contains static HTML pages. Current deployment routing, CDN cache behavior, TTFB, FCP, LCP, and mobile network performance have not been measured in a reproducible current-environment test.</div>
       </div>
     </div>
   </div>
 </div>
 
 </div>
-<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Performance Load Test Report &nbsp;|&nbsp; 15 Pages &nbsp;|&nbsp; 50 Concurrent Reads &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Performance Load Test Report &nbsp;|&nbsp; Historical figures unverified · no current benchmark &nbsp;|&nbsp; Ottawa, ON, Canada</div>
 <div style="position:fixed;bottom:24px;right:24px;z-index:999;">
   <button onclick="window.print()" style="background:var(--green);color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px rgba(34,197,94,0.4);">&#11015; Export Report</button>
 </div>
