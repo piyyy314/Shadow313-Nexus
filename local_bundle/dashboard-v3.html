@@ -187,11 +187,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-12">
 <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
-<div class="kpi"><div class="kpi-num green">LIVE</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
+<div class="kpi"><div class="kpi-num green">CI LINK</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View current CI results</a></div></div>
 <div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
-<div class="kpi"><div class="kpi-num green">12/14</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
+<div class="kpi"><div class="kpi-num green">DEMO</div><div class="kpi-lbl">CRQC scenario states</div><div class="kpi-sub">Not independently verified</div></div>
 <div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
-<div class="kpi"><div class="kpi-num amber">~40%</div><div class="kpi-lbl">CMMC L2</div><div class="kpi-sub">~44/110 practices</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">CMMC L2 mapping</div><div class="kpi-sub">No compliance assessment</div></div>
 <div class="kpi"><div class="kpi-num green">✅</div><div class="kpi-lbl">PIPEDA</div><div class="kpi-sub">Zero PII</div></div>
 <div class="kpi"><div class="kpi-num purple">103</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">v1→v4 complete</div></div>
 <div class="kpi"><div class="kpi-num green">4</div><div class="kpi-lbl">DW Windows</div><div class="kpi-sub">Q4'26–Q2'27</div></div>
@@ -199,7 +199,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 </div>
 <div class="col-4">
 <div class="panel">
-<div class="panel-title">Active Threat Feed</div>
+<div class="panel-title">Simulated Event Feed</div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Illustrative TR-069/CWMP scenario TR-069 CWMP unsigned provisioning — lab-router (synthetic)</span><span class="threat-time">01:18</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">UART/JTAG unauthenticated — device registers readable</span><span class="threat-time">01:19</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Unsigned firmware accepted — arbitrary partition overwrite</span><span class="threat-time">01:23</span></div>
@@ -211,8 +211,8 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 </div>
 <div class="col-4">
 <div class="panel">
-<div class="panel-title">CRQC Migration Status</div>
-<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
+<div class="panel-title">Illustrative CRQC scenario states</div>
+<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green" >EXAMPLE</div></div>
 <div class="prog-row"><div class="prog-label">CRQC-002 SHA-256</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
 <div class="prog-row"><div class="prog-label">CRQC-003 Ledger</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
 <div class="prog-row"><div class="prog-label">CRQC-004-008</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
@@ -225,7 +225,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="col-4">
 <div class="panel">
 <div class="panel-title">Interconnections</div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green" >EXAMPLE</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">Secrets FIPS HSM</div><div class="ic-status green">ACTIVE</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static assets TLS 1.3</div><div class="ic-status green">ACTIVE</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--amber)"></div><div class="ic-name">IPFS Network</div><div class="ic-flow">Receipt anchors SHA3-256</div><div class="ic-status amber">NO-IPFS</div></div>
@@ -265,7 +265,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-8">
 <div class="panel">
-<div class="panel-title">ATT&amp;CK Kill Chain — Aegis Telemetry (2026-08-29)</div>
+<div class="panel-title">Sample ATT&amp;CK scenario — no live telemetry</div>
 <table style="width:100%;font-size:10px;border-collapse:collapse">
 <thead><tr style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">
 <th style="padding:5px;text-align:left">Stage</th><th>Technique</th><th>Tool</th><th>Status</th><th>Coverage</th>
@@ -404,7 +404,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-12">
 <div class="panel">
-<div class="panel-title">313 Temporal Binding Protocol — Receipt Chain Status</div>
+<div class="panel-title">313 Temporal Binding Protocol — Receipt UI demonstration — no verified chain</div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
 <div class="kpi"><div class="kpi-num green">SLH-DSA</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">FIPS 205 pyspx</div></div>
 <div class="kpi"><div class="kpi-num green">SHA3-512</div><div class="kpi-lbl">Chain Hash</div><div class="kpi-sub">Quantum-safe</div></div>
@@ -443,9 +443,9 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
 <div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
 <div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
-<div class="t-green">[TEST] Test status: see live CI results</div>
+<div class="t-green">[TEST] Test status: see current GitHub Actions</div>
 <div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
-<div class="t-green">[CRQC] 12/14 items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
+<div class="t-green">[CRQC] Illustrative scenario states; not verified — DW-1/DW-2 planned Q4'26/Q1'27</div>
 <div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
 <div class="t-amber">[VSAT] Illustrative TR-069/CWMP scenario TR-069 CWMP — EXAMPLE ONLY</div>
 <div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — ACTIVE</div>
