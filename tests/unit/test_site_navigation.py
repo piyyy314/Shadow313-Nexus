@@ -253,5 +253,25 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertIn('No independently sourced', text)
 
 
+    def test_marketplace_and_cli_pages_do_not_claim_unavailable_services(self):
+        for relative in ('marketplace/index.html', 'marketplace/analytics.html',
+                         'local_bundle/marketplace.html',
+                         'local_bundle/marketplace-analytics.html',
+                         'local_bundle/marketplace-live.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertIn('role="note"', text)
+                self.assertNotIn('247 verified plugins', text)
+                self.assertNotIn('cosign-signed', text)
+                self.assertNotIn('89.4k', text)
+                self.assertNotIn('12,400 STARS', text)
+        homepage = (ROOT / 'index.html').read_text()
+        self.assertNotIn('shadow313 verify', homepage)
+        self.assertIn('shadow313 temporal --verify', homepage)
+        cli = (ROOT / 'shadow313/cli/main.py').read_text()
+        self.assertIn('sub.add_parser("temporal"', cli)
+        self.assertIn('p_temp.add_argument("--verify"', cli)
+
+
 if __name__ == '__main__':
     unittest.main()
