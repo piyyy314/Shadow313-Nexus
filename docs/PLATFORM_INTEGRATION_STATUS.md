@@ -1,6 +1,6 @@
 # Shadow313 Platform Integration Status
 
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-13
 
 This document is the integration control sheet for the Shadow313 repositories.
 It separates implemented code, work in review, and work that still requires
@@ -196,6 +196,40 @@ Do not silently merge the distinct SQLite stores in the two repositories.
 - [ ] SOAR playbooks with dry-run mode, approval gates, least privilege, and
   rollback.
 - [ ] Live dashboard, investigation timeline, and operational health metrics.
+
+## README, API contract, and website consistency review (2026-11-13)
+
+PR #116 also updates the project README, OpenAPI contract, and public HTML
+content to remove unsupported operational and assurance claims. The reviewed
+changes distinguish source-implemented features from browser demonstrations,
+static snapshots, optional integrations, and unavailable remote services.
+
+Key corrections include:
+
+- The OpenAPI contract now identifies the MIT license and matches the Python
+  API request schemas and authentication requirements for detection, web-shell
+  scanning, receipt creation, ATT&CK coverage, and receipt retrieval.
+- The API receipt endpoint is documented as unsigned
+  `UNSIGNED-SHA3-512-DEMO`, process-local, capped, and not IPFS-anchored or
+  SLH-DSA-signed.
+- Reconnaissance, vulnerability, mobile, event-stream, and persisted-audit API
+  routes return explicit unavailable responses until their workers/backends
+  exist.
+- ATT&CK coverage is a static code-defined snapshot, not live SOC telemetry.
+- Public dashboards, marketplace analytics, case studies, ROI calculators,
+  and architecture pages are identified as illustrative unless backed by
+  current connected-service evidence.
+- Unsupported FIPS validation, FedRAMP/CMMC/SOC 2/PIPEDA compliance,
+  production-readiness, zero-PII, and subscription claims are withdrawn.
+- The public-site builder injects a general reference/demo notice into each
+  allowlisted HTML output. This notice supplements, but does not replace,
+  page-specific accuracy and source review.
+
+At the latest observed PR #116 head during this review
+(`3c317fb77bc70a90f8859be444612b5aca423d4f`), the newly triggered GitHub
+Actions runs were still queued or in progress. The two Snyk code-test statuses
+continued to report quota exhaustion. Do not call the documentation changes
+validated until the exact head's HTML, route, lint, and test workflows finish.
 
 ## Definition of done
 
