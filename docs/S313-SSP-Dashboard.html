@@ -42,7 +42,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
 .card h3{font-size:13px;color:var(--green);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 /* Table */
-table{width:100%;border-collapse:collapse;font-size:12px}
+table{width:DEMO;border-collapse:collapse;font-size:12px}
 th{background:var(--surface2);color:var(--muted);text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border)}
 td{padding:7px 10px;border-bottom:1px solid rgba(26,46,26,.5);vertical-align:top}
 tr:hover td{background:rgba(34,197,94,.03)}
@@ -60,7 +60,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--green)}
 /* Progress bar */
 .prog-wrap{background:rgba(26,46,26,.5);border-radius:4px;height:8px;overflow:hidden;margin-top:4px}
-.prog{height:100%;border-radius:4px;transition:.3s}
+.prog{height:DEMO;border-radius:4px;transition:.3s}
 /* Ring chart */
 .rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
 .ring-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
@@ -89,7 +89,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .gap-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .gap-label{font-size:11px;min-width:80px;color:var(--muted)}
 .gap-bar-wrap{flex:1;background:rgba(26,46,26,.5);border-radius:4px;height:16px;overflow:hidden;position:relative}
-.gap-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
+.gap-bar-fill{height:DEMO;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
 .gap-pct{font-size:11px;min-width:36px;text-align:right}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,7 +150,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">NIST 800-53 mapping</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">CMMC L2 mapping</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num cyan">MODERATE</div><div class="lbl">FIPS 199 Category</div><div class="sub">Integrity: HIGH</div></div>
-<div class="kpi"><div class="num purple">FIPS 205</div><div class="lbl">Signature Standard</div><div class="sub">Not implemented by this demo</div></div>
+<div class="kpi"><div class="num purple">FIPS 205 · reference only</div><div class="lbl">Signature Standard</div><div class="sub">Not implemented by this demo</div></div>
 <div class="kpi"><div class="num green">✅</div><div class="lbl">Privacy compliance not assessed</div><div class="sub">No privacy audit evidence</div></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
@@ -264,9 +264,9 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div style="font-size:10px;color:var(--muted)">~65 of 323 controls</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#06b6d4" stroke-dasharray="126 188" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">40%</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of practices</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#06b6d4" stroke-dasharray="126 188" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of practices</text></svg>
 <div class="ring-label">CMMC Level 2</div>
-<div class="ring-pct cyan">~40%</div>
+<div class="ring-pct cyan">DEMO</div>
 <div style="font-size:10px;color:var(--muted)">~44 of 110 practices</div>
 </div>
 <div class="ring-card">
@@ -276,7 +276,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div style="font-size:10px;color:var(--muted)">Within 9 documented families</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="302 12" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">100%</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">CRQC closed</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="302 12" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">CRQC closed</text></svg>
 <div class="ring-label">CRQC Migration</div>
 <div class="ring-pct green">12/14</div>
 <div style="font-size:10px;color:var(--muted)">2 planned (DW-1, DW-2)</div>
@@ -284,14 +284,14 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="ring-card">
 <svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#a78bfa" stroke-dasharray="314 0" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">FIPS</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">203/204/205</text></svg>
 <div class="ring-label">PQC Standards</div>
-<div class="ring-pct purple">100%</div>
+<div class="ring-pct purple">DEMO</div>
 <div style="font-size:10px;color:var(--muted)">All three NIST PQC standards</div>
 </div>
 </div>
 <div class="card" style="margin-top:16px">
 <h3>CMMC Level 2 Domain Coverage</h3>
 <div style="padding:8px 0">
-<div class="gap-row"><div class="gap-label">IR (Incident)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:100%;background:var(--green)">3/3</div></div><div class="gap-pct green">100%</div></div>
+<div class="gap-row"><div class="gap-label">IR (Incident)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:DEMO;background:var(--green)">3/3</div></div><div class="gap-pct green">DEMO</div></div>
 <div class="gap-row"><div class="gap-label">AU (Audit)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:56%;background:var(--cyan)">5/9</div></div><div class="gap-pct cyan">56%</div></div>
 <div class="gap-row"><div class="gap-label">RA (Risk)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:67%;background:var(--cyan)">2/3</div></div><div class="gap-pct cyan">67%</div></div>
 <div class="gap-row"><div class="gap-label">SI (Integrity)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:43%;background:var(--amber)">3/7</div></div><div class="gap-pct amber">43%</div></div>
@@ -313,15 +313,15 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <table>
 <thead><tr><th>ID</th><th>Algorithm</th><th>Standard</th><th>Purpose</th><th>Key Size</th><th>Quantum Safe</th><th>HNDL Window</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>CS-001</td><td class="algo-safe">SLH-DSA-SHAKE-128f</td><td>FIPS 205</td><td>Signing (313-BIND)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
+<tr><td>CS-001</td><td class="algo-safe">SLH-DSA-SHAKE-128f · not verified</td><td>FIPS 205 · reference only</td><td>Signing (313-BIND)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
 <tr><td>CS-002</td><td class="algo-safe">ML-DSA-65 (proxy→liboqs)</td><td>FIPS 204</td><td>Plugin/Ledger signing</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">DW-1 Q4'26</span></td></tr>
-<tr><td>CS-003</td><td class="algo-safe">AES-256-GCM</td><td>FIPS 140-3</td><td>Session encryption</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-004</td><td class="algo-safe">Argon2id</td><td>RFC 9106</td><td>Key derivation</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-005</td><td class="algo-safe">SHA3-256</td><td>FIPS 202</td><td>Hashing (all paths)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-006</td><td class="algo-safe">SHA3-512</td><td>FIPS 202</td><td>Chain hashing</td><td>512-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-007</td><td class="algo-safe">HMAC-SHA256</td><td>FIPS 198-1</td><td>Ephemeral MACs</td><td>256-bit</td><td class="green">✅ Yes (sym)</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
+<tr><td>CS-003</td><td class="algo-safe">AES-256-GCM</td><td>FIPS 140-3</td><td>Session encryption</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
+<tr><td>CS-004</td><td class="algo-safe">Argon2id</td><td>RFC 9106</td><td>Key derivation</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
+<tr><td>CS-005</td><td class="algo-safe">SHA3-256</td><td>FIPS 202</td><td>Hashing (all paths)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
+<tr><td>CS-006</td><td class="algo-safe">SHA3-512</td><td>FIPS 202</td><td>Chain hashing</td><td>512-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
+<tr><td>CS-007</td><td class="algo-safe">HMAC-SHA256</td><td>FIPS 198-1</td><td>Ephemeral MACs</td><td>256-bit</td><td class="green">✅ Yes (sym)</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
 <tr><td>CS-008</td><td class="algo-risk">ECDSA P-256 (cosign)</td><td>FIPS 186-5</td><td>Plugin signing (legacy)</td><td>256-bit</td><td class="red">❌ No</td><td>2030–2033</td><td><span class="status-partial">DEPRECATED</span></td></tr>
-<tr><td>CS-009</td><td class="algo-safe">ML-KEM-1024</td><td>FIPS 203</td><td>Key encapsulation</td><td>1024-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
+<tr><td>CS-009</td><td class="algo-safe">ML-KEM-1024</td><td>FIPS 203</td><td>Key encapsulation</td><td>1024-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">DEMO</span></td></tr>
 </tbody>
 </table>
 </div>
@@ -378,9 +378,9 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div style="padding:8px 0">
 <div class="gap-row"><div class="gap-label" style="min-width:140px">NIST 800-53 Rev 5</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:23%;background:var(--amber)">~23%</div></div><div class="gap-pct amber">~23%</div></div>
 <div class="gap-row"><div class="gap-label" style="min-width:140px">FedRAMP Moderate</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:20%;background:var(--amber)">~20%</div></div><div class="gap-pct amber">~20%</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">CMMC Level 2</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:40%;background:var(--cyan)">~40%</div></div><div class="gap-pct cyan">~40%</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">CMMC Level 2</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:DEMO;background:var(--cyan)">DEMO</div></div><div class="gap-pct cyan">DEMO</div></div>
 <div class="gap-row"><div class="gap-label" style="min-width:140px">Within 9 Families</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:86%;background:var(--green)">~86%</div></div><div class="gap-pct green">~86%</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">PQC (FIPS 203/4/5)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:100%;background:var(--green)">100%</div></div><div class="gap-pct green">100%</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">PQC (FIPS 203/4/5)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:DEMO;background:var(--green)">DEMO</div></div><div class="gap-pct green">DEMO</div></div>
 </div>
 </div>
 <div class="card">
