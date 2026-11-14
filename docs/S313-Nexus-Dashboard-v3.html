@@ -197,9 +197,9 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="header-right">
 <div style="display:flex;align-items:center;gap:6px">
 <div class="status-dot"></div>
-<span style="color:var(--green);font-size:10px">OPERATIONAL</span>
+<span style="color:var(--green);font-size:10px">DEMO ONLY</span>
 </div>
-<div class="defcon">DEFCON 4 · GREEN</div>
+<div class="defcon">SIMULATED STATE</div>
 <div class="time-display" id="clock">--:--:-- UTC</div>
 <div style="font-size:9px;color:var(--muted)">HB-9982-AX-2026</div>
 </div>
@@ -219,12 +219,12 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="col-12">
 <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
 <div class="kpi"><div class="kpi-num green">CI</div><div class="kpi-lbl">CI workflow link</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
-<div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
-<div class="kpi"><div class="kpi-num green">12/14</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
-<div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
+<div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">SAMPLE COUNTERS</div></div>
+<div class="kpi"><div class="kpi-num green">DEMO</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
+<div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">Not implemented by this demo</div></div>
 <div class="kpi"><div class="kpi-num amber">~40%</div><div class="kpi-lbl">CMMC L2</div><div class="kpi-sub">~44/110 practices</div></div>
-<div class="kpi"><div class="kpi-num green">✅</div><div class="kpi-lbl">PIPEDA</div><div class="kpi-sub">Zero PII</div></div>
-<div class="kpi"><div class="kpi-num purple">103</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">v1→v4 complete</div></div>
+<div class="kpi"><div class="kpi-num green">✅</div><div class="kpi-lbl">PIPEDA</div><div class="kpi-sub">No privacy audit evidence</div></div>
+<div class="kpi"><div class="kpi-num purple">DEMO</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">Not independently verified</div></div>
 <div class="kpi"><div class="kpi-num green">4</div><div class="kpi-lbl">DW Windows</div><div class="kpi-sub">Q4'26–Q2'27</div></div>
 </div>
 </div>
@@ -330,7 +330,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="col-12">
 <div class="panel">
 <div class="panel-title">Post-Quantum Cryptographic Stack — NIST FIPS 203/204/205</div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">313-BIND temporal receipts — pyspx pure-Python, 17,088B signatures</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">Illustrative receipt UI; no signing service or cryptographic attestation is connected</span><span class="pqc-status">✅ ACTIVE</span></div>
 <div class="pqc-item"><span class="pqc-badge">FIPS 204</span><span class="pqc-algo">ML-DSA-65 (proxy)</span><span class="pqc-desc">Plugin trust registry + ledger signing — HMAC-SHA3-256 proxy → liboqs DW-1</span><span class="pqc-status" style="color:var(--amber)">🔄 DW-1</span></div>
 <div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">Key encapsulation — @noble/post-quantum JS, 1184B pubkey, 1088B ciphertext</span><span class="pqc-status">✅ ACTIVE</span></div>
 <div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Session encryption — cryptography library, quantum-safe symmetric</span><span class="pqc-status">✅ ACTIVE</span></div>
@@ -440,7 +440,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="kpi"><div class="kpi-num green">SLH-DSA</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">FIPS 205 pyspx</div></div>
 <div class="kpi"><div class="kpi-num green">SHA3-512</div><div class="kpi-lbl">Chain Hash</div><div class="kpi-sub">Quantum-safe</div></div>
 <div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Timestamp</div><div class="kpi-sub">Nanosecond entropy</div></div>
-<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">HybridAnchor active</div></div>
+<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">IPFS not connected</div></div>
 </div>
 <div class="panel-title">Anchor Strategy Comparison</div>
 <table style="width:100%;font-size:10px;border-collapse:collapse">
@@ -471,12 +471,12 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="t-green">[BOOT] Shadow313 NEXUS v4.0.0 initialized</div>
 <div class="t-green">[AUTH] Operator: mohamad — Ottawa, ON, Canada</div>
 <div class="t-green">[LINK] Establishing mesh connection to Orbital Stack...</div>
-<div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
+<div class="t-cyan">[PQC]  PQC implementation not assessed by this demo</div>
 <div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
 <div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
 <div class="t-green">[TEST] Test status: see live CI results</div>
-<div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
-<div class="t-green">[CRQC] 12/14 items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
+<div class="t-green">[SDS]  Posture scanner: GREEN (SAMPLE COUNTERS)</div>
+<div class="t-green">[CRQC] DEMO items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
 <div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
 <div class="t-amber">[VSAT] Illustrative TR-069/CWMP scenario TR-069 CWMP — EXAMPLE ONLY</div>
 <div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — ACTIVE</div>
@@ -517,7 +517,7 @@ function show(id,btn){
 // Terminal
 const COMMANDS={
   'help':'Available: status, tests, crqc, pqc, vsat, cmmc, clear',
-  'status':'Posture: CRIT=0 HIGH=0 | Test status: see live CI results | PQC status: not assessed by this demo',
+  'status':'Posture: SAMPLE COUNTERS | Test status: see live CI results | PQC status: not assessed by this demo',
   'tests':'[PASS] Test status: see live CI results',
   'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
   'pqc':'SLH-DSA-SHAKE-128f (FIPS 205) | ML-DSA-65 proxy | ML-KEM-768 | AES-256-GCM | Argon2id | SHA3-256/512',
