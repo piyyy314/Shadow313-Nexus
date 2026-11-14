@@ -183,7 +183,7 @@
     </div>
   </div>
   <div class="tac-status">
-    <div class="status-pill"><div class="pulse-dot"></div>SAT-LINK BIND ACTIVE</div>
+    <div class="status-pill"><div class="pulse-dot"></div>SAT-LINK DEMO · NOT CONNECTED</div>
     <div class="status-pill" style="color:var(--amber);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.08)">⚠ DEFCON 3</div>
     <div class="status-pill" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.08)">🔴 7 CRITICAL FINDINGS</div>
   </div>
@@ -315,7 +315,7 @@
     <div class="harden-card">
       <div class="harden-header"><span class="harden-icon">🔐</span><button class="harden-toggle on" onclick="toggleHarden(this)"></button></div>
       <div class="harden-title">SSH Ed25519</div>
-      <div class="harden-status on">✅ ACTIVE</div>
+      <div class="harden-status on">DEMO · NOT VERIFIED</div>
     </div>
     <div class="harden-card">
       <div class="harden-header"><span class="harden-icon">🛡️</span><button class="harden-toggle off" onclick="toggleHarden(this)"></button></div>
@@ -419,7 +419,7 @@ function runSweep() {
 function runHardening() {
   addLog('info', '[*] Applying quick hardening profile...');
   setTimeout(() => addLog('ok', '[+] Telnet disabled — SSH Ed25519 enforced'), 600);
-  setTimeout(() => addLog('ok', '[+] FTP disabled — SFTP chroot deployed'), 1200);
+  setTimeout(() => addLog('ok', '[+] FTP disabled — SFTP chroot simulation — no system change performed'), 1200);
   setTimeout(() => addLog('ok', '[+] HTTP redirected to HTTPS (TLS 1.3)'), 1800);
   setTimeout(() => addLog('ok', '[+] Hardening complete — 3/7 findings remediated'), 2400);
 }
