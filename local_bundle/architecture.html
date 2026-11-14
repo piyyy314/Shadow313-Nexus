@@ -242,13 +242,13 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div class="comp-icon">⬡</div>
 <div class="comp-name">Shadow313 CLI v4</div>
 <div class="comp-port">/workspace/</div>
-<div class="comp-desc">28 modules. Test status: see live CI results. 29 detectors active.</div>
+<div class="comp-desc">Module and detector counts are not measured by this page. See exact-commit CI for test results.</div>
 </div>
 <div class="comp" onclick="showDetail('fastapi')">
 <div class="comp-status status-demo"></div>
 <div class="comp-icon">⚡</div>
-<div class="comp-name">FastAPI Event Bus</div>
-<div class="comp-port">localhost:8000</div>
+<div class="comp-name">Shadow313 FastAPI API</div>
+<div class="comp-port">localhost:8313</div>
 <div class="comp-desc">NEXUS detection pipeline REST API. Audit server.</div>
 </div>
 <div class="comp" onclick="showDetail('nexus-engine')">
@@ -256,7 +256,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div class="comp-icon">🧠</div>
 <div class="comp-name">NEXUS ML Engine</div>
 <div class="comp-port">Internal</div>
-<div class="comp-desc">Isolation Forest + RF + Quantum scorer. 29 detectors.</div>
+<div class="comp-desc">Example analytics pipeline; detector inventory requires source verification.</div>
 </div>
 <div class="comp" onclick="showDetail('313-bind')">
 <div class="comp-status status-demo"></div>
@@ -296,7 +296,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div class="comp-status status-demo"></div>
 <div class="comp-icon">🔌</div>
 <div class="comp-name">Shadow313 API</div>
-<div class="comp-port">localhost:8000</div>
+<div class="comp-port">localhost:8313</div>
 <div class="comp-desc">FastAPI audit server. 6 routes. 313-BIND receipts.</div>
 </div>
 <div class="comp" onclick="showDetail('postgres')">
@@ -403,7 +403,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <tbody>
 <tr><td class="port-num">11434</td><td class="port-service">Ollama AI Engine</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Bound to 127.0.0.1 — never exposed externally</td></tr>
 <tr><td class="port-num">3000</td><td class="port-service">Open WebUI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Docker container — localhost access only</td></tr>
-<tr><td class="port-num">8000</td><td class="port-service">Shadow313 FastAPI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Audit server + event bus REST API</td></tr>
+<tr><td class="port-num">8313</td><td class="port-service">Shadow313 FastAPI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Audit server + event bus REST API</td></tr>
 <tr><td class="port-num">8080</td><td class="port-service">Burp Suite Proxy</td><td class="port-proto">HTTP</td><td>Intercept</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Configure browser proxy → 127.0.0.1:8080</td></tr>
 <tr><td class="port-num">5432</td><td class="port-service">PostgreSQL (Metasploit)</td><td class="port-proto">TCP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Kali Linux Metasploit database</td></tr>
 <tr><td class="port-num">51820</td><td class="port-service">WireGuard VPN</td><td class="port-proto">UDP</td><td>Outbound</td><td><span class="port-trust trust-encrypted">ENCRYPTED</span></td><td style="color:var(--muted);font-size:10px">Tunnel to Hetzner VPS — or port 443 obfuscated</td></tr>
@@ -413,7 +413,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 </table>
 </div>
 <!-- ── DETECTOR MAP ── -->
-<div class="section-title">Shadow313 v4 Detector Stack — 29 Active Detectors</div>
+<div class="section-title">Shadow313 v4 Detector Stack — Detector count not verified</div>
 <div class="arch-canvas">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
 <div>
@@ -463,7 +463,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 <div style="text-align:center;padding:20px 0;font-size:10px;color:var(--dim);font-family:monospace">
   Shadow313 NEXUS v4.0.0 · Architecture Dashboard · Ottawa, ON, Canada · 2026 ·
   <span style="color:var(--green)">Test status: see live CI results</span> ·
-  <span style="color:var(--cyan)">313-BIND Active</span>
+  <span style="color:var(--cyan)">313-BIND demo workflow</span>
 </div>
 </div><!-- /main -->
 <script>
@@ -560,7 +560,7 @@ const DETAILS = {
     {label:'Port', value:'localhost:8313'},
     {label:'Routes', value:'POST /api/audit-code, GET /api/audit/chain, POST /api/link-budget'},
     {label:'Purpose', value:'313-BIND audit server + NEXUS event bus'},
-    {label:'Auth', value:'None (localhost only)'},
+    {label:'Auth', value:'Depends on local configuration'},
     {label:'Status', value:'✅ Implemented and tested'},
     {label:'File', value:'shadow313/api/audit_server.py'},
   ]},
@@ -605,10 +605,10 @@ const DETAILS = {
     {label:'After install', value:'Open http://localhost:3000 in browser'},
   ]},
   'shadow313-api': { title: '🔌 Shadow313 API Container', items: [
-    {label:'Port', value:'localhost:8000'},
+    {label:'Port', value:'localhost:8313'},
     {label:'Framework', value:'FastAPI 0.116.1'},
     {label:'Routes', value:'6 endpoints (audit, link-budget, health, public-key)'},
-    {label:'Auth', value:'None required (localhost)'},
+    {label:'Auth', value:'Depends on local configuration'},
     {label:'Status', value:'✅ Implemented'},
     {label:'File', value:'shadow313/api/audit_server.py'},
   ]},
