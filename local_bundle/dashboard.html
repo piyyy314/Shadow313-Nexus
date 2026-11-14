@@ -821,11 +821,11 @@ function downloadExport() {
     test_status: 'See live CI results',
     attck_techniques: null,
     active_techniques: null,
-    pqc_standard: 'FIPS 203/204/205',
-    ml_ensemble: ['IsolationForest(30%)', 'RandomForest(35%)', 'GradientBoosting(25%)', 'QuantumWeighter(10%)', 'LSTM(boost)'],
-    soar_playbooks: 5,
-    apt_profiles: 6,
-    location: 'Ottawa, Ontario, Canada',
+    pqc_standard: null,
+    ml_ensemble: null,
+    soar_playbooks: null,
+    apt_profiles: null,
+    location: null,
     github: 'github.com/piyyy314/Shadow313-Nexus',
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
