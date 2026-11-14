@@ -2,6 +2,7 @@
 """Scan tracked files, allowing only reviewed fixture fingerprints at exact paths.
 
 Fingerprints avoid duplicating token-shaped test data in the scanner config.
+The fixture file contains reviewed, path-specific fingerprints for known detection fixtures.
 Adding a fixture requires reviewing both the exact source line and its specific path.
 No candidate values are printed in diagnostics.
 """

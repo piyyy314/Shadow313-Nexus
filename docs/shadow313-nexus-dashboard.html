@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHADOW313 NEXUS — Master Intelligence Dashboard</title>
+<title>SHADOW313 NEXUS — Illustrative Security Dashboard</title>
 <!-- Vercel Speed Insights -->
 <script>
   window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -243,7 +243,7 @@
 <link rel="stylesheet" href="/assets/site-nav.css">
 <link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body class="site-page">
+<body class="site-page"><div role="note" style="padding:12px;background:#4b3200;color:#fff3cd;text-align:center">DEMO DATA ONLY: synthetic sample events; not live sensors, APIs, or production metrics.</div>
 <!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
 <nav id="site-nav" aria-label="Primary navigation">
   <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
@@ -319,8 +319,8 @@
     <div class="kpi-lbl">Low</div>
   </div>
   <div class="kpi-cell green">
-    <div class="kpi-val" style="color:var(--green)">3,462</div>
-    <div class="kpi-lbl">Tests Passing</div>
+    <div class="kpi-val" style="color:var(--green)">—</div>
+    <div class="kpi-lbl">Sample dashboard metric — not live CI data</div>
   </div>
   <div class="kpi-cell purple">
     <div class="kpi-val" style="color:var(--purple)">26</div>
@@ -362,8 +362,8 @@
           <tr style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.3);border-radius:6px">
       <td style="padding:10px 12px;font-weight:700;color:#e2e8f0">Shadow313 NEXUS<span style="font-size:9px;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);border-radius:3px;padding:1px 6px;margin-left:6px">★ #1</span></td>
       <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-weight:700;color:#22c55e;font-size:16px">96.2</td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">1.2 min</td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">847%</td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">—</td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">—</td>
       <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">10.0</td>
       <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#22c55e">10.0</td>
       <td style="padding:10px 12px"><span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;border-radius:4px;padding:2px 8px">LEADER</span></td>
@@ -432,7 +432,7 @@
     <div class="panel">
       <div class="panel-hdr">
         <span class="panel-title">🗺 ATT&CK Heatmap</span>
-        <span class="panel-badge">26 active · LIVE</span>
+        <span class="panel-badge">Synthetic events · DEMO</span>
       </div>
       <div class="panel-body">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
@@ -734,7 +734,7 @@
   <div class="panel">
     <div class="panel-hdr">
       <span class="panel-title">⚡ SOAR Playbooks</span>
-      <span class="panel-badge">5 production · SHA-256 audit chain</span>
+      <span class="panel-badge">Sample entries · not production</span>
     </div>
     <div class="panel-body">
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -786,6 +786,7 @@ updateClock();
 setInterval(updateClock, 1000);
 
 // Live feed
+// Synthetic demonstration events only; this feed is not connected to sensors, APIs, or production telemetry.
 const FEED_EVENTS = [
   {sev:'CRITICAL', title:'Firmware hash mismatch — edge-node-04', asset:'edge-node-04', time:''},
   {sev:'CRITICAL', title:'China Chopper web shell in uploads/', asset:'web-app-01', time:''},
@@ -833,17 +834,17 @@ setInterval(addFeedEvent, 2200);
 function downloadExport() {
   const data = {
     exported: new Date().toISOString(),
-    source: 'SHADOW313 NEXUS Master Intelligence Dashboard v4.0.0',
+    source: 'Shadow313 NEXUS illustrative dashboard; synthetic demonstration data, not live telemetry',
     version: '4.0.0',
-    composite_score: 96.2,
-    mttd_minutes: 1.2,
-    roi_3yr: '847%',
-    breach_cost_reduction: '94.1%',
+    composite_score: null, // Not measured; sample dashboard data removed.
+    mttd_minutes: null,
+    roi_3yr: null,
+    breach_cost_reduction: null,
     test_status: 'See live CI results',
     attck_techniques: 37,
     active_techniques: 26,
-    pqc_standard: 'FIPS 203/204/205',
-    ml_ensemble: ['IsolationForest(30%)', 'RandomForest(35%)', 'GradientBoosting(25%)', 'QuantumWeighter(10%)', 'LSTM(boost)'],
+    pqc_standard: 'PQC audit research; no validation claim',
+    ml_ensemble: [],
     soar_playbooks: 5,
     apt_profiles: 6,
     location: 'Ottawa, Ontario, Canada',

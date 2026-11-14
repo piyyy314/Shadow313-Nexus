@@ -27,7 +27,7 @@
 <a class="sidebar-link" href="/docs/quickstart">Quick Start</a>
 <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin:16px 0 10px;padding:0 8px">Reference</div>
 <a class="sidebar-link" href="/docs/api">API Reference</a>
-<a class="sidebar-link" href="/docs/modules" class="sidebar-link active">Module Reference</a>
+<a class="sidebar-link active" href="/docs/modules">Module Reference</a>
 <a class="sidebar-link" href="/docs/pqc">PQC Guide</a>
 <a class="sidebar-link" href="/docs/attck">ATT&amp;CK Coverage</a>
 <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin:16px 0 10px;padding:0 8px">Platform</div>
@@ -37,7 +37,7 @@
 <a class="sidebar-link" href="/platform/quantum">Quantum Module</a>
 </div><div class="docs-content" style="flex:1;padding:40px;max-width:800px">
 <h1 style="font-size:28px;font-weight:800;margin-bottom:8px">Module Reference</h1>
-<p style="color:var(--muted);margin-bottom:28px">9 core modules — all local-first, offline-capable.</p>
+<p style="color:var(--muted);margin-bottom:28px">Nine CLI module groups are listed below. Optional dependencies, credentials, network access, and connected services vary by feature; local-first does not mean every operation is offline.</p>
 <div style="display:flex;flex-direction:column;gap:10px">
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">🔍</div>
@@ -47,7 +47,7 @@
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">🛡️</div>
 <div><div style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">shadow313.vuln</div>
-<div style="font-size:11px;color:var(--muted)">CVE/NVD, CVSS v3.1, EPSS, KEV, OSV audit, AI triage — 40-dim feature vector</div></div>
+<div style="font-size:11px;color:var(--muted)">CVE/NVD and dependency-analysis utilities; external enrichment and AI triage require their respective services and configuration.</div></div>
 <a href="/platform/vuln" style="margin-left:auto;font-size:10px;color:var(--green);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid rgba(34,197,94,0.3);border-radius:4px">Docs →</a>
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">⚔️</div>
@@ -62,22 +62,22 @@
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">🔒</div>
 <div><div style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">shadow313.defense</div>
-<div style="font-size:11px;color:var(--muted)">24 CIS checks, iptables analysis, SSH hardening, AI remediation</div></div>
+<div style="font-size:11px;color:var(--muted)">Defensive audit and remediation utilities; supported checks depend on platform, privileges, and installed dependencies.</div></div>
 <a href="/platform/defense" style="margin-left:auto;font-size:10px;color:var(--green);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid rgba(34,197,94,0.3);border-radius:4px">Docs →</a>
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">⚛️</div>
 <div><div style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">shadow313.quantum</div>
-<div style="font-size:11px;color:var(--muted)">TLS scan, NIST FIPS 203/204/205, SLH-DSA, 313-BIND receipts</div></div>
+<div style="font-size:11px;color:var(--muted)">TLS and post-quantum cryptography audit utilities. Algorithm availability and security properties are implementation-specific; API demo receipts are unsigned.</div></div>
 <a href="/platform/quantum" style="margin-left:auto;font-size:10px;color:var(--green);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid rgba(34,197,94,0.3);border-radius:4px">Docs →</a>
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">🔌</div>
 <div><div style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">shadow313.plugins</div>
-<div style="font-size:11px;color:var(--muted)">Sandboxed IPC, 6 hook points, HMAC-SHA256 signing, cosign verification</div></div>
+<div style="font-size:11px;color:var(--muted)">Plugin lifecycle and verification utilities; review the implementation and trust configuration before installing third-party plugins.</div></div>
 <a href="/platform/plugins" style="margin-left:auto;font-size:10px;color:var(--green);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid rgba(34,197,94,0.3);border-radius:4px">Docs →</a>
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">🔄</div>
 <div><div style="font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">shadow313.cicd</div>
-<div style="font-size:11px;color:var(--muted)">18 secret patterns, SARIF 2.1.0, GitHub Actions integration</div></div>
+<div style="font-size:11px;color:var(--muted)">Secret scanning and SARIF output utilities with GitHub Actions integration.</div></div>
 <a href="/platform/cicd" style="margin-left:auto;font-size:10px;color:var(--green);text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid rgba(34,197,94,0.3);border-radius:4px">Docs →</a>
 </div><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px;display:flex;align-items:flex-start;gap:14px">
 <div style="font-size:22px;flex-shrink:0">📚</div>

@@ -65,7 +65,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 .comp-port { font-size: 10px; font-family: monospace; color: var(--green); margin-bottom: 4px; }
 .comp-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
 .comp-status { position: absolute; top: 10px; right: 10px; width: 7px; height: 7px; border-radius: 50%; }
-.status-live { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+.status-demo { background: var(--amber); box-shadow: none; }
 .status-ready { background: var(--amber); }
 .status-planned { background: var(--dim); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
@@ -180,7 +180,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">☁️ Internet / Cloud</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('claude')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🤖</div>
 <div class="comp-name">Claude (Anthropic)</div>
 <div class="comp-port">api.anthropic.com:443</div>
@@ -266,7 +266,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-icon">⬡</div>
 <div class="comp-name">Shadow313 CLI v4</div>
 <div class="comp-port">/workspace/</div>
-<div class="comp-desc">30 modules. Test status: see live CI results. 29 detectors active.</div>
+<div class="comp-desc">Illustrative architecture map. Component indicators are not live service health; module and detector availability must be verified from the running backend and exact-commit tests.</div>
 </div>
 <div class="comp" onclick="showDetail('fastapi')">
 <div class="comp-status status-live"></div>
@@ -369,7 +369,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="bind-step">
 <div class="bind-step-num">STEP 5</div>
 <div class="bind-step-name">SLH-DSA Sign</div>
-<div class="bind-step-detail">FIPS 205 signature over chain_hash (pyspx or HMAC fallback)</div>
+<div class="bind-step-detail">API receipt is UNSIGNED-SHA3-512-DEMO; process-local only, no SLH-DSA signature</div>
 </div>
 <div class="bind-arrow">→</div>
 <div class="bind-step">
@@ -469,7 +469,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 </div>
 </div>
 <div>
-<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">PQC Stack (FIPS 203/204/205)</div>
+<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">PQC Standards Reference (not validation)</div>
 <div style="font-size:10px;font-family:monospace;line-height:2;color:var(--muted)">
 <span style="color:var(--cyan)">FIPS 203</span> ML-KEM-768 → Key Encapsulation<br/>
 <span style="color:var(--cyan)">FIPS 204</span> ML-DSA-65 → Digital Signatures<br/>
