@@ -66,7 +66,13 @@ For PR #115 head `7c962bd5aee6116cbf090cd64f9068b796937c77`:
 - The Vercel workflow's quality checks passed, but both production and preview deployment jobs were skipped. Do not describe this run as a deployment.
 - All currently listed inline review threads on PR #115 are resolved. The PR remains open and is not merged.
 
+- External Snyk contexts are still not green on this head: both `code/snyk` contexts report `error`, and `security/snyk` reports `failure`. The earlier Snyk Code response was a provider test-quota limit; the security failure requires provider-side finding review. These external checks are unresolved and must not be described as passed.
+
 Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831166), [pre-deploy validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831301), [CI/CD](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831258), [API validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831226).
+
+### PR #103 — cross-platform wheel verification
+
+The updated head `fec9e2415807562509f64ecd98c30ca8a911cdd9` completed its GitHub Actions checks successfully: Python 3.11/3.12 tests, lint, Bandit/Semgrep, Gitleaks, dependency audit, Docker build, distribution build, PR Checks, and full pre-deploy validation. PyPI/TestPyPI publication jobs and Vercel preview/production deployment jobs were skipped. The branch remains open and unmerged; platform-specific Windows/macOS coverage is not established by these Linux runner results.
 
 For PR #116, the CI-repair and site-consistency branch remains under active validation. Its status is commit-specific; consult the live [PR checks](https://github.com/piyyy314/Shadow313-Nexus/pull/116) and [Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) rather than copying a previous run's result into this document.
 
