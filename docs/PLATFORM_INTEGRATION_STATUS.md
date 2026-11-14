@@ -74,6 +74,10 @@ Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/r
 
 The updated head `fec9e2415807562509f64ecd98c30ca8a911cdd9` completed its GitHub Actions checks successfully: Python 3.11/3.12 tests, lint, Bandit/Semgrep, Gitleaks, dependency audit, Docker build, distribution build, PR Checks, and full pre-deploy validation. PyPI/TestPyPI publication jobs and Vercel preview/production deployment jobs were skipped. The branch remains open and unmerged; platform-specific Windows/macOS coverage is not established by these Linux runner results.
 
+### Master nightly container security scan
+
+The November 14 nightly run [`43544839618`](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43544839618) passed the dependency audit, Git-history secret scan, and Docker Compose security audit, but the Trivy image scan failed with the configured `CRITICAL,HIGH` threshold and uploaded SARIF to GitHub Code Scanning. The workflow artifact available here did not include the Trivy SARIF payload, and the code-scanning alerts endpoint was not accessible in this review. The specific CVEs therefore remain unverified in this handoff; inspect the repository's Code Scanning alerts and remediate before treating the master security gate as green.
+
 For PR #116, the CI-repair and site-consistency branch remains under active validation. Its status is commit-specific; consult the live [PR checks](https://github.com/piyyy314/Shadow313-Nexus/pull/116) and [Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) rather than copying a previous run's result into this document.
 
 Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
