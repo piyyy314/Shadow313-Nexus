@@ -125,7 +125,7 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
   <h2>Post-Quantum Migration Assessment</h2>
   <div class="panel">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-      <span class="badge badge-green">12/14 PATCHED</span>
+      <span class="badge badge-green">12/14 NOT VERIFIED</span>
       <span class="badge badge-cyan">PQC standards research</span>
       <span class="badge badge-amber">DW-1/DW-2 PENDING</span>
     </div>
@@ -135,10 +135,10 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
       <thead><tr><th>Item</th><th>Algorithm</th><th>Status</th><th>Timeline</th></tr></thead>
       <tbody>
         <tr><td>CRQC-001 plugin_signer.py</td><td>ECDSA → ML-DSA-65</td><td>Example mitigation · not verified</td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-002 temporal chain</td><td>SHA-256 → SHA3-512</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-003 cosign ECDSA</td><td>ECDSA → SLH-DSA</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-007 crypto_store</td><td>RSA → ML-KEM-768</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
-        <tr><td>CRQC-012 pyspx fallback</td><td>HMAC → SLH-DSA</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
+        <tr><td>CRQC-002 temporal chain</td><td>SHA-256 → SHA3-512</td><td>EXAMPLE ONLY · NOT VERIFIED</td><td>v4.0.0</td></tr>
+        <tr><td>CRQC-003 cosign ECDSA</td><td>ECDSA → SLH-DSA</td><td>EXAMPLE ONLY · NOT VERIFIED</td><td>v4.0.0</td></tr>
+        <tr><td>CRQC-007 crypto_store</td><td>RSA → ML-KEM-768</td><td>EXAMPLE ONLY · NOT VERIFIED</td><td>v4.0.0</td></tr>
+        <tr><td>CRQC-012 pyspx fallback</td><td>HMAC → SLH-DSA</td><td>EXAMPLE ONLY · NOT VERIFIED</td><td>v4.0.0</td></tr>
         <tr><td>DW-1 liboqs ML-DSA</td><td>HMAC proxy → real ML-DSA</td><td>🔄 PLANNED</td><td>Q4 2026</td></tr>
         <tr><td>DW-2 HSM key storage</td><td>In-memory → Azure Key Vault HSM</td><td>🔄 PLANNED</td><td>Q1 2027</td></tr>
       </tbody>
