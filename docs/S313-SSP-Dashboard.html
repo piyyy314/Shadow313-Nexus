@@ -118,6 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Simulation data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>SIMULATION / REFERENCE DATA ONLY.</strong> This page is a static interface demonstration. Events, assets, hostnames, vulnerability examples, ATT&amp;CK mappings, compliance states, receipts, and counters are synthetic or code-defined examples. No live sensors, customer systems, threat feeds, endpoint actions, signed receipts, or verified compliance assessment are connected by this page.</aside>
 
 <div class="header">
 <div>
@@ -143,11 +144,11 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <!-- OVERVIEW -->
 <div class="section active" id="overview">
 <div class="kpi-row">
-<div class="kpi"><div class="num green">LIVE</div><div class="lbl">Test status</div><div class="sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
-<div class="kpi"><div class="num green">GREEN</div><div class="lbl">Posture Score</div><div class="sub">CRIT=0 HIGH=0</div></div>
+<div class="kpi"><div class="num green">CI</div><div class="lbl">CI workflow link</div><div class="sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
+<div class="kpi"><div class="num green">DEMO</div><div class="lbl">Illustrative posture</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num green">12/14</div><div class="lbl">CRQC Items Closed</div><div class="sub">2 planned DW-1/DW-2</div></div>
-<div class="kpi"><div class="num amber">~23%</div><div class="lbl">NIST 800-53 Coverage</div><div class="sub">31 of ~300 controls</div></div>
-<div class="kpi"><div class="num amber">~40%</div><div class="lbl">CMMC L2 Coverage</div><div class="sub">~44 of 110 practices</div></div>
+<div class="kpi"><div class="num amber">DEMO</div><div class="lbl">NIST 800-53 mapping</div><div class="sub">Not assessed</div></div>
+<div class="kpi"><div class="num amber">DEMO</div><div class="lbl">CMMC L2 mapping</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num cyan">MODERATE</div><div class="lbl">FIPS 199 Category</div><div class="sub">Integrity: HIGH</div></div>
 <div class="kpi"><div class="num purple">FIPS 205</div><div class="lbl">Signature Standard</div><div class="sub">SLH-DSA deployed</div></div>
 <div class="kpi"><div class="num green">✅</div><div class="lbl">PIPEDA Compliant</div><div class="sub">Zero PII collected</div></div>
@@ -426,37 +427,37 @@ function show(id, btn) {
 
 // Controls data
 const controls = [
-  {id:'AC-2',family:'AC',title:'Account Management',impl:'Azure AD B2C + role claims',status:'Implemented'},
-  {id:'AC-3',family:'AC',title:'Access Enforcement',impl:'JWT middleware, MFA enforced',status:'Implemented'},
-  {id:'AC-6',family:'AC',title:'Least Privilege',impl:'UID 10313, CAP_NET_RAW only',status:'Implemented'},
-  {id:'AC-12',family:'AC',title:'Session Termination',impl:'Complete logout all devices',status:'Implemented'},
-  {id:'AC-17',family:'AC',title:'Remote Access',impl:'TLS 1.3, MFA, OIDC federation',status:'Implemented'},
-  {id:'AU-2',family:'AU',title:'Event Logging',impl:'313-BIND audit chain',status:'Implemented'},
-  {id:'AU-3',family:'AU',title:'Content of Audit Records',impl:'Timestamp, module, action, detail',status:'Implemented'},
-  {id:'AU-9',family:'AU',title:'Protection of Audit Info',impl:'SLH-DSA + IPFS immutability',status:'Exceeds'},
-  {id:'AU-10',family:'AU',title:'Non-repudiation',impl:'313-BIND cryptographic receipts',status:'Exceeds'},
-  {id:'AU-11',family:'AU',title:'Audit Record Retention',impl:'30-day backup retention policy',status:'Implemented'},
-  {id:'CM-2',family:'CM',title:'Baseline Configuration',impl:'DHI Docker, pinned dependencies',status:'Implemented'},
-  {id:'CM-6',family:'CM',title:'Configuration Settings',impl:'CIS Level 1 audit module',status:'Implemented'},
-  {id:'CM-7',family:'CM',title:'Least Functionality',impl:'Non-root, read-only filesystem',status:'Implemented'},
-  {id:'CM-8',family:'CM',title:'System Component Inventory',impl:'requirements.txt + Snyk SBOM',status:'Implemented'},
-  {id:'CP-9',family:'CP',title:'System Backup',impl:'Daily automated backup, 30-day retention',status:'Implemented'},
-  {id:'CP-10',family:'CP',title:'System Recovery',impl:'Restore from SHA-256 verified backup',status:'Implemented'},
-  {id:'IA-2',family:'IA',title:'Identification & Authentication',impl:'Azure AD B2C OIDC',status:'Implemented'},
-  {id:'IA-5',family:'IA',title:'Authenticator Management',impl:'Rotating refresh tokens, OIDC federation',status:'Implemented'},
-  {id:'IA-7',family:'IA',title:'Cryptographic Module Auth',impl:'FIPS 140-2 Key Vault HSM',status:'Implemented'},
-  {id:'IR-4',family:'IR',title:'Incident Handling',impl:'Ghost-Watch CADL + IR Plan',status:'Implemented'},
-  {id:'IR-5',family:'IR',title:'Incident Monitoring',impl:'NEXUS continuous monitoring',status:'Implemented'},
-  {id:'IR-6',family:'IR',title:'Incident Reporting',impl:'Telegram notifications + STIX export',status:'Implemented'},
-  {id:'RA-3',family:'RA',title:'Risk Assessment',impl:'Red-team simulation harness',status:'Implemented'},
-  {id:'RA-5',family:'RA',title:'Vulnerability Scanning',impl:'Snyk + OWASP ZAP + Bandit',status:'Implemented'},
-  {id:'SC-8',family:'SC',title:'Transmission Confidentiality',impl:'TLS 1.3 end-to-end',status:'Implemented'},
-  {id:'SC-12',family:'SC',title:'Cryptographic Key Establishment',impl:'ML-KEM-768, SLH-DSA, OIDC',status:'Exceeds'},
-  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'NIST FIPS 203/204/205',status:'Exceeds'},
-  {id:'SC-28',family:'SC',title:'Protection at Rest',impl:'AES-256-GCM CryptoStore',status:'Implemented'},
-  {id:'SI-2',family:'SI',title:'Flaw Remediation',impl:'SDS=0, 2071/2071 tests, Snyk',status:'Exceeds'},
-  {id:'SI-3',family:'SI',title:'Malicious Code Protection',impl:'Malware sandbox, supply chain scanner',status:'Exceeds'},
-  {id:'SI-10',family:'SI',title:'Information Input Validation',impl:'UUID regex, SQL allowlist, path sanitization',status:'Exceeds'},
+  {id:'AC-2',family:'AC',title:'Account Management',impl:'Azure AD B2C + role claims',status:'Example'},
+  {id:'AC-3',family:'AC',title:'Access Enforcement',impl:'JWT middleware, MFA enforced',status:'Example'},
+  {id:'AC-6',family:'AC',title:'Least Privilege',impl:'UID 10313, CAP_NET_RAW only',status:'Example'},
+  {id:'AC-12',family:'AC',title:'Session Termination',impl:'Complete logout all devices',status:'Example'},
+  {id:'AC-17',family:'AC',title:'Remote Access',impl:'TLS 1.3, MFA, OIDC federation',status:'Example'},
+  {id:'AU-2',family:'AU',title:'Event Logging',impl:'313-BIND audit chain',status:'Example'},
+  {id:'AU-3',family:'AU',title:'Content of Audit Records',impl:'Timestamp, module, action, detail',status:'Example'},
+  {id:'AU-9',family:'AU',title:'Protection of Audit Info',impl:'SLH-DSA + IPFS immutability',status:'Example'},
+  {id:'AU-10',family:'AU',title:'Non-repudiation',impl:'Illustrative receipt interface (not a verified audit control)',status:'Example'},
+  {id:'AU-11',family:'AU',title:'Audit Record Retention',impl:'30-day backup retention policy',status:'Example'},
+  {id:'CM-2',family:'CM',title:'Baseline Configuration',impl:'DHI Docker, pinned dependencies',status:'Example'},
+  {id:'CM-6',family:'CM',title:'Configuration Settings',impl:'CIS Level 1 audit module',status:'Example'},
+  {id:'CM-7',family:'CM',title:'Least Functionality',impl:'Non-root, read-only filesystem',status:'Example'},
+  {id:'CM-8',family:'CM',title:'System Component Inventory',impl:'requirements.txt + Snyk SBOM',status:'Example'},
+  {id:'CP-9',family:'CP',title:'System Backup',impl:'Daily automated backup, 30-day retention',status:'Example'},
+  {id:'CP-10',family:'CP',title:'System Recovery',impl:'Backup-verification example (not tested)',status:'Example'},
+  {id:'IA-2',family:'IA',title:'Identification & Authentication',impl:'Azure AD B2C OIDC',status:'Example'},
+  {id:'IA-5',family:'IA',title:'Authenticator Management',impl:'Rotating refresh tokens, OIDC federation',status:'Example'},
+  {id:'IA-7',family:'IA',title:'Cryptographic Module Auth',impl:'FIPS 140-2 Key Vault HSM',status:'Example'},
+  {id:'IR-4',family:'IR',title:'Incident Handling',impl:'Ghost-Watch CADL + IR Plan',status:'Example'},
+  {id:'IR-5',family:'IR',title:'Incident Monitoring',impl:'Example monitoring workflow (not connected)',status:'Example'},
+  {id:'IR-6',family:'IR',title:'Incident Reporting',impl:'Telegram notifications + STIX export',status:'Example'},
+  {id:'RA-3',family:'RA',title:'Risk Assessment',impl:'Red-team simulation harness',status:'Example'},
+  {id:'RA-5',family:'RA',title:'Vulnerability Scanning',impl:'Snyk + OWASP ZAP + Bandit',status:'Example'},
+  {id:'SC-8',family:'SC',title:'Transmission Confidentiality',impl:'TLS 1.3 end-to-end',status:'Example'},
+  {id:'SC-12',family:'SC',title:'Cryptographic Key Establishment',impl:'ML-KEM-768, SLH-DSA, OIDC',status:'Example'},
+  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'NIST FIPS 203/204/205',status:'Example'},
+  {id:'SC-28',family:'SC',title:'Protection at Rest',impl:'AES-256-GCM CryptoStore',status:'Example'},
+  {id:'SI-2',family:'SI',title:'Flaw Remediation',impl:'SDS=0, 2071/2071 tests, Snyk',status:'Example'},
+  {id:'SI-3',family:'SI',title:'Malicious Code Protection',impl:'Malware sandbox, supply chain scanner',status:'Example'},
+  {id:'SI-10',family:'SI',title:'Information Input Validation',impl:'UUID regex, SQL allowlist, path sanitization',status:'Example'},
 ];
 
 function renderControls(data) {
