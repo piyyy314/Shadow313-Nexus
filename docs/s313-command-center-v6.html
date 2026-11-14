@@ -1364,11 +1364,11 @@ function downloadExport() {
     schema_version: '6.0',
     source: 'S313 NEXUS Command Center v6',
     operator: 'mohamad',
-    counts: { CRITICAL: 56, HIGH: 52, MEDIUM: 44, LOW: 20, acked: 66 },
+    counts: { CRITICAL: null, HIGH: null, MEDIUM: null, LOW: null, acked: null },
     attck_heatmap: HEATMAP_DATA,
-    evidence_receipts: 50,
+    evidence_receipts: null,
     platform_status: 'DEMO ONLY',
-    test_status: 'See live CI results'
+    test_status: 'Not reported by this demo; see exact-commit GitHub Actions'
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');
