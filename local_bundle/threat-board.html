@@ -1797,7 +1797,7 @@ function runSimulation() {
   if (simInterval) {
     clearInterval(simInterval);
     simInterval = null;
-    btn.textContent = '▶ Live Simulation';
+    btn.textContent = '▶ Run Simulation';
     document.getElementById('sim-status').textContent = 'Simulation stopped';
     document.getElementById('sim-bar').style.width = '0%';
     return;
@@ -1808,7 +1808,7 @@ function runSimulation() {
     if (simIdx >= allTids.length) {
       clearInterval(simInterval);
       simInterval = null;
-      btn.textContent = '▶ Live Simulation';
+      btn.textContent = '▶ Run Simulation';
       document.getElementById('sim-status').textContent = `✅ Complete — ${allTids.length} techniques`;
       document.getElementById('sim-bar').style.width = '100%';
       return;
