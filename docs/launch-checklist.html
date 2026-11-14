@@ -395,7 +395,7 @@ git add SECURITY.md && git commit -m "docs: add SECURITY.md" && git push</div>
 <div class="phase">
   <div class="phase-header" style="background:rgba(34,197,94,0.08);border-bottom:1px solid rgba(34,197,94,0.2)" onclick="togglePhase(this)">
     <div class="phase-num" style="background:rgba(34,197,94,0.15);color:var(--green)">4</div>
-    <div class="phase-title" style="color:var(--green)">Vercel — shadow313.dev Live</div>
+    <div class="phase-title" style="color:var(--green)">Vercel deployment — verify current state</div>
     <div class="phase-meta">5 steps · ~15 min</div>
     <span style="color:var(--muted);font-size:18px">▼</span>
   </div>
@@ -463,7 +463,7 @@ docker logs telegram-bot</div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Test alert delivery <span class="badge-today">TODAY</span></div>
       <div class="step-desc">Bot should send startup message to your channel. Trigger a test alert via Shadow313 CLI.</div>
-      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/shiatoali/shadow313-nexus && python3 -c \"from shadow313.integrations.telegram.bot import send_message; send_message('✅ Shadow313 NEXUS test alert — system operational')\""</div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/shiatoali/shadow313-nexus && python3 -c \"from shadow313.integrations.telegram.bot import send_message; send_message('✅ Shadow313 NEXUS test alert — verify configured service before sending')\""</div>
     </div></div>
   </div>
 </div>
@@ -543,7 +543,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">docs/status.html — Live system status <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-title">docs/status.html — proposed status page (verify route and implementation) <span class="badge-week">THIS WEEK</span></div>
       <div class="step-desc">Shows: test count (3614 GREEN), POSTURE, uptime, last deploy, API health</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
