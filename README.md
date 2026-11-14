@@ -128,6 +128,8 @@ The website is a static site with HTML pages, assets, documentation, and browser
 - [Platform integration status](docs/PLATFORM_INTEGRATION_STATUS.md)
 - [Audit repair handoff](docs/audit-repair-handoff.md)
 
+The dashboard gallery at [shadow313.dev/dashboards](https://shadow313.dev/dashboards) is a directory of static interfaces and browser-side demonstrations. Dashboard counters, threat feeds, ATT&CK coverage, RF health, scenario findings, and event streams are illustrative unless a page links to current, independently verifiable evidence. A browser demo or passing CI workflow is not proof of a deployed service or production telemetry.
+
 Interactive pages may use sample data or simulated behavior. Check each page's own notice and the relevant API/service status before interpreting displayed data as live.
 
 ## Validation and security status

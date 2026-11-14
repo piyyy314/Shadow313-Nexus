@@ -83,7 +83,12 @@ class SiteNavigationTests(unittest.TestCase):
         for route in ('/docs/install', '/docs/quickstart', '/docs/api', '/docs/modules', '/dashboards'):
             self.assertIn(route, links)
         self.assertNotIn('LIVE DASHBOARDS', docs)
-        self.assertIn('LIVE DASHBOARDS', (ROOT / 'docs/dashboards.html').read_text())
+        dashboard = (ROOT / 'docs/dashboards.html').read_text()
+        self.assertIn('DASHBOARD DEMONSTRATIONS', dashboard)
+        self.assertNotIn('LIVE DASHBOARDS', dashboard)
+        self.assertIn('Demonstration data only.', dashboard)
+        self.assertNotIn('3,449', dashboard)
+        self.assertNotIn('98%', dashboard)
 
     def test_internal_navigation_targets_exist(self):
         config = json.loads((ROOT / 'vercel.json').read_text())
