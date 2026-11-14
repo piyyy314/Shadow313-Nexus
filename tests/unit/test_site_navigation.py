@@ -32,6 +32,16 @@ class Page(HTMLParser):
 
 
 class SiteNavigationTests(unittest.TestCase):
+    def test_contributor_guide_uses_current_reproducible_setup(self):
+        guide = (ROOT / 'CONTRIBUTING.md').read_text()
+        self.assertIn('python -m pip install -e ".[dev]"', guide)
+        self.assertIn('python -m pytest tests/ -q --tb=short', guide)
+        self.assertNotRegex(
+            guide,
+            r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*"
+            r"tests?\s+(?:GREEN|passing|passed|included|all passing)\b",
+        )
+
     def test_html_pages_do_not_publish_fixed_test_scores(self):
         fixed_score = re.compile(
             r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*tests?\s+"
