@@ -235,7 +235,7 @@ tr:last-child td{border-bottom:none;}
 
   <!-- ── Sample Receipts ── -->
   <div style="margin-bottom:32px;">
-    <h2 style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15)">Sample Receipts — Click to Verify</h2>
+    <h2 style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15)">Sample Receipt Formats — Click to Inspect</h2>
     <div class="samples">
       <div class="sample-card" onclick="loadSample('vsat')">
         <div class="sample-type">VSAT Security Sweep</div>
@@ -245,38 +245,38 @@ tr:last-child td{border-bottom:none;}
       <div class="sample-card" onclick="loadSample('apt')">
         <div class="sample-type">APT Detection</div>
         <div class="sample-id">313-APT-B8E391</div>
-        <div class="sample-desc">APT29 lateral movement · 8 techniques · LSASS dump · DCSync</div>
+        <div class="sample-desc">Synthetic APT-style scenario; techniques are illustrative and no incident was detected.</div>
       </div>
       <div class="sample-card" onclick="loadSample('supply')">
         <div class="sample-type">Supply Chain Audit</div>
         <div class="sample-id">313-SUPPLY-C7D445</div>
-        <div class="sample-desc">Plugin signing verification · HMAC chain · cosign attestation</div>
+        <div class="sample-desc">Synthetic supply-chain scenario; no HMAC or cosign verification was performed.</div>
       </div>
       <div class="sample-card" onclick="loadSample('webshell')">
         <div class="sample-type">WebShell Detection</div>
         <div class="sample-id">313-WSD-F1A823</div>
-        <div class="sample-desc">China Chopper detected · F1=1.000 · 45 signatures · T1505.003</div>
+        <div class="sample-desc">Synthetic web-shell scenario; no detection benchmark or F1 score was measured.</div>
       </div>
       <div class="sample-card" onclick="loadSample('pqc')">
         <div class="sample-type">PQC Audit</div>
         <div class="sample-id">313-PQC-E2B156</div>
-        <div class="sample-desc">CRQC-001 through CRQC-013 · 12/14 patched · DW-1/DW-2 pending</div>
+        <div class="sample-desc">Illustrative PQC scenario; no cryptographic audit or patch status was verified.</div>
       </div>
       <div class="sample-card" onclick="loadSample('invalid')" style="border-color:rgba(239,68,68,0.2)">
         <div class="sample-type" style="color:var(--red)">Tampered Receipt</div>
         <div class="sample-id" style="color:var(--red)">313-TAMPER-000000</div>
-        <div class="sample-desc">Chain hash mismatch · Demonstrates tamper detection</div>
+        <div class="sample-desc">Synthetic malformed sample; no trusted chain or signature is verified.</div>
       </div>
     </div>
   </div>
 
   <!-- ── CLI Verification ── -->
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:32px;">
-    <h2 style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:16px">Verify via CLI (Offline)</h2>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">You can verify any receipt without this portal using the Shadow313 CLI or raw cryptographic tools:</p>
+    <h2 style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:16px">CLI verification notes (not executed here)</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">This page does not provide a working verifier. Consult the current CLI help and implementation before attempting offline verification.</p>
     <div style="background:#000;border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#94a3b8;line-height:1.8">
       <div style="color:var(--green)"># Method 1: Shadow313 CLI</div>
-      <div>shadow313 verify 313-VSAT-A4F2C1</div>
+      <div>shadow313 temporal --verify 313-VSAT-A4F2C1</div>
       <div style="margin-top:8px;color:var(--green)"># Method 2: IPFS (if anchored)</div>
       <div>ipfs cat QmX7k9abc123... | python3 -m json.tool</div>
       <div style="margin-top:8px;color:var(--green)"># Method 3: Manual SHA3-512 verification</div>
@@ -467,7 +467,7 @@ function showNotFound(input) {
     </div>
     <div class="field" style="grid-column:1/-1">
       <div class="field-label">Manual Verification</div>
-      <div class="field-value">shadow313 verify ${input}</div>
+      <div class="field-value">shadow313 temporal --verify ${input}</div>
     </div>`;
   document.getElementById('chain-viz').style.display = 'none';
   document.getElementById('verify-actions').innerHTML = '';
