@@ -1263,7 +1263,7 @@ footer {
                 <div class="qte-msg">
                     <div class="qte-avatar agent"><i class="fa-solid fa-atom"></i></div>
                     <div class="qte-bubble agent">
-                        SHADOW313 QTE online. I can execute quantum algorithms, generate circuits, analyze results, and bind every run to a cryptographic timestamp. What would you like to compute today?
+                        SHADOW313 QTE demonstration mode. I can explain quantum algorithms and show illustrative circuit workflows; no quantum execution backend or trusted provenance service is connected to this page.
                     </div>
                 </div>
             </div>
@@ -1331,13 +1331,13 @@ footer {
 
         <div class="bind-explain">
             <h3>How 313 Temporal Binding Works</h3>
-            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">Every quantum job receives a cryptographic proof of when it ran and what it computed. This is not just logging — it's verifiable provenance anchored to an immutable decentralized ledger.</p>
+            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">This interface illustrates a possible provenance workflow. It does not create a trusted timestamp, signed proof, or immutable ledger record; the current API demo receipts are unsigned and process-local.</p>
             <div class="bind-steps">
                 <div class="bind-step">
                     <div class="bind-step-num">1</div>
                     <div class="bind-step-content">
                         <h5>Nanosecond Wait</h5>
-                        <p>SHADOW313 polls <code>time.time_ns()</code> until the timestamp ends in <code>...313</code> — happening every ~1ms, guaranteeing cryptographic uniqueness.</p>
+                        <p>A timestamp suffix ending in <code>...313</code> is only a display convention. It is not a trusted clock, entropy source, or guarantee of uniqueness.</p>
                     </div>
                 </div>
                 <div class="bind-step">
