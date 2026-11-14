@@ -153,7 +153,7 @@ class BlueTeamMonitor:
                          "c2_head": 0.60, "exfiltration_head": 0.65}.get(head, 0.65)
 
             evt = DetectionEvent(
-                event_id=f"EVT-{hashlib.md5(str(time.time_ns()).encode()).hexdigest()[:8].upper()}",
+                event_id=f"EVT-{secrets.token_hex(4).upper()}",
                 head=head,
                 score=score,
                 technique=technique,
@@ -272,7 +272,7 @@ class RedTeamEmulator:
         detection_rate = len(detected) / len(ttps) if ttps else 0.0
 
         result = RedTeamResult(
-            run_id=f"RED-{hashlib.md5(f'{persona_name}{time.time_ns()}'.encode()).hexdigest()[:8].upper()}",
+            run_id=f"RED-{secrets.token_hex(4).upper()}",
             persona=persona_name,
             ttps_attempted=ttps,
             ttps_detected=detected,
@@ -353,7 +353,7 @@ class IntelligenceFusion:
         recommendations = self._recommend_rules(gap_techniques)
 
         return FusedIntelligence(
-            fusion_id=f"FUSE-{hashlib.md5(str(time.time_ns()).encode()).hexdigest()[:8].upper()}",
+            fusion_id=f"FUSE-{secrets.token_hex(4).upper()}",
             blue_detections=blue_summary["detected"],
             red_attempts=sum(len(r.ttps_attempted) for r in red.results),
             detection_rate=blue_summary["detection_rate"],
@@ -490,7 +490,7 @@ class RuleEvolutionEngine:
                 continue
 
             rule = EvolvedRule(
-                rule_id=f"RULE-{hashlib.md5(f'{technique}{time.time_ns()}'.encode()).hexdigest()[:8].upper()}",
+                rule_id=f"RULE-{secrets.token_hex(4).upper()}",
                 rule_type=template["rule_type"],
                 technique=technique,
                 trigger=gap,
