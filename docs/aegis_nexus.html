@@ -260,10 +260,10 @@
     <div class="panel">
       <div class="panel-hdr">
         <span class="panel-title">🔐 PQC Readiness</span>
-        <span class="panel-badge">42.8% · FIPS 203/204/205</span>
+        <span class="panel-badge">DEMO · PQC not assessed</span>
       </div>
       <div class="panel-body">
-        <div class="pqc-row"><span class="pqc-name">ML-KEM-768</span><span class="pqc-status" style="color:var(--green)">✅ FIPS 203</span></div>
+        <div class="pqc-row"><span class="pqc-name">ML-KEM-768</span><span class="pqc-status" style="color:var(--green)">NOT VERIFIED</span></div>
         <div class="pqc-row"><span class="pqc-name">ML-DSA-65</span><span class="pqc-status" style="color:var(--amber)">⚠ PARTIAL</span></div>
         <div class="pqc-row"><span class="pqc-name">SLH-DSA (reference)</span><span class="pqc-status" style="color:var(--amber)">NOT VERIFIED</span></div>
         <div class="pqc-row"><span class="pqc-name">RSA-2048</span><span class="pqc-status" style="color:var(--red)">❌ LEGACY</span></div>
@@ -355,9 +355,9 @@ function downloadReport() {
       {severity:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', technique:'T1565.001', fix:'Resync GPS/NTP; inspect OCXO'},
     ],
     pqc_inventory: [
-      {algorithm:'ML-KEM-768', standard:'FIPS 203', status:'COMPLIANT'},
-      {algorithm:'ML-DSA-65', standard:'FIPS 204', status:'PARTIAL'},
-      {algorithm:'SLH-DSA', standard:'FIPS 205', status:'COMPLIANT'},
+      {algorithm:'ML-KEM-768', standard:'FIPS 203', status:'NOT_ASSESSED'},
+      {algorithm:'ML-DSA-65', standard:'FIPS 204', status:'NOT_ASSESSED'},
+      {algorithm:'SLH-DSA', standard:'FIPS 205', status:'NOT_ASSESSED'},
       {algorithm:'RSA-2048', standard:'Legacy', status:'CRITICAL_RISK'},
       {algorithm:'ECC-P256', standard:'Legacy', status:'HIGH_RISK'},
     ],
