@@ -173,5 +173,60 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertNotIn('display: none', css)
 
 
+    def test_dashboard_and_receipt_pages_disclose_demo_boundaries(self):
+        demo_pages = (
+            'docs/dashboards.html',
+            'docs/shadow313-nexus-dashboard.html',
+            'local_bundle/dashboard.html',
+            'docs/s313-threat-board.html',
+            'local_bundle/threat-board.html',
+            'docs/s313-command-center-v6.html',
+            'local_bundle/command-center.html',
+            'docs/S313-Nexus-Dashboard-v3.html',
+            'local_bundle/dashboard-v3.html',
+            'docs/S313-SSP-Dashboard.html',
+            'local_bundle/ssp.html',
+            'docs/aegis_nexus.html',
+            'tools/aegis-nexus.html',
+            'local_bundle/aegis-nexus.html',
+            'docs/nvsm-chain-score-dashboard.html',
+            'docs/313-bind-verification-portal.html',
+            'docs/attck-coverage-graph.html',
+            'docs/vendor-scorecard.html',
+            'local_bundle/vendor-scorecard.html',
+        )
+        for relative in demo_pages:
+            page = ROOT / relative
+            text = page.read_text()
+            with self.subTest(page=relative):
+                self.assertIn('role="note"', text)
+                self.assertNotRegex(
+                    text,
+                    r'CVE-2026-(?:3392|0001|1847)',
+                )
+                self.assertNotIn('REAL DATA', text)
+                self.assertNotIn('REAL SESSION DATA', text)
+                self.assertNotIn('LIVE DATA', text)
+
+        receipt = (ROOT / 'docs/313-bind-verification-portal.html').read_text()
+        self.assertIn('Sample Receipt — Not Verified', receipt)
+        self.assertNotIn('Receipt VALID — Chain Intact', receipt)
+        self.assertNotIn('Every receipt is signed with SLH-DSA', receipt)
+
+    def test_compliance_and_vendor_demo_scores_are_not_presented_as_assessed(self):
+        for relative in ('docs/S313-SSP-Dashboard.html', 'local_bundle/ssp.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertNotIn('~23%', text)
+                self.assertNotIn('~40%', text)
+                self.assertIn('Not assessed', text)
+        for relative in ('docs/vendor-scorecard.html', 'local_bundle/vendor-scorecard.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertNotIn('#1 of 13', text)
+                self.assertNotIn('96.2/100', text)
+                self.assertIn('No independently sourced', text)
+
+
 if __name__ == '__main__':
     unittest.main()
