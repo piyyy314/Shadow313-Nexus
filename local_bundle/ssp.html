@@ -37,7 +37,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
 .card h3{font-size:13px;color:var(--green);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 /* Table */
-table{width:100%;border-collapse:collapse;font-size:12px}
+table{width:NOT ASSESSED;border-collapse:collapse;font-size:12px}
 th{background:var(--surface2);color:var(--muted);text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border)}
 td{padding:7px 10px;border-bottom:1px solid rgba(26,46,26,.5);vertical-align:top}
 tr:hover td{background:rgba(34,197,94,.03)}
@@ -55,7 +55,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--green)}
 /* Progress bar */
 .prog-wrap{background:rgba(26,46,26,.5);border-radius:4px;height:8px;overflow:hidden;margin-top:4px}
-.prog{height:100%;border-radius:4px;transition:.3s}
+.prog{height:NOT ASSESSED;border-radius:4px;transition:.3s}
 /* Ring chart */
 .rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
 .ring-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
@@ -84,7 +84,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 .gap-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .gap-label{font-size:11px;min-width:80px;color:var(--muted)}
 .gap-bar-wrap{flex:1;background:rgba(26,46,26,.5);border-radius:4px;height:16px;overflow:hidden;position:relative}
-.gap-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
+.gap-bar-fill{height:NOT ASSESSED;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#000}
 .gap-pct{font-size:11px;min-width:36px;text-align:right}
 </style>
 </head>
@@ -118,9 +118,9 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <div class="kpi"><div class="num green">DEMO</div><div class="lbl">CRQC scenario states</div><div class="sub">2 planned DW-1/DW-2</div></div>
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">NIST 800-53 mapping</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">CMMC L2 mapping</div><div class="sub">Not assessed</div></div>
-<div class="kpi"><div class="num cyan">MODERATE</div><div class="lbl">FIPS 199 Category</div><div class="sub">Integrity: HIGH</div></div>
-<div class="kpi"><div class="num purple">FIPS 205</div><div class="lbl">Signature Standard</div><div class="sub">SLH-DSA deployed</div></div>
-<div class="kpi"><div class="num green">✅</div><div class="lbl">PIPEDA Compliant</div><div class="sub">Zero PII collected</div></div>
+<div class="kpi"><div class="num cyan">NOT ASSESSED</div><div class="lbl">Impact category · not assessed</div><div class="sub">Impact level not assessed</div></div>
+<div class="kpi"><div class="num purple">FIPS 205</div><div class="lbl">Signature Standard</div><div class="sub">Not implemented by this demo</div></div>
+<div class="kpi"><div class="num green">✅</div><div class="lbl">Privacy compliance not assessed</div><div class="sub">No privacy audit evidence</div></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
 <div class="card">
@@ -138,12 +138,12 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <div class="card">
 <h3>⭐ Illustrative control mappings (not assessed)</h3>
 <table>
-<tr><td style="color:var(--green)">Post-Quantum Crypto</td><td>FIPS 203/204/205 — 4+ years ahead of CNSA 2.0</td></tr>
+<tr><td style="color:var(--green)">Post-Quantum Crypto</td><td>PQC implementation and compliance not assessed</td></tr>
 <tr><td style="color:var(--green)">AU-9/AU-10</td><td>SLH-DSA + IPFS + 313-BIND — quantum-resistant</td></tr>
 <tr><td style="color:var(--green)">SI-2 Flaw Remediation</td><td>CI results do not establish control effectiveness</td></tr>
 <tr><td style="color:var(--green)">CRQC Migration</td><td>Example migration scenario; not independently verified</td></tr>
 <tr><td style="color:var(--green)">CMMC Audit Packages</td><td>Sample audit package placeholder; not 3PAO-verified</td></tr>
-<tr><td style="color:var(--green)">PIPEDA</td><td>Zero PII collected by design</td></tr>
+<tr><td style="color:var(--green)">Privacy controls</td><td>No privacy audit evidence</td></tr>
 </table>
 </div>
 </div>
@@ -212,7 +212,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <tr><td><span class="sev-medium">P3</span></td><td>AU-1, AU-4–AU-8, AU-12</td><td>Audit policy + log management enhancements</td><td>Q2 2027</td><td>Low</td><td><span class="status-planned">Planned</span></td></tr>
 <tr><td><span class="sev-medium">P3</span></td><td>CM-1, CM-3, CM-4</td><td>Change control process; configuration mgmt policy</td><td>Q2 2027</td><td>Low</td><td><span class="status-planned">Planned</span></td></tr>
 <tr><td><span class="sev-medium">P3</span></td><td>SA-11 (3PAO pentest)</td><td>Third-party penetration test engagement</td><td>Q1 2027</td><td>High</td><td><span class="status-planned">Planned</span></td></tr>
-<tr><td><span class="sev-low">Done</span></td><td>AC-12 Session Termination</td><td>Complete logout all devices</td><td>✅ Done</td><td>—</td><td><span class="status-pass">Complete</span></td></tr>
+<tr><td><span class="sev-low">Done</span></td><td>AC-12 Session Termination</td><td>Complete logout all devices</td><td>✅ Done</td><td>—</td><td><span class="status-partial">Not assessed</span></td></tr>
 </tbody>
 </table>
 </div>
@@ -221,76 +221,76 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <div class="section" id="compliance">
 <div class="rings">
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="72 242" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
 <div class="ring-label">NIST 800-53 Rev 5</div>
 <div class="ring-pct amber">DEMO</div>
 <div style="font-size:10px;color:var(--muted)">Not assessed</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#f59e0b" stroke-dasharray="63 251" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#f59e0b" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
 <div class="ring-label">FedRAMP Moderate</div>
-<div class="ring-pct amber">~20%</div>
+<div class="ring-pct amber">Not assessed</div>
 <div style="font-size:10px;color:var(--muted)">~65 of 323 controls</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#06b6d4" stroke-dasharray="126 188" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of practices</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#06b6d4" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of practices</text></svg>
 <div class="ring-label">CMMC Level 2</div>
 <div class="ring-pct cyan">DEMO</div>
 <div style="font-size:10px;color:var(--muted)">Not assessed</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="267 47" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">within families</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">within families</text></svg>
 <div class="ring-label">Documented Families</div>
-<div class="ring-pct green">~86%</div>
+<div class="ring-pct amber">Not assessed</div>
 <div style="font-size:10px;color:var(--muted)">Within 9 documented families</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="302 12" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">CRQC closed</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">CRQC closed</text></svg>
 <div class="ring-label">CRQC Migration</div>
 <div class="ring-pct green">DEMO</div>
 <div style="font-size:10px;color:var(--muted)">2 planned (DW-1, DW-2)</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#a78bfa" stroke-dasharray="314 0" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">FIPS</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">203/204/205</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#a78bfa" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">FIPS</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">203/204/205</text></svg>
 <div class="ring-label">PQC Standards</div>
-<div class="ring-pct purple">100%</div>
-<div style="font-size:10px;color:var(--muted)">All three NIST PQC standards</div>
+<div class="ring-pct amber">Not assessed</div>
+<div style="font-size:10px;color:var(--muted)">Implementation not assessed</div>
 </div>
 </div>
 <div class="card" style="margin-top:16px">
 <h3>Illustrative CMMC control mapping — not assessed</h3>
 <div style="padding:8px 0">
-<div class="gap-row"><div class="gap-label">IR (Incident)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:100%;background:var(--green)">3/3</div></div><div class="gap-pct green">100%</div></div>
-<div class="gap-row"><div class="gap-label">AU (Audit)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:56%;background:var(--cyan)">5/9</div></div><div class="gap-pct cyan">56%</div></div>
-<div class="gap-row"><div class="gap-label">RA (Risk)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:67%;background:var(--cyan)">2/3</div></div><div class="gap-pct cyan">67%</div></div>
-<div class="gap-row"><div class="gap-label">SI (Integrity)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:43%;background:var(--amber)">3/7</div></div><div class="gap-pct amber">43%</div></div>
-<div class="gap-row"><div class="gap-label">CM (Config)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:44%;background:var(--amber)">4/9</div></div><div class="gap-pct amber">44%</div></div>
-<div class="gap-row"><div class="gap-label">AC (Access)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">5/22</div></div><div class="gap-pct amber">23%</div></div>
-<div class="gap-row"><div class="gap-label">IA (Identity)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:27%;background:var(--red)">3/11</div></div><div class="gap-pct red">27%</div></div>
-<div class="gap-row"><div class="gap-label">SC (Comms)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:25%;background:var(--red)">4/16</div></div><div class="gap-pct red">25%</div></div>
-<div class="gap-row"><div class="gap-label">AT (Training)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:1%;background:var(--red)"></div></div><div class="gap-pct red">0%</div></div>
-<div class="gap-row"><div class="gap-label">MA (Maint.)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:1%;background:var(--red)"></div></div><div class="gap-pct red">0%</div></div>
-<div class="gap-row"><div class="gap-label">MP (Media)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:1%;background:var(--red)"></div></div><div class="gap-pct red">0%</div></div>
-<div class="gap-row"><div class="gap-label">CA (Assessment)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:1%;background:var(--red)"></div></div><div class="gap-pct red">0%</div></div>
+<div class="gap-row"><div class="gap-label">IR (Incident)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--green)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">AU (Audit)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--cyan)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">RA (Risk)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--cyan)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">SI (Integrity)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--amber)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">CM (Config)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--amber)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">AC (Access)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">IA (Identity)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">SC (Comms)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--red)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">AT (Training)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">MA (Maint.)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">MP (Media)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label">CA (Assessment)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
 </div>
 </div>
 </div>
 <!-- CRYPTOGRAPHY -->
 <div class="section" id="crypto">
 <div class="card">
-<h3>Cryptographic Component Inventory (FIPS 203/204/205)</h3>
+<h3>Cryptographic Component Inventory (PQC standards (implementation not assessed))</h3>
 <table>
 <thead><tr><th>ID</th><th>Algorithm</th><th>Standard</th><th>Purpose</th><th>Key Size</th><th>Quantum Safe</th><th>HNDL Window</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>CS-001</td><td class="algo-safe">SLH-DSA-SHAKE-128f</td><td>FIPS 205</td><td>Signing (313-BIND)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">EXAMPLE</span></td></tr>
+<tr><td>CS-001</td><td class="algo-safe">SLH-DSA-SHAKE-128f</td><td>FIPS 205</td><td>Signing (313-BIND)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
 <tr><td>CS-002</td><td class="algo-safe">ML-DSA-65 (proxy→liboqs)</td><td>FIPS 204</td><td>Plugin/Ledger signing</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">DW-1 Q4'26</span></td></tr>
-<tr><td>CS-003</td><td class="algo-safe">AES-256-GCM</td><td>FIPS 140-3</td><td>Session encryption</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-004</td><td class="algo-safe">Argon2id</td><td>RFC 9106</td><td>Key derivation</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-005</td><td class="algo-safe">SHA3-256</td><td>FIPS 202</td><td>Hashing (all paths)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-006</td><td class="algo-safe">SHA3-512</td><td>FIPS 202</td><td>Chain hashing</td><td>512-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
-<tr><td>CS-007</td><td class="algo-safe">HMAC-SHA256</td><td>FIPS 198-1</td><td>Ephemeral MACs</td><td>256-bit</td><td class="green">✅ Yes (sym)</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
+<tr><td>CS-003</td><td class="algo-safe">AES-256-GCM</td><td>FIPS 140-3</td><td>Session encryption</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CS-004</td><td class="algo-safe">Argon2id</td><td>RFC 9106</td><td>Key derivation</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CS-005</td><td class="algo-safe">SHA3-256</td><td>FIPS 202</td><td>Hashing (all paths)</td><td>256-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CS-006</td><td class="algo-safe">SHA3-512</td><td>FIPS 202</td><td>Chain hashing</td><td>512-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CS-007</td><td class="algo-safe">HMAC-SHA256</td><td>FIPS 198-1</td><td>Ephemeral MACs</td><td>256-bit</td><td class="green">✅ Yes (sym)</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
 <tr><td>CS-008</td><td class="algo-risk">ECDSA P-256 (cosign)</td><td>FIPS 186-5</td><td>Plugin signing (legacy)</td><td>256-bit</td><td class="red">❌ No</td><td>2030–2033</td><td><span class="status-partial">DEPRECATED</span></td></tr>
-<tr><td>CS-009</td><td class="algo-safe">ML-KEM-1024</td><td>FIPS 203</td><td>Key encapsulation</td><td>1024-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-pass">ACTIVE</span></td></tr>
+<tr><td>CS-009</td><td class="algo-safe">ML-KEM-1024</td><td>FIPS 203</td><td>Key encapsulation</td><td>1024-bit</td><td class="green">✅ Yes</td><td>N/A</td><td><span class="status-partial">Not assessed</span></td></tr>
 </tbody>
 </table>
 </div>
@@ -299,12 +299,12 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <table>
 <thead><tr><th>Item</th><th>Vulnerability</th><th>Algorithm</th><th>Fix Applied</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>CRQC-001</td><td>ECDSA P-256 cosign primary</td><td>ECDSA → ML-DSA-65</td><td>MLDSATrustRegistry wired as primary</td><td><span class="status-pass">EXAMPLE</span></td></tr>
-<tr><td>CRQC-002</td><td>SHA-256 ledger payload_hash</td><td>SHA-256 → SHA3-256</td><td>ledger_engine.py patched</td><td><span class="status-pass">✅ Closed</span></td></tr>
-<tr><td>CRQC-003</td><td>SHA-256 ledger entry signature</td><td>Hash → ML-DSA-65</td><td>ML-DSA-65 signing via HardenedKeyInfra</td><td><span class="status-pass">✅ Closed</span></td></tr>
-<tr><td>CRQC-004–008</td><td>SHA-256 various paths</td><td>SHA-256 → SHA3-256</td><td>6 files patched (temporal, ghost, workflow)</td><td><span class="status-pass">✅ Closed</span></td></tr>
-<tr><td>CRQC-007</td><td>PBKDF2-SHA256 session keys</td><td>PBKDF2 → Argon2id</td><td>crypto_store.py: 64MB Argon2id</td><td><span class="status-pass">✅ Closed</span></td></tr>
-<tr><td>CRQC-012</td><td>HMAC fallback (air-gapped)</td><td>HMAC → SLH-DSA</td><td>pyspx 3-tier fallback chain</td><td><span class="status-pass">✅ Closed</span></td></tr>
+<tr><td>CRQC-001</td><td>ECDSA P-256 cosign primary</td><td>ECDSA → ML-DSA-65</td><td>MLDSATrustRegistry wired as primary</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CRQC-002</td><td>SHA-256 ledger payload_hash</td><td>SHA-256 → SHA3-256</td><td>ledger_engine.py patched</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CRQC-003</td><td>SHA-256 ledger entry signature</td><td>Hash → ML-DSA-65</td><td>ML-DSA-65 signing via HardenedKeyInfra</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CRQC-004–008</td><td>SHA-256 various paths</td><td>SHA-256 → SHA3-256</td><td>6 files patched (temporal, ghost, workflow)</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CRQC-007</td><td>PBKDF2-SHA256 session keys</td><td>PBKDF2 → Argon2id</td><td>crypto_store.py: 64MB Argon2id</td><td><span class="status-partial">Not assessed</span></td></tr>
+<tr><td>CRQC-012</td><td>HMAC fallback (air-gapped)</td><td>HMAC → SLH-DSA</td><td>pyspx 3-tier fallback chain</td><td><span class="status-partial">Not assessed</span></td></tr>
 <tr><td>DW-1</td><td>HMAC proxy for ML-DSA-65</td><td>HMAC-SHA3 → liboqs</td><td>Requires C build env (Q4 2026)</td><td><span class="status-planned">🔄 Planned</span></td></tr>
 <tr><td>DW-2</td><td>In-memory key material</td><td>Memory → HSM</td><td>Azure Key Vault HSM (Q1 2027)</td><td><span class="status-planned">🔄 Planned</span></td></tr>
 </tbody>
@@ -345,11 +345,11 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <div class="card">
 <h3>Coverage Summary by Framework</h3>
 <div style="padding:8px 0">
-<div class="gap-row"><div class="gap-label" style="min-width:140px">NIST 800-53 Rev 5</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">DEMO</div></div><div class="gap-pct amber">DEMO</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">FedRAMP Moderate</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:20%;background:var(--amber)">~20%</div></div><div class="gap-pct amber">~20%</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">CMMC Level 2</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--cyan)">DEMO</div></div><div class="gap-pct cyan">DEMO</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">Within 9 Families</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:86%;background:var(--green)">~86%</div></div><div class="gap-pct green">~86%</div></div>
-<div class="gap-row"><div class="gap-label" style="min-width:140px">PQC (FIPS 203/4/5)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:100%;background:var(--green)">100%</div></div><div class="gap-pct green">100%</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">NIST 800-53 Rev 5</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">DEMO</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">FedRAMP Moderate</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">CMMC Level 2</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:0%;background:var(--amber)">Not assessed</div></div><div class="gap-pct cyan">DEMO</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">Within 9 Families</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--green)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
+<div class="gap-row"><div class="gap-label" style="min-width:140px">PQC (FIPS 203/4/5)</div><div class="gap-bar-wrap"><div class="gap-bar-fill" style="width:NOT ASSESSED;background:var(--green)">NOT ASSESSED</div></div><div class="gap-pct amber">Not assessed</div></div>
 </div>
 </div>
 <div class="card">
@@ -372,7 +372,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <h3>Key Insight: Documentation Gap, Not Technical Gap</h3>
 <p style="font-size:12px;color:var(--muted);line-height:1.7">
       The primary path to FedRAMP Moderate authorization is <strong style="color:var(--text)">documentation and governance</strong>, not technical implementation.
-      The cryptographic posture (FIPS 203/204/205, SLH-DSA, Argon2id, SHA3-256 throughout) already exceeds FedRAMP Moderate technical requirements.
+      The cryptographic posture (PQC standards (implementation not assessed), SLH-DSA, Argon2id, SHA3-256 throughout) already exceeds FedRAMP Moderate technical requirements.
       <br/><br/>
       What's missing: <strong style="color:var(--amber)">Policy documents</strong> for each control family (1–3 pages each),
       <strong style="color:var(--amber)">training records</strong> (AT-2 requires annual completion evidence),
@@ -422,7 +422,7 @@ const controls = [
   {id:'RA-5',family:'RA',title:'Vulnerability Scanning',impl:'Snyk + OWASP ZAP + Bandit',status:'Example'},
   {id:'SC-8',family:'SC',title:'Transmission Confidentiality',impl:'TLS 1.3 end-to-end',status:'Example'},
   {id:'SC-12',family:'SC',title:'Cryptographic Key Establishment',impl:'ML-KEM-768, SLH-DSA, OIDC',status:'Example'},
-  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'NIST FIPS 203/204/205',status:'Example'},
+  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'NIST PQC standards (implementation not assessed)',status:'Example'},
   {id:'SC-28',family:'SC',title:'Protection at Rest',impl:'AES-256-GCM CryptoStore',status:'Example'},
   {id:'SI-2',family:'SI',title:'Flaw Remediation',impl:'SDS=0, 2071/2071 tests, Snyk',status:'Example'},
   {id:'SI-3',family:'SI',title:'Malicious Code Protection',impl:'Malware sandbox, supply chain scanner',status:'Example'},
