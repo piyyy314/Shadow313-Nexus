@@ -144,6 +144,11 @@ class SiteNavigationTests(unittest.TestCase):
             ROOT / 'docs/S313-SSP-Dashboard.html',
             ROOT / 'local_bundle/ssp.html',
             ROOT / 'docs/313-bind-verification-portal.html',
+            ROOT / 'docs/s313-command-center-v6.html',
+            ROOT / 'docs/adversarial-pivot-dashboard.html',
+            ROOT / 'docs/adversarial-pivot-analysis.html',
+            ROOT / 'docs/nvsm-chain-score-dashboard.html',
+            ROOT / 'local_bundle/dashboard-v3.html',
         )
         script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
         for path in dashboard_pages:
