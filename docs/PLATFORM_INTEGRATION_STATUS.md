@@ -1,6 +1,6 @@
 # Shadow313 Platform Integration Status
 
-Last reviewed: 2026-11-13
+Last reviewed: 2026-11-14
 
 This document is the integration control sheet for the Shadow313 repositories.
 It separates implemented code, work in review, and work that still requires
@@ -58,48 +58,29 @@ The PR's own limitations are important:
 
 ### Latest observed PR checks
 
-For PR #115 head `87aa028462f6fe1e60ab15872e3cd7fba1d725ca`:
+For PR #115 head `7c962bd5aee6116cbf090cd64f9068b796937c77`:
 
-- Unit tests for Python 3.11 and 3.12: passed.
-- Secret detection, SAST, dependency scan, Dockerfile lint, shell/config and
-  file-integrity checks: passed.
-- Python/API validation, config validation, file-integrity checks, shell
-  validation, HTML validation, quality checks, and live API endpoint validation:
-  passed.
-- Unit test matrix for Python 3.11 and 3.12: passed. The separate aggregate
-  Python Test Suite job was cancelled after the validation gate had already
-  failed; do not count that cancelled job as a pass.
-- Repository-wide Ruff lint: failed with thousands of existing diagnostics
-  across unrelated package files. The observed run emitted no Ruff diagnostics
-  for the new `shiatoali` package.
-- Security scan: failed because the full-tree Bandit scan returned findings.
-  Its uploaded report counted 69 medium and 106 low severity findings, and zero
-  high severity findings. No findings were listed under the new
-  `shiatoali` package in that report. These are baseline findings requiring
-  triage, not proof that every finding is exploitable.
-- The overall validation gate failed. Deployment, Docker build, and publishing
-  jobs were skipped; this PR has not demonstrated a production deployment.
+- PR Checks, full pre-deploy validation, API endpoint validation, and the CI/CD workflow completed successfully.
+- Python 3.11 and 3.12 unit-test jobs, SAST, secret detection, dependency scanning, Dockerfile lint, HTML validation, shell/config checks, file-integrity checks, and Python/API validation completed successfully in the observed runs.
+- The CI/CD workflow's Docker build and security scan completed successfully. PyPI and TestPyPI publication jobs were skipped.
+- The Vercel workflow's quality checks passed, but both production and preview deployment jobs were skipped. Do not describe this run as a deployment.
+- All currently listed inline review threads on PR #115 are resolved. The PR remains open and is not merged.
 
-Do not merge the draft until the latest checks complete, the lint baseline is
-handled transparently, and the runtime persistence/configuration review is
-complete.
+Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831166), [pre-deploy validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831301), [CI/CD](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831258), [API validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831226).
 
-## Critical repository hygiene and deployment work
+For PR #116, the CI-repair and site-consistency branch remains under active validation. Its status is commit-specific; consult the live [PR checks](https://github.com/piyyy314/Shadow313-Nexus/pull/116) and [Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) rather than copying a previous run's result into this document.
 
-The following open PRs in Shadow313-Nexus require review:
+Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
 
-1. [PR #107 — remove committed TLS private key](https://github.com/piyyy314/Shadow313-Nexus/pull/107).
-   Treat the old private key as compromised. Removing it from the current tree
-   does not remove it from Git history. Revoke/replace the certificate and key,
-   verify deployment references, and plan history cleanup before considering
-   the incident closed.
-2. [PR #108 — Debian and Python packaging security updates](https://github.com/piyyy314/Shadow313-Nexus/pull/108).
-   Review package compatibility and rebuild the production image; do not assume
-   a source-level dependency bump fixes the deployed image until it is rebuilt
-   and scanned.
-3. [PR #109 — Open WebUI URL and Nginx memory limit](https://github.com/piyyy314/Shadow313-Nexus/pull/109).
-   The PR body explicitly says the stack has not been run with this change.
-   Validate the Compose stack and upload path before deployment.
+## Repository hygiene and deployment follow-up
+
+The following historical maintenance PRs are closed and merged:
+
+1. [PR #107 — remove committed TLS private key](https://github.com/piyyy314/Shadow313-Nexus/pull/107). The removal change is merged. Key/certificate rotation and any required Git-history cleanup are external follow-up actions and are **not verified by merge status alone**.
+2. [PR #108 — Debian and Python packaging security updates](https://github.com/piyyy314/Shadow313-Nexus/pull/108). The change is merged. Confirm the actual deployed image has been rebuilt and scanned before treating runtime exposure as resolved.
+3. [PR #109 — Open WebUI URL and Nginx memory limit](https://github.com/piyyy314/Shadow313-Nexus/pull/109). The change is merged. Validate the Compose stack and upload path in the target environment before asserting operational readiness.
+
+PR #115 (ShiatoAli SOC foundation) and PR #116 (CI repairs and site consistency) remain open. This document is a handoff, not a live deployment dashboard; recheck GitHub before acting.
 
 ## Shared integration contracts
 

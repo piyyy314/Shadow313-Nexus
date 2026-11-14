@@ -65,9 +65,9 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">⬡ Responsible Disclosure · Bug Bounty · CVE Program</div>
+  <div class="hero-badge">⬡ Responsible Disclosure</div>
   <h1>Security <span>Policy</span></h1>
-  <p>Shadow313 NEXUS takes security seriously. We welcome responsible disclosure and commit to responding within 24 hours.</p>
+  <p>Shadow313 NEXUS welcomes responsible, private vulnerability disclosure. No fixed response or remediation SLA is currently promised.</p>
 </div>
 <div class="main">
 
@@ -76,17 +76,16 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
   <div class="panel">
     <h3>How to Report</h3>
     <p>Send vulnerability reports to: <code>matarmohamad313@duck.com</code></p>
-    <p>Subject line: <code>[CVE DISCLOSURE] Brief description</code></p>
+    <p>Subject line: <code>[SECURITY] Brief description</code></p>
     <p>Include: affected component, reproduction steps, impact assessment, and your contact information for credit.</p>
   </div>
   <div class="panel">
     <h3>Our Commitment</h3>
     <ul>
-      <li>Acknowledge receipt within 24 hours</li>
-      <li>Provide a timeline for resolution within 72 hours</li>
-      <li>Credit researchers in our changelog (unless anonymity requested)</li>
-      <li>Not pursue legal action against good-faith researchers</li>
-      <li>Coordinate public disclosure timing with the reporter</li>
+      <li>Review the report and request clarification where needed</li>
+      <li>Coordinate remediation and disclosure where appropriate</li>
+      <li>Respect a reporter's request for attribution or anonymity where practical</li>
+      <li>Good-faith testing must be authorized and non-disruptive; this policy is not permission to test third-party systems</li>
     </ul>
   </div>
 </div>
@@ -99,10 +98,10 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
         <li>Shadow313 CLI v1–v4 (github.com/piyyy314/Shadow313-Nexus)</li>
         <li>shadow313.dev and shadow313.com web properties</li>
         <li>313-BIND temporal binding protocol implementation</li>
-        <li>FastAPI audit server (localhost:8000)</li>
+        <li>Optional Python API (local Docker Compose port 8313; not the static website adapter)</li>
         <li>Plugin system and HMAC signing</li>
         <li>Docker Compose stack and Dockerfile</li>
-        <li>Ollama model (matarmohamad313/shadow313-nexus)</li>
+        <li>Optional local AI integrations, when configured by the operator</li>
       </ul>
     </div>
     <div class="panel">
@@ -119,32 +118,16 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
   </div>
 </div>
 <div class="section">
-  <h2>Known CVEs &amp; Security Advisories</h2>
+  <h2>CVEs and Security Advisories</h2>
   <div class="panel">
-    <table>
-      <thead><tr><th>ID</th><th>Component</th><th>Severity</th><th>Status</th><th>Fixed In</th></tr></thead>
-      <tbody>
-        <tr><td>S313-CVE-2026-001</td><td>Session path traversal (encrypted writes)</td><td><span class="badge badge-red">HIGH</span></td><td>✅ Fixed</td><td>v4.0.1</td></tr>
-        <tr><td>S313-CVE-2026-002</td><td>SSRF in AI engine URL handling</td><td><span class="badge badge-amber">MEDIUM</span></td><td>✅ Fixed</td><td>v4.0.1</td></tr>
-        <tr><td>S313-CVE-2026-003</td><td>Crypto downgrade to plaintext on import failure</td><td><span class="badge badge-red">HIGH</span></td><td>✅ Fixed</td><td>v4.0.1</td></tr>
-        <tr><td>S313-CVE-2026-006</td><td>ECDSA P-256 cosign in plugin_signer.py (CRQC)</td><td><span class="badge badge-red">CRITICAL</span></td><td>🔄 Migrating</td><td>v4.1.0 (Q4 2026)</td></tr>
-      </tbody>
-    </table>
+    <p>No externally assigned CVE identifiers or published advisories are confirmed by this page. Project-internal tracking labels are not CVE assignments and must not be presented as such.</p>
+    <p>For externally assigned identifiers and published advisories, use the <a href="https://github.com/piyyy314/Shadow313-Nexus/security/advisories">GitHub Security Advisories</a> page. Verify the affected commit and released artifact before describing a fix as shipped.</p>
   </div>
 </div>
 <div class="section">
-  <h2>Bug Bounty Program</h2>
+  <h2>Bounty and Rewards</h2>
   <div class="panel">
-    <p>Shadow313 operates an informal bug bounty program. Rewards are at our discretion based on severity and impact:</p>
-    <table>
-      <thead><tr><th>Severity</th><th>Examples</th><th>Reward</th></tr></thead>
-      <tbody>
-        <tr><td>Critical</td><td>RCE, auth bypass, key extraction</td><td>$500–$2,000 + CVE credit</td></tr>
-        <tr><td>High</td><td>Path traversal, SSRF, privilege escalation</td><td>$100–$500 + CVE credit</td></tr>
-        <tr><td>Medium</td><td>Information disclosure, CSRF</td><td>$25–$100 + credit</td></tr>
-        <tr><td>Low</td><td>Minor issues, best-practice violations</td><td>Public credit + swag</td></tr>
-      </tbody>
-    </table>
+    <p>No formal paid bug-bounty program, reward schedule, or guaranteed payout is currently published. Do not assume a report qualifies for compensation.</p>
   </div>
 </div>
 
