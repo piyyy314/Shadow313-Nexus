@@ -126,7 +126,7 @@
   }
 </style>
 </head>
-<body>
+<body><aside role="note" aria-label="Local bundle demonstration notice" style="margin:14px 20px;padding:12px 16px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font:12px/1.6 system-ui,sans-serif"><strong>STATIC REFERENCE / SIMULATION ONLY.</strong> This standalone page is a browser-side interface demonstration. Metrics, findings, CVEs, RF readings, compliance states, cryptographic labels, event feeds, and receipt records are illustrative unless independently verified in source and current test evidence. No live target, customer system, sensor, production service, signature, IPFS anchor, or compliance certification is established here.</aside>
 
 <nav class="nav">
   <div class="nav-logo">
@@ -198,7 +198,7 @@
     </div>
   </div>
   <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-    <button onclick="runSimulation()" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif">▶ Run Live Simulation</button>
+    <button onclick="runSimulation()" style="background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif">▶ Run Simulation</button>
   </div>
 </div>
 
@@ -231,10 +231,10 @@
       </div>
     </div>
 
-    <!-- 313-BIND Receipt -->
+    <!-- Sample Receipt UI -->
     <div class="panel">
       <div class="panel-hdr">
-        <span class="panel-title">🔐 313-BIND Receipt</span>
+        <span class="panel-title">🔐 Sample Receipt UI</span>
         <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green)">SLH-DSA signed</span>
       </div>
       <div class="panel-body" id="receipt-body">
@@ -333,7 +333,7 @@ function selectEvent(logId) {
     `<div class="ir-step"><div class="ir-num">${i+1}</div><div class="ir-text">${s}</div></div>`
   ).join('');
   
-  // 313-BIND Receipt
+  // Sample Receipt UI
   const receipt = ev.receipt;
   if (receipt) {
     document.getElementById('receipt-body').innerHTML = `
@@ -375,12 +375,12 @@ function selectScenario(filter, el) {
   renderTimeline(filter);
 }
 
-// Live simulation
+// Browser-side simulation
 function runSimulation() {
   if (simInterval) {
     clearInterval(simInterval);
     simInterval = null;
-    document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Live Simulation';
+    document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Simulation';
     document.getElementById('sim-status').textContent = 'Simulation stopped';
     return;
   }
@@ -395,7 +395,7 @@ function runSimulation() {
     if (simIndex >= filtered.length) {
       clearInterval(simInterval);
       simInterval = null;
-      document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Live Simulation';
+      document.querySelector('[onclick="runSimulation()"]').textContent = '▶ Run Simulation';
       document.getElementById('sim-status').textContent = `✅ Simulation complete — ${filtered.length} events processed`;
       document.getElementById('sim-bar').style.width = '100%';
       return;
