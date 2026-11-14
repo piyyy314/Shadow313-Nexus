@@ -86,11 +86,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Gitleaks full history
-        uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_SUMMARY: true
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Install Gitleaks CLI
+        run: |
+          go install github.com/gitleaks/gitleaks/v8@v8.30.1
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Scan full Git history with Gitleaks
+        run: gitleaks git --redact --exit-code 1 --log-opts="--all" .
 
   # ── Docker compose security check ─────────────────────────────────
   compose-security:
