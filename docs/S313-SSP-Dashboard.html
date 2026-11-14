@@ -122,13 +122,13 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 
 <div class="header">
 <div>
-<h1>⬡ Shadow313 / VANGUARD-313 — System Security Plan Dashboard</h1>
-<div class="meta">S313-SSP-2026-001 · v1.0 · 2026-08-31 · Ottawa, ON, Canada · Owner: mohamad</div>
+<h1>⬡ Shadow313 / VANGUARD-313 — System Security Plan Mapping Demo</h1>
+<div class="meta">Illustrative control mapping · not an approved SSP or compliance assessment</div>
 </div>
 <div style="display:flex;gap:8px;align-items:center">
-<span class="badge">MODERATE</span>
-<span class="badge" style="color:var(--cyan);border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.1)">CMMC L2</span>
-<span class="badge" style="color:var(--purple);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">FedRAMP</span>
+<span class="badge">REFERENCE ONLY</span>
+<span class="badge" style="color:var(--cyan);border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.1)">CMMC L2 MAPPING</span>
+<span class="badge" style="color:var(--purple);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">FedRAMP MAPPING</span>
 </div>
 </div>
 <div class="nav">
@@ -146,10 +146,10 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="kpi-row">
 <div class="kpi"><div class="num green">CI</div><div class="lbl">CI workflow link</div><div class="sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
 <div class="kpi"><div class="num green">DEMO</div><div class="lbl">Illustrative posture</div><div class="sub">Not assessed</div></div>
-<div class="kpi"><div class="num green">12/14</div><div class="lbl">CRQC Items Closed</div><div class="sub">2 planned DW-1/DW-2</div></div>
+<div class="kpi"><div class="num green">DEMO</div><div class="lbl">CRQC workstream sample</div><div class="sub">2 planned DW-1/DW-2</div></div>
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">NIST 800-53 mapping</div><div class="sub">Not assessed</div></div>
 <div class="kpi"><div class="num amber">DEMO</div><div class="lbl">CMMC L2 mapping</div><div class="sub">Not assessed</div></div>
-<div class="kpi"><div class="num cyan">MODERATE</div><div class="lbl">FIPS 199 Category</div><div class="sub">Integrity: HIGH</div></div>
+<div class="kpi"><div class="num cyan">NOT ASSESSED</div><div class="lbl">FIPS 199 category</div><div class="sub">No categorization evidence</div></div>
 <div class="kpi"><div class="num purple">FIPS 205 · reference only</div><div class="lbl">Signature Standard</div><div class="sub">Not implemented by this demo</div></div>
 <div class="kpi"><div class="num green">✅</div><div class="lbl">Privacy compliance not assessed</div><div class="sub">No privacy audit evidence</div></div>
 </div>
@@ -252,16 +252,16 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="section" id="compliance">
 <div class="rings">
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="72 242" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">23%</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="72 242" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
 <div class="ring-label">NIST 800-53 Rev 5</div>
-<div class="ring-pct amber">DEMO</div>
+<div class="ring-pct amber">NOT ASSESSED</div>
 <div style="font-size:10px;color:var(--muted)">Not assessed</div>
 </div>
 <div class="ring-card">
-<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#f59e0b" stroke-dasharray="63 251" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">20%</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
-<div class="ring-label">FedRAMP Moderate</div>
-<div class="ring-pct amber">~20%</div>
-<div style="font-size:10px;color:var(--muted)">~65 of 323 controls</div>
+<svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#f59e0b" stroke-dasharray="63 251" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of baseline</text></svg>
+<div class="ring-label">FedRAMP control mapping</div>
+<div class="ring-pct amber">NOT ASSESSED</div>
+<div style="font-size:10px;color:var(--muted)">No control assessment</div>
 </div>
 <div class="ring-card">
 <svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#06b6d4" stroke-dasharray="126 188" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">of practices</text></svg>
