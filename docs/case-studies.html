@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Case Studies — Shadow313 NEXUS</title>
+<title>Illustrative Security Scenarios — Shadow313 NEXUS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root{--green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--red:#ef4444;--bg:#000;--bg2:#080808;--border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.5);--text:#e2e8f0;--muted:#64748b;}
@@ -79,21 +79,21 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
       <span class="badge badge-cyan">VSAT · TR-069 · RF</span>
       <span class="badge badge-green">313-BIND ANCHORED</span>
     </div>
-    <p>A full ground segment security sweep of a Ku-band VSAT installation targeting 192.168.100.1/24 using the Shadow313 VSAT Tactical Security Suite v5.0 Ultra.</p>
+    <p>A full ground segment security sweep of a Ku-band VSAT installation targeting Lab router (synthetic)/24 using the Shadow313 VSAT Tactical Security Suite v5.0 Ultra.</p>
     <h3 style="margin-top:16px">Findings</h3>
     <table>
       <thead><tr><th>Severity</th><th>Finding</th><th>Host</th><th>Remediation</th></tr></thead>
       <tbody>
         <tr><td><span class="badge badge-red">CRITICAL</span></td><td>Telnet (Port 23) OPEN</td><td>192.168.100.1</td><td>Disable telnet; deploy SSH (Ed25519)</td></tr>
         <tr><td><span class="badge badge-red">CRITICAL</span></td><td>FTP Anonymous Write (Port 21)</td><td>192.168.100.15</td><td>Disable FTP; deploy SFTP chroot</td></tr>
-        <tr><td><span class="badge badge-red">CRITICAL</span></td><td>CVE-2026-3392 TR-069 CWMP</td><td>192.168.100.1</td><td>Disable CWMP or enforce mutual TLS</td></tr>
+        <tr><td><span class="badge badge-red">CRITICAL</span></td><td>Example TR-069/CWMP configuration exposure</td><td>192.168.100.1</td><td>Disable CWMP or enforce mutual TLS</td></tr>
         <tr><td><span class="badge badge-red">CRITICAL</span></td><td>Unsigned Firmware Accepted</td><td>192.168.100.1</td><td>Enable firmware signature verification</td></tr>
         <tr><td><span class="badge badge-red">CRITICAL</span></td><td>UART/JTAG Unauthenticated</td><td>192.168.100.1</td><td>Physically secure debug headers</td></tr>
         <tr><td><span class="badge badge-amber">HIGH</span></td><td>SNR 5.9 dB / Clock Skew +55.1 Hz</td><td>RF Link</td><td>Resync GPS/NTP; inspect OCXO</td></tr>
-        <tr><td><span class="badge badge-red">CRITICAL</span></td><td>QKD BB84 QBER 40% — Eavesdropper</td><td>QKD Link</td><td>Abort key exchange; investigate RF path</td></tr>
+        <tr><td><span class="badge badge-red">CRITICAL</span></td><td>Illustrative BB84 QBER anomaly scenario</td><td>QKD Link</td><td>Abort key exchange; investigate RF path</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace">313-BIND Receipt: 313-VSAT-A4F2C1 · IPFS: QmX7k9... · Chain: INTACT</p>
+    <p style="margin-top:12px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace">Sample receipt placeholder only · no signature, IPFS CID, or chain verification</p>
   </div>
 </div>
 <div class="section">
@@ -134,7 +134,7 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
     <table>
       <thead><tr><th>Item</th><th>Algorithm</th><th>Status</th><th>Timeline</th></tr></thead>
       <tbody>
-        <tr><td>CRQC-001 plugin_signer.py</td><td>ECDSA → ML-DSA-65</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
+        <tr><td>CRQC-001 plugin_signer.py</td><td>ECDSA → ML-DSA-65</td><td>Example mitigation · not verified</td><td>v4.0.0</td></tr>
         <tr><td>CRQC-002 temporal chain</td><td>SHA-256 → SHA3-512</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
         <tr><td>CRQC-003 cosign ECDSA</td><td>ECDSA → SLH-DSA</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
         <tr><td>CRQC-007 crypto_store</td><td>RSA → ML-KEM-768</td><td>✅ PATCHED</td><td>v4.0.0</td></tr>
