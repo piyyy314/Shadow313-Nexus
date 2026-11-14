@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S313NEXUS — Real-Time Threat Board v4</title>
+<title>S313NEXUS — Threat Board Simulation v4</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
@@ -157,7 +157,7 @@
   .dd-event-title { color:var(--text); font-size:11px; margin-top:2px; }
   .dd-event-asset { font-family:'JetBrains Mono',monospace; color:var(--cyan); font-size:10px; }
 
-  /* ── LIVE FEED ── */
+  /* ── DEMO FEED ── */
   .feed { height:260px; overflow-y:auto; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.8; }
   .ev { display:flex; gap:8px; align-items:baseline; padding:2px 0; border-bottom:1px solid rgba(30,41,59,0.2); flex-wrap:wrap; }
   .ev-time { color:var(--dim); white-space:nowrap; }
@@ -187,14 +187,14 @@
   }
 </style>
 </head>
-<body>
+<body><aside role="note" aria-label="Simulation data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>SIMULATION / REFERENCE DATA ONLY.</strong> This page is a static interface demonstration. Events, assets, hostnames, vulnerability examples, ATT&amp;CK mappings, compliance states, receipts, and counters are synthetic or code-defined examples. No live sensors, customer systems, threat feeds, endpoint actions, signed receipts, or verified compliance assessment are connected by this page.</aside>
 
 <!-- ── HEADER ── -->
 <header class="header">
   <div class="logo-hex">S3</div>
   <div class="logo-text">SHADOW<span>313</span> NEXUS</div>
-  <span class="hdr-badge badge-red">🔴 REAL-TIME THREAT BOARD v4</span>
-  <span class="hdr-badge badge-cyan">LIVE DATA · 2026-09-25</span>
+  <span class="hdr-badge badge-red">🔴 SIMULATED THREAT BOARD v4</span>
+  <span class="hdr-badge badge-cyan">SAMPLE DATA · STATIC</span>
   <div class="hdr-right">
     <div class="pulse"></div>
     <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)" id="clock"></span>
@@ -207,7 +207,7 @@
 <div class="hero">
   <div>
     <div class="hero-title">REAL-TIME <span class="accent">THREAT INTELLIGENCE</span> BOARD</div>
-    <div class="hero-sub">26 active ATT&CK techniques · 172 events · 313-BIND cryptographic receipts · MITRE ATT&CK v15 aligned</div>
+    <div class="hero-sub">26 active ATT&CK techniques · 172 events · illustrative receipt interface (not signed) · MITRE ATT&CK v15 aligned</div>
   </div>
   <div class="hero-kpis">
     <div class="hero-kpi">
@@ -283,7 +283,7 @@
   <div class="panel">
     <div class="panel-hdr">
       <span class="panel-title">⬡ ATT&CK Heatmap — Live Threat Data</span>
-      <span class="panel-badge">26 techniques · 172 events · REAL SESSION DATA</span>
+      <span class="panel-badge">26 techniques · 172 events · SAMPLE SESSION DATA</span>
     </div>
     <div style="overflow-x:auto">
       <table class="hm-table">
@@ -525,14 +525,14 @@
       </div>
     </div>
 
-    <!-- Live Feed -->
+    <!-- Demo Feed -->
     <div class="panel">
       <div class="panel-hdr">
-        <span class="panel-title">⚡ Live Event Stream</span>
-        <span class="panel-badge" id="feed-count">30 events · LIVE</span>
+        <span class="panel-title">⚡ Sample Event Stream</span>
+        <span class="panel-badge" id="feed-count">30 sample events · DEMO</span>
       </div>
       <div class="feed" id="feed-body">
-        <div class="ev"><span class="ev-time">23:12:14</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">CVE-2026-0001 kernel priv esc</span><span class="ev-asset">linux-srv-05</span><span class="ev-tid">T1068</span></div>
+        <div class="ev"><span class="ev-time">23:12:14</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">Illustrative kernel privilege-escalation scenario</span><span class="ev-asset">linux-srv-05</span><span class="ev-tid">T1068</span></div>
 <div class="ev"><span class="ev-time">23:12:12</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">VSS shadow copy deletion</span><span class="ev-asset">ws-finance-03</span><span class="ev-tid">T1490</span></div>
 <div class="ev"><span class="ev-time">23:12:07</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">.env probe — CensysInspect</span><span class="ev-asset">web-trap-01</span><span class="ev-tid">T1552.001</span></div>
 <div class="ev"><span class="ev-time">23:12:03</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">CreateRemoteThread → lsass.exe</span><span class="ev-asset">ws-dev-12</span><span class="ev-tid">T1055.001</span></div>
@@ -542,11 +542,11 @@
 <div class="ev"><span class="ev-time">23:11:49</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">China Chopper web shell in uploads/</span><span class="ev-asset">web-app-01</span><span class="ev-tid">T1505.003</span></div>
 <div class="ev"><span class="ev-time">23:11:45</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">RDP from powershell.exe parent</span><span class="ev-asset">ws-admin-01</span><span class="ev-tid">T1021.001</span></div>
 <div class="ev"><span class="ev-time">23:11:42</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">LSASS dump via MiniDumpWriteDump</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1003.001</span></div>
-<div class="ev"><span class="ev-time">23:11:38</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
+<div class="ev"><span class="ev-time">23:11:38</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">Sample 313-BIND event — not verified</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
 <div class="ev"><span class="ev-time">23:11:36</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Unsigned dependency in build pipeline</span><span class="ev-asset">build-runner-02</span><span class="ev-tid">T1195.001</span></div>
 <div class="ev"><span class="ev-time">23:11:33</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">Registry Run key — non-standard path</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1547.001</span></div>
 <div class="ev"><span class="ev-time">23:11:29</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">eBPF: cat /etc/shadow intercepted</span><span class="ev-asset">linux-srv-05</span><span class="ev-tid">T1003.008</span></div>
-<div class="ev"><span class="ev-time">23:11:26</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">OpenSSL PQC downgrade CVE-2026-1847</span><span class="ev-asset">api-gw-01</span><span class="ev-tid">T1600.001</span></div>
+<div class="ev"><span class="ev-time">23:11:26</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario</span><span class="ev-asset">api-gw-01</span><span class="ev-tid">T1600.001</span></div>
 <div class="ev"><span class="ev-time">23:11:24</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1558.003</span></div>
 <div class="ev"><span class="ev-time">23:11:20</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span><span class="ev-tid">T1596</span></div>
 <div class="ev"><span class="ev-time">23:11:16</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">DCSync — non-DC replication</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1003.006</span></div>
@@ -555,7 +555,7 @@
 <div class="ev"><span class="ev-time">23:11:05</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">UAC bypass via fodhelper.exe</span><span class="ev-asset">ws-hr-07</span><span class="ev-tid">T1548.002</span></div>
 <div class="ev"><span class="ev-time">23:11:04</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span><span class="ev-tid">T1558.003</span></div>
 <div class="ev"><span class="ev-time">23:11:00</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">PE-7 retraining checkpoint F1=0.94</span><span class="ev-asset">nc-04</span><span class="ev-tid"></span></div>
-<div class="ev"><span class="ev-time">23:10:57</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
+<div class="ev"><span class="ev-time">23:10:57</span><span class="ev-sev" style="background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.2)">LOW</span><span class="ev-title">Sample 313-BIND event — not verified</span><span class="ev-asset">ledger-01</span><span class="ev-tid"></span></div>
 <div class="ev"><span class="ev-time">23:10:55</span><span class="ev-sev" style="background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3)">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span><span class="ev-tid">T1596</span></div>
 <div class="ev"><span class="ev-time">23:10:52</span><span class="ev-sev" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">CRITICAL</span><span class="ev-title">Behinder JSP AES shell</span><span class="ev-asset">tomcat-prod-01</span><span class="ev-tid">T1505.003</span></div>
 <div class="ev"><span class="ev-time">23:10:50</span><span class="ev-sev" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)">HIGH</span><span class="ev-title">DNS tunneling — entropy 4.2</span><span class="ev-asset">ws-finance-03</span><span class="ev-tid">T1572</span></div>
@@ -573,7 +573,7 @@
 </div>
 
 <div class="footer">
-  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Real-Time Threat Board v4 &nbsp;·&nbsp;
+  SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Threat Board Simulation v4 &nbsp;·&nbsp;
   313 Temporal Binding Protocol &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp;
   matarmohamad313@duck.com &nbsp;·&nbsp;
   <span style="color:var(--green)">Test status: see live CI results</span>
@@ -777,21 +777,21 @@ const DRILLDOWN = {
       {
         "id": 436,
         "ts": "23:12:14",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       },
       {
         "id": 395,
         "ts": "23:10:07",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       },
       {
         "id": 366,
         "ts": "23:08:39",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       }
@@ -993,21 +993,21 @@ const DRILLDOWN = {
       {
         "id": 422,
         "ts": "23:11:26",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       },
       {
         "id": 405,
         "ts": "23:10:34",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       },
       {
         "id": 362,
         "ts": "23:08:24",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       }
@@ -1518,10 +1518,10 @@ const DRILLDOWN = {
     ]
   }
 };
-const LIVE_EVENTS = [
+const DEMO_EVENTS = [
   {
     "sev": "CRITICAL",
-    "title": "CVE-2026-0001 kernel priv esc",
+    "title": "Illustrative kernel privilege-escalation scenario",
     "technique": "T1068",
     "asset": "linux-srv-05",
     "time": "23:12:14"
@@ -1619,7 +1619,7 @@ const LIVE_EVENTS = [
   },
   {
     "sev": "HIGH",
-    "title": "OpenSSL PQC downgrade CVE-2026-1847",
+    "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
     "technique": "T1600.001",
     "asset": "api-gw-01",
     "time": "23:11:26"
@@ -1831,7 +1831,7 @@ const SEV_STYLES = {
 };
 let liveIdx = 0;
 function addLiveEvent() {
-  const ev = LIVE_EVENTS[liveIdx % LIVE_EVENTS.length];
+  const ev = DEMO_EVENTS[liveIdx % DEMO_EVENTS.length];
   liveIdx++;
   const body = document.getElementById('feed-body');
   const ts = new Date().toISOString().slice(11,19);
@@ -1843,7 +1843,7 @@ function addLiveEvent() {
   while (body.children.length > 150) body.removeChild(body.firstChild);
   body.scrollTop = body.scrollHeight;
   const cnt = document.getElementById('feed-count');
-  cnt.textContent = body.children.length + ' events · LIVE';
+  cnt.textContent = body.children.length + ' events · DEMO';
 }
 setInterval(addLiveEvent, 2500);
 
@@ -1851,12 +1851,12 @@ setInterval(addLiveEvent, 2500);
 function downloadExport() {
   const data = {
     exported: new Date().toISOString(),
-    source: 'S313NEXUS Real-Time Threat Board v4',
+    source: 'S313NEXUS Threat Board Simulation v4',
     schema_version: '4.0',
     operator: 'mohamad',
     counts: { CRITICAL: 56, HIGH: 52, MEDIUM: 44, LOW: 20, acked: 66 },
     attck_heatmap: DRILLDOWN,
-    events: LIVE_EVENTS,
+    events: DEMO_EVENTS,
     evidence_receipts: 50,
     platform: 'SHADOW313 NEXUS v4.0.0 · Ottawa, ON, Canada',
   };

@@ -133,7 +133,7 @@
     S313 NEXUS
   </div>
   <span class="nav-badge">COMMAND CENTER v6</span>
-  <span class="nav-badge" style="color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)">LIVE · 2026-09-25</span>
+  <span class="nav-badge" style="color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)">DEMO · STATIC</span>
   <div class="nav-right">
     <div class="pulse"></div>
     <span id="clock" class="mono"></span>
@@ -149,6 +149,7 @@
     <button class="dl-btn" onclick="downloadExport()">⬇ Export</button>
   </div>
 </nav>
+<aside role="note" aria-label="Simulation data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>SIMULATION / REFERENCE DATA ONLY.</strong> This page is a static interface demonstration. Events, assets, hostnames, vulnerability examples, ATT&amp;CK mappings, compliance states, receipts, and counters are synthetic or code-defined examples. No live sensors, customer systems, threat feeds, endpoint actions, signed receipts, or verified compliance assessment are connected by this page.</aside>
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('threat')">⚡ Threat Feed</div>
@@ -171,11 +172,11 @@
   <div class="grid-2">
     <div class="panel">
       <div class="panel-hdr">
-        <span class="panel-title">⚡ Live Event Stream</span>
-        <span class="panel-badge">30 events · REAL DATA</span>
+        <span class="panel-title">⚡ Sample Event Stream</span>
+        <span class="panel-badge">30 sample events · DEMO</span>
       </div>
       <div class="feed-body">
-        <div class="ev ev-crit"><span class="ev-time">23:12:14</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">CVE-2026-0001 kernel priv esc</span><span class="ev-asset">linux-srv-05</span></div>
+        <div class="ev ev-crit"><span class="ev-time">23:12:14</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">Illustrative kernel privilege-escalation scenario</span><span class="ev-asset">linux-srv-05</span></div>
 <div class="ev ev-crit"><span class="ev-time">23:12:12</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">VSS shadow copy deletion</span><span class="ev-asset">ws-finance-03</span></div>
 <div class="ev ev-med"><span class="ev-time">23:12:07</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">.env probe — CensysInspect</span><span class="ev-asset">web-trap-01</span></div>
 <div class="ev ev-crit"><span class="ev-time">23:12:03</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">CreateRemoteThread → lsass.exe</span><span class="ev-asset">ws-dev-12</span></div>
@@ -185,11 +186,11 @@
 <div class="ev ev-crit"><span class="ev-time">23:11:49</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">China Chopper web shell in uploads/</span><span class="ev-asset">web-app-01</span></div>
 <div class="ev ev-high"><span class="ev-time">23:11:45</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">RDP from powershell.exe parent</span><span class="ev-asset">ws-admin-01</span></div>
 <div class="ev ev-crit"><span class="ev-time">23:11:42</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">LSASS dump via MiniDumpWriteDump</span><span class="ev-asset">ws-hr-07</span></div>
-<div class="ev ev-low"><span class="ev-time">23:11:38</span><span class="ev-sev sev-low">LOW</span><span class="ev-title">313-BIND chain verified — 3180 binds</span><span class="ev-asset">ledger-01</span></div>
+<div class="ev ev-low"><span class="ev-time">23:11:38</span><span class="ev-sev sev-low">LOW</span><span class="ev-title">Sample 313-BIND event — not verified</span><span class="ev-asset">ledger-01</span></div>
 <div class="ev ev-high"><span class="ev-time">23:11:36</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">Unsigned dependency in build pipeline</span><span class="ev-asset">build-runner-02</span></div>
 <div class="ev ev-med"><span class="ev-time">23:11:33</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">Registry Run key — non-standard path</span><span class="ev-asset">ws-hr-07</span></div>
 <div class="ev ev-med"><span class="ev-time">23:11:29</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">eBPF: cat /etc/shadow intercepted</span><span class="ev-asset">linux-srv-05</span></div>
-<div class="ev ev-high"><span class="ev-time">23:11:26</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">OpenSSL PQC downgrade CVE-2026-1847</span><span class="ev-asset">api-gw-01</span></div>
+<div class="ev ev-high"><span class="ev-time">23:11:26</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario</span><span class="ev-asset">api-gw-01</span></div>
 <div class="ev ev-high"><span class="ev-time">23:11:24</span><span class="ev-sev sev-high">HIGH</span><span class="ev-title">Kerberoasting — RC4 TGS from jsmith</span><span class="ev-asset">dc-01</span></div>
 <div class="ev ev-med"><span class="ev-time">23:11:20</span><span class="ev-sev sev-med">MEDIUM</span><span class="ev-title">WE-FORGE decoy — DNS beacon fired</span><span class="ev-asset">vortex.ghost.watch.local</span></div>
 <div class="ev ev-crit"><span class="ev-time">23:11:16</span><span class="ev-sev sev-crit">CRITICAL</span><span class="ev-title">DCSync — non-DC replication</span><span class="ev-asset">dc-01</span></div>
@@ -263,7 +264,7 @@
   <div class="panel">
     <div class="panel-hdr">
       <span class="panel-title">⬡ Full ATT&CK Heatmap — 26 Active Techniques</span>
-      <span class="panel-badge">Real session data · 2026-09-25</span>
+      <span class="panel-badge">Sample session · static demonstration</span>
     </div>
     <div class="panel-body">
       <div id="attck-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
@@ -293,8 +294,8 @@
         <div style="color:#94a3b8;line-height:2">
           T1542.001 · Firmware hash mismatch — edge-node-04 (11 events, ALL CRITICAL)<br>
           T1565.001 · SATCOM uplink gain spoof — vsat-gw-01 (5 events, MEDIUM)<br>
-          CVE-2026-3392 · TR-069 unsigned CWMP provisioning — vsat-gw-01<br>
-          T1600.001 · OpenSSL PQC downgrade CVE-2026-1847 — api-gw-01 (6 events, HIGH)
+          Illustrative TR-069/CWMP scenario · TR-069 unsigned CWMP provisioning — vsat-gw-01<br>
+          T1600.001 · OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario — api-gw-01 (6 events, HIGH)
         </div>
       </div>
     </div>
@@ -311,23 +312,23 @@
     <div class="panel-body">
       <div class="receipt">
         <div class="receipt-id">313-BIND-A4F2C1 · IPFS: QmX7k9...</div>
-        <div class="receipt-meta">2026-09-25T03:12:17Z · T1542.001 · edge-node-04 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+        <div class="receipt-meta">2026-09-25T03:12:17Z · T1542.001 · edge-node-04 · demo receipt · NOT VERIFIED</div>
       </div>
       <div class="receipt">
         <div class="receipt-id">313-BIND-B8E3D2 · IPFS: QmY8m1...</div>
-        <div class="receipt-meta">2026-09-25T03:11:49Z · T1505.003 · web-app-01 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+        <div class="receipt-meta">2026-09-25T03:11:49Z · T1505.003 · web-app-01 · demo receipt · NOT VERIFIED</div>
       </div>
       <div class="receipt">
         <div class="receipt-id">313-BIND-C9F4E3 · IPFS: QmZ9n2...</div>
-        <div class="receipt-meta">2026-09-25T03:11:42Z · T1003.001 · ws-hr-07 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+        <div class="receipt-meta">2026-09-25T03:11:42Z · T1003.001 · ws-hr-07 · demo receipt · NOT VERIFIED</div>
       </div>
       <div class="receipt">
         <div class="receipt-id">313-BIND-D0G5F4 · IPFS: QmA0o3...</div>
-        <div class="receipt-meta">2026-09-25T03:11:36Z · T1195.001 · build-runner-02 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+        <div class="receipt-meta">2026-09-25T03:11:36Z · T1195.001 · build-runner-02 · demo receipt · NOT VERIFIED</div>
       </div>
       <div class="receipt">
         <div class="receipt-id">313-BIND-E1H6G5 · IPFS: QmB1p4...</div>
-        <div class="receipt-meta">2026-09-25T03:11:29Z · T1003.008 · linux-srv-05 · SLH-DSA-SHAKE-128f · VERIFIED</div>
+        <div class="receipt-meta">2026-09-25T03:11:29Z · T1003.008 · linux-srv-05 · demo receipt · NOT VERIFIED</div>
       </div>
       <div style="text-align:center;padding:12px;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">
         50 receipts total · bind_index gap: none · chain intact ✅
@@ -345,15 +346,15 @@
         <span class="panel-badge">9 active</span>
       </div>
       <div class="panel-body">
-        <div class="topic-row"><span class="topic-name">s313.telemetry.vsat_tsi</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.telemetry.kernel</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.telemetry.network</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.alerts.critical</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.alerts.high</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.bind.receipts</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.soar.actions</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.intel.ioc</span><span class="topic-status status-ok">● ACTIVE</span></div>
-        <div class="topic-row"><span class="topic-name">s313.audit.events</span><span class="topic-status status-ok">● ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">s313.telemetry.vsat_tsi</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.telemetry.kernel</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.telemetry.network</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.alerts.critical</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.alerts.high</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.bind.receipts</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.soar.actions</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.intel.ioc</span><span class="topic-status status-ok">● DEMO</span></div>
+        <div class="topic-row"><span class="topic-name">s313.audit.events</span><span class="topic-status status-ok">● DEMO</span></div>
       </div>
     </div>
     <div class="panel">
@@ -365,7 +366,7 @@
         <div class="topic-row"><span class="topic-name">SLH-DSA signing</span><span class="topic-status status-ok">✅ FIPS 205</span></div>
         <div class="topic-row"><span class="topic-name">ML-KEM-768 KEX</span><span class="topic-status status-ok">✅ FIPS 203</span></div>
         <div class="topic-row"><span class="topic-name">ML-DSA-65 auth</span><span class="topic-status status-ok">✅ FIPS 204</span></div>
-        <div class="topic-row"><span class="topic-name">IPFS anchoring</span><span class="topic-status status-ok">✅ ACTIVE</span></div>
+        <div class="topic-row"><span class="topic-name">IPFS anchoring</span><span class="topic-status status-ok">✅ DEMO</span></div>
         <div class="topic-row"><span class="topic-name">313-BIND chain</span><span class="topic-status status-ok">✅ INTACT</span></div>
         <div class="topic-row"><span class="topic-name">liboqs ML-DSA</span><span class="topic-status status-warn">⚠ DW-1 Q4 2026</span></div>
         <div class="topic-row"><span class="topic-name">HSM key storage</span><span class="topic-status status-warn">⚠ DW-2 Q1 2027</span></div>
@@ -567,21 +568,21 @@ const HEATMAP_DATA = {
       {
         "id": 436,
         "ts": "23:12:14",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       },
       {
         "id": 395,
         "ts": "23:10:07",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       },
       {
         "id": 366,
         "ts": "23:08:39",
-        "title": "CVE-2026-0001 kernel priv esc",
+        "title": "Illustrative kernel privilege-escalation scenario",
         "sev": "CRITICAL",
         "asset": "linux-srv-05"
       }
@@ -777,21 +778,21 @@ const HEATMAP_DATA = {
       {
         "id": 422,
         "ts": "23:11:26",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       },
       {
         "id": 405,
         "ts": "23:10:34",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       },
       {
         "id": 362,
         "ts": "23:08:24",
-        "title": "OpenSSL PQC downgrade CVE-2026-1847",
+        "title": "OpenSSL PQC downgrade Illustrative OpenSSL downgrade scenario",
         "sev": "HIGH",
         "asset": "api-gw-01"
       }
