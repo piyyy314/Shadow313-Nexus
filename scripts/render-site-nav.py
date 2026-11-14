@@ -46,6 +46,9 @@ def main():
             stale.append(str(portal.relative_to(ROOT)))
             if not args.check:
                 portal.write_text(updated)
+    if args.check:
+        for item in stale:
+            print(f'STALE: {item}')
     print(f'{len(stale)} navigation sections {"out of date" if args.check else "updated"}')
     return int(args.check and bool(stale))
 
