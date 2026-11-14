@@ -188,13 +188,13 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="col-12">
 <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
 <div class="kpi"><div class="kpi-num green">CI LINK</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View current CI results</a></div></div>
-<div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">No live alert data connected</div></div>
 <div class="kpi"><div class="kpi-num green">DEMO</div><div class="kpi-lbl">CRQC scenario states</div><div class="kpi-sub">Not independently verified</div></div>
-<div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT IMPLEMENTED</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">No signing service connected</div></div>
 <div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">CMMC L2 mapping</div><div class="kpi-sub">No compliance assessment</div></div>
 <div class="kpi"><div class="kpi-num amber">DEMO</div><div class="kpi-lbl">Privacy controls</div><div class="kpi-sub">Not assessed</div></div>
-<div class="kpi"><div class="kpi-num purple">103</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">v1→v4 complete</div></div>
-<div class="kpi"><div class="kpi-num green">4</div><div class="kpi-lbl">DW Windows</div><div class="kpi-sub">Q4'26–Q2'27</div></div>
+<div class="kpi"><div class="kpi-num purple">NOT VERIFIED</div><div class="kpi-lbl">Module inventory</div><div class="kpi-sub">No completion claim</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">Migration windows</div><div class="kpi-sub">Planning placeholders only</div></div>
 </div>
 </div>
 <div class="col-4">
@@ -206,7 +206,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Carrier SNR 5.9 dB — below 8.0 dB minimum threshold</span><span class="threat-time">02:07</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Clock skew +55.1 Hz — exceeds ±10 Hz limit (OSCILLATOR_DRIFT)</span><span class="threat-time">02:07</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">QKD BB84 QBER 40% — eavesdropper detected, key dropped</span><span class="threat-time">03:08</span></div>
-<div class="threat-item"><span class="threat-sev sev-med">MEDIUM</span><span class="threat-text">CRQC-012 HMAC fallback — pyspx SLH-DSA now active</span><span class="threat-time">06:58</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">MEDIUM</span><span class="threat-text">Synthetic CRQC scenario; no SLH-DSA service is connected</span><span class="threat-time">06:58</span></div>
 </div>
 </div>
 <div class="col-4">
@@ -226,11 +226,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="panel">
 <div class="panel-title">Interconnections</div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green" >EXAMPLE</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">Secrets FIPS HSM</div><div class="ic-status green">ACTIVE</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static assets TLS 1.3</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">No Key Vault integration verified</div><div class="ic-status amber">NOT CONNECTED</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static host; deployment status via Vercel</div><div class="ic-status amber">NOT VERIFIED</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--amber)"></div><div class="ic-name">IPFS Network</div><div class="ic-flow">Receipt anchors SHA3-256</div><div class="ic-status amber">NO-IPFS</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--cyan)"></div><div class="ic-name">OpenAI API</div><div class="ic-flow">Chat only — no sec data</div><div class="ic-status cyan">OPTIONAL</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">relay.js port 3133</div><div class="ic-status green">LOCAL</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">Proxy integration not verified</div><div class="ic-status amber">NOT VERIFIED</div></div>
 </div>
 </div>
 <div class="col-6">
@@ -248,11 +248,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 </div>
 <div class="col-6">
 <div class="panel">
-<div class="panel-title">Wave 1 Documentation Status (Q4 2026)</div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Policy-S313.md — Security Awareness Training Policy</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Training-Records-S313.md — 16hr training documented</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-Policy-S313.md — Personnel Security Policy</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-AUA-S313.md — Acceptable Use Agreement</span></div>
+<div class="panel-title">Illustrative documentation checklist — not verified</div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">AT-Policy-S313.md — sample policy reference; not assessed</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">AT-Training-Records-S313.md — sample record reference; not verified</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">PS-Policy-S313.md — sample policy reference; not assessed</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">PS-AUA-S313.md — sample agreement reference; not assessed</span></div>
 <div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">IR-Plan-S313.md — Incident Response Plan</span></div>
 <div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">CA-Readiness-S313.md — 3PAO Engagement Package</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">NEXT</span><span class="threat-text">Engage C3PAO — CMMC Level 2 assessment</span></div>
@@ -299,12 +299,12 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="col-12">
 <div class="panel">
 <div class="panel-title">Post-Quantum Cryptographic Stack — NIST FIPS 203/204/205</div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">313-BIND temporal receipts — pyspx pure-Python, 17,088B signatures</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">FIPS 205 reference; no signing service connected</span><span class="pqc-status">NOT IMPLEMENTED</span></div>
 <div class="pqc-item"><span class="pqc-badge">FIPS 204</span><span class="pqc-algo">ML-DSA-65 (proxy)</span><span class="pqc-desc">Plugin trust registry + ledger signing — HMAC-SHA3-256 proxy → liboqs DW-1</span><span class="pqc-status" style="color:var(--amber)">🔄 DW-1</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">Key encapsulation — @noble/post-quantum JS, 1184B pubkey, 1088B ciphertext</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Session encryption — cryptography library, quantum-safe symmetric</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">RFC 9106</span><span class="pqc-algo">Argon2id</span><span class="pqc-desc">Session key derivation — 64MB memory, t=3, p=4 — replaces PBKDF2-SHA256</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 202</span><span class="pqc-algo">SHA3-256/512</span><span class="pqc-desc">All security-critical hashing — Merkle chains, IPFS CIDs, payload hashes</span><span class="pqc-status">✅ ACTIVE</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">FIPS 203 reference; production key exchange not verified</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Algorithm reference; deployment and FIPS validation not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">RFC 9106</span><span class="pqc-algo">Argon2id</span><span class="pqc-desc">Algorithm reference; deployed configuration not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 202</span><span class="pqc-algo">SHA3-256/512</span><span class="pqc-desc">Hash references; full security-critical coverage not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
 <div class="pqc-item"><span class="pqc-badge" style="color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1)">DEPRECATED</span><span class="pqc-algo" style="color:var(--amber)">ECDSA P-256</span><span class="pqc-desc">cosign legacy path — ML-DSA-65 is now primary, ECDSA is fallback only</span><span class="pqc-status" style="color:var(--amber)">⚠ LEGACY</span></div>
 </div>
 </div>
@@ -406,10 +406,10 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="panel">
 <div class="panel-title">313 Temporal Binding Protocol — Receipt UI demonstration — no verified chain</div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-<div class="kpi"><div class="kpi-num green">SLH-DSA</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">FIPS 205 pyspx</div></div>
-<div class="kpi"><div class="kpi-num green">SHA3-512</div><div class="kpi-lbl">Chain Hash</div><div class="kpi-sub">Quantum-safe</div></div>
-<div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Timestamp</div><div class="kpi-sub">Nanosecond entropy</div></div>
-<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">HybridAnchor active</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT IMPLEMENTED</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">No signing service connected</div></div>
+<div class="kpi"><div class="kpi-num cyan">SHA3-512</div><div class="kpi-lbl">Hash example</div><div class="kpi-sub">No attestation connected</div></div>
+<div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Display suffix</div><div class="kpi-sub">Not trusted time or entropy</div></div>
+<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">No anchor service connected</div></div>
 </div>
 <div class="panel-title">Anchor Strategy Comparison</div>
 <table style="width:100%;font-size:10px;border-collapse:collapse">
@@ -417,7 +417,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <th style="padding:5px;text-align:left">Strategy</th><th>Always Available</th><th>Offline</th><th>Quantum-Safe</th><th>Self-Contained</th><th>CMMC</th>
 </tr></thead>
 <tbody>
-<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;font-weight:700">HybridAnchor ⭐</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">Partial</td><td style="color:var(--green)">BEST</td></tr>
+<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;font-weight:700">Proposed HybridAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">Partial</td><td style="color:var(--green)">BEST</td></tr>
 <tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">MultiHashAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅ Full</td><td style="color:var(--cyan)">STRONG</td></tr>
 <tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">LedgerAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--cyan)">STRONG</td></tr>
 <tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">IPFS (current)</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--amber)">MEDIUM</td></tr>
@@ -440,17 +440,17 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="t-green">[BOOT] Shadow313 NEXUS v4.0.0 initialized</div>
 <div class="t-green">[AUTH] Operator: mohamad — Ottawa, ON, Canada</div>
 <div class="t-green">[LINK] Establishing mesh connection to Orbital Stack...</div>
-<div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
-<div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
+<div class="t-cyan">[PQC]  Algorithm references only; no signing service connected</div>
+<div class="t-cyan">[PQC]  ML-DSA-65 reference only; implementation not assessed</div>
 <div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
 <div class="t-green">[TEST] Test status: see current GitHub Actions</div>
-<div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
+<div class="t-green">[SDS]  Posture scanner: NOT ASSESSED — no live telemetry</div>
 <div class="t-green">[CRQC] Illustrative scenario states; not verified — DW-1/DW-2 planned Q4'26/Q1'27</div>
 <div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
 <div class="t-amber">[VSAT] Illustrative TR-069/CWMP scenario TR-069 CWMP — EXAMPLE ONLY</div>
-<div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — ACTIVE</div>
-<div class="t-green">[313]  Temporal binding chain — INTACT</div>
-<div class="t-green">[CMMC] Wave 1 documentation — COMPLETE</div>
+<div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — reference concept; no live endpoint integration</div>
+<div class="t-green">[313]  Receipt chain — no trusted chain connected</div>
+<div class="t-green">[CMMC] Compliance status — not assessed</div>
 <div class="t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
 <div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>
 </div>
@@ -489,9 +489,9 @@ const COMMANDS={
   'status':'Posture: CRIT=0 HIGH=0 | Test status: see current GitHub Actions | PQC status: not assessed by this demo',
   'tests':'[PASS] Test status: see current GitHub Actions',
   'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
-  'pqc':'SLH-DSA-SHAKE-128f (FIPS 205) | ML-DSA-65 proxy | ML-KEM-768 | AES-256-GCM | Argon2id | SHA3-256/512',
-  'vsat':'7 CRITICAL findings: Telnet/FTP/HTTP/Illustrative TR-069/CWMP scenario/Firmware/UART/sample QKD anomaly (not measured)',
-  'cmmc':'Wave 1 DONE: AT-Policy ✅ AT-Records ✅ PS-Policy ✅ PS-AUA ✅ IR-Plan ✅ CA-Readiness ✅',
+  'pqc':'Reference algorithm names only; no production PQC signing or key-exchange service verified',
+  'vsat':'Synthetic lab scenarios only; no live target scan or findings verified',
+  'cmmc':'Compliance evidence not assessed; no independent authorization review',
   'clear':'__CLEAR__',
 };
 
