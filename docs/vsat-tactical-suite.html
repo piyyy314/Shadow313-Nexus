@@ -196,7 +196,7 @@
   <div class="tac-status">
     <div class="status-pill"><div class="pulse-dot"></div>SAT-LINK BIND ACTIVE</div>
     <div class="status-pill" style="color:var(--amber);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.08)">⚠ DEFCON 3</div>
-    <div class="status-pill" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.08)">🔴 7 CRITICAL FINDINGS</div>
+    <div class="status-pill" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.08)">🔴 7 SAMPLE FINDINGS</div>
   </div>
 </div>
 
@@ -239,7 +239,7 @@
     <div class="kpi red">
       <div class="kpi-label">CISA KEV Matches</div>
       <div class="kpi-value" style="color:var(--red)">2</div>
-      <div class="kpi-sub">CVE-2026-3392 · CVE-2024-6199</div>
+      <div class="kpi-sub">Illustrative TR-069/CWMP scenario · CVE-2024-6199</div>
     </div>
     <div class="kpi green">
       <div class="kpi-label">Telemetry Accuracy</div>
@@ -285,7 +285,7 @@
   <div class="elements-grid">
     <a class="element-card" href="/platform/vuln">
       <div class="element-header"><span class="element-icon">🔍</span><span class="element-num">01</span><span class="element-title">Vulnerability Scanner</span></div>
-      <div class="element-desc">CVE-2026-3392 TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
+      <div class="element-desc">Illustrative TR-069/CWMP scenario TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
       <span class="element-badge badge-cyan">CLI module guide</span>
     </a>
     <a class="element-card" href="/apt-simulation">
@@ -355,7 +355,7 @@
       <div class="log-ok">[+] Host 192.168.100.15 — Network Operations Center Console</div>
       <div class="log-crit">[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!</div>
       <div class="log-crit">[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!</div>
-      <div class="log-crit">[!!!] CVE-2026-3392: Unsigned CWMP provisioning — VULNERABLE!</div>
+      <div class="log-crit">[!!!] Illustrative TR-069/CWMP scenario: Unsigned CWMP provisioning — VULNERABLE!</div>
       <div class="log-crit">[!!!] Firmware hash mismatch — Arbitrary partition overwrite threat!</div>
       <div class="log-warn">[!] SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)</div>
       <div class="log-warn">[!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)</div>
@@ -417,7 +417,7 @@ function addLog(type, msg) {
 // Actions
 function runSweep() {
   addLog('info', '[*] Initiating ground segment sweep...');
-  setTimeout(() => addLog('crit', '[!!!] CVE-2026-3392 confirmed — TR-069 CWMP unsigned'), 800);
+  setTimeout(() => addLog('crit', '[!!!] Illustrative TR-069/CWMP scenario confirmed — TR-069 CWMP unsigned'), 800);
   setTimeout(() => addLog('warn', '[!] SNR degradation detected — 5.9 dB'), 1400);
   setTimeout(() => addLog('ok', '[+] 313-BIND receipt generated: 313-SWEEP-' + Math.random().toString(16).slice(2,10).toUpperCase()), 2000);
 }
@@ -446,7 +446,7 @@ function exportReport() {
     findings: [
       {sev:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'192.168.100.1', cve:'T1040'},
       {sev:'CRITICAL', title:'FTP Anonymous Write', host:'192.168.100.15', cve:'T1190'},
-      {sev:'CRITICAL', title:'CVE-2026-3392 TR-069 CWMP', host:'192.168.100.1', cve:'T1542.001'},
+      {sev:'CRITICAL', title:'Illustrative TR-069/CWMP scenario TR-069 CWMP', host:'192.168.100.1', cve:'T1542.001'},
       {sev:'CRITICAL', title:'Unsigned Firmware', host:'192.168.100.1', cve:'T1542.001'},
       {sev:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', cve:'T1200'},
       {sev:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', cve:'T1565.001'},
