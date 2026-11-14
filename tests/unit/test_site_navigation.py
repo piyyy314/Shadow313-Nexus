@@ -63,6 +63,31 @@ class SiteNavigationTests(unittest.TestCase):
                     r"\b\d+(?:\.\d+)?%\s*(?:MITRE\s+)?ATT&amp;CK\s+coverage\b",
                 )
 
+    def test_public_pages_disclose_demo_and_unverified_assurance_limits(self):
+        home = (ROOT / 'index.html').read_text()
+        self.assertIn('no quantum execution backend', home.lower())
+        self.assertNotIn('guaranteeing cryptographic uniqueness', home)
+        self.assertNotIn('Every quantum job receives a cryptographic proof', home)
+
+        dashboard = (ROOT / 'docs/S313-Nexus-Dashboard-v3.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', dashboard)
+        self.assertIn('No signing service connected', dashboard)
+        self.assertNotIn('Nanosecond entropy', dashboard)
+        self.assertNotIn('>PIPEDA</div>', dashboard)
+
+        ssp = (ROOT / 'docs/S313-SSP-Dashboard.html').read_text()
+        self.assertIn('not an approved SSP or compliance assessment', ssp)
+        self.assertNotIn('12/14', ssp)
+        self.assertNotIn('~20%', ssp)
+        self.assertNotIn('~65 of 323 controls', ssp)
+
+        architecture = (ROOT / 'docs/shadow313-nexus-architecture.html').read_text()
+        self.assertNotIn('Live and pushed', architecture)
+        self.assertNotIn('(~1ms entropy)', architecture)
+
+        self.assertNotIn('CVE-2026-3392', (ROOT / 'docs/careers.html').read_text())
+        self.assertNotIn('CVE-2026-3392', (ROOT / 'blog/index.html').read_text())
+
     def test_dashboard_export_scripts_are_valid_javascript(self):
         dashboard_pages = (
             ROOT / 'docs/shadow313-nexus-dashboard.html',
