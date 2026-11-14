@@ -148,7 +148,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 </div>
 </div>
 <div class="card">
-<h3>Authorization Boundary</h3>
+<h3>Illustrative Reference Boundary — Not Deployed or Authorized</h3>
 <pre style="font-size:11px;color:var(--muted);font-family:monospace;line-height:1.6">
   ┌─────────────────────────────────────────────────────────────────────────┐
   │  ILLUSTRATIVE REFERENCE BOUNDARY — NOT DEPLOYED                                                  │
@@ -162,7 +162,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
   │  ┌──────────────────────────────────────────────────────────────────┐  │
   │  │  LOCAL SHADOW313 CLI (Operator Machine)                          │  │
   │  │  NEXUS Engine │ Ghost-Watch │ 313-BIND │ VSAT │ Aegis PQC       │  │
-  │  │  Air-gap capable — zero cloud dependency for core operations     │  │
+  │  │  Optional integrations may use external services                │  │
   │  └──────────────────────────────────────────────────────────────────┘  │
   │                                                                         │
   │  External (outside boundary): OpenAI API │ IPFS │ Hugging Face         │
@@ -185,7 +185,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 </div>
 <div class="card" style="padding:0;overflow:hidden">
 <table id="ctrl-table">
-<thead><tr><th>Control</th><th>Title</th><th>Implementation</th><th>Status</th><th>Notes</th></tr></thead>
+<thead><tr><th>Control</th><th>Title</th><th>Illustrative mapping (not verified)</th><th>Status</th><th>Notes</th></tr></thead>
 <tbody id="ctrl-body"></tbody>
 </table>
 </div>
@@ -242,7 +242,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">within families</text></svg>
 <div class="ring-label">Documented Families</div>
 <div class="ring-pct amber">Not assessed</div>
-<div style="font-size:10px;color:var(--muted)">Within 9 documented families</div>
+<div style="font-size:10px;color:var(--muted)">No control assessment</div>
 </div>
 <div class="ring-card">
 <svg viewbox="0 0 120 120"><circle cx="60" cy="60" fill="none" r="50" stroke="#1a2e1a" stroke-width="12"></circle><circle cx="60" cy="60" fill="none" r="50" stroke="#22c55e" stroke-dasharray="0 314" stroke-dashoffset="62" stroke-linecap="round" stroke-width="12"></circle><text fill="#e2e8f0" font-size="18" font-weight="700" text-anchor="middle" x="60" y="55">DEMO</text><text fill="#64748b" font-size="9" text-anchor="middle" x="60" y="70">CRQC closed</text></svg>
@@ -371,8 +371,8 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <div class="card">
 <h3>Key Insight: Documentation Gap, Not Technical Gap</h3>
 <p style="font-size:12px;color:var(--muted);line-height:1.7">
-      The primary path to FedRAMP Moderate authorization is <strong style="color:var(--text)">documentation and governance</strong>, not technical implementation.
-      The cryptographic posture (PQC standards (implementation not assessed), SLH-DSA, Argon2id, SHA3-256 throughout) already exceeds FedRAMP Moderate technical requirements.
+      A real authorization requires a defined system boundary, implemented controls, supporting evidence, independent assessment, and an authorization decision. This demonstration provides none of those assurances.
+      Cryptographic implementation and compliance have not been assessed. Algorithm names and reference mappings do not establish deployed cryptographic controls or FedRAMP readiness.
       <br/><br/>
       What's missing: <strong style="color:var(--amber)">Policy documents</strong> for each control family (1–3 pages each),
       <strong style="color:var(--amber)">training records</strong> (AT-2 requires annual completion evidence),
@@ -380,7 +380,7 @@ tr:hover td{background:rgba(34,197,94,.03)}
       <strong style="color:var(--amber)">contingency plan</strong> (CP-2 is a document, not a system change),
       and <strong style="color:var(--amber)">personnel security</strong> (PS controls are HR processes).
       <br/><br/>
-<strong style="color:var(--green)">Estimated effort to FedRAMP Moderate readiness: 6–9 months of documentation + 3PAO engagement.</strong>
+<strong style="color:var(--green)">Readiness timeline: not estimated. Scope, evidence, control ownership, and independent assessment have not been established.</strong>
 </p>
 </div>
 </div>
@@ -396,37 +396,37 @@ function show(id, btn) {
 
 // Controls data
 const controls = [
-  {id:'AC-2',family:'AC',title:'Account Management',impl:'Azure AD B2C + role claims',status:'Example'},
-  {id:'AC-3',family:'AC',title:'Access Enforcement',impl:'JWT middleware, MFA enforced',status:'Example'},
-  {id:'AC-6',family:'AC',title:'Least Privilege',impl:'UID 10313, CAP_NET_RAW only',status:'Example'},
-  {id:'AC-12',family:'AC',title:'Session Termination',impl:'Complete logout all devices',status:'Example'},
-  {id:'AC-17',family:'AC',title:'Remote Access',impl:'TLS 1.3, MFA, OIDC federation',status:'Example'},
-  {id:'AU-2',family:'AU',title:'Event Logging',impl:'313-BIND audit chain',status:'Example'},
-  {id:'AU-3',family:'AU',title:'Content of Audit Records',impl:'Timestamp, module, action, detail',status:'Example'},
-  {id:'AU-9',family:'AU',title:'Protection of Audit Info',impl:'SLH-DSA + IPFS immutability',status:'Example'},
-  {id:'AU-10',family:'AU',title:'Non-repudiation',impl:'Illustrative receipt interface (not a verified audit control)',status:'Example'},
-  {id:'AU-11',family:'AU',title:'Audit Record Retention',impl:'30-day backup retention policy',status:'Example'},
-  {id:'CM-2',family:'CM',title:'Baseline Configuration',impl:'DHI Docker, pinned dependencies',status:'Example'},
-  {id:'CM-6',family:'CM',title:'Configuration Settings',impl:'CIS Level 1 audit module',status:'Example'},
-  {id:'CM-7',family:'CM',title:'Least Functionality',impl:'Non-root, read-only filesystem',status:'Example'},
-  {id:'CM-8',family:'CM',title:'System Component Inventory',impl:'requirements.txt + Snyk SBOM',status:'Example'},
-  {id:'CP-9',family:'CP',title:'System Backup',impl:'Daily automated backup, 30-day retention',status:'Example'},
-  {id:'CP-10',family:'CP',title:'System Recovery',impl:'Backup-verification example (not tested)',status:'Example'},
-  {id:'IA-2',family:'IA',title:'Identification & Authentication',impl:'Azure AD B2C OIDC',status:'Example'},
-  {id:'IA-5',family:'IA',title:'Authenticator Management',impl:'Rotating refresh tokens, OIDC federation',status:'Example'},
-  {id:'IA-7',family:'IA',title:'Cryptographic Module Auth',impl:'FIPS 140-2 Key Vault HSM',status:'Example'},
-  {id:'IR-4',family:'IR',title:'Incident Handling',impl:'Ghost-Watch CADL + IR Plan',status:'Example'},
-  {id:'IR-5',family:'IR',title:'Incident Monitoring',impl:'Example monitoring workflow (not connected)',status:'Example'},
-  {id:'IR-6',family:'IR',title:'Incident Reporting',impl:'Telegram notifications + STIX export',status:'Example'},
-  {id:'RA-3',family:'RA',title:'Risk Assessment',impl:'Red-team simulation harness',status:'Example'},
-  {id:'RA-5',family:'RA',title:'Vulnerability Scanning',impl:'Snyk + OWASP ZAP + Bandit',status:'Example'},
-  {id:'SC-8',family:'SC',title:'Transmission Confidentiality',impl:'TLS 1.3 end-to-end',status:'Example'},
-  {id:'SC-12',family:'SC',title:'Cryptographic Key Establishment',impl:'ML-KEM-768, SLH-DSA, OIDC',status:'Example'},
-  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'NIST PQC standards (implementation not assessed)',status:'Example'},
-  {id:'SC-28',family:'SC',title:'Protection at Rest',impl:'AES-256-GCM CryptoStore',status:'Example'},
-  {id:'SI-2',family:'SI',title:'Flaw Remediation',impl:'SDS=0, 2071/2071 tests, Snyk',status:'Example'},
-  {id:'SI-3',family:'SI',title:'Malicious Code Protection',impl:'Malware sandbox, supply chain scanner',status:'Example'},
-  {id:'SI-10',family:'SI',title:'Information Input Validation',impl:'UUID regex, SQL allowlist, path sanitization',status:'Example'},
+  {id:'AC-2',family:'AC',title:'Account Management',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AC-3',family:'AC',title:'Access Enforcement',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AC-6',family:'AC',title:'Least Privilege',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AC-12',family:'AC',title:'Session Termination',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AC-17',family:'AC',title:'Remote Access',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AU-2',family:'AU',title:'Event Logging',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AU-3',family:'AU',title:'Content of Audit Records',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AU-9',family:'AU',title:'Protection of Audit Info',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AU-10',family:'AU',title:'Non-repudiation',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'AU-11',family:'AU',title:'Audit Record Retention',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CM-2',family:'CM',title:'Baseline Configuration',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CM-6',family:'CM',title:'Configuration Settings',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CM-7',family:'CM',title:'Least Functionality',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CM-8',family:'CM',title:'System Component Inventory',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CP-9',family:'CP',title:'System Backup',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'CP-10',family:'CP',title:'System Recovery',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IA-2',family:'IA',title:'Identification & Authentication',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IA-5',family:'IA',title:'Authenticator Management',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IA-7',family:'IA',title:'Cryptographic Module Auth',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IR-4',family:'IR',title:'Incident Handling',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IR-5',family:'IR',title:'Incident Monitoring',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'IR-6',family:'IR',title:'Incident Reporting',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'RA-3',family:'RA',title:'Risk Assessment',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'RA-5',family:'RA',title:'Vulnerability Scanning',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SC-8',family:'SC',title:'Transmission Confidentiality',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SC-12',family:'SC',title:'Cryptographic Key Establishment',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SC-13',family:'SC',title:'Cryptographic Protection',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SC-28',family:'SC',title:'Protection at Rest',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SI-2',family:'SI',title:'Flaw Remediation',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SI-3',family:'SI',title:'Malicious Code Protection',impl:'Not assessed; illustrative mapping only',status:'Example'},
+  {id:'SI-10',family:'SI',title:'Information Input Validation',impl:'Not assessed; illustrative mapping only',status:'Example'},
 ];
 
 function renderControls(data) {
