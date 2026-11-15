@@ -166,6 +166,16 @@ def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
     assert "pip-audit>=2.10.1" in dev_requirements
 
 
+def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
+    workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
+    assert 'severity: "CRITICAL,HIGH"' in workflow
+    assert 'exit-code: "1"' in workflow
+    assert 'output: "trivy-container.sarif"' in workflow
+    assert "Archive Trivy SARIF for diagnosis" in workflow
+    assert "path: trivy-container.sarif" in workflow
+    assert "if-no-files-found: warn" in workflow
+
+
 def test_runtime_requirements_exclude_ci_scanners_and_test_tools():
     runtime = (ROOT / "requirements.txt").read_text(encoding="utf-8").lower()
     development = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8").lower()
