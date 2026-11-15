@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 Shadow313 — GhostHTTP
 HTTP fingerprinting engine. Extracts server secrets from timing
@@ -7,16 +6,21 @@ analysis. Identifies hidden technologies, WAF presence, and
 information disclosure vulnerabilities.
 """
 
+from __future__ import annotations
+
 
 import asyncio
 import hashlib
 import json
+import logging
 import re
 import time
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 try:
     from shadow313.core.kernel import KernelContext, register_command
