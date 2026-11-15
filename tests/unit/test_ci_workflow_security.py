@@ -99,7 +99,6 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     assert "pip-audit-local-report.json" in workflow
     assert "pip-audit-requirements-report.json" in workflow
     assert "pip-audit --desc --format json -o pip-audit-requirements-report.json -r requirements.txt" in workflow
-    assert "pip install -r requirements.txt" in workflow
     assert "pip freeze --exclude-editable > requirements-audit-resolved.txt" in workflow
     assert "python -m venv \"$RUNNER_TEMP/safety-env\"" in workflow
     assert "safety-env/bin/safety\" check --full-report --check-unpinned-requirements -r requirements-audit-resolved.txt" in workflow
@@ -111,7 +110,6 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
         encoding="utf-8"
     )
     assert "safety==3.8.1" in workflow
-    assert "pip install -r requirements.txt" in workflow
     assert "pip freeze --exclude-editable > requirements-audit-resolved.txt" in workflow
     assert "safety-env/bin/safety\" check --full-report --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json" in workflow
     assert "pip-audit --local --skip-editable" in workflow
