@@ -35,7 +35,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-
 # ── Shared paths ───────────────────────────────────────────────────────────────
 STATE_DIR = Path(
     os.environ.get(
