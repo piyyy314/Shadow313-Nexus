@@ -9,7 +9,6 @@ import shadow313.tools.redteam.ghosthttp as ghosthttp
 from shadow313.modules.cicd.pipeline import CICDPipeline
 from shadow313.v4.detection import adaptive_defense_loop
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 

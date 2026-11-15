@@ -23,55 +23,61 @@ try:
     from shadow313.core.kernel import KernelContext, register_command
 except ImportError:
     KernelContext = object
+
     def register_command(*a, **kw):  # nosec
         def _deco(fn):
             return fn
+
         return _deco
+
 
 try:
     from shadow313.tools.base import BaseTool, ToolResult
 except ImportError:
     BaseTool = object
+
     class ToolResult:  # nosec
-        def __init__(self, **kw): self.__dict__.update(kw)
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+
 
 logger = logging.getLogger(__name__)
 
 # ── Probe paths for technology detection ──────────────────────────────────
 TECH_PROBES: list[dict[str, Any]] = [
     # CMS Detection
-    {"path": "/wp-login.php",           "tech": "WordPress",      "indicator": "wp-login"},
-    {"path": "/wp-admin/",              "tech": "WordPress",      "indicator": "WordPress"},
-    {"path": "/administrator/",         "tech": "Joomla",         "indicator": "Joomla"},
-    {"path": "/user/login",             "tech": "Drupal",         "indicator": "Drupal"},
-    {"path": "/typo3/",                 "tech": "TYPO3",          "indicator": "TYPO3"},
+    {"path": "/wp-login.php", "tech": "WordPress", "indicator": "wp-login"},
+    {"path": "/wp-admin/", "tech": "WordPress", "indicator": "WordPress"},
+    {"path": "/administrator/", "tech": "Joomla", "indicator": "Joomla"},
+    {"path": "/user/login", "tech": "Drupal", "indicator": "Drupal"},
+    {"path": "/typo3/", "tech": "TYPO3", "indicator": "TYPO3"},
     # Framework Detection
-    {"path": "/rails/info/properties",  "tech": "Ruby on Rails",  "indicator": "Rails"},
-    {"path": "/actuator/health",        "tech": "Spring Boot",    "indicator": "status"},
-    {"path": "/api/swagger.json",       "tech": "Swagger/OpenAPI","indicator": "swagger"},
-    {"path": "/swagger-ui.html",        "tech": "Swagger UI",     "indicator": "swagger"},
-    {"path": "/.env",                   "tech": "Env File",       "indicator": "APP_"},
-    {"path": "/config.php",             "tech": "PHP Config",     "indicator": "<?php"},
-    {"path": "/phpinfo.php",            "tech": "PHP Info",       "indicator": "phpinfo"},
+    {"path": "/rails/info/properties", "tech": "Ruby on Rails", "indicator": "Rails"},
+    {"path": "/actuator/health", "tech": "Spring Boot", "indicator": "status"},
+    {"path": "/api/swagger.json", "tech": "Swagger/OpenAPI", "indicator": "swagger"},
+    {"path": "/swagger-ui.html", "tech": "Swagger UI", "indicator": "swagger"},
+    {"path": "/.env", "tech": "Env File", "indicator": "APP_"},
+    {"path": "/config.php", "tech": "PHP Config", "indicator": "<?php"},
+    {"path": "/phpinfo.php", "tech": "PHP Info", "indicator": "phpinfo"},
     # Admin Panels
-    {"path": "/admin",                  "tech": "Admin Panel",    "indicator": "admin"},
-    {"path": "/admin/login",            "tech": "Admin Login",    "indicator": "login"},
-    {"path": "/phpmyadmin/",            "tech": "phpMyAdmin",     "indicator": "phpMyAdmin"},
-    {"path": "/adminer.php",            "tech": "Adminer",        "indicator": "adminer"},
+    {"path": "/admin", "tech": "Admin Panel", "indicator": "admin"},
+    {"path": "/admin/login", "tech": "Admin Login", "indicator": "login"},
+    {"path": "/phpmyadmin/", "tech": "phpMyAdmin", "indicator": "phpMyAdmin"},
+    {"path": "/adminer.php", "tech": "Adminer", "indicator": "adminer"},
     # API Endpoints
-    {"path": "/api/v1/",                "tech": "REST API v1",    "indicator": None},
-    {"path": "/graphql",                "tech": "GraphQL",        "indicator": "graphql"},
-    {"path": "/.well-known/security.txt","tech": "Security.txt",  "indicator": "Contact"},
+    {"path": "/api/v1/", "tech": "REST API v1", "indicator": None},
+    {"path": "/graphql", "tech": "GraphQL", "indicator": "graphql"},
+    {"path": "/.well-known/security.txt", "tech": "Security.txt", "indicator": "Contact"},
     # Version Files
-    {"path": "/CHANGELOG.md",           "tech": "Changelog",      "indicator": None},
-    {"path": "/VERSION",                "tech": "Version File",   "indicator": None},
-    {"path": "/robots.txt",             "tech": "Robots.txt",     "indicator": None},
-    {"path": "/sitemap.xml",            "tech": "Sitemap",        "indicator": None},
+    {"path": "/CHANGELOG.md", "tech": "Changelog", "indicator": None},
+    {"path": "/VERSION", "tech": "Version File", "indicator": None},
+    {"path": "/robots.txt", "tech": "Robots.txt", "indicator": None},
+    {"path": "/sitemap.xml", "tech": "Sitemap", "indicator": None},
     # Cloud/Infrastructure
-    {"path": "/.git/HEAD",              "tech": "Git Repo",       "indicator": "ref:"},
-    {"path": "/.git/config",            "tech": "Git Config",     "indicator": "[core]"},
-    {"path": "/.svn/entries",           "tech": "SVN Repo",       "indicator": None},
-    {"path": "/server-status",          "tech": "Apache Status",  "indicator": "Apache"},
+    {"path": "/.git/HEAD", "tech": "Git Repo", "indicator": "ref:"},
+    {"path": "/.git/config", "tech": "Git Config", "indicator": "[core]"},
+    {"path": "/.svn/entries", "tech": "SVN Repo", "indicator": None},
+    {"path": "/server-status", "tech": "Apache Status", "indicator": "Apache"},
     {
         "path": "/nginx_status",
         "tech": "Nginx Status",
@@ -120,26 +126,32 @@ WAF_SIGNATURES: dict[str, dict[str, Any]] = {
 
 # ── Information disclosure patterns ───────────────────────────────────────
 INFO_DISCLOSURE_PATTERNS = [
-    (r"(?i)mysql.*error|sql syntax|ORA-\d+|pg_query|sqlite_",
-     "Database Error Disclosure", "CRITICAL"),
-    (r"(?i)stack trace|traceback|exception in|at line \d+",
-     "Stack Trace Disclosure", "HIGH"),
-    (r"(?i)internal server error.*version|server.*apache/[\d.]+|nginx/[\d.]+",
-     "Server Version Disclosure", "MEDIUM"),
-    (r"(?i)debug.*true|app_debug.*true|display_errors.*on",
-     "Debug Mode Enabled", "HIGH"),
-    (r"(?i)password|passwd|secret|api_key|token.*=.*['\"][^'\"]{8,}",
-     "Credential Disclosure", "CRITICAL"),
-    (r"(?i)aws_access_key|aws_secret|AKIA[0-9A-Z]{16}",
-     "AWS Credential Disclosure", "CRITICAL"),
-    (r"(?i)private key|BEGIN RSA|BEGIN EC PRIVATE",
-     "Private Key Disclosure", "CRITICAL"),
-    (r"(?i)phpinfo\(\)|php version|php/[\d.]+",
-     "PHP Version Disclosure", "MEDIUM"),
-    (r"(?i)x-powered-by.*php|x-powered-by.*asp",
-     "Technology Disclosure via Header", "LOW"),
-    (r"(?i)server.*microsoft-iis|server.*apache|server.*nginx",
-     "Server Software Disclosure", "LOW"),
+    (
+        r"(?i)mysql.*error|sql syntax|ORA-\d+|pg_query|sqlite_",
+        "Database Error Disclosure",
+        "CRITICAL",
+    ),
+    (r"(?i)stack trace|traceback|exception in|at line \d+", "Stack Trace Disclosure", "HIGH"),
+    (
+        r"(?i)internal server error.*version|server.*apache/[\d.]+|nginx/[\d.]+",
+        "Server Version Disclosure",
+        "MEDIUM",
+    ),
+    (r"(?i)debug.*true|app_debug.*true|display_errors.*on", "Debug Mode Enabled", "HIGH"),
+    (
+        r"(?i)password|passwd|secret|api_key|token.*=.*['\"][^'\"]{8,}",
+        "Credential Disclosure",
+        "CRITICAL",
+    ),
+    (r"(?i)aws_access_key|aws_secret|AKIA[0-9A-Z]{16}", "AWS Credential Disclosure", "CRITICAL"),
+    (r"(?i)private key|BEGIN RSA|BEGIN EC PRIVATE", "Private Key Disclosure", "CRITICAL"),
+    (r"(?i)phpinfo\(\)|php version|php/[\d.]+", "PHP Version Disclosure", "MEDIUM"),
+    (r"(?i)x-powered-by.*php|x-powered-by.*asp", "Technology Disclosure via Header", "LOW"),
+    (
+        r"(?i)server.*microsoft-iis|server.*apache|server.*nginx",
+        "Server Software Disclosure",
+        "LOW",
+    ),
 ]
 
 
@@ -260,8 +272,12 @@ Provide:
     async def _baseline_request(self, client: httpx.AsyncClient, url: str) -> dict[str, Any]:
         """Make baseline request and extract all useful information."""
         result: dict[str, Any] = {
-            "status_code": None, "headers": {}, "server": "",
-            "technologies": [], "title": "", "body_hash": "",
+            "status_code": None,
+            "headers": {},
+            "server": "",
+            "technologies": [],
+            "title": "",
+            "body_hash": "",
             "response_time_ms": 0,
         }
         try:
@@ -304,50 +320,53 @@ Provide:
         # Version disclosure in Server header
         server = headers_lower.get("server", "")
         if server and re.search(r"[\d.]+", server):
-            findings.append(self._finding(
-                title=f"Server Version Disclosure: {server}",
-                severity="LOW",
-                description=(
-                    f"Server header reveals version: '{server}'. "
-                    "This aids attacker reconnaissance."
-                ),
-                data={"header": "Server", "value": server},
-                remediation="Configure server to return generic 'Server: webserver' header",
-                mitre_technique="T1592.002",
-            ))
+            findings.append(
+                self._finding(
+                    title=f"Server Version Disclosure: {server}",
+                    severity="LOW",
+                    description=(
+                        f"Server header reveals version: '{server}'. "
+                        "This aids attacker reconnaissance."
+                    ),
+                    data={"header": "Server", "value": server},
+                    remediation="Configure server to return generic 'Server: webserver' header",
+                    mitre_technique="T1592.002",
+                )
+            )
 
         # X-Powered-By disclosure
         powered_by = headers_lower.get("x-powered-by", "")
         if powered_by:
-            findings.append(self._finding(
-                title=f"Technology Disclosure: X-Powered-By: {powered_by}",
-                severity="LOW",
-                description=f"X-Powered-By header reveals: '{powered_by}'",
-                data={"header": "X-Powered-By", "value": powered_by},
-                remediation="Remove X-Powered-By header from server configuration",
-                mitre_technique="T1592.002",
-            ))
+            findings.append(
+                self._finding(
+                    title=f"Technology Disclosure: X-Powered-By: {powered_by}",
+                    severity="LOW",
+                    description=f"X-Powered-By header reveals: '{powered_by}'",
+                    data={"header": "X-Powered-By", "value": powered_by},
+                    remediation="Remove X-Powered-By header from server configuration",
+                    mitre_technique="T1592.002",
+                )
+            )
 
         # Internal IP disclosure
         private_ip_pattern = (
-            r"\b(10\.\d+\.\d+\.\d+|"
-            r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|"
-            r"192\.168\.\d+\.\d+)\b"
+            r"\b(10\.\d+\.\d+\.\d+|" r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|" r"192\.168\.\d+\.\d+)\b"
         )
         for header_name, header_val in headers_lower.items():
             ip_match = re.search(private_ip_pattern, header_val)
             if ip_match:
-                findings.append(self._finding(
-                    title=f"Internal IP Disclosure in Header: {header_name}",
-                    severity="MEDIUM",
-                    description=(
-                        f"Header '{header_name}' reveals internal IP: "
-                        f"{ip_match.group(0)}"
-                    ),
-                    data={"header": header_name, "ip": ip_match.group(0)},
-                    remediation=f"Remove or sanitize the {header_name} header",
-                    mitre_technique="T1590.005",
-                ))
+                findings.append(
+                    self._finding(
+                        title=f"Internal IP Disclosure in Header: {header_name}",
+                        severity="MEDIUM",
+                        description=(
+                            f"Header '{header_name}' reveals internal IP: " f"{ip_match.group(0)}"
+                        ),
+                        data={"header": header_name, "ip": ip_match.group(0)},
+                        remediation=f"Remove or sanitize the {header_name} header",
+                        mitre_technique="T1590.005",
+                    )
+                )
 
         return findings
 
@@ -432,9 +451,9 @@ Provide:
                     body = r.text[:2000]
                     indicator = probe.get("indicator")
                     matched = (
-                        not indicator or
-                        indicator.lower() in body.lower() or
-                        indicator.lower() in r.headers.get("content-type", "").lower()
+                        not indicator
+                        or indicator.lower() in body.lower()
+                        or indicator.lower() in r.headers.get("content-type", "").lower()
                     )
 
                     if matched or r.status_code == 200:
@@ -444,45 +463,52 @@ Provide:
                         # Special handling for critical exposures
                         if probe["tech"] in ("Git Repo", "Git Config", "Env File", "PHP Info"):
                             sev = "CRITICAL"
-                            findings.append(self._finding(
-                                title=f"Critical Exposure: {probe['tech']} at {probe['path']}",
-                                severity=sev,
-                                description=(
-                                    f"{probe['tech']} accessible at {url} "
-                                    f"(HTTP {r.status_code}). "
-                                    "This may expose source code, credentials, "
-                                    "or configuration."
-                                ),
-                                data={"path": probe["path"], "status": r.status_code,
-                                      "tech": probe["tech"], "preview": body[:200]},
-                                remediation=f"Immediately restrict access to {probe['path']}",
-                                mitre_technique="T1552.001",
-                            ))
+                            findings.append(
+                                self._finding(
+                                    title=f"Critical Exposure: {probe['tech']} at {probe['path']}",
+                                    severity=sev,
+                                    description=(
+                                        f"{probe['tech']} accessible at {url} "
+                                        f"(HTTP {r.status_code}). "
+                                        "This may expose source code, credentials, "
+                                        "or configuration."
+                                    ),
+                                    data={
+                                        "path": probe["path"],
+                                        "status": r.status_code,
+                                        "tech": probe["tech"],
+                                        "preview": body[:200],
+                                    },
+                                    remediation=f"Immediately restrict access to {probe['path']}",
+                                    mitre_technique="T1552.001",
+                                )
+                            )
                         elif r.status_code == 200 and sev in ("HIGH", "MEDIUM"):
-                            findings.append(self._finding(
-                                title=f"Discovered: {probe['tech']} ({probe['path']})",
-                                severity=sev,
-                                description=(
-                                    f"{probe['tech']} found at {url} "
-                                    f"(HTTP {r.status_code})"
-                                ),
-                                data={
-                                    "path": probe["path"],
-                                    "status": r.status_code,
-                                    "tech": probe["tech"],
-                                },
-                                remediation=(
-                                    f"Restrict access to {probe['path']} if not required"
-                                ),
-                                mitre_technique="T1083",
-                            ))
+                            findings.append(
+                                self._finding(
+                                    title=f"Discovered: {probe['tech']} ({probe['path']})",
+                                    severity=sev,
+                                    description=(
+                                        f"{probe['tech']} found at {url} " f"(HTTP {r.status_code})"
+                                    ),
+                                    data={
+                                        "path": probe["path"],
+                                        "status": r.status_code,
+                                        "tech": probe["tech"],
+                                    },
+                                    remediation=(
+                                        f"Restrict access to {probe['path']} if not required"
+                                    ),
+                                    mitre_technique="T1083",
+                                )
+                            )
             except Exception as exc:  # nosec
                 logger.debug("Technology probe failed for %s: %s", url, exc)
 
         # Run probes concurrently in batches
         batch_size = 10
         for i in range(0, len(TECH_PROBES), batch_size):
-            batch = TECH_PROBES[i:i + batch_size]
+            batch = TECH_PROBES[i : i + batch_size]
             await asyncio.gather(*[probe_path(p) for p in batch])
             await asyncio.sleep(0.1)
 
@@ -516,17 +542,23 @@ Provide:
                 for pattern, title, severity in INFO_DISCLOSURE_PATTERNS:
                     match = re.search(pattern, body)
                     if match:
-                        findings.append(self._finding(
-                            title=f"{title} at {path}",
-                            severity=severity,
-                            description=(
-                                f"{title} detected at {url}. "
-                                f"Matched: '{match.group(0)[:100]}'"
-                            ),
-                            data={"path": path, "pattern": pattern, "match": match.group(0)[:100]},
-                            remediation=f"Fix {title.lower()} at {path}",
-                            mitre_technique="T1552",
-                        ))
+                        findings.append(
+                            self._finding(
+                                title=f"{title} at {path}",
+                                severity=severity,
+                                description=(
+                                    f"{title} detected at {url}. "
+                                    f"Matched: '{match.group(0)[:100]}'"
+                                ),
+                                data={
+                                    "path": path,
+                                    "pattern": pattern,
+                                    "match": match.group(0)[:100],
+                                },
+                                remediation=f"Fix {title.lower()} at {path}",
+                                mitre_technique="T1552",
+                            )
+                        )
             except Exception as exc:  # nosec
                 logger.debug("Information-disclosure probe failed for %s: %s", url, exc)
 
@@ -534,9 +566,7 @@ Provide:
 
     # ── Timing Analysis ────────────────────────────────────────────────────
 
-    async def _timing_analysis(
-        self, client: httpx.AsyncClient, base_url: str
-    ) -> dict[str, Any]:
+    async def _timing_analysis(self, client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
         """Analyze response timing for side-channel information."""
         timings = []
         anomalies = []
@@ -558,17 +588,19 @@ Provide:
             avg_time = sum(t["ms"] for t in timings) / len(timings)
             for t in timings:
                 if t["ms"] > avg_time * 3 and t["ms"] > 500:
-                    anomalies.append({
-                        "path": t["path"],
-                        "ms": t["ms"],
-                        "avg_ms": round(avg_time, 1),
-                        "description": (
-                            f"Path {t['path']} responds in {t['ms']}ms "
-                            f"vs avg {avg_time:.0f}ms. "
-                            "Timing difference may indicate backend processing "
-                            "(auth check, DB query)."
-                        ),
-                    })
+                    anomalies.append(
+                        {
+                            "path": t["path"],
+                            "ms": t["ms"],
+                            "avg_ms": round(avg_time, 1),
+                            "description": (
+                                f"Path {t['path']} responds in {t['ms']}ms "
+                                f"vs avg {avg_time:.0f}ms. "
+                                "Timing difference may indicate backend processing "
+                                "(auth check, DB query)."
+                            ),
+                        }
+                    )
 
         return {
             "timings": timings,
@@ -597,17 +629,19 @@ Provide:
 
                 for pattern, title, severity in INFO_DISCLOSURE_PATTERNS:
                     if re.search(pattern, body, re.I):
-                        findings.append(self._finding(
-                            title=f"{title} in Error Response",
-                            severity=severity,
-                            description=f"Error page at {url} reveals: {title}",
-                            data={"trigger": path, "status": r.status_code},
-                            remediation=(
-                                "Configure custom error pages that don't reveal "
-                                "stack traces or server info"
-                            ),
-                            mitre_technique="T1592",
-                        ))
+                        findings.append(
+                            self._finding(
+                                title=f"{title} in Error Response",
+                                severity=severity,
+                                description=f"Error page at {url} reveals: {title}",
+                                data={"trigger": path, "status": r.status_code},
+                                remediation=(
+                                    "Configure custom error pages that don't reveal "
+                                    "stack traces or server info"
+                                ),
+                                mitre_technique="T1592",
+                            )
+                        )
                         break
             except Exception as exc:  # nosec
                 logger.debug("Error-page probe failed for %s: %s", url, exc)
@@ -654,14 +688,16 @@ Provide:
 
         for header, info in security_headers.items():
             if header not in headers_lower:
-                findings.append(self._finding(
-                    title=info["title"],
-                    severity=info["severity"],
-                    description=f"Security header '{header}' is not set.",
-                    data={"missing_header": header},
-                    remediation=info["remediation"],
-                    mitre_technique="T1059.007",
-                ))
+                findings.append(
+                    self._finding(
+                        title=info["title"],
+                        severity=info["severity"],
+                        description=f"Security header '{header}' is not set.",
+                        data={"missing_header": header},
+                        remediation=info["remediation"],
+                        mitre_technique="T1059.007",
+                    )
+                )
 
         return findings
 
@@ -671,24 +707,26 @@ Provide:
         data = result.data
         waf = data.get("waf", {})
 
-        self.output.kv_table({
-            "Target": data.get("base_url", ""),
-            "Status": str(data.get("baseline", {}).get("status_code", "")),
-            "Server": data.get("baseline", {}).get("server", "unknown"),
-            "Technologies": (
-                ", ".join(data.get("baseline", {}).get("technologies", []))
-                or "none detected"
-            ),
-            "WAF": (
-                f"{waf.get('waf_name', 'None')} "
-                f"(confidence: {waf.get('confidence', 0):.0%})"
-                if waf.get("detected")
-                else "Not detected"
-            ),
-            "Paths Discovered": str(len(data.get("discovered_paths", []))),
-            "Timing Anomalies": str(len(data.get("timing", {}).get("anomalies", []))),
-            "Total Findings": str(data.get("total_findings", 0)),
-        }, title="GhostHTTP Results")
+        self.output.kv_table(
+            {
+                "Target": data.get("base_url", ""),
+                "Status": str(data.get("baseline", {}).get("status_code", "")),
+                "Server": data.get("baseline", {}).get("server", "unknown"),
+                "Technologies": (
+                    ", ".join(data.get("baseline", {}).get("technologies", [])) or "none detected"
+                ),
+                "WAF": (
+                    f"{waf.get('waf_name', 'None')} "
+                    f"(confidence: {waf.get('confidence', 0):.0%})"
+                    if waf.get("detected")
+                    else "Not detected"
+                ),
+                "Paths Discovered": str(len(data.get("discovered_paths", []))),
+                "Timing Anomalies": str(len(data.get("timing", {}).get("anomalies", []))),
+                "Total Findings": str(data.get("total_findings", 0)),
+            },
+            title="GhostHTTP Results",
+        )
 
         if result.findings:
             sorted_findings = sorted(

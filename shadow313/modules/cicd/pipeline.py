@@ -28,9 +28,7 @@ class CICDPipeline:
         self.repo_path = Path(repo_path)
         self._findings: list[dict[str, object]] = []
 
-    def scan_secrets(
-        self, paths: list[str] | None = None
-    ) -> dict[str, object]:
+    def scan_secrets(self, paths: list[str] | None = None) -> dict[str, object]:
         findings: list[dict[str, object]] = []
         scan_paths = [Path(path) for path in (paths or [str(self.repo_path)])]
         for scan_path in scan_paths:
@@ -40,8 +38,7 @@ class CICDPipeline:
                 for file_path in scan_path.rglob("*"):
                     if (
                         file_path.is_file()
-                        and file_path.suffix
-                        in {".py", ".js", ".yml", ".env", ".json", ".sh"}
+                        and file_path.suffix in {".py", ".js", ".yml", ".env", ".json", ".sh"}
                         and ".git" not in str(file_path)
                         and "node_modules" not in str(file_path)
                     ):
@@ -66,9 +63,9 @@ class CICDPipeline:
         for line_number, line in enumerate(content.splitlines(), 1):
             for pattern, secret_type in SECRET_PATTERNS:
                 if re.search(pattern, line, re.IGNORECASE):
-                    rule_digest = hashlib.md5(
-                        pattern.encode(), usedforsecurity=False
-                    ).hexdigest()[:6].upper()
+                    rule_digest = (
+                        hashlib.md5(pattern.encode(), usedforsecurity=False).hexdigest()[:6].upper()
+                    )
                     findings.append(
                         {
                             "file": str(path),
@@ -128,12 +125,6 @@ class CICDPipeline:
         }
 
     def gate_check(self) -> tuple[bool, list[str]]:
-        critical = [
-            finding
-            for finding in self._findings
-            if finding.get("severity") == "CRITICAL"
-        ]
-        failures = (
-            [f"{len(critical)} critical secrets detected"] if critical else []
-        )
+        critical = [finding for finding in self._findings if finding.get("severity") == "CRITICAL"]
+        failures = [f"{len(critical)} critical secrets detected"] if critical else []
         return not failures, failures
