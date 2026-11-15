@@ -214,13 +214,29 @@ jobs:
         run: pip install pip-audit==2.7.3 safety==3.8.1
 
       - name: Run pip-audit
+        id: pip_audit
+        continue-on-error: true
         run: |
           pip install -e ".[dev]"
-          pip-audit --desc --format json -o pip-audit-report.json || true
-          pip-audit --desc
+          pip-audit --skip-editable --desc --format json -o pip-audit-report.json || true
+          pip-audit --skip-editable --desc
 
       - name: Run Safety check
+        id: safety_scan
+        continue-on-error: true
         run: safety check --full-report
+
+      - name: Enforce dependency audit results
+        if: always()
+        env:
+          PIP_AUDIT_OUTCOME: ${{ steps.pip_audit.outcome }}
+          SAFETY_OUTCOME: ${{ steps.safety_scan.outcome }}
+        run: |
+          printf 'pip-audit: %s\nSafety: %s\n' "$PIP_AUDIT_OUTCOME" "$SAFETY_OUTCOME"
+          if [ "$PIP_AUDIT_OUTCOME" != "success" ] || [ "$SAFETY_OUTCOME" != "success" ]; then
+            echo "At least one dependency scanner failed or reported findings." >&2
+            exit 1
+          fi
 
   # ── Docker Lint ───────────────────────────────────────────────────
   docker-lint:

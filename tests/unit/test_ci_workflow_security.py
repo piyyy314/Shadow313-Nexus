@@ -103,3 +103,18 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     assert "safety check --full-report --json > nightly-safety.json || true" not in workflow
     assert "bandit -r shadow313/ nexus_toolkit/" in workflow
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
+
+
+def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
+    api_workflow = (ROOT / ".github" / "workflows" / "shadow313-api-validate.yml").read_text(
+        encoding="utf-8"
+    )
+    predeploy_workflow = (ROOT / ".github" / "workflows" / "shadow313-validate.yml").read_text(
+        encoding="utf-8"
+    )
+    for workflow in (api_workflow, predeploy_workflow):
+        for line in workflow.splitlines():
+            if "pip install -e \\".[dev]\\"" in line:
+                assert not line.rstrip().endswith("|| true")
+    assert "--cov=shadow313 --cov-report=term-missing 2>&1 || true" not in predeploy_workflow
+    assert "python3 -m pytest tests/" in predeploy_workflow
