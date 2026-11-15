@@ -558,10 +558,8 @@ Provide:
                         "avg_ms": round(avg_time, 1),
                         "description": (
                             f"Path {t['path']} responds in {t['ms']}ms vs avg {avg_time:.0f}ms. "
-                            (
-                                "Timing difference may indicate backend processing "
-                                "(auth check, DB query)."
-                            )
+                            "Timing difference may indicate backend processing "
+                            "(auth check, DB query)."
                         ),
                     })
 
