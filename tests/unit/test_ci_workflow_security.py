@@ -114,7 +114,7 @@ def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
     )
     for workflow in (api_workflow, predeploy_workflow):
         for line in workflow.splitlines():
-            if "pip install -e \\".[dev]\\"" in line:
+            if "pip install -e" in line:
                 assert not line.rstrip().endswith("|| true")
     assert "--cov=shadow313 --cov-report=term-missing 2>&1 || true" not in predeploy_workflow
     assert "python3 -m pytest tests/" in predeploy_workflow
