@@ -6,7 +6,7 @@ on:
       - fix/ci-audit-blockers
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format-export:
@@ -16,24 +16,32 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
-      - name: Install the repository Black version
-        run: python -m pip install black==26.10.1
-      - name: Format the repaired Python files
+      - name: Install repository formatters
+        run: python -m pip install black==26.10.1 ruff==0.17.5
+      - name: Format and lint repaired Python files
         run: |
-          black \
-            shadow313/modules/cicd/pipeline.py \
-            shadow313/tools/redteam/ghosthttp.py \
-            shadow313/v4/detection/adaptive_defense_loop.py \
-            shadow313/v4/detection/advanced_detection_layer.py \
-            tests/unit/test_ci_workflow_security.py
-      - name: Export formatted source files
-        uses: actions/upload-artifact@v7
-        with:
-          name: black-formatted-sources
-          path: |
+          files=(
             shadow313/modules/cicd/pipeline.py
             shadow313/tools/redteam/ghosthttp.py
             shadow313/v4/detection/adaptive_defense_loop.py
             shadow313/v4/detection/advanced_detection_layer.py
             tests/unit/test_ci_workflow_security.py
-          if-no-files-found: error
+          )
+          black "${files[@]}"
+          ruff check "${files[@]}"
+      - name: Commit formatting-only changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            shadow313/modules/cicd/pipeline.py \
+            shadow313/tools/redteam/ghosthttp.py \
+            shadow313/v4/detection/adaptive_defense_loop.py \
+            shadow313/v4/detection/advanced_detection_layer.py \
+            tests/unit/test_ci_workflow_security.py
+          if git diff --cached --quiet; then
+            echo "No formatting changes needed."
+            exit 0
+          fi
+          git commit -m "style: apply Black formatting to repaired Python files"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
