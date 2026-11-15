@@ -327,8 +327,13 @@ Provide:
             ))
 
         # Internal IP disclosure
+        private_ip_pattern = (
+            r"\b(10\.\d+\.\d+\.\d+|"
+            r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|"
+            r"192\.168\.\d+\.\d+)\b"
+        )
         for header_name, header_val in headers_lower.items():
-            ip_match = re.search(r"\b(10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)\b", header_val)
+            ip_match = re.search(private_ip_pattern, header_val)
             if ip_match:
                 findings.append(self._finding(
                     title=f"Internal IP Disclosure in Header: {header_name}",
@@ -451,13 +456,20 @@ Provide:
                             findings.append(self._finding(
                                 title=f"Discovered: {probe['tech']} ({probe['path']})",
                                 severity=sev,
-                                description=f"{probe['tech']} found at {url} (HTTP {r.status_code})",
-                                data={"path": probe["path"], "status": r.status_code, "tech": probe["tech"]},
+                                description=(
+                                    f"{probe['tech']} found at {url} "
+                                    f"(HTTP {r.status_code})"
+                                ),
+                                data={
+                                    "path": probe["path"],
+                                    "status": r.status_code,
+                                    "tech": probe["tech"],
+                                },
                                 remediation=f"Restrict access to {probe['path']} if not required",
                                 mitre_technique="T1083",
                             ))
-            except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+            except Exception as exc:  # nosec
+                logger.debug("Technology probe failed for %s: %s", url, exc)
 
         # Run probes concurrently in batches
         batch_size = 10
@@ -507,8 +519,8 @@ Provide:
                             remediation=f"Fix {title.lower()} at {path}",
                             mitre_technique="T1552",
                         ))
-            except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+            except Exception as exc:  # nosec
+                logger.debug("Information-disclosure probe failed for %s: %s", url, exc)
 
         return findings
 
@@ -530,8 +542,8 @@ Provide:
                 r = await client.get(url)
                 elapsed = round((time.monotonic() - t0) * 1000, 1)
                 timings.append({"path": path, "ms": elapsed, "status": r.status_code})
-            except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+            except Exception as exc:  # nosec
+                logger.debug("Timing probe failed for %s: %s", url, exc)
 
         # Detect timing anomalies
         if timings:
@@ -580,8 +592,8 @@ Provide:
                             mitre_technique="T1592",
                         ))
                         break
-            except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+            except Exception as exc:  # nosec
+                logger.debug("Error-page probe failed for %s: %s", url, exc)
 
         return findings
 
