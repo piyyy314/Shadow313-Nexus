@@ -93,10 +93,14 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     assert 'finding.get("issue_severity") == "HIGH"' in workflow
     assert "safety==3.8.1" in workflow
     assert "safety check --full-report || true" not in workflow
-    assert workflow.count("pip-audit --local") == 2
+    assert workflow.count("pip-audit --local") == 1
     assert "pip-audit==2.10.1" in workflow
-    assert "bandit==1.9.4" in workflow
-    assert "--skip-editable" not in workflow
+    assert "--skip-editable" in workflow
+    assert "pip-audit-local-report.json" in workflow
+    assert "pip-audit-requirements-report.json" in workflow
+    assert "pip-audit --desc --format json -o pip-audit-requirements-report.json -r requirements.txt" in workflow
+    assert "safety check --full-report -r requirements.txt" in workflow
+    assert workflow.index("pip-audit --local") < workflow.index("pip install safety==3.8.1")
 
 
 def test_nightly_security_scanners_do_not_hide_tool_failures():
@@ -104,11 +108,14 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
         encoding="utf-8"
     )
     assert "safety==3.8.1" in workflow
-    assert "safety check --full-report --json > nightly-safety.json || true" not in workflow
-    assert "pip-audit --local" in workflow
+    assert "safety check --full-report --json -r requirements.txt > nightly-safety.json" in workflow
+    assert "pip-audit --local --skip-editable" in workflow
+    assert "pip-audit --desc --format json -o nightly-pip-audit-requirements.json -r requirements.txt" in workflow
     assert "pip-audit==2.10.1" in workflow
     assert "bandit==1.9.4" in workflow
-    assert "--skip-editable" not in workflow
+    assert "Enforce dependency and SAST results" in workflow
+    assert "BANDIT_OUTCOME" in workflow
+    assert workflow.index("pip-audit --local") < workflow.index("pip install safety==3.8.1")
     assert "bandit -r shadow313/ nexus_toolkit/" in workflow
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
 
