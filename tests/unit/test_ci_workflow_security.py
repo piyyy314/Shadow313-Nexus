@@ -118,3 +118,17 @@ def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
                 assert not line.rstrip().endswith("|| true")
     assert "--cov=shadow313 --cov-report=term-missing 2>&1 || true" not in predeploy_workflow
     assert "python3 -m pytest tests/" in predeploy_workflow
+
+
+def test_changed_workflows_have_clean_end_of_file_formatting():
+    for name in (
+        "pr-checks.yml",
+        "security-scan.yml",
+        "shadow313-api-validate.yml",
+        "shadow313-validate.yml",
+    ):
+        content = (ROOT / ".github" / "workflows" / name).read_text(
+            encoding="utf-8"
+        )
+        assert content.endswith("\n")
+        assert not content.endswith("\n\n")
