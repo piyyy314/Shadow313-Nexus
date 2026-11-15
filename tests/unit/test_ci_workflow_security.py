@@ -19,8 +19,8 @@ def test_gitleaks_workflows_use_the_canonical_go_module():
     )
     for path in workflow_paths:
         workflow = path.read_text(encoding="utf-8")
-        assert "go install github.com/gitleaks/gitleaks/v8@" in workflow
-        assert "github.com/zricethezav/gitleaks/v8" not in workflow
+        assert "go install github.com/zricethezav/gitleaks/v8@" in workflow
+        assert "github.com/gitleaks/gitleaks/v8" not in workflow
 
 
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
