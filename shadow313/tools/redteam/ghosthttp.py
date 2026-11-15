@@ -19,8 +19,6 @@ from urllib.parse import urljoin
 
 import httpx
 
-logger = logging.getLogger(__name__)
-
 try:
     from shadow313.core.kernel import KernelContext, register_command
 except ImportError:
@@ -36,6 +34,8 @@ except ImportError:
     BaseTool = object
     class ToolResult:  # nosec
         def __init__(self, **kw): self.__dict__.update(kw)
+
+logger = logging.getLogger(__name__)
 
 # ── Probe paths for technology detection ──────────────────────────────────
 TECH_PROBES: list[dict[str, Any]] = [
