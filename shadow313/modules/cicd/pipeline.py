@@ -79,8 +79,8 @@ class CICDPipeline:
         return findings
 
     def generate_sarif(self) -> dict[str, object]:
-        rules = []
-        results = []
+        rules: list[dict[str, object]] = []
+        results: list[dict[str, object]] = []
         for finding in self._findings:
             rule_id = finding.get("rule_id", "S313-UNKNOWN")
             if not any(rule["id"] == rule_id for rule in rules):
