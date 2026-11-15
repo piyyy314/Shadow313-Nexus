@@ -73,7 +73,11 @@ TECH_PROBES: list[dict[str, Any]] = [
     {"path": "/.git/config",            "tech": "Git Config",     "indicator": "[core]"},
     {"path": "/.svn/entries",           "tech": "SVN Repo",       "indicator": None},
     {"path": "/server-status",          "tech": "Apache Status",  "indicator": "Apache"},
-    {"path": "/nginx_status",           "tech": "Nginx Status",   "indicator": "Active connections"},
+    {
+        "path": "/nginx_status",
+        "tech": "Nginx Status",
+        "indicator": "Active connections",
+    },
 ]
 
 # ── WAF fingerprints ───────────────────────────────────────────────────────
@@ -193,7 +197,9 @@ class GhostHTTP(BaseTool):
 
             # ── Information disclosure ─────────────────────────────────────
             self.output.info("Scanning for information disclosure...")
-            disclosure_findings = await self._scan_info_disclosure(client, base_url, discovered_paths)
+            disclosure_findings = await self._scan_info_disclosure(
+                client, base_url, discovered_paths
+            )
             result.findings.extend(disclosure_findings)
 
             # ── Timing analysis ────────────────────────────────────────────
@@ -231,7 +237,8 @@ Analyze these GhostHTTP fingerprinting results for {result.data.get('base_url')}
 
 Server: {result.data.get('baseline', {}).get('server', 'unknown')}
 Technologies: {result.data.get('baseline', {}).get('technologies', [])}
-WAF Detected: {result.data.get('waf', {}).get('detected', False)} — {result.data.get('waf', {}).get('waf_name', 'none')}
+WAF Detected: {result.data.get('waf', {}).get('detected', False)} —
+{result.data.get('waf', {}).get('waf_name', 'none')}
 Discovered Paths: {result.data.get('discovered_paths', [])}
 Timing Anomalies: {result.data.get('timing', {}).get('anomalies', [])}
 
@@ -298,7 +305,10 @@ Provide:
             findings.append(self._finding(
                 title=f"Server Version Disclosure: {server}",
                 severity="LOW",
-                description=f"Server header reveals version: '{server}'. This aids attacker reconnaissance.",
+                description=(
+                    f"Server header reveals version: '{server}'. "
+                    "This aids attacker reconnaissance."
+                ),
                 data={"header": "Server", "value": server},
                 remediation="Configure server to return generic 'Server: webserver' header",
                 mitre_technique="T1592.002",
