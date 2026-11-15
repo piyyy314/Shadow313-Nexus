@@ -281,7 +281,7 @@ class MLAnomalyProfiler:
         # Session entropy
         if commands:
             total = len(commands)
-            freq = {}
+            freq: dict[str, int] = {}
             for c in commands:
                 freq[c] = freq.get(c, 0) + 1
             entropy = -sum((v / total) * math.log2(v / total) for v in freq.values())
