@@ -226,7 +226,7 @@ jobs:
           pip-audit --desc --format json -o pip-audit-requirements-report.json -r requirements.txt
           requirements_status=$?
           set -e
-          printf 'pip-audit local: %s\\npip-audit requirements: %s\\n' "$local_status" "$requirements_status"
+          printf 'pip-audit local: %s\npip-audit requirements: %s\n' "$local_status" "$requirements_status"
           if [ "$local_status" -ne 0 ] || [ "$requirements_status" -ne 0 ]; then
             exit 1
           fi
