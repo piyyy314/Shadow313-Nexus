@@ -32,14 +32,24 @@ class Page(HTMLParser):
 
 
 class SiteNavigationTests(unittest.TestCase):
-    def test_contributor_guide_uses_current_reproducible_setup(self):
+    def test_install_guides_use_current_reproducible_setup(self):
+        expected = 'python -m pytest tests/ -q --tb=short'
+        for relative in (
+            'README.md',
+            'CONTRIBUTING.md',
+            'docs/install.html',
+            'local_bundle/docs-install.html',
+        ):
+            content = (ROOT / relative).read_text()
+            with self.subTest(guide=relative):
+                self.assertIn(expected, content)
+                self.assertNotIn('--ignore=tests/integration', content)
         guide = (ROOT / 'CONTRIBUTING.md').read_text()
         self.assertIn('python -m pip install -e ".[dev]"', guide)
-        self.assertIn('python -m pytest tests/ -q --tb=short', guide)
         self.assertNotRegex(
             guide,
-            r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*"
-            r"tests?\s+(?:GREEN|passing|passed|included|all passing)\b",
+            r"\\b\\d[\\d,]*(?:\\s*/\\s*\\d[\\d,]*)?\\s*\\+?\\s*"
+            r"tests?\\s+(?:GREEN|passing|passed|included|all passing)\\b",
         )
 
     def test_html_pages_do_not_publish_fixed_test_scores(self):
