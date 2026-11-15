@@ -11,4 +11,4 @@ pytest>=7.4.0
 pytest-asyncio>=0.21.0
 pytest-cov>=7.1.0
 
-# Safety CLI is installed by CI as an isolated scanner, not as an application dependency.
+# Safety CLI is installed by CI after the application dependency audit; it is not an application dependency.
