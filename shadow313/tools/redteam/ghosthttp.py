@@ -243,7 +243,10 @@ Discovered Paths: {result.data.get('discovered_paths', [])}
 Timing Anomalies: {result.data.get('timing', {}).get('anomalies', [])}
 
 Findings ({len(result.findings)} total):
-{json.dumps([{'title': f['title'], 'severity': f['severity']} for f in result.findings[:10]], indent=2)}
+{json.dumps(
+    [{'title': f['title'], 'severity': f['severity']} for f in result.findings[:10]],
+    indent=2,
+)}
 
 Provide:
 1. **Technology Stack Assessment** — what's running and what vulnerabilities are likely
@@ -556,11 +559,18 @@ Provide:
                         "avg_ms": round(avg_time, 1),
                         "description": (
                             f"Path {t['path']} responds in {t['ms']}ms vs avg {avg_time:.0f}ms. "
-                            "Timing difference may indicate backend processing (auth check, DB query)."
+                            (
+                                "Timing difference may indicate backend processing "
+                                "(auth check, DB query)."
+                            )
                         ),
                     })
 
-        return {"timings": timings, "anomalies": anomalies, "avg_ms": round(avg_time if timings else 0, 1)}
+        return {
+            "timings": timings,
+            "anomalies": anomalies,
+            "avg_ms": round(avg_time if timings else 0, 1),
+        }
 
     # ── Error Page Analysis ────────────────────────────────────────────────
 
@@ -588,7 +598,10 @@ Provide:
                             severity=severity,
                             description=f"Error page at {url} reveals: {title}",
                             data={"trigger": path, "status": r.status_code},
-                            remediation="Configure custom error pages that don't reveal stack traces or server info",
+                            remediation=(
+                                "Configure custom error pages that don't reveal "
+                                "stack traces or server info"
+                            ),
                             mitre_technique="T1592",
                         ))
                         break
@@ -608,7 +621,10 @@ Provide:
             "strict-transport-security": {
                 "title": "Missing HSTS Header",
                 "severity": "MEDIUM",
-                "remediation": "Add: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
+                "remediation": (
+                    "Add: Strict-Transport-Security: max-age=31536000; "
+                    "includeSubDomains; preload"
+                ),
             },
             "content-security-policy": {
                 "title": "Missing Content-Security-Policy Header",
@@ -655,17 +671,34 @@ Provide:
             "Target": data.get("base_url", ""),
             "Status": str(data.get("baseline", {}).get("status_code", "")),
             "Server": data.get("baseline", {}).get("server", "unknown"),
-            "Technologies": ", ".join(data.get("baseline", {}).get("technologies", [])) or "none detected",
-            "WAF": f"{waf.get('waf_name', 'None')} (confidence: {waf.get('confidence', 0):.0%})" if waf.get("detected") else "Not detected",
+            "Technologies": (
+                ", ".join(data.get("baseline", {}).get("technologies", []))
+                or "none detected"
+            ),
+            "WAF": (
+                f"{waf.get('waf_name', 'None')} "
+                f"(confidence: {waf.get('confidence', 0):.0%})"
+                if waf.get("detected")
+                else "Not detected"
+            ),
             "Paths Discovered": str(len(data.get("discovered_paths", []))),
             "Timing Anomalies": str(len(data.get("timing", {}).get("anomalies", []))),
             "Total Findings": str(data.get("total_findings", 0)),
         }, title="GhostHTTP Results")
 
         if result.findings:
+            sorted_findings = sorted(
+                result.findings,
+                key=lambda finding: {
+                    "CRITICAL": 0,
+                    "HIGH": 1,
+                    "MEDIUM": 2,
+                    "LOW": 3,
+                }.get(finding["severity"], 4),
+            )[:12]
             self.output.findings_table(
-                sorted(result.findings, key=lambda f: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}.get(f["severity"], 4))[:12],
-                title="HTTP Findings"
+                sorted_findings,
+                title="HTTP Findings",
             )
 
 
