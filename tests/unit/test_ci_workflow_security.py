@@ -93,6 +93,10 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     assert 'finding.get("issue_severity") == "HIGH"' in workflow
     assert "safety==3.8.1" in workflow
     assert "safety check --full-report || true" not in workflow
+    assert workflow.count("pip-audit --local") == 2
+    assert "pip-audit==2.10.1" in workflow
+    assert "bandit==1.9.4" in workflow
+    assert "--skip-editable" not in workflow
 
 
 def test_nightly_security_scanners_do_not_hide_tool_failures():
@@ -101,6 +105,10 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     )
     assert "safety==3.8.1" in workflow
     assert "safety check --full-report --json > nightly-safety.json || true" not in workflow
+    assert "pip-audit --local" in workflow
+    assert "pip-audit==2.10.1" in workflow
+    assert "bandit==1.9.4" in workflow
+    assert "--skip-editable" not in workflow
     assert "bandit -r shadow313/ nexus_toolkit/" in workflow
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
 
@@ -132,3 +140,14 @@ def test_changed_workflows_have_clean_end_of_file_formatting():
         )
         assert content.endswith("\n")
         assert not content.endswith("\n\n")
+
+
+def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
+    workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+    assert "bandit==1.9.4" in workflow
+    assert "pip-audit==2.10.1" in workflow
+    assert "bandit>=1.9.4" in requirements
+    assert "pip-audit>=2.10.1" in requirements
