@@ -214,7 +214,9 @@ jobs:
         run: pip install pip-audit==2.10.1
 
       - name: Install project dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          pip install -r requirements.txt
 
       - name: Run pip-audit on installed project dependencies
         id: pip_audit
@@ -231,6 +233,9 @@ jobs:
             exit 1
           fi
 
+      - name: Freeze resolved application dependencies for Safety
+        run: python -m pip freeze --exclude-editable > requirements-audit-resolved.txt
+
       - name: Upload pip-audit reports
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
@@ -239,15 +244,17 @@ jobs:
           path: |
             pip-audit-local-report.json
             pip-audit-requirements-report.json
+            requirements-audit-resolved.txt
           retention-days: 7
           if-no-files-found: warn
 
-      - name: Run Safety check against runtime requirements
+      - name: Run Safety check against resolved application dependencies
         id: safety_scan
         continue-on-error: true
         run: |
-          pip install safety==3.8.1
-          safety check --full-report -r requirements.txt
+          python -m venv "$RUNNER_TEMP/safety-env"
+          "$RUNNER_TEMP/safety-env/bin/python" -m pip install --disable-pip-version-check safety==3.8.1
+          "$RUNNER_TEMP/safety-env/bin/safety" check --full-report --check-unpinned-requirements -r requirements-audit-resolved.txt
 
       - name: Enforce dependency audit results
         if: always()
