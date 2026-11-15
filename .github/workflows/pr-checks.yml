@@ -216,7 +216,6 @@ jobs:
       - name: Install project dependencies
         run: |
           pip install -e ".[dev]"
-          pip install -r requirements.txt
 
       - name: Run pip-audit on installed project dependencies
         id: pip_audit
