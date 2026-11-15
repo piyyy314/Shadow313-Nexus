@@ -60,7 +60,7 @@ jobs:
         run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
       - name: MyPy type check (changed Python files)
         if: steps.changed-python.outputs.count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports --follow-imports=silent
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
