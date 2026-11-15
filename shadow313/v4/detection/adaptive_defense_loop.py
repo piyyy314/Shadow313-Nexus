@@ -32,6 +32,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -215,7 +216,7 @@ class RedTeamEmulator:
     """
 
     # APT persona → TTP chains (from our Purple Team coverage analysis)
-    PERSONAS = {
+    PERSONAS: dict[str, dict[str, Any]] = {
         "APT29": {
             "ttps": [
                 "T1566.001",
@@ -429,7 +430,7 @@ class RuleEvolutionEngine:
     """
 
     # Rule templates per technique gap
-    RULE_TEMPLATES = {
+    RULE_TEMPLATES: dict[str, dict[str, Any]] = {
         "T1055.012": {
             "rule_type": "SIGMA",
             "title": "Process Hollowing — Sysmon Event 7 Unsigned DLL",
