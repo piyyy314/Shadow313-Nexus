@@ -64,3 +64,10 @@ def test_ghosthttp_returns_anomaly_for_slow_response_without_type_error():
 
     assert len(result["anomalies"]) == 1
     assert result["anomalies"][0]["ms"] > 500
+
+
+def test_mypy_checks_changed_files_without_blocking_on_imported_modules():
+    workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    assert '--follow-imports=silent' in workflow
