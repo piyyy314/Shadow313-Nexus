@@ -153,8 +153,19 @@ def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
     workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
         encoding="utf-8"
     )
-    requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+    dev_requirements = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8")
     assert "bandit==1.9.4" in workflow
     assert "pip-audit==2.10.1" in workflow
-    assert "bandit>=1.9.4" in requirements
-    assert "pip-audit>=2.10.1" in requirements
+    assert "bandit>=1.9.4" in dev_requirements
+    assert "pip-audit>=2.10.1" in dev_requirements
+
+
+def test_runtime_requirements_exclude_ci_scanners_and_test_tools():
+    runtime = (ROOT / "requirements.txt").read_text(encoding="utf-8").lower()
+    development = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8").lower()
+    assert "-r requirements.txt" in development
+    for package in ("bandit", "pip-audit", "safety", "pytest", "pytest-asyncio", "pytest-cov"):
+        assert not any(line.strip().startswith(package) for line in runtime.splitlines())
+    for package in ("bandit", "pip-audit", "pytest", "pytest-asyncio", "pytest-cov"):
+        assert any(line.strip().startswith(package) for line in development.splitlines())
+    assert "safety" not in development
