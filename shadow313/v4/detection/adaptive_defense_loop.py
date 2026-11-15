@@ -377,10 +377,16 @@ class IntelligenceFusion:
     def _recommend_rules(self, gap_techniques: list[str]) -> list[str]:
         """Map evasion gaps to specific rule recommendations."""
         rule_map = {
-            "T1055.012": "Add Sysmon Event 7 unsigned DLL load monitoring + Event 8 CreateRemoteThread",
+            "T1055.012": (
+                "Add Sysmon Event 7 unsigned DLL load monitoring "
+                "+ Event 8 CreateRemoteThread"
+            ),
             "T1195.002": "Add certificate subject vs. vendor folder mismatch detection",
             "T1021.002": "Add Event 4648 explicit credential use + WSMan PSRemoting correlation",
-            "T1071.004": "Remove rate threshold; add structural DNS label analysis (count + max length)",
+            "T1071.004": (
+                "Remove rate threshold; add structural DNS label analysis "
+                "(count + max length)"
+            ),
             "T1218":     "Add HKCU CLSID InprocServer32 registration monitoring",
             "T1056.001": "Requires EDR integration — out of SIEM scope",
             "T1113":     "Requires EDR integration — out of SIEM scope",
@@ -607,21 +613,31 @@ class AdaptiveDefenseLoop:
     def run_cycle(self, cycle_num: int) -> dict:
         """Execute one full Blue→Red→Fuse→Evolve cycle."""
         print(f"\n{'━'*70}")
-        logger.debug("  ADAPTIVE DEFENSE LOOP — Cycle {cycle_num}/{self.max_cycles}")
+        logger.debug(
+            "  ADAPTIVE DEFENSE LOOP — Cycle %s/%s",
+            cycle_num,
+            self.max_cycles,
+        )
         print(f"{'━'*70}")
 
         cycle_start = time.perf_counter()
 
         # ── Stage 1: Blue Team — process telemetry ─────────────────────────────
-        print(f"\n[BLUE]  Processing telemetry batch (50 events)...")
+        print("\n[BLUE]  Processing telemetry batch (50 events)...")
         batch = self._generate_telemetry_batch(50)
-        detections = self.blue.process_telemetry_batch(batch)
+        self.blue.process_telemetry_batch(batch)
         blue_summary = self.blue.get_coverage_summary()
 
-        logger.debug("  Processed:      {blue_summary['total_processed']} events")
-        logger.debug("  Detected:       {blue_summary['detected']} alerts")
-        logger.debug("  Missed:         {blue_summary['missed']} (false negatives)")
-        logger.debug("  Detection rate: {blue_summary['detection_rate']:.1%}")
+        logger.debug("  Processed:      %s events", blue_summary["total_processed"])
+        logger.debug("  Detected:       %s alerts", blue_summary["detected"])
+        logger.debug(
+            "  Missed:         %s (false negatives)",
+            blue_summary["missed"],
+        )
+        logger.debug(
+            "  Detection rate: %.1f%%",
+            blue_summary["detection_rate"] * 100,
+        )
 
         self._audit("BLUE_CYCLE", {
             "cycle": cycle_num,
@@ -631,7 +647,7 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 2: Red Team — run all 4 APT personas ─────────────────────────
-        print(f"\n[RED]   Running APT persona simulations...")
+        print("\n[RED]   Running APT persona simulations...")
         red_results = []
         for persona in ["APT29", "APT41", "Lazarus", "FIN7"]:
             result = self.red.run_persona_simulation(persona)
@@ -648,15 +664,15 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 3: Intelligence Fusion — compute the delta ───────────────────
-        print(f"\n[FUSE]  Computing Blue/Red delta...")
+        print("\n[FUSE]  Computing Blue/Red delta...")
         intel = self.fusion.fuse(self.blue, self.red)
 
-        logger.debug("  Evasion gaps:   {len(intel.evasion_gaps)}")
-        logger.debug("  High-risk gaps: {len(intel.high_risk_gaps)}")
+        logger.debug("  Evasion gaps:   %s", len(intel.evasion_gaps))
+        logger.debug("  High-risk gaps: %s", len(intel.high_risk_gaps))
         if intel.high_risk_gaps:
             for gap in intel.high_risk_gaps[:3]:
                 risk = IntelligenceFusion.GAP_RISK_SCORES.get(gap, 0)
-                logger.debug("    ⚠ {gap}  risk={risk:.1f}/10")
+                logger.debug("    ⚠ %s  risk=%.1f/10", gap, risk)
 
         self._audit("INTELLIGENCE_FUSION", {
             "cycle":        cycle_num,
@@ -666,16 +682,20 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 4: Rule Evolution — generate new detection rules ─────────────
-        print(f"\n[EVOLVE] Synthesizing new detection rules...")
+        print("\n[EVOLVE] Synthesizing new detection rules...")
         new_rules = self.evolution.synthesize_rules(intel)
         deployed  = self.evolution.deploy_rules(new_rules)
         coverage_gain = self.evolution.estimate_coverage_improvement(new_rules)
 
-        logger.debug("  Rules generated: {len(new_rules)}")
-        logger.debug("  Rules deployed:  {deployed}")
-        logger.debug("  Est. coverage gain: +{coverage_gain:.1%}")
+        logger.debug("  Rules generated: %s", len(new_rules))
+        logger.debug("  Rules deployed:  %s", deployed)
+        logger.debug("  Est. coverage gain: +%.1f%%", coverage_gain * 100)
         for rule in new_rules:
-            logger.debug("    ✓ [{rule.rule_type}] {rule.rule_content.get('title', rule.rule_id)}")
+            logger.debug(
+                "    ✓ [%s] %s",
+                rule.rule_type,
+                rule.rule_content.get("title", rule.rule_id),
+            )
 
         self._audit("RULE_EVOLUTION", {
             "cycle":         cycle_num,
@@ -711,7 +731,11 @@ class AdaptiveDefenseLoop:
         """Run the full adaptive defense loop for max_cycles iterations."""
         print("\n" + "="*70)
         print("  SHADOW313 v3 — ADAPTIVE DEFENSE LOOP")
-        logger.debug("  Cycles: {self.max_cycles}  |  Mode: {'DRY-RUN' if self.dry_run else 'LIVE'}")
+        logger.debug(
+            "  Cycles: %s  |  Mode: %s",
+            self.max_cycles,
+            "DRY-RUN" if self.dry_run else "LIVE",
+        )
         print("="*70)
 
         t_start = time.perf_counter()
@@ -730,18 +754,21 @@ class AdaptiveDefenseLoop:
         print(f"\n{'='*70}")
         logger.debug("  ADAPTIVE DEFENSE LOOP — FINAL REPORT")
         print(f"{'='*70}")
-        logger.debug("  Cycles completed:      {self.max_cycles}")
-        logger.debug("  Total rules generated: {total_rules}")
-        logger.debug("  Total coverage gain:   +{total_coverage_gain:.1%}")
-        logger.debug("  Baseline coverage:     {baseline_coverage:.1%}")
-        logger.debug("  Projected coverage:    {projected_coverage:.1%}")
-        logger.debug("  Audit entries:         {len(self.audit_chain)}")
-        logger.debug("  Total runtime:         {total_ms:.0f} ms")
+        logger.debug("  Cycles completed:      %s", self.max_cycles)
+        logger.debug("  Total rules generated: %s", total_rules)
+        logger.debug(
+            "  Total coverage gain:   +%.1f%%",
+            total_coverage_gain * 100,
+        )
+        logger.debug("  Baseline coverage:     %.1f%%", baseline_coverage * 100)
+        logger.debug("  Projected coverage:    %.1f%%", projected_coverage * 100)
+        logger.debug("  Audit entries:         %s", len(self.audit_chain))
+        logger.debug("  Total runtime:         %.0f ms", total_ms)
 
         # Cycle-by-cycle table
         print(f"\n  {'Cycle':<8} {'Blue Det%':<12} {'Red Det%':<12} "
               f"{'Gaps':<8} {'Rules':<8} {'Gain':<8}")
-        logger.debug("  {'─'*60}")
+        logger.debug("%s", "─" * 60)
         for c in self.cycle_log:
             print(f"  {c['cycle']:<8} "
                   f"{c['blue_detection_rate']:.1%}{'':>5} "
@@ -766,8 +793,8 @@ class AdaptiveDefenseLoop:
         _ensure_parent(ADL_REPORT_PATH)
         ADL_REPORT_PATH.write_text(json.dumps(report, indent=2))
         print(f"\n  Report saved to: {ADL_REPORT_PATH}")
-        logger.debug("  Rules saved to:  {EVOLVED_RULES}")
-        logger.debug("  Audit log:       {ADL_LOG_PATH}")
+        logger.debug("  Rules saved to:  %s", EVOLVED_RULES)
+        logger.debug("  Audit log:       %s", ADL_LOG_PATH)
 
         return report
 
