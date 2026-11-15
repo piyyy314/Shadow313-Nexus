@@ -168,4 +168,4 @@ def test_runtime_requirements_exclude_ci_scanners_and_test_tools():
         assert not any(line.strip().startswith(package) for line in runtime.splitlines())
     for package in ("bandit", "pip-audit", "pytest", "pytest-asyncio", "pytest-cov"):
         assert any(line.strip().startswith(package) for line in development.splitlines())
-    assert "safety" not in development
+    assert not any(line.strip().startswith("safety") for line in development.splitlines())
