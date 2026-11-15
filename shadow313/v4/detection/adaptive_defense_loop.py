@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 Shadow313 v3 — Adaptive Defense Loop (ADL)
 ===========================================
@@ -21,24 +20,37 @@ Just the real closed loop between detection, response, and evolution.
 Author: Shadow313 Core Team
 """
 
+from __future__ import annotations
+
 
 import hashlib
 import json
+import logging
+import os
 import random
 import secrets  # for cryptographic operations
 import time
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
-import logging
+
 logger = logging.getLogger(__name__)
 
 
 # ── Shared paths ───────────────────────────────────────────────────────────────
-ADL_LOG_PATH    = Path("/tmp/shadow313_adl_log.jsonl")
-ADL_REPORT_PATH = Path("/tmp/shadow313_adl_report.json")
-EVOLVED_RULES   = Path("/tmp/shadow313_evolved_rules.json")
+STATE_DIR = Path(
+    os.environ.get(
+        "SHADOW313_STATE_DIR",
+        str(Path.home() / ".local" / "state" / "shadow313"),
+    )
+)
+ADL_LOG_PATH = STATE_DIR / "adl_log.jsonl"
+ADL_REPORT_PATH = STATE_DIR / "adl_report.json"
+EVOLVED_RULES = STATE_DIR / "evolved_rules.json"
+
+
+def _ensure_parent(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
 
 
 # ── Data models ────────────────────────────────────────────────────────────────
@@ -51,7 +63,7 @@ class DetectionEvent:
     score:       float
     technique:   str
     host:        str
-    timestamp:   str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:   str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     evaded:      bool = False  # True if red team bypassed detection
 
 
@@ -65,7 +77,7 @@ class RedTeamResult:
     ttps_evaded:     list[str]
     detection_rate:  float
     evasion_gaps:    list[str]    # specific blind spots found
-    timestamp:       str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:       str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -77,7 +89,7 @@ class EvolvedRule:
     trigger:      str          # what gap triggered this rule
     rule_content: dict
     confidence:   float
-    generated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    generated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     deployed:     bool = False
 
 
@@ -94,7 +106,7 @@ class FusedIntelligence:
     evasion_gaps:       list[str]
     high_risk_gaps:     list[str]   # gaps with CVSS-equivalent risk ≥ 7.0
     recommended_rules:  list[str]
-    timestamp:          str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:          str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 # ── Blue Team: Detection Engine Interface ──────────────────────────────────────
@@ -517,6 +529,7 @@ class RuleEvolutionEngine:
             existing[rule.rule_id] = asdict(rule)
             deployed += 1
 
+        _ensure_parent(EVOLVED_RULES)
         EVOLVED_RULES.write_text(json.dumps(existing, indent=2))
         return deployed
 
@@ -565,11 +578,12 @@ class AdaptiveDefenseLoop:
         chain_hash = hashlib.sha256((self._prev_hash + entry_json).encode()).hexdigest()
         self._prev_hash = chain_hash
         self.audit_chain.append(chain_hash)
+        _ensure_parent(ADL_LOG_PATH)
         with open(ADL_LOG_PATH, "a") as f:
             f.write(json.dumps({
                 "type": entry_type, "data": data,
                 "chain_hash": chain_hash,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }) + "\n")
         return chain_hash
 
@@ -737,7 +751,7 @@ class AdaptiveDefenseLoop:
                   f"+{c['coverage_gain']:.1%}")
 
         report = {
-            "run_timestamp":       datetime.now(timezone.utc).isoformat(),
+            "run_timestamp":       datetime.now(UTC).isoformat(),
             "cycles":              self.max_cycles,
             "total_rules":         total_rules,
             "total_coverage_gain": round(total_coverage_gain, 4),
@@ -749,6 +763,7 @@ class AdaptiveDefenseLoop:
             "evolved_rules":       [asdict(r) for r in self.evolution.generated_rules],
         }
 
+        _ensure_parent(ADL_REPORT_PATH)
         ADL_REPORT_PATH.write_text(json.dumps(report, indent=2))
         print(f"\n  Report saved to: {ADL_REPORT_PATH}")
         logger.debug("  Rules saved to:  {EVOLVED_RULES}")
