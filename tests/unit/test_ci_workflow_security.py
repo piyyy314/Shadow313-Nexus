@@ -71,3 +71,35 @@ def test_mypy_checks_changed_files_without_blocking_on_imported_modules():
         encoding="utf-8"
     )
     assert '--follow-imports=silent' in workflow
+
+
+def test_pr_checks_lint_and_security_gates_fail_closed():
+    workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "Identify changed Python and YAML files" in workflow
+    assert "Run Ruff on changed Python files" in workflow
+    assert "Run Black on changed Python files" in workflow
+    assert "Run yamllint on changed YAML files" in workflow
+    for line in workflow.splitlines():
+        if any(
+            command in line
+            for command in ("ruff check", "black --check", "yamllint -c")
+        ):
+            assert "|| true" not in line
+    assert "name: SAST (Bandit)" in workflow
+    assert "Bandit + Semgrep" not in workflow
+    assert "Enforce high-severity Bandit threshold" in workflow
+    assert 'finding.get("issue_severity") == "HIGH"' in workflow
+    assert "safety==3.8.1" in workflow
+    assert "safety check --full-report || true" not in workflow
+
+
+def test_nightly_security_scanners_do_not_hide_tool_failures():
+    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "safety==3.8.1" in workflow
+    assert "safety check --full-report --json > nightly-safety.json || true" not in workflow
+    assert "bandit -r shadow313/ nexus_toolkit/" in workflow
+    assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow

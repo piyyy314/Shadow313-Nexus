@@ -13,7 +13,7 @@ python -m pytest tests/ -q --tb=short
 2. Create a branch: `git checkout -b feat/your-feature`
 3. Add or update focused tests for the behavior you change. Test counts vary by branch and optional dependencies; do not publish a fixed passing-test total.
 4. Implement your feature
-5. Run: `pytest tests/ -q`
+5. Run: `python -m pytest tests/ -q --tb=short`
 6. Commit: `feat: add X module`
 7. Open a Pull Request
 

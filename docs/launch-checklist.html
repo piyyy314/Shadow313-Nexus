@@ -105,7 +105,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <!-- Connection Diagram -->
 <div class="conn-diagram">
   <div><span class="node">Users</span> <span class="arrow">──HTTPS──▶</span> <span class="node">Vercel</span> <span class="label">(shadow313.dev)</span> <span class="arrow">◀──git push──</span> <span class="node">GitHub</span></div>
-  <div><span class="node">Vercel</span> <span class="arrow">──serves──▶</span> <span class="label">HTML/JS/CSS (158 routes)</span></div>
+  <div><span class="node">Vercel</span> <span class="arrow">──serves──▶</span> <span class="label">HTML/JS/CSS (configured routes)</span></div>
   <div><span class="node">Browser</span> <span class="arrow">──API calls──▶</span> <span class="node">Hetzner VPS</span> <span class="label">(:8000 Shadow313 API)</span></div>
   <div><span class="node">Hetzner VPS</span> <span class="arrow">──WireGuard──▶</span> <span class="node">Your Laptop</span> <span class="label">(encrypted tunnel)</span></div>
   <div><span class="node">Hetzner VPS</span> <span class="arrow">──runs──▶</span> <span class="label">Docker: API + Telegram Bot + PostgreSQL + Nginx</span></div>
@@ -149,14 +149,14 @@ netsh interface ip show dns "Wi-Fi"</div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Start Docker stack <span class="badge-now">DO NOW</span></div>
       <div class="step-desc">Start Shadow313 API + all services (Open WebUI already running)</div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 docker compose up -d
 docker ps  # verify all containers running</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Fix Ollama context window <span class="badge-now">DO NOW</span></div>
       <div class="step-desc">System prompt is 9,918 tokens but num_ctx was 8,192 — causes HTTP 400 errors in Open WebUI</div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus\ollama
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"\ollama
 # Edit Modelfile — change num_ctx 8192 to num_ctx 16384
 (Get-Content Modelfile) -replace 'num_ctx 8192','num_ctx 16384' | Set-Content Modelfile
 ollama create matarmohamad313/shadow313-nexus -f Modelfile
@@ -176,17 +176,17 @@ ollama push matarmohamad313/shadow313-nexus</div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Buy the server <span class="badge-1hr">1 HOUR</span></div>
-      <div class="step-desc">hetzner.com/cloud → Add Server → exact config below</div>
+      <div class="step-desc">hetzner.com/cloud → review the example configuration below and verify current availability and terms before ordering</div>
       <div class="config-box">
-        <div class="config-title">Exact Hetzner Configuration</div>
+        <div class="config-title">Example Hetzner Configuration (verify at checkout)</div>
         <div class="config-row"><span class="config-key">Plan</span><span class="config-val">CX22 — 2 vCPU, 4GB RAM, 40GB SSD</span></div>
-        <div class="config-row"><span class="config-key">Price</span><span class="config-val">€3.29/mo (~$4.80 CAD)</span></div>
-        <div class="config-row"><span class="config-key">Location</span><span class="config-val">Ashburn, VA (closest to Ottawa)</span></div>
+        <div class="config-row"><span class="config-key">Price</span><span class="config-val">Verify current regional pricing in the provider console before ordering</span></div>
+        <div class="config-row"><span class="config-key">Location</span><span class="config-val">Choose a region after checking latency, data residency, and provider availability</span></div>
         <div class="config-row"><span class="config-key">Image</span><span class="config-val">Ubuntu 24.04 LTS</span></div>
         <div class="config-row"><span class="config-key">SSH Key</span><span class="config-val">Add your public key (generate below)</span></div>
         <div class="config-row"><span class="config-key">Firewall</span><span class="config-val">Create new: allow 22/tcp, 51820/udp, 80/tcp, 443/tcp</span></div>
         <div class="config-row"><span class="config-key">Name</span><span class="config-val">shadow313-nexus-vps</span></div>
-        <div class="config-row"><span class="config-key">Backups</span><span class="config-val">Enable (€0.66/mo extra — worth it)</span></div>
+        <div class="config-row"><span class="config-key">Backups</span><span class="config-val">Verify current backup pricing, retention, and restore requirements before enabling</span></div>
       </div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
@@ -338,7 +338,7 @@ TXT @  "v=spf1 include:_spf.google.com ~all"
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Create email addresses <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd">mohamad@shadow313.dev      # Primary — you
-security@shadow313.dev     # CVE reports / bug bounty
+security@shadow313.dev     # Security disclosures; no paid bounty program
 support@shadow313.dev      # Customer support
 billing@shadow313.dev      # License / payment
 noreply@shadow313.dev      # Automated emails</div>
@@ -365,7 +365,7 @@ noreply@shadow313.dev      # Automated emails</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Create v4.0.0 release tag <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 git tag -a v4.0.0 -m "Shadow313 NEXUS v4.0.0 — Test status: see live CI results"
 git push origin v4.0.0</div>
     </div></div>
@@ -420,14 +420,14 @@ SHADOW313_CORS_ORIGINS=https://shadow313.dev,https://shadow313.com</div>
       <div class="step-desc">Vercel → Project → Settings → Domains → Add shadow313.com → follow DNS instructions</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Test all 158 routes <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-title">Validate configured public routes <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\shadow313-html-auditor.ps1</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Enable Vercel Analytics <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">Vercel → Project → Analytics → Enable — free tier shows page views, visitors, performance</div>
+      <div class="step-desc">Review current plan availability, pricing, privacy, and consent settings; verify analytics after deployment</div>
     </div></div>
   </div>
 </div>
@@ -453,7 +453,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Add to .env and start bot <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 # Add to .env:
 Add-Content .env "TELEGRAM_BOT_TOKEN=your_token_here"
 Add-Content .env "TELEGRAM_CHAT_ID=-1001234567890"
@@ -504,11 +504,14 @@ docker logs telegram-bot</div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Install Shadow313 CLI in Ubuntu <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "
-cd /mnt/c/Users/shiatoali/shadow313-nexus
-pip install -e '.[full]' --break-system-packages
-pip install pyspx --break-system-packages
-shadow313 --version"</div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -lc '
+cd "$HOME/Shadow313-Nexus"
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[full]"
+shadow313 --version
+'</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Verify Open WebUI connects to Ollama <span class="badge-today">PLANNED</span></div>
@@ -527,7 +530,7 @@ powershell.exe -Command "Resume-BitLocker -MountPoint C:"</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Run full system verification <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\full-system-check.ps1</div>
     </div></div>
@@ -545,11 +548,11 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">docs/status.html — proposed status page (verify route and implementation) <span class="badge-week">THIS WEEK</span></div>
-      <div class="step-desc">Shows: test count (3614 GREEN), POSTURE, uptime, last deploy, API health</div>
+      <div class="step-desc">Shows: a link to the current CI run and commit; uptime and API health only when backed by active monitors</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">docs/roadmap.html — Public roadmap <span class="badge-week">THIS WEEK</span></div>
-      <div class="step-desc">Q4 2026: liboqs ML-DSA, Stripe payments, 313-BIND portal live API. Q1 2027: HSM, mobile app, federated mesh beta</div>
+      <div class="step-desc">Proposed, uncommitted roadmap only: evaluate liboqs/ML-DSA integration, payment processing, the 313-BIND API, HSM support, a mobile client, and federated mesh; publish dates only after implementation is scoped</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">docs/platform/ — 9 module pages <span class="badge-week">THIS WEEK</span></div>

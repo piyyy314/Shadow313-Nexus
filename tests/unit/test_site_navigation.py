@@ -329,5 +329,41 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertIn('p_temp.add_argument("--verify"', cli)
 
 
+    def test_marketplace_demo_pages_do_not_claim_live_connections_or_metrics(self):
+        public_live = (ROOT / "marketplace/analytics-live.html").read_text()
+        bundle_live = (ROOT / "local_bundle/marketplace-live.html").read_text()
+        bundle_analytics = (ROOT / "local_bundle/marketplace-analytics.html").read_text()
+
+        self.assertNotIn("live-stream", public_live)
+        self.assertIn("demo-stream", public_live)
+        self.assertNotIn("live-stream", bundle_live)
+        self.assertIn("demo-stream", bundle_live)
+        self.assertIn("DEMO MODE", bundle_live)
+        self.assertNotIn(">● CONNECTED</span>", bundle_live)
+        self.assertNotIn('class="badge bc">WEBSOCKET</span>', bundle_live)
+
+        for sample_metric in (
+            "68%",
+            ">72</span>",
+            ">48</span>",
+            ">38</span>",
+            ">32</span>",
+            ">28</span>",
+            ">25</span>",
+        ):
+            self.assertNotIn(sample_metric, bundle_analytics)
+        self.assertIn("SAMPLE DATA", bundle_analytics)
+
+    def test_launch_checklist_avoids_unverified_prices_and_unsafe_install_commands(self):
+        checklist = (ROOT / "docs/launch-checklist.html").read_text()
+        self.assertNotIn("€3.29/mo", checklist)
+        self.assertNotIn("€0.66/mo", checklist)
+        self.assertNotIn("3614 GREEN", checklist)
+        self.assertNotIn("158 routes", checklist)
+        self.assertNotIn("bug bounty", checklist.lower())
+        self.assertNotIn("--break-system-packages", checklist)
+        self.assertIn("python3 -m venv .venv", checklist)
+        self.assertIn("current CI run and commit", checklist)
+
 if __name__ == '__main__':
     unittest.main()
