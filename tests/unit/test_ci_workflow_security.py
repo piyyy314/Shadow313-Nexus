@@ -1,6 +1,7 @@
 """Regression tests for CI security configuration and local artifact paths."""
 
 import asyncio
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -41,7 +42,8 @@ def test_adl_artifacts_use_a_configurable_state_directory():
         adaptive_defense_loop.EVOLVED_RULES,
     )
     assert all(path.parent == adaptive_defense_loop.STATE_DIR for path in paths)
-    assert all("/tmp/" not in str(path).replace("\\", "/") for path in paths)
+    temp_dir = Path(tempfile.gettempdir())
+    assert all(path.parent != temp_dir for path in paths)
 
 
 def test_ghosthttp_returns_anomaly_for_slow_response_without_type_error():
