@@ -18,8 +18,8 @@ SECRET_PATTERNS = [
     (r"sk-[a-zA-Z0-9]{48}", "OpenAI Key"),
     (r"AKIA[0-9A-Z]{16}", "AWS Key"),
     (r"-----BEGIN.*PRIVATE KEY-----", "Private Key"),
-    (r"password\\s*=\\s*['\\"]{1}\\S{8,}", "Hardcoded Password"),
-    (r"api_key\\s*=\\s*['\\"]{1}\\S{8,}", "API Key"),
+    (r"password\s*=\s*['\"]{1}\S{8,}", "Hardcoded Password"),
+    (r"api_key\s*=\s*['\"]{1}\S{8,}", "API Key"),
 ]
 
 
