@@ -1,7 +1,10 @@
 """Regression tests for CI security configuration and local artifact paths."""
 
+import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 
+import shadow313.tools.redteam.ghosthttp as ghosthttp
 from shadow313.modules.cicd.pipeline import CICDPipeline
 from shadow313.v4.detection import adaptive_defense_loop
 
@@ -39,3 +42,24 @@ def test_adl_artifacts_use_a_configurable_state_directory():
     )
     assert all(path.parent == adaptive_defense_loop.STATE_DIR for path in paths)
     assert all("/tmp/" not in str(path).replace("\\", "/") for path in paths)
+
+
+def test_ghosthttp_returns_anomaly_for_slow_response_without_type_error():
+    class DelayedClient:
+        def __init__(self):
+            self.delays = iter((0.7, 0.1, 0.1, 0.1, 0.1))
+
+        async def get(self, url: str) -> SimpleNamespace:
+            await asyncio.sleep(next(self.delays))
+            return SimpleNamespace(status_code=200)
+
+    result = asyncio.run(
+        ghosthttp.GhostHTTP._timing_analysis(
+            None,
+            DelayedClient(),
+            "https://example.test",
+        )
+    )
+
+    assert len(result["anomalies"]) == 1
+    assert result["anomalies"][0]["ms"] > 500
