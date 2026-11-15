@@ -19,26 +19,7 @@ from urllib.parse import urljoin
 
 import httpx
 
-try:
-    from shadow313.core.kernel import KernelContext, register_command
-except ImportError:
-    KernelContext = object
-
-    def register_command(*a, **kw):  # nosec
-        def _deco(fn):
-            return fn
-
-        return _deco
-
-
-try:
-    from shadow313.tools.base import BaseTool, ToolResult
-except ImportError:
-    BaseTool = object
-
-    class ToolResult:  # nosec
-        def __init__(self, **kw):
-            self.__dict__.update(kw)
+from shadow313.tools.base import BaseTool, ToolResult
 
 
 logger = logging.getLogger(__name__)
@@ -173,6 +154,24 @@ class GhostHTTP(BaseTool):
     TOOL_NAME = "ghosthttp"
     TEAM = "redteam"
     DESCRIPTION = "HTTP fingerprinting engine — WAF detection, info disclosure, timing analysis"
+
+    @staticmethod
+    def _finding(
+        title: str,
+        severity: str,
+        description: str,
+        data: dict[str, Any] | None = None,
+        remediation: str = "",
+        mitre_technique: str | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "title": title,
+            "severity": severity,
+            "description": description,
+            "data": data or {},
+            "remediation": remediation,
+            "mitre_technique": mitre_technique,
+        }
 
     async def run(self, target: str, **kwargs: Any) -> ToolResult:
         result = ToolResult(tool_name=self.TOOL_NAME, target=target)
@@ -376,7 +375,12 @@ Provide:
         self, client: httpx.AsyncClient, url: str, baseline: dict[str, Any]
     ) -> dict[str, Any]:
         """Detect WAF/CDN presence via header and behavioral analysis."""
-        result = {"detected": False, "waf_name": None, "confidence": 0.0, "bypass_hints": []}
+        result: dict[str, Any] = {
+            "detected": False,
+            "waf_name": None,
+            "confidence": 0.0,
+            "bypass_hints": [],
+        }
 
         headers_lower = {k.lower(): v.lower() for k, v in baseline.get("headers", {}).items()}
 
@@ -744,13 +748,15 @@ Provide:
             )
 
 
-@register_command("tools", "ghosthttp")
-async def run_ghosthttp(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
-    """GhostHTTP — HTTP fingerprinting engine."""
+async def run_ghosthttp(ctx: Any, **kwargs: Any) -> dict[str, Any]:
+    """Run the GhostHTTP tool using the active kernel context."""
     target = kwargs.get("target", "")
     if not target:
-        ctx.output.error("No target specified")
+        output = getattr(ctx, "out", None)
+        if output is not None:
+            output.error("No target specified")
         return {}
-    tool = GhostHTTP(ctx)
-    result = await tool.run_with_ai(target, **kwargs)
+
+    tool_kwargs = {key: value for key, value in kwargs.items() if key != "target"}
+    result = await GhostHTTP().run(target, **tool_kwargs)
     return result.to_dict()
