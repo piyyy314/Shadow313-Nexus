@@ -18,7 +18,6 @@ from typing import Any
 from urllib.parse import urljoin
 
 import httpx
-
 from shadow313.tools.base import BaseTool, ToolResult
 
 
