@@ -61,6 +61,8 @@ python -m pytest tests/ -q --tb=short
 
 Optional dependency groups are declared in `pyproject.toml`. Install only the groups needed for the integration you intend to use. The `full` extra is a convenience subset; it does not include every heavyweight or external integration.
 
+`requirements.txt` contains application and optional-feature dependencies. `requirements-dev.txt` layers test and local audit tools on top; the editable `.[dev]` install above remains the recommended developer setup. Safety CLI is installed by CI as a scanner and is not an application/runtime dependency.
+
 ## CLI quick reference
 
 Check the installed version and available commands:
