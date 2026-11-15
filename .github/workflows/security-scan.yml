@@ -32,7 +32,9 @@ jobs:
         run: pip install pip-audit==2.10.1
 
       - name: Install project dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          pip install -r requirements.txt
 
       - name: Audit installed project dependencies
         id: pip_audit_local
@@ -44,13 +46,19 @@ jobs:
         continue-on-error: true
         run: pip-audit --desc --format json -o nightly-pip-audit-requirements.json -r requirements.txt
 
-      - name: Install supplementary scanners
-        run: pip install safety==3.8.1 bandit==1.9.4
+      - name: Freeze resolved application dependencies for Safety
+        run: python -m pip freeze --exclude-editable > requirements-audit-resolved.txt
 
-      - name: Run Safety against runtime requirements
+      - name: Install supplementary scanners
+        run: pip install bandit==1.9.4
+
+      - name: Run Safety against resolved application dependencies
         id: safety_scan
         continue-on-error: true
-        run: safety check --full-report --json -r requirements.txt > nightly-safety.json
+        run: |
+          python -m venv "$RUNNER_TEMP/safety-env"
+          "$RUNNER_TEMP/safety-env/bin/python" -m pip install --disable-pip-version-check safety==3.8.1
+          "$RUNNER_TEMP/safety-env/bin/safety" check --full-report --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json
 
       - name: Run Bandit
         id: bandit_scan
@@ -87,6 +95,7 @@ jobs:
           path: |
             nightly-pip-audit-local.json
             nightly-pip-audit-requirements.json
+            requirements-audit-resolved.txt
             nightly-safety.json
             nightly-bandit.json
           retention-days: 30
