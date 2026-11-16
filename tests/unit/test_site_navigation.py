@@ -46,11 +46,13 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertNotIn('--ignore=tests/integration', content)
         guide = (ROOT / 'CONTRIBUTING.md').read_text()
         self.assertIn('python -m pip install -e ".[dev]"', guide)
-        self.assertNotRegex(
-            guide,
-            r"\\b\\d[\\d,]*(?:\\s*/\\s*\\d[\\d,]*)?\\s*\\+?\\s*"
-            r"tests?\\s+(?:GREEN|passing|passed|included|all passing)\\b",
+        stale_total = re.compile(
+            r"\b\d[\d,]*(?:\s*/\s*[\d,]*)?\s*\+?\s*"
+            r"tests?\s+(?:GREEN|passing|passed|included|all passing)\b",
+            re.IGNORECASE,
         )
+        self.assertRegex("4,107+ tests GREEN", stale_total)
+        self.assertNotRegex(guide, stale_total)
 
     def test_html_pages_do_not_publish_fixed_test_scores(self):
         fixed_score = re.compile(
