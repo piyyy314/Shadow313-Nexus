@@ -1,5 +1,6 @@
 """Regression tests for CI security configuration and local artifact paths."""
 
+import ast
 import asyncio
 import tempfile
 from pathlib import Path
@@ -183,3 +184,48 @@ def test_runtime_requirements_exclude_ci_scanners_and_test_tools():
     for package in ("bandit", "pip-audit", "pytest", "pytest-asyncio", "pytest-cov"):
         assert any(line.strip().startswith(package) for line in development.splitlines())
     assert not any(line.strip().startswith("safety") for line in development.splitlines())
+
+
+def test_md5_fingerprints_are_nonsecurity_and_bandit_b324_is_enabled():
+    workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "B324" not in workflow
+
+    md5_paths = (
+        ROOT / "shadow313" / "modules" / "cicd" / "pipeline.py",
+        ROOT / "shadow313" / "tools" / "redteam" / "ghosthttp.py",
+        ROOT / "shadow313" / "v4" / "detection" / "advanced_detection_layer.py",
+    )
+    for path in md5_paths:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "hashlib"
+            and node.func.attr == "md5"
+        ]
+        assert calls, f"Expected a documented compatibility fingerprint in {path}"
+        for call in calls:
+            usedforsecurity = next(
+                (keyword.value for keyword in call.keywords if keyword.arg == "usedforsecurity"),
+                None,
+            )
+            assert (
+                isinstance(usedforsecurity, ast.Constant)
+                and usedforsecurity.value is False
+            ), f"{path}:{call.lineno} must mark MD5 as non-security use"
+
+    adl_path = ROOT / "shadow313" / "v4" / "detection" / "adaptive_defense_loop.py"
+    adl_tree = ast.parse(adl_path.read_text(encoding="utf-8"), filename=str(adl_path))
+    assert not any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "hashlib"
+        and node.func.attr == "md5"
+        for node in ast.walk(adl_tree)
+    )
