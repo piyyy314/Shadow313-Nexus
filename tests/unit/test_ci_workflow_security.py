@@ -1,6 +1,7 @@
 """Regression tests for CI security configuration and local artifact paths."""
 
 import ast
+import json
 import asyncio
 import tempfile
 from pathlib import Path
@@ -229,3 +230,18 @@ def test_md5_fingerprints_are_nonsecurity_and_bandit_b324_is_enabled():
         and node.func.attr == "md5"
         for node in ast.walk(adl_tree)
     )
+
+
+def test_secret_scanner_fixture_catalog_is_present_and_well_formed():
+    fixture_path = ROOT / "scripts" / "secret-fixtures.json"
+    fixtures = json.loads(fixture_path.read_text(encoding="utf-8"))
+
+    assert fixtures
+    for source_path, fingerprints in fixtures.items():
+        assert source_path and not Path(source_path).is_absolute()
+        assert fingerprints
+        assert all(
+            len(fingerprint) == 64
+            and all(character in "0123456789abcdef" for character in fingerprint)
+            for fingerprint in fingerprints
+        )
