@@ -126,6 +126,19 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
 
 
+def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
+    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "name: Dockerfile and Compose Security Audit" in workflow
+    assert "Run Checkov on Dockerfile" in workflow
+    assert "checkov -f Dockerfile" in workflow
+    assert "--framework dockerfile" in workflow
+    assert "checkov -f docker-compose.yml" not in workflow
+    assert "Verify Compose hardening assertions" in workflow
+    assert "with open('docker-compose.yml') as f:" in workflow
+
+
 def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
     api_workflow = (ROOT / ".github" / "workflows" / "shadow313-api-validate.yml").read_text(
         encoding="utf-8"

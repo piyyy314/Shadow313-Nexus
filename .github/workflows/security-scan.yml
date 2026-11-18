@@ -158,9 +158,9 @@ jobs:
       - name: Scan full Git history with Gitleaks
         run: gitleaks git --redact --exit-code 1 --log-opts="--all" .
 
-  # ── Docker compose security check ─────────────────────────────────
+  # ── Dockerfile and Compose security checks ────────────────────────
   compose-security:
-    name: Docker Compose Security Audit
+    name: Dockerfile and Compose Security Audit
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -168,13 +168,13 @@ jobs:
       - name: Install checkov
         run: pip install checkov==3.2.0
 
-      - name: Run checkov on docker-compose
+      - name: Run Checkov on Dockerfile
         run: |
-          checkov -f docker-compose.yml \
+          checkov -f Dockerfile \
             --framework dockerfile \
             --output cli
 
-      - name: Verify security hardening
+      - name: Verify Compose hardening assertions
         run: |
           python3 << 'PYEOF'
           import sys

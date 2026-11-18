@@ -1,6 +1,6 @@
 # Shadow313 Platform Integration Status
 
-Last reviewed: 2026-11-14
+Last reviewed: 2026-11-18
 
 This document is the integration control sheet for the Shadow313 repositories.
 It separates implemented code, work in review, and work that still requires
@@ -64,7 +64,7 @@ For PR #115 head `7c962bd5aee6116cbf090cd64f9068b796937c77`:
 - Python 3.11 and 3.12 unit-test jobs, SAST, secret detection, dependency scanning, Dockerfile lint, HTML validation, shell/config checks, file-integrity checks, and Python/API validation completed successfully in the observed runs.
 - The CI/CD workflow's Docker build and security scan completed successfully. PyPI and TestPyPI publication jobs were skipped.
 - The Vercel workflow's quality checks passed, but both production and preview deployment jobs were skipped. Do not describe this run as a deployment.
-- All currently listed inline review threads on PR #115 are resolved. The PR remains open and is not merged.
+- All 14 currently listed inline review threads on PR #115 are resolved. No human approval is recorded; the PR remains open, draft, and unmerged.
 
 - External Snyk contexts are still not green on this head: both `code/snyk` contexts report `error`, and `security/snyk` reports `failure`. The earlier Snyk Code response was a provider test-quota limit; the security failure requires provider-side finding review. These external checks are unresolved and must not be described as passed.
 
@@ -74,11 +74,24 @@ Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/r
 
 The updated head `fec9e2415807562509f64ecd98c30ca8a911cdd9` completed its GitHub Actions checks successfully: Python 3.11/3.12 tests, lint, Bandit/Semgrep, Gitleaks, dependency audit, Docker build, distribution build, PR Checks, and full pre-deploy validation. PyPI/TestPyPI publication jobs and Vercel preview/production deployment jobs were skipped. The branch remains open and unmerged; platform-specific Windows/macOS coverage is not established by these Linux runner results.
 
-### Master nightly container security scan
+### Master nightly container and dependency security scan
 
-The November 14 nightly run [`43544839618`](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43544839618) passed the dependency audit, Git-history secret scan, and Docker Compose security audit, but the Trivy image scan failed with the configured `CRITICAL,HIGH` threshold and uploaded SARIF to GitHub Code Scanning. The workflow artifact available here did not include the Trivy SARIF payload, and the code-scanning alerts endpoint was not accessible in this review. The specific CVEs therefore remain unverified in this handoff; inspect the repository's Code Scanning alerts and remediate before treating the master security gate as green.
+The latest master run, [Nightly Security Scan #44221496259](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44221496259), ran on 2026-11-18 at master SHA `38471258650dce774d7521831e3dda909517117c` and failed.
 
-For PR #116, the CI-repair and site-consistency branch remains under active validation. Its status is commit-specific; consult the live [PR checks](https://github.com/piyyy314/Shadow313-Nexus/pull/116) and [Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) rather than copying a previous run's result into this document.
+- Gitleaks completed its full-history scan; the uploaded SARIF artifact contains zero results.
+- pip-audit 2.7.3 reported no known vulnerabilities in the audited environment.
+- Safety 3.1.0 failed to start with `AttributeError: module 'typer' has no attribute 'rich_utils'`; `nightly-safety.json` is empty. The master workflow masks this failure with `|| true`, so the green Full Dependency Audit job conclusion is not evidence of a completed Safety scan.
+- Bandit 1.7.8 produced 8 HIGH B324, 69 MEDIUM, and 312 LOW findings. The eight HIGH findings are weak-MD5 warnings in `pipeline.py`, `ghosthttp.py`, `adaptive_defense_loop.py`, and `advanced_detection_layer.py`. These are static-analysis findings requiring review, not proof of exploit.
+- Trivy completed the container scan at the configured `CRITICAL,HIGH` threshold and exited 1. SARIF upload to GitHub Code Scanning completed, but the SARIF payload and individual alerts were not retrievable through this connection; the CVE list therefore remains unverified.
+- The Docker Compose Security Audit job concluded success, but Checkov logged `There are no runners to run` because it was invoked with `--framework dockerfile` against `docker-compose.yml`. The seven custom Compose hardening assertions passed; Checkov did not perform a meaningful scan.
+
+PR #116 now corrects the Checkov target to the repository `Dockerfile` while retaining the separate Compose hardening assertions, with a regression test for the prior mismatched invocation. The nightly workflow is schedule/workflow-dispatch only, so the corrected Checkov command must be verified by a subsequent security-scan run; no successful Checkov result is claimed yet.
+
+### PR #116 — latest validated state
+
+At the last fully validated head `80857979a0d30c981d6368e657462a2f67b4d620`, five internal workflows passed on 2026-11-17: [PR Checks #44103166387](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166387), [Full Pre-Deploy #44103166430](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166430), [CI/CD #44103166443](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166443), [API validation #44103166536](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166536), and [Vercel workflow #44103166563](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166563). Full Pre-Deploy reported 4,910 passed, 51 skipped, and one warning; each Python PR-check matrix reported 4,853 passed, 51 skipped, and one warning.
+
+All 10 inline review threads are resolved, but no human approval is recorded. GitGuardian is neutral, CodeRabbit is skipped, both `code/snyk` contexts are errors, and `security/snyk` is success. Ten other third-party check suites remain queued. The Vercel workflow's quality job passed, but both preview and production deployment jobs were skipped. Follow-up documentation, marketplace, dashboard, and Checkov repairs are newer than this validated head and must receive fresh exact-head checks.
 
 Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
 
@@ -147,9 +160,8 @@ Do not silently merge the distinct SQLite stores in the two repositories.
 
 - [ ] Revoke and rotate the exposed TLS private key; verify it is absent from
   current artifacts and handle Git history exposure.
-- [ ] Complete review and validation of PRs #107, #108, and #109.
-- [ ] Finish PR #115 CI checks and review the new SOC routes, store lifecycle,
-  permissions, and deployment configuration.
+- [ ] Verify external post-merge follow-up for PRs #107, #108, and #109: key rotation/history exposure, rebuilt and scanned images, and the Compose upload path. Merge status alone is not runtime evidence.
+- [ ] Obtain human review and complete provider-side Snyk triage for PR #115. Internal GitHub Actions are green on its current head, but the PR remains draft and its two code/snyk contexts are errors while security/snyk is failure.
 - [ ] Ensure all API startup paths fail closed when required credentials are
   absent.
 - [ ] Verify backups, restore, TLS termination, and external exposure boundaries.
@@ -216,11 +228,7 @@ Key corrections include:
   allowlisted HTML output. This notice supplements, but does not replace,
   page-specific accuracy and source review.
 
-At the latest observed PR #116 head during this review
-(`3c317fb77bc70a90f8859be444612b5aca423d4f`), the newly triggered GitHub
-Actions runs were still queued or in progress. The two Snyk code-test statuses
-continued to report quota exhaustion. Do not call the documentation changes
-validated until the exact head's HTML, route, lint, and test workflows finish.
+At the last fully validated PR #116 head (`80857979a0d30c981d6368e657462a2f67b4d620`), the five internal workflows listed above succeeded. Newer branch repairs are pending exact-head validation. Both Snyk Code contexts currently report `error` with no specific cause exposed in the status payload; Snyk Security is `success`. GitGuardian is `neutral`, CodeRabbit is `skipped`, and no human approval is recorded. The Vercel workflow's preview and production deployment jobs were skipped, so no deployment is implied.
 
 ## Definition of done
 

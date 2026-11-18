@@ -100,6 +100,15 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertNotIn('12/14', ssp)
         self.assertNotIn('~20%', ssp)
         self.assertNotIn('~65 of 323 controls', ssp)
+        for unsupported_claim in (
+            '2071/2071 tests',
+            'SDS=0',
+            'Snyk SBOM',
+            'Daily automated backup, 30-day retention',
+            'MFA enforced',
+        ):
+            self.assertNotIn(unsupported_claim, ssp)
+        self.assertIn('test totals and scanner status are not assessed', ssp)
 
         architecture = (ROOT / 'docs/shadow313-nexus-architecture.html').read_text()
         self.assertNotIn('Live and pushed', architecture)
@@ -345,6 +354,10 @@ class SiteNavigationTests(unittest.TestCase):
         public_live = (ROOT / "marketplace/analytics-live.html").read_text()
         bundle_live = (ROOT / "local_bundle/marketplace-live.html").read_text()
         bundle_analytics = (ROOT / "local_bundle/marketplace-analytics.html").read_text()
+        marketplace = (ROOT / "marketplace/index.html").read_text()
+
+        self.assertNotIn("136/265 techniques (51.4%)", marketplace)
+        self.assertIn("not validated detection coverage", marketplace.lower())
 
         self.assertNotIn("live-stream", public_live)
         self.assertIn("demo-stream", public_live)
