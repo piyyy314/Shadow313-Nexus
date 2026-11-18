@@ -87,11 +87,15 @@ The latest master run, [Nightly Security Scan #44221496259](https://github.com/p
 
 PR #116 now corrects the Checkov target to the repository `Dockerfile` while retaining the separate Compose hardening assertions, with a regression test for the prior mismatched invocation. The nightly workflow is schedule/workflow-dispatch only, so the corrected Checkov command must be verified by a subsequent security-scan run; no successful Checkov result is claimed yet.
 
-### PR #116 — latest validated state
+### PR #116 — latest validated code state
 
-At the last fully validated head `80857979a0d30c981d6368e657462a2f67b4d620`, five internal workflows passed on 2026-11-17: [PR Checks #44103166387](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166387), [Full Pre-Deploy #44103166430](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166430), [CI/CD #44103166443](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166443), [API validation #44103166536](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166536), and [Vercel workflow #44103166563](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44103166563). Full Pre-Deploy reported 4,910 passed, 51 skipped, and one warning; each Python PR-check matrix reported 4,853 passed, 51 skipped, and one warning.
+The latest code changes are on head `eedf4715601f38efad4c33813078a04ebafd78e8` ([commit](https://github.com/piyyy314/Shadow313-Nexus/commit/eedf4715601f38efad4c33813078a04ebafd78e8)). All five internal workflows completed successfully on 2026-11-18: [PR Checks #44332317172](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317172), [Full Pre-Deploy #44332317365](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317365), [CI/CD #44332317243](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317243), [API validation #44332317211](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317211), and [Vercel workflow #44332317179](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317179).
 
-All 10 inline review threads are resolved, but no human approval is recorded. GitGuardian is neutral, CodeRabbit is skipped, both `code/snyk` contexts are errors, and `security/snyk` is success. Ten other third-party check suites remain queued. The Vercel workflow's quality job passed, but both preview and production deployment jobs were skipped. Follow-up documentation, marketplace, dashboard, and Checkov repairs are newer than this validated head and must receive fresh exact-head checks.
+Full Pre-Deploy reported 4,911 passed, 51 skipped, and one Starlette/httpx deprecation warning. Each Python PR-check matrix reported 4,854 passed, 51 skipped, and one warning. The CI/CD security job retained 171 Bandit findings with zero high-severity findings; pip-audit reported no known vulnerabilities. Gitleaks completed and reported no leaks. The HTML, route, API, configuration, shell, and Git hygiene checks all passed.
+
+All 10 inline review threads are resolved, but no human approval is recorded. GitGuardian is neutral, CodeRabbit is skipped, both `code/snyk` contexts are errors, and `security/snyk` is success. Ten other third-party check suites remain queued. Copilot's review was not completed because the requesting user had insufficient remaining quota. The Vercel workflow's quality job passed, but both preview and production deployment jobs were skipped; no deployment is claimed.
+
+The Checkov target correction is covered by a regression test, but the nightly security workflow is schedule/workflow-dispatch only and has not executed on this PR branch. Its successful scanner execution remains unverified.
 
 Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
 
@@ -228,7 +232,7 @@ Key corrections include:
   allowlisted HTML output. This notice supplements, but does not replace,
   page-specific accuracy and source review.
 
-At the last fully validated PR #116 head (`80857979a0d30c981d6368e657462a2f67b4d620`), the five internal workflows listed above succeeded. Newer branch repairs are pending exact-head validation. Both Snyk Code contexts currently report `error` with no specific cause exposed in the status payload; Snyk Security is `success`. GitGuardian is `neutral`, CodeRabbit is `skipped`, and no human approval is recorded. The Vercel workflow's preview and production deployment jobs were skipped, so no deployment is implied.
+The latest validated PR #116 code head is `eedf4715601f38efad4c33813078a04ebafd78e8`; the five internal workflow runs above passed on that exact SHA. Both Snyk Code contexts remain `error` with no cause exposed in the status payload, while Snyk Security is `success`. GitGuardian is `neutral`, CodeRabbit is `skipped`, and no human approval is recorded. Vercel preview and production deployment jobs were skipped.
 
 ## Definition of done
 
