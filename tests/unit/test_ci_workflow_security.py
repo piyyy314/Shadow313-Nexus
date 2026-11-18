@@ -164,7 +164,7 @@ def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
     assert "trivy-container.json" in workflow
 
 
-def test_builder_stage_pins_trivy_confirmed_python_fixes_before_copy():
+def test_runtime_image_removes_build_tools_after_dependency_check():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     install_index = dockerfile.index("pip install --no-cache-dir --prefix=/install .")
     patch_index = dockerfile.index(
@@ -174,13 +174,12 @@ def test_builder_stage_pins_trivy_confirmed_python_fixes_before_copy():
     assert install_index < patch_index < copy_index
     builder_patch = dockerfile[patch_index:copy_index]
     assert '"msgpack==1.2.3"' in builder_patch
-    assert '"setuptools==84.1.0"' in builder_patch
     assert '"urllib3==2.8.0"' in builder_patch
+    assert '"setuptools==84.1.0"' not in dockerfile
     production_stage = dockerfile[copy_index:]
-    assert '"msgpack==1.2.3"' not in production_stage
-    assert '"setuptools==84.1.0"' not in production_stage
-    assert '"urllib3==2.8.0"' not in production_stage
-    assert "python -m pip check" in production_stage
+    check_index = production_stage.index("python -m pip check")
+    uninstall_index = production_stage.index("python -m pip uninstall -y pip setuptools")
+    assert check_index < uninstall_index
 
 
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():

@@ -43,7 +43,6 @@ COPY MANIFEST.in LICENSE CHANGELOG.md SECURITY.md requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
     && pip install --no-cache-dir --prefix=/install . \
     && pip install --no-cache-dir --prefix=/install --upgrade \
-        "setuptools==84.1.0" \
         "urllib3==2.8.0" \
         "msgpack==1.2.3"
 
@@ -76,9 +75,10 @@ ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
 
-# Keep scanner-confirmed Python package fixes in the builder layer before copying artifacts.
-RUN python -m pip install --no-cache-dir --upgrade "pip==26.2.2" \
-    && python -m pip check
+# Validate installed dependencies, then remove pip and setuptools from the runtime image.
+# Their bundled/build-only packages are not required to run the Shadow313 CLI.
+RUN python -m pip check \
+    && python -m pip uninstall -y pip setuptools
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
