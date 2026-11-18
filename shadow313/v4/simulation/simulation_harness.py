@@ -231,10 +231,6 @@ class RoutingABTestSimulation:
     Reproduces the July 2026 A/B test results.
     """
 
-    def __init__(self, rng: random.Random | None = None):
-        # Inject a seeded Random instance in tests so sample comparisons are reproducible.
-        self._rng = rng if rng is not None else random
-
     # A/B test results from §3.5
     BASELINE = {
         "routing_precision":    0.934,
@@ -275,7 +271,7 @@ class RoutingABTestSimulation:
 
                 # Sample latency (add noise)
                 base_lat = config["e2e_p50"]
-                noise    = self._rng.gauss(0, base_lat * 0.2)
+                noise    = random.gauss(0, base_lat * 0.2)
                 lat      = max(10, base_lat + noise)
                 latencies.append(lat)
 

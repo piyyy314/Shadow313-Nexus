@@ -2,7 +2,9 @@
 Simulation tests — shadow313.v4.simulation
 Runs all simulation scenarios and validates results against targets.
 """
-import random\nimport pytest
+import random
+import pytest
+from shadow313.v4.simulation import simulation_harness
 from shadow313.v4.simulation.simulation_harness import (
     LatencySimulator,
     AgentWorkflowSimulation,
@@ -126,11 +128,15 @@ class TestRoutingABTestSimulation:
         assert "hybrid"   in result
         assert "delta"    in result
 
-    def test_hybrid_better_than_baseline(self):
-        sim    = RoutingABTestSimulation(rng=random.Random(313))
+    def test_hybrid_better_than_baseline(self, monkeypatch):
+        monkeypatch.setattr(simulation_harness, "random", random.Random(313))
+        sim    = RoutingABTestSimulation()
         result = sim.run(n_requests=500)
-        # Compare one reproducible sample; the configured expected precision is also superior.
-        assert result["hybrid"]["expected"]["routing_precision"] > result["baseline"]["expected"]["routing_precision"]
+        # Compare one reproducible sample and its configured expected precision.
+        assert (
+            result["hybrid"]["expected"]["routing_precision"]
+            > result["baseline"]["expected"]["routing_precision"]
+        )
         assert result["hybrid"]["routing_precision"] >= result["baseline"]["routing_precision"]
 
     def test_delta_computed(self):
@@ -142,10 +148,14 @@ class TestRoutingABTestSimulation:
         # Winner should be hybrid (higher expected precision) — allow baseline on small samples
         assert delta["winner"] in ("hybrid", "baseline")
 
-    def test_fallback_rate_lower_in_hybrid(self):
-        sim    = RoutingABTestSimulation(rng=random.Random(313))
+    def test_fallback_rate_lower_in_hybrid(self, monkeypatch):
+        monkeypatch.setattr(simulation_harness, "random", random.Random(313))
+        sim    = RoutingABTestSimulation()
         result = sim.run(n_requests=500)
-        assert result["hybrid"]["expected"]["fallback_rate"] < result["baseline"]["expected"]["fallback_rate"]
+        assert (
+            result["hybrid"]["expected"]["fallback_rate"]
+            < result["baseline"]["expected"]["fallback_rate"]
+        )
         assert result["hybrid"]["fallback_rate"] <= result["baseline"]["fallback_rate"]
 
 
