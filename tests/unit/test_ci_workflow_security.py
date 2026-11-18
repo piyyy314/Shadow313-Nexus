@@ -126,6 +126,26 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
 
 
+def test_nightly_security_scan_runs_for_security_relevant_pull_requests():
+    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "  pull_request:" in workflow
+    assert "    branches:" in workflow
+    assert "      - master" in workflow
+    for path in (
+        ".github/workflows/security-scan.yml",
+        "Dockerfile",
+        "docker-compose.yml",
+        "pyproject.toml",
+        "requirements*.txt",
+        "shadow313/**",
+        "nexus_toolkit/**",
+        "scripts/**",
+    ):
+        assert f'      - "{path}"' in workflow
+
+
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
         encoding="utf-8"

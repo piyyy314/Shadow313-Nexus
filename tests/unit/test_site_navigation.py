@@ -156,6 +156,22 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertIn('STATIC REFERENCE / SIMULATION ONLY', bundle_platform)
         self.assertNotIn('3,4,140 TESTS', bundle_platform)
 
+    def test_ssp_interconnections_and_provider_risk_are_not_presented_as_verified(self):
+        for relative in ("docs/S313-SSP-Dashboard.html", "local_bundle/ssp.html"):
+            page = (ROOT / relative).read_text(encoding="utf-8")
+            with self.subTest(page=relative):
+                self.assertIn("Illustrative control mappings (not assessed)", page)
+                self.assertIn("Illustrative System Interconnections (Not Connected)", page)
+                self.assertIn("no connections, data flows, identity provider, key vault, or boundary are verified", page)
+                self.assertNotIn(">Inside</span>", page)
+                self.assertNotIn(">Outside</span>", page)
+                self.assertIn("Illustrative External Service Risk Examples (Not Assessed)", page)
+                self.assertIn("Provider assurance (not verified)", page)
+                self.assertIn("Provider attestations, scope, applicability, and risk are not assessed", page)
+                self.assertNotIn("Microsoft FedRAMP High P-ATO", page)
+                self.assertNotIn("SLH-DSA signed, SHA3-256 CIDv1", page)
+                self.assertIn("No signature or IPFS anchor is generated or verified by this demo", page)
+
     def test_dashboard_export_scripts_are_valid_javascript(self):
         dashboard_pages = (
             ROOT / 'docs/shadow313-nexus-dashboard.html',

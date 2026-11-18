@@ -128,10 +128,10 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <table>
 <tr><td style="color:var(--muted);width:140px">System Name</td><td>Shadow313 / VANGUARD-313</td></tr>
 <tr><td style="color:var(--muted)">Owner</td><td>mohamad — Ottawa, ON, Canada</td></tr>
-<tr><td style="color:var(--muted)">Environment</td><td>Cloud (Vercel) + Local (Docker)</td></tr>
-<tr><td style="color:var(--muted)">Boundary</td><td>shadow313.dev, shadow313.com, local CLI</td></tr>
+<tr><td style="color:var(--muted)">Environment</td><td>Example hosted static site + local Docker; deployment not verified</td></tr>
+<tr><td style="color:var(--muted)">Boundary</td><td>Example domains and local CLI; system boundary not assessed</td></tr>
 <tr><td style="color:var(--muted)">Status</td><td><span class="status-partial">Not assessed · demo only</span></td></tr>
-<tr><td style="color:var(--muted)">Classification</td><td>Sensitive — Security Intelligence</td></tr>
+<tr><td style="color:var(--muted)">Classification</td><td>Not assessed — no formal categorization</td></tr>
 <tr><td style="color:var(--muted)">Air-gap capable</td><td><span class="status-partial">Not verified; optional integrations may use external services</span></td></tr>
 </table>
 </div>
@@ -314,28 +314,30 @@ tr:hover td{background:rgba(34,197,94,.03)}
 <!-- INTERCONNECTIONS -->
 <div class="section" id="interconnect">
 <div class="card">
-<h3>System Interconnections</h3>
+<h3>Illustrative System Interconnections (Not Connected)</h3>
+<p role="note" style="margin:10px 0 14px;padding:10px 12px;border:1px solid #a16207;border-radius:6px;background:#251b0b;color:#fde68a;font-size:12px;line-height:1.5"><strong>REFERENCE ONLY.</strong> This is an illustrative service map only; no connections, data flows, identity provider, key vault, or boundary are verified for this deployment.</p>
 <div class="ic-row" style="background:var(--surface2);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">
-<div style="min-width:160px">System</div><div style="flex:1">Data Flow</div><div style="min-width:200px">Security Controls</div><div style="min-width:80px">Boundary</div>
+<div style="min-width:160px">Example system</div><div style="flex:1">Illustrative data flow (not verified)</div><div style="min-width:200px">Example controls (not verified)</div><div style="min-width:80px">Boundary assessment</div>
 </div>
-<div class="ic-row"><div class="ic-sys">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound) — OIDC federation</div><div class="ic-ctrl">TLS 1.3, OIDC, MFA, rotating refresh tokens</div><div><span class="sev-medium">Inside</span></div></div>
-<div class="ic-row"><div class="ic-sys">Azure Key Vault</div><div class="ic-flow">Secrets (inbound) — Managed Identity</div><div class="ic-ctrl">FIPS 140-2 HSM, Managed Identity, RBAC</div><div><span class="sev-medium">Inside</span></div></div>
-<div class="ic-row"><div class="ic-sys">Vercel CDN</div><div class="ic-flow">Static assets (outbound) — CDN delivery</div><div class="ic-ctrl">TLS 1.3, CSP headers, no security data</div><div><span class="sev-low">Outside</span></div></div>
-<div class="ic-row"><div class="ic-sys">OpenAI API</div><div class="ic-flow">Chat queries (outbound) — AI inference only</div><div class="ic-ctrl">TLS 1.3, no security data transmitted</div><div><span class="sev-low">Outside</span></div></div>
-<div class="ic-row"><div class="ic-sys">IPFS integration concept</div><div class="ic-flow">Optional IPFS integration concept — not connected</div><div class="ic-ctrl">No signature or IPFS anchor is generated or verified by this demo</div><div><span class="sev-low">Outside</span></div></div>
-<div class="ic-row"><div class="ic-sys">Hugging Face</div><div class="ic-flow">Detection target only — not used by platform</div><div class="ic-ctrl">N/A — detection target, no data flow</div><div><span class="sev-low">Outside</span></div></div>
+<div class="ic-row"><div class="ic-sys">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound) — OIDC federation</div><div class="ic-ctrl">TLS 1.3, OIDC, MFA, rotating refresh tokens</div><div><span class="sev-medium">Not assessed</span></div></div>
+<div class="ic-row"><div class="ic-sys">Azure Key Vault</div><div class="ic-flow">Secrets (inbound) — Managed Identity</div><div class="ic-ctrl">FIPS 140-2 HSM, Managed Identity, RBAC</div><div><span class="sev-medium">Not assessed</span></div></div>
+<div class="ic-row"><div class="ic-sys">Vercel CDN</div><div class="ic-flow">Static assets (outbound) — CDN delivery</div><div class="ic-ctrl">TLS 1.3, CSP headers, no security data</div><div><span class="sev-medium">Not assessed</span></div></div>
+<div class="ic-row"><div class="ic-sys">OpenAI API</div><div class="ic-flow">Chat queries (outbound) — AI inference only</div><div class="ic-ctrl">TLS 1.3, no security data transmitted</div><div><span class="sev-medium">Not assessed</span></div></div>
+<div class="ic-row"><div class="ic-sys">IPFS integration concept</div><div class="ic-flow">Optional IPFS integration concept — not connected</div><div class="ic-ctrl">No signature or IPFS anchor is generated or verified by this demo</div><div><span class="sev-medium">Not assessed</span></div></div>
+<div class="ic-row"><div class="ic-sys">Hugging Face</div><div class="ic-flow">Detection target only — not used by platform</div><div class="ic-ctrl">N/A — detection target, no data flow</div><div><span class="sev-medium">Not assessed</span></div></div>
 </div>
 <div class="card">
-<h3>External Service Risk Assessment (SA-9)</h3>
+<h3>Illustrative External Service Risk Examples (Not Assessed)</h3>
+<p role="note" style="margin:10px 0 14px;padding:10px 12px;border:1px solid #a16207;border-radius:6px;background:#251b0b;color:#fde68a;font-size:12px;line-height:1.5">Provider attestations, scope, applicability, and risk are not assessed for this deployment. The rows below are placeholders, not a vendor assessment.</p>
 <table>
-<thead><tr><th>Service</th><th>Data Sensitivity</th><th>Formal Assessment</th><th>Risk</th></tr></thead>
+<thead><tr><th>Service</th><th>Example data category</th><th>Provider assurance (not verified)</th><th>Risk assessment</th></tr></thead>
 <tbody>
-<tr><td>Azure AD B2C</td><td>Auth tokens only</td><td>Microsoft FedRAMP High P-ATO</td><td><span class="sev-low">Low</span></td></tr>
-<tr><td>Azure Key Vault</td><td>Secrets (FIPS HSM)</td><td>Microsoft FedRAMP High P-ATO</td><td><span class="sev-low">Low</span></td></tr>
-<tr><td>Vercel</td><td>Static assets only</td><td>SOC 2 Type II — no FedRAMP</td><td><span class="sev-medium">Medium</span></td></tr>
-<tr><td>OpenAI API</td><td>Chat queries (no security data)</td><td>SOC 2 — no FedRAMP</td><td><span class="sev-medium">Medium</span></td></tr>
-<tr><td>IPFS</td><td>Public data only (receipts)</td><td>Decentralized — no formal assessment</td><td><span class="sev-medium">Medium</span></td></tr>
-<tr><td>pyspx (library)</td><td>Cryptographic operations</td><td>Open source — supply chain risk</td><td><span class="sev-high">High (SR-3)</span></td></tr>
+<tr><td>Azure AD B2C</td><td>Auth tokens only</td><td>Not verified for this deployment</td><td><span class="sev-medium">Not assessed</span></td></tr>
+<tr><td>Azure Key Vault</td><td>Secrets (FIPS HSM)</td><td>Not verified for this deployment</td><td><span class="sev-medium">Not assessed</span></td></tr>
+<tr><td>Vercel</td><td>Static assets only</td><td>Not verified for this deployment</td><td><span class="sev-medium">Not assessed</span></td></tr>
+<tr><td>OpenAI API</td><td>Chat queries (no security data)</td><td>Not verified for this deployment</td><td><span class="sev-medium">Not assessed</span></td></tr>
+<tr><td>IPFS</td><td>Public data only (receipts)</td><td>Not verified for this deployment</td><td><span class="sev-medium">Not assessed</span></td></tr>
+<tr><td>pyspx (library)</td><td>Cryptographic operations</td><td>Dependency provenance not assessed</td><td><span class="sev-medium">Not assessed</span></td></tr>
 </tbody>
 </table>
 </div>

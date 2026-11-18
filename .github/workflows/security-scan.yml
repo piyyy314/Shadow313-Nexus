@@ -6,6 +6,18 @@ name: Nightly Security Scan
 on:
   schedule:
     - cron: "0 2 * * *"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/security-scan.yml"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "shadow313/**"
+      - "nexus_toolkit/**"
+      - "scripts/**"
   workflow_dispatch:
 
 permissions:
