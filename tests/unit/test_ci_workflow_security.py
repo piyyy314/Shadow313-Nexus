@@ -181,6 +181,12 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     nexus_start = dockerfile.index("FROM production-base AS nexus")
     production_stage = dockerfile[production_start:nexus_start]
     nexus_stage = dockerfile[nexus_start:]
+    assert production_stage.index("USER root") < production_stage.index(
+        "python -m pip uninstall -y pip setuptools"
+    )
+    assert production_stage.index("python -m pip uninstall -y pip setuptools") < (
+        production_stage.index("USER shadow313")
+    )
     for stage in (production_stage, nexus_stage):
         check_index = stage.index("python -m pip check")
         uninstall_index = stage.index("python -m pip uninstall -y pip setuptools")

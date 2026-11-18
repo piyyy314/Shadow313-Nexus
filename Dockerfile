@@ -104,8 +104,10 @@ CMD ["--help"]
 # ── Stage 3: Slim production runtime ──────────────────────────────
 FROM production-base AS production
 
+USER root
 RUN python -m pip check \
     && python -m pip uninstall -y pip setuptools
+USER shadow313
 
 
 # ── Stage 4: Full NEXUS (all optional deps) ───────────────────────
