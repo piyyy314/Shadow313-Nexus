@@ -151,6 +151,19 @@ def test_nightly_security_scan_runs_for_security_relevant_pull_requests():
         assert f'      - "{path}"' in workflow
 
 
+def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
+    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "Generate Trivy JSON diagnostic report" in workflow
+    assert "--scanners vuln" in workflow
+    assert "--severity CRITICAL,HIGH" in workflow
+    assert "--format json" in workflow
+    assert "--output trivy-container.json" in workflow
+    assert "--exit-code 0" in workflow
+    assert "trivy-container.json" in workflow
+
+
 def test_production_image_pins_trivy_confirmed_python_fixes_after_builder_copy():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     copy_index = dockerfile.index("COPY --from=builder /install /usr/local")
