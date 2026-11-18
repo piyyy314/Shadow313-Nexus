@@ -76,7 +76,7 @@ ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
 
-# Apply scanner-confirmed Python package fixes after overlaying builder artifacts.
+# Keep scanner-confirmed Python package fixes in the builder layer before copying artifacts.
 RUN python -m pip install --no-cache-dir --upgrade "pip==26.2.2" \
     && python -m pip check
 
