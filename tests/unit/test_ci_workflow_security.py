@@ -113,13 +113,18 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     )
     assert "safety==3.8.1" in workflow
     assert "pip freeze --exclude-editable > requirements-audit-resolved.txt" in workflow
-    assert "safety-env/bin/safety\" check --full-report --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json" in workflow
+    assert "safety-env/bin/safety\" check --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json" in workflow
     assert "pip-audit --local --skip-editable" in workflow
     assert "pip-audit --desc --format json -o nightly-pip-audit-requirements.json -r requirements.txt" in workflow
     assert "pip-audit==2.10.1" in workflow
     assert "bandit==1.9.4" in workflow
     assert "Enforce dependency and SAST results" in workflow
     assert "BANDIT_OUTCOME" in workflow
+    assert "--exit-zero" in workflow
+    assert "--severity-level high" not in workflow
+    assert "issue_severity" in workflow
+    assert "high severity" in workflow
+    assert "--full-report --json" not in workflow
     assert workflow.index("pip-audit --local") < workflow.index("pip freeze --exclude-editable") < workflow.index("safety-env")
     assert "requirements-audit-resolved.txt" in workflow
     assert "bandit -r shadow313/ nexus_toolkit/" in workflow
@@ -144,6 +149,16 @@ def test_nightly_security_scan_runs_for_security_relevant_pull_requests():
         "scripts/**",
     ):
         assert f'      - "{path}"' in workflow
+
+
+def test_production_image_pins_trivy_confirmed_python_fixes_after_builder_copy():
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    copy_index = dockerfile.index("COPY --from=builder /install /usr/local")
+    patch_index = dockerfile.index('"urllib3==2.8.0"')
+    assert copy_index < patch_index
+    assert '"msgpack==1.2.3"' in dockerfile
+    assert '"setuptools==84.1.0"' in dockerfile
+    assert "python -m pip check" in dockerfile
 
 
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():

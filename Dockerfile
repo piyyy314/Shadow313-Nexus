@@ -67,13 +67,18 @@ RUN apt-get update -o Acquire::Retries=3 \
 # Apply the latest Debian security fixes to base-image packages
 RUN apt-get update -o Acquire::Retries=3 && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Refresh pip and setuptools (pip bundles urllib3 and msgpack)
-RUN pip install --no-cache-dir --upgrade pip==26.2.2 setuptools==84.1.0
-
 # Clear proxy env after apt (don't leak into runtime)
 ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
+
+# Apply scanner-confirmed Python package fixes after overlaying builder artifacts.
+RUN python -m pip install --no-cache-dir --upgrade \
+    "pip==26.2.2" \
+    "setuptools==84.1.0" \
+    "urllib3==2.8.0" \
+    "msgpack==1.2.3" \
+    && python -m pip check
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
