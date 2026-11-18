@@ -132,11 +132,8 @@ class TestRoutingABTestSimulation:
         monkeypatch.setattr(simulation_harness, "random", random.Random(313))
         sim    = RoutingABTestSimulation()
         result = sim.run(n_requests=500)
-        # Compare one reproducible sample and its configured expected precision.
-        assert (
-            result["hybrid"]["expected"]["routing_precision"]
-            > result["baseline"]["expected"]["routing_precision"]
-        )
+        # Compare a reproducible sample and the configured expected precision.
+        assert sim.HYBRID["routing_precision"] > sim.BASELINE["routing_precision"]
         assert result["hybrid"]["routing_precision"] >= result["baseline"]["routing_precision"]
 
     def test_delta_computed(self):
@@ -152,10 +149,7 @@ class TestRoutingABTestSimulation:
         monkeypatch.setattr(simulation_harness, "random", random.Random(313))
         sim    = RoutingABTestSimulation()
         result = sim.run(n_requests=500)
-        assert (
-            result["hybrid"]["expected"]["fallback_rate"]
-            < result["baseline"]["expected"]["fallback_rate"]
-        )
+        assert sim.HYBRID["fallback_rate"] < sim.BASELINE["fallback_rate"]
         assert result["hybrid"]["fallback_rate"] <= result["baseline"]["fallback_rate"]
 
 

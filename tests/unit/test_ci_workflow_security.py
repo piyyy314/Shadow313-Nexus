@@ -242,7 +242,7 @@ def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     assert 'exit-code: "1"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
-    archive_end = workflow.index("\\n      - name:", archive_start + 1)
+    archive_end = workflow.index("\n      - name:", archive_start + 1)
     archive_step = workflow[archive_start:archive_end]
     assert "path: |" in archive_step
     assert "trivy-container.sarif" in archive_step
