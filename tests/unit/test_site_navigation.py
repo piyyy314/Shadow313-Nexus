@@ -103,7 +103,7 @@ class SiteNavigationTests(unittest.TestCase):
         for unsupported_claim in (
             '2071/2071 tests',
             'SDS=0',
-            'Snyk SBOM',
+            'requirements.txt + Snyk SBOM',
             'Daily automated backup, 30-day retention',
             'MFA enforced',
         ):
