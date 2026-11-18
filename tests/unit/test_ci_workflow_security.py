@@ -176,10 +176,19 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     assert '"msgpack==1.2.3"' in builder_patch
     assert '"urllib3==2.8.0"' in builder_patch
     assert '"setuptools==84.1.0"' not in dockerfile
-    production_stage = dockerfile[copy_index:]
-    check_index = production_stage.index("python -m pip check")
-    uninstall_index = production_stage.index("python -m pip uninstall -y pip setuptools")
-    assert check_index < uninstall_index
+
+    production_start = dockerfile.index("FROM production-base AS production")
+    nexus_start = dockerfile.index("FROM production-base AS nexus")
+    production_stage = dockerfile[production_start:nexus_start]
+    nexus_stage = dockerfile[nexus_start:]
+    for stage in (production_stage, nexus_stage):
+        check_index = stage.index("python -m pip check")
+        uninstall_index = stage.index("python -m pip uninstall -y pip setuptools")
+        assert check_index < uninstall_index
+
+    nexus_install_index = nexus_stage.index("RUN pip install --no-cache-dir")
+    nexus_cleanup_index = nexus_stage.index("python -m pip uninstall -y pip setuptools")
+    assert nexus_install_index < nexus_cleanup_index
 
 
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():

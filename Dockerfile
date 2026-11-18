@@ -48,7 +48,7 @@ RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
 
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
-FROM python:3.15-slim-trixie AS production
+FROM python:3.15-slim-trixie AS production-base
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -75,10 +75,8 @@ ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
 
-# Validate installed dependencies, then remove pip and setuptools from the runtime image.
-# Their bundled/build-only packages are not required to run the Shadow313 CLI.
-RUN python -m pip check \
-    && python -m pip uninstall -y pip setuptools
+# Keep pip in this shared base because the derived NEXUS stage installs optional dependencies.
+# Final image targets remove pip and setuptools after all package installation is complete.
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
@@ -103,8 +101,15 @@ ENTRYPOINT ["shadow313"]
 CMD ["--help"]
 
 
-# ── Stage 3: Full NEXUS (all optional deps) ───────────────────────
-FROM production AS nexus
+# ── Stage 3: Slim production runtime ──────────────────────────────
+FROM production-base AS production
+
+RUN python -m pip check \
+    && python -m pip uninstall -y pip setuptools
+
+
+# ── Stage 4: Full NEXUS (all optional deps) ───────────────────────
+FROM production-base AS nexus
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -128,6 +133,9 @@ RUN pip install --no-cache-dir \
     "networkx>=3.2" \
     "scikit-learn>=1.3" \
     "joblib>=1.3"
+
+RUN python -m pip check \
+    && python -m pip uninstall -y pip setuptools
 
 ENV http_proxy="" https_proxy=""
 USER shadow313
