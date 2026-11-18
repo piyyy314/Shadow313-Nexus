@@ -2,7 +2,7 @@
 Simulation tests — shadow313.v4.simulation
 Runs all simulation scenarios and validates results against targets.
 """
-import pytest
+import random\nimport pytest
 from shadow313.v4.simulation.simulation_harness import (
     LatencySimulator,
     AgentWorkflowSimulation,
@@ -127,9 +127,10 @@ class TestRoutingABTestSimulation:
         assert "delta"    in result
 
     def test_hybrid_better_than_baseline(self):
-        sim    = RoutingABTestSimulation()
+        sim    = RoutingABTestSimulation(rng=random.Random(313))
         result = sim.run(n_requests=500)
-        # Hybrid should have better routing precision
+        # Compare one reproducible sample; the configured expected precision is also superior.
+        assert result["hybrid"]["expected"]["routing_precision"] > result["baseline"]["expected"]["routing_precision"]
         assert result["hybrid"]["routing_precision"] >= result["baseline"]["routing_precision"]
 
     def test_delta_computed(self):
@@ -142,8 +143,9 @@ class TestRoutingABTestSimulation:
         assert delta["winner"] in ("hybrid", "baseline")
 
     def test_fallback_rate_lower_in_hybrid(self):
-        sim    = RoutingABTestSimulation()
+        sim    = RoutingABTestSimulation(rng=random.Random(313))
         result = sim.run(n_requests=500)
+        assert result["hybrid"]["expected"]["fallback_rate"] < result["baseline"]["expected"]["fallback_rate"]
         assert result["hybrid"]["fallback_rate"] <= result["baseline"]["fallback_rate"]
 
 

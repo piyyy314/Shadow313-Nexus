@@ -164,14 +164,23 @@ def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
     assert "trivy-container.json" in workflow
 
 
-def test_production_image_pins_trivy_confirmed_python_fixes_after_builder_copy():
+def test_builder_stage_pins_trivy_confirmed_python_fixes_before_copy():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    install_index = dockerfile.index("pip install --no-cache-dir --prefix=/install .")
+    patch_index = dockerfile.index(
+        "pip install --no-cache-dir --prefix=/install --upgrade"
+    )
     copy_index = dockerfile.index("COPY --from=builder /install /usr/local")
-    patch_index = dockerfile.index('"urllib3==2.8.0"')
-    assert copy_index < patch_index
-    assert '"msgpack==1.2.3"' in dockerfile
-    assert '"setuptools==84.1.0"' in dockerfile
-    assert "python -m pip check" in dockerfile
+    assert install_index < patch_index < copy_index
+    builder_patch = dockerfile[patch_index:copy_index]
+    assert '"msgpack==1.2.3"' in builder_patch
+    assert '"setuptools==84.1.0"' in builder_patch
+    assert '"urllib3==2.8.0"' in builder_patch
+    production_stage = dockerfile[copy_index:]
+    assert '"msgpack==1.2.3"' not in production_stage
+    assert '"setuptools==84.1.0"' not in production_stage
+    assert '"urllib3==2.8.0"' not in production_stage
+    assert "python -m pip check" in production_stage
 
 
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
@@ -232,9 +241,13 @@ def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     assert 'severity: "CRITICAL,HIGH"' in workflow
     assert 'exit-code: "1"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
-    assert "Archive Trivy SARIF for diagnosis" in workflow
-    assert "path: trivy-container.sarif" in workflow
-    assert "if-no-files-found: warn" in workflow
+    archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
+    archive_end = workflow.index("\\n      - name:", archive_start + 1)
+    archive_step = workflow[archive_start:archive_end]
+    assert "path: |" in archive_step
+    assert "trivy-container.sarif" in archive_step
+    assert "trivy-container.json" in archive_step
+    assert "if-no-files-found: warn" in archive_step
 
 
 def test_runtime_requirements_exclude_ci_scanners_and_test_tools():

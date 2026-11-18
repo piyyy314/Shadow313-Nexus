@@ -41,7 +41,11 @@ COPY nexus_toolkit/ ./nexus_toolkit/
 COPY MANIFEST.in LICENSE CHANGELOG.md SECURITY.md requirements.txt ./
 
 RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
-    && pip install --no-cache-dir --prefix=/install .
+    && pip install --no-cache-dir --prefix=/install . \
+    && pip install --no-cache-dir --prefix=/install --upgrade \
+        "setuptools==84.1.0" \
+        "urllib3==2.8.0" \
+        "msgpack==1.2.3"
 
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
@@ -73,11 +77,7 @@ ENV http_proxy="" https_proxy=""
 COPY --from=builder /install /usr/local
 
 # Apply scanner-confirmed Python package fixes after overlaying builder artifacts.
-RUN python -m pip install --no-cache-dir --upgrade \
-    "pip==26.2.2" \
-    "setuptools==84.1.0" \
-    "urllib3==2.8.0" \
-    "msgpack==1.2.3" \
+RUN python -m pip install --no-cache-dir --upgrade "pip==26.2.2" \
     && python -m pip check
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
