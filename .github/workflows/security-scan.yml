@@ -69,7 +69,7 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/safety-env"
           "$RUNNER_TEMP/safety-env/bin/python" -m pip install --disable-pip-version-check safety==3.8.1
-          "$RUNNER_TEMP/safety-env/bin/safety" check --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json
+          "$RUNNER_TEMP/safety-env/bin/safety" check --json --check-unpinned-requirements --save-json nightly-safety.json -r requirements-audit-resolved.txt > /dev/null
 
       - name: Run Bandit (retain all severities)
         id: bandit_scan
@@ -103,6 +103,23 @@ jobs:
           failed = [name for name, outcome in outcomes.items() if outcome != "success"]
           for name, outcome in outcomes.items():
               print(f"{name}: {outcome}")
+
+          try:
+              safety_report = json.loads(
+                  Path("nightly-safety.json").read_text(encoding="utf-8")
+              )
+              safety_meta = safety_report.get("report_meta")
+              if not isinstance(safety_meta, dict):
+                  raise ValueError("Safety JSON report has no report_meta object")
+              safety_vulnerabilities = safety_meta.get("vulnerabilities_found")
+              if not isinstance(safety_vulnerabilities, int):
+                  raise ValueError("Safety JSON report has no vulnerability count")
+              print(
+                  f"Safety report valid: {safety_vulnerabilities} vulnerabilities found."
+              )
+          except Exception as exc:
+              print(f"Safety report unavailable or invalid: {exc}", file=sys.stderr)
+              failed.append("Safety report")
 
           try:
               report = json.loads(Path("nightly-bandit.json").read_text(encoding="utf-8"))
