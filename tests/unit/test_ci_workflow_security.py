@@ -257,6 +257,7 @@ def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
     assert 'severity: "CRITICAL,HIGH"' in workflow
     assert 'exit-code: "1"' in workflow
+    assert 'version: "v0.76.2"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
     archive_end = workflow.index("\n      - name:", archive_start + 1)
