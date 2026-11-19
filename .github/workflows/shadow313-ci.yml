@@ -35,83 +35,33 @@ jobs:
           cache: pip
       - name: Install dev dependencies
         run: pip install ruff black mypy pyyaml rich
-      - name: Record full-repository Ruff baseline
-        run: |
-          ruff check shadow313/ --output-format json > ruff-baseline.json || true
-          python -c 'import json; from pathlib import Path; report=json.loads(Path("ruff-baseline.json").read_text()); print(f"Full-repository Ruff baseline: {len(report)} diagnostics")'
-      - name: Ruff lint changed Python modules
+      - name: Identify changed Python files
+        id: changed-python
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         shell: bash
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            base_ref="$GITHUB_BASE_REF"
-          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
-            base_ref="master"
-          else
-            base_ref=""
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          if [ -n "$base_ref" ]; then
-            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
-            base="origin/$base_ref"
-          else
-            base="$(git rev-parse HEAD^)"
-          fi
-          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
-          if [ -n "$changed_files" ]; then
-            printf '%s\n' "$changed_files" | xargs -r ruff check --output-format github
-          else
-            echo "No changed Shadow313 Python modules to lint."
-          fi
-      - name: Black format check changed Python modules
-        shell: bash
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            base_ref="$GITHUB_BASE_REF"
-          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
-            base_ref="master"
-          else
-            base_ref=""
-          fi
-          if [ -n "$base_ref" ]; then
-            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
-            base="origin/$base_ref"
-          else
-            base="$(git rev-parse HEAD^)"
-          fi
-          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
-          if [ -n "$changed_files" ]; then
-            printf '%s\n' "$changed_files" | xargs -r black --check --diff
-          else
-            echo "No changed Shadow313 Python modules to format-check."
-          fi
-        continue-on-error: true
-      - name: MyPy type check changed Python modules
-        shell: bash
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            base_ref="$GITHUB_BASE_REF"
-          elif [[ "$GITHUB_REF" == refs/heads/feat/* || "$GITHUB_REF" == refs/heads/feature/* ]]; then
-            base_ref="master"
-          else
-            base_ref=""
-          fi
-          if [ -n "$base_ref" ]; then
-            git fetch --no-tags origin "+refs/heads/$base_ref:refs/remotes/origin/$base_ref"
-            base="origin/$base_ref"
-          else
-            base="$(git rev-parse HEAD^)"
-          fi
-          changed_files="$(git diff --name-only "$base...HEAD" | grep -E '^shadow313/.*[.]py$' || true)"
-          if [ -n "$changed_files" ]; then
-            printf '%s\n' "$changed_files" | xargs -r mypy --ignore-missing-imports --follow-imports=skip
-          else
-            echo "No changed Shadow313 Python modules to type-check."
-          fi
-      - name: Upload full-repository lint baseline
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ruff-repository-baseline
-          path: ruff-baseline.json
+          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          changed_files=()
+          for file in "${candidates[@]}"; do
+            if [ -f "$file" ]; then
+              changed_files+=("$file")
+            fi
+          done
+          printf '%s\n' "${changed_files[@]}" > "$RUNNER_TEMP/shadow313-changed-python.txt"
+          echo "count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+      - name: Ruff lint (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; ruff check "${files[@]}" --output-format github
+      - name: Black format check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
+      - name: MyPy type check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
@@ -194,35 +144,35 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-      - name: Install
+      - name: Install patched build tooling and audit dependencies
         run: |
-          pip install --upgrade "setuptools>=84.1.0"
-          pip install -e "." pyyaml rich bandit pip-audit
-      - name: Bandit SAST scan
+          python -m pip install --upgrade "setuptools>=84.1.0"
+          python -m pip install -e "." pyyaml rich bandit pip-audit
+          python -m pip show setuptools
+      - name: Bandit SAST scan (retain all severities)
         run: |
-          bandit -r shadow313/ -f json -o bandit-report.json --exit-zero \
-            --skip B101,B603,B607,B608,B311,B324
-      - name: Enforce high-severity Bandit findings
+          bandit -r shadow313/ -f json -o bandit-report.json \
+            --exit-zero --skip B101,B603,B607,B608,B311,B324
+      - name: Enforce high-severity Bandit threshold
         run: |
           python - <<'PY'
           import json
           import sys
+          from pathlib import Path
 
-          with open("bandit-report.json", encoding="utf-8") as report_file:
-              report = json.load(report_file)
+          report = json.loads(Path("bandit-report.json").read_text(encoding="utf-8"))
           findings = report.get("results", [])
-          high = [item for item in findings if item.get("issue_severity") == "HIGH"]
-          medium = [item for item in findings if item.get("issue_severity") == "MEDIUM"]
-          print(f"Bandit findings: {len(high)} high, {len(medium)} medium, "
-                f"{len(findings) - len(high) - len(medium)} low")
+          high = [item for item in findings if item.get("issue_severity", "").upper() == "HIGH"]
+          print(f"Bandit findings retained: {len(findings)} total; {len(high)} high severity.")
           for item in high:
-              print(f"HIGH: {item['filename']}:{item['line_number']} "
-                    f"{item['test_id']} {item['issue_text']}")
-          if high:
-              sys.exit(1)
+              print(
+                  f"HIGH: {item.get('filename')}:{item.get('line_number')} "
+                  f"{item.get('test_id')} — {item.get('issue_text')}"
+              )
+          sys.exit(1 if high else 0)
           PY
       - name: Dependency vulnerability audit
-        run: pip-audit --format json > dependency-report.json
+        run: pip-audit --local --format json --output pip-audit-report.json
       - name: Upload security artifacts
         uses: actions/upload-artifact@v7
         if: always()
@@ -230,7 +180,7 @@ jobs:
           name: security-reports
           path: |
             bandit-report.json
-            dependency-report.json
+            pip-audit-report.json
 
 # ── Build Package ─────────────────────────────────────────────────────────────
   build:
