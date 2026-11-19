@@ -71,9 +71,11 @@ for the authoritative status of a specific commit.
 
 The default AI backend is local Ollama at `http://localhost:11434`. Select it
 with `SHADOW313_AI_BACKEND=ollama`, and configure `SHADOW313_AI_MODEL` and
-`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway
-requires `AI_GATEWAY_API_KEY`; `OPENAI_API_KEY` is used only for the OpenAI
-backend and is not reused for the gateway.
+`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway uses `AI_GATEWAY_API_KEY` and defaults
+to `https://ai-gateway.vercel.sh/v1`; the OpenAI backend defaults to
+`https://api.openai.com/v1` and uses `OPENAI_API_KEY`. Set
+`SHADOW313_AI_MODEL` to a model identifier supported by the selected provider.
+The Docker Compose stack passes these settings through to the CLI, authenticated Python API (`POST /api/chat`), and optional Telegram bot. Open WebUI can also expose an OpenAI-compatible gateway provider using `OPENWEBUI_OPENAI_API_BASE_URLS` and `OPENWEBUI_OPENAI_API_KEYS`; if unset, it continues to use local Ollama only. The Telegram bot polls authenticated ShiatoAli SOC alerts; it does not use the static website's unavailable event adapter.
 
 The Python API listens on port `8313` when run in Docker Compose. Compose keeps
 the API internal to its Docker network; the static site adapter does not host
@@ -194,6 +196,7 @@ docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.
 ```bash
 cp .env.example .env
 # Replace the example secrets before starting the API services.
+# Compose creates a local-only self-signed certificate in a Docker volume.
 docker compose up -d
 # Open WebUI through the nginx development listener: http://localhost:8080
 # Nginx HTTPS listener: https://localhost
@@ -396,7 +399,7 @@ Edit `~/.shadow313/config.yaml`:
 ```yaml
 shadow313:
   ai:
-    backend:  ollama          # ollama | openai | disabled
+    backend:  ollama          # ollama | openai | gateway | disabled
     model:    mistral:7b
     endpoint: http://localhost:11434
   storage:

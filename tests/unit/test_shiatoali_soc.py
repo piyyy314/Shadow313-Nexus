@@ -1,0 +1,468 @@
+from __future__ import annotations
+
+from shadow313.v4.shiatoali.service import EventInput, ShiatoAliStore
+
+
+def make_store(tmp_path):
+    return ShiatoAliStore(tmp_path / "shiatoali-test.sqlite3")
+
+
+def test_ingest_persists_event_and_detects_encoded_powershell(tmp_path):
+    store = make_store(tmp_path)
+    result = store.ingest(EventInput(
+        source="windows",
+        host="workstation-01",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand SQBFAFgA",
+        event_id="evt-powershell-1",
+    ))
+
+    assert result["status"] == "accepted"
+    assert len(result["alerts_created"]) == 1
+    assert result["alerts_created"][0]["rule_id"] == "SHIA-EXEC-001"
+    assert store.health()["events"] == 1
+    assert store.health()["alerts"] == 1
+
+
+def test_in_memory_store_keeps_state_across_connections():
+    store = ShiatoAliStore(":memory:")
+    result = store.ingest(EventInput(
+        source="linux",
+        host="memory-host",
+        event_type="system",
+        message="service started",
+        event_id="memory-event",
+    ))
+
+    assert result["status"] == "accepted"
+    assert store.health()["events"] == 1
+    assert store.list_events()[0]["event_id"] == "memory-event"
+
+
+def test_duplicate_event_is_idempotent(tmp_path):
+    store = make_store(tmp_path)
+    event = EventInput(
+        source="linux",
+        host="server-01",
+        event_type="system",
+        message="service started",
+        event_id="same-event",
+    )
+
+    first = store.ingest(event)
+    second = store.ingest(event)
+
+    assert first["status"] == "accepted"
+    assert second["status"] == "duplicate"
+    assert store.health()["events"] == 1
+
+
+def test_five_failed_authentications_raise_brute_force_alert(tmp_path):
+    store = make_store(tmp_path)
+    for index in range(5):
+        result = store.ingest(EventInput(
+            source="linux",
+            host="auth-01",
+            event_type="authentication_failure",
+            message="authentication failed",
+            username="analyst",
+            event_id=f"failed-{index}",
+        ))
+
+    assert any(
+        alert["rule_id"] == "SHIA-ID-001"
+        for alert in result["alerts_created"]
+    )
+
+
+
+
+def test_detection_preserves_every_matching_alert(tmp_path):
+    store = make_store(tmp_path)
+    result = store.ingest(EventInput(
+        source="windows",
+        host="multi-rule-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA; nmap -sV 192.0.2.10",
+        event_id="multi-rule-event",
+    ))
+
+    assert {alert["rule_id"] for alert in result["alerts_created"]} == {
+        "SHIA-EXEC-001", "SHIA-DISC-001"
+    }
+    assert store.health()["alerts"] == 2
+
+
+def test_authentication_failures_must_fall_inside_rolling_window(tmp_path):
+    store = make_store(tmp_path)
+    for index in range(4):
+        store.ingest(EventInput(
+            source="linux",
+            host="auth-window-host",
+            event_type="authentication_failure",
+            message="authentication failed",
+            username="analyst",
+            timestamp=f"2026-01-01T10:0{index}:00+00:00",
+            event_id=f"old-failure-{index}",
+        ))
+
+    result = store.ingest(EventInput(
+        source="linux",
+        host="auth-window-host",
+        event_type="authentication_failure",
+        message="authentication failed",
+        username="analyst",
+        timestamp="2026-01-03T10:00:00+00:00",
+        event_id="new-failure",
+    ))
+
+    assert not any(
+        alert["rule_id"] == "SHIA-ID-001" for alert in result["alerts_created"]
+    )
+
+
+def test_alert_listing_includes_originating_event_host(tmp_path):
+    store = make_store(tmp_path)
+    store.ingest(EventInput(
+        source="windows",
+        host="alert-host-01",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="alert-host-event",
+    ))
+
+    alerts = store.list_alerts()
+
+    assert alerts[0]["host"] == "alert-host-01"
+
+
+def test_note_only_case_update_refreshes_updated_at(tmp_path):
+    store = make_store(tmp_path)
+    case = store.create_case("Note activity case")
+
+    updated = store.update_case(
+        case["case_id"], actor="analyst", note="Reviewed supporting telemetry"
+    )
+    detail = store.get_case(case["case_id"])
+
+    assert updated["updated_at"] == detail["activity"][-1]["created_at"]
+    assert detail["activity"][-1]["action"] == "note"
+
+
+def test_authenticated_api_ingestion_and_alert_query(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from shadow313.api.server import create_app
+
+    monkeypatch.setenv("SHIAATOALI_DB_PATH", str(tmp_path / "api.sqlite3"))
+    client = TestClient(create_app(api_key="shiatoali-test-key"))
+    headers = {"x-api-key": "shiatoali-test-key"}
+    response = client.post(
+        "/api/shiatoali/events",
+        headers=headers,
+        json={
+            "source": "windows",
+            "host": "endpoint-02",
+            "event_type": "process_creation",
+            "message": "powershell.exe -EncodedCommand <redacted>",
+            "event_id": "api-event-1",
+        },
+    )
+
+    assert response.status_code == 202
+    assert response.json()["status"] == "accepted"
+    alerts = client.get("/api/shiatoali/alerts", headers=headers)
+    assert alerts.status_code == 200
+    assert alerts.json()["items"][0]["rule_id"] == "SHIA-EXEC-001"
+
+    ordered = client.get(
+        "/api/shiatoali/alerts?order=asc&since=2000-01-01T00%3A00%3A00%2B00%3A00",
+        headers=headers,
+    )
+    assert ordered.status_code == 200
+    assert ordered.json()["order"] == "asc"
+    assert ordered.json()["since"].startswith("2000-01-01")
+
+    invalid_order = client.get("/api/shiatoali/alerts?order=random", headers=headers)
+    assert invalid_order.status_code == 422
+
+    denied = client.get("/api/shiatoali/alerts")
+    assert denied.status_code == 401
+
+
+def test_case_lifecycle_links_alert_and_records_audit_activity(tmp_path):
+    store = make_store(tmp_path)
+    event_result = store.ingest(EventInput(
+        source="windows",
+        host="endpoint-03",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="case-alert-event",
+    ))
+    alert_id = event_result["alerts_created"][0]["alert_id"]
+    case = store.create_case(
+        title="Investigate suspicious PowerShell",
+        description="Review endpoint telemetry and user activity.",
+        priority="high",
+        created_by="soc-analyst",
+        alert_id=alert_id,
+    )
+
+    updated = store.update_case(
+        case["case_id"],
+        actor="soc-analyst",
+        status="investigating",
+        assignee="tier-2",
+        note="Endpoint owner contacted; preserve evidence.",
+    )
+    detail = store.get_case(case["case_id"])
+
+    assert updated["status"] == "investigating"
+    assert updated["assignee"] == "tier-2"
+    assert len(detail["alerts"]) == 1
+    assert [item["action"] for item in detail["activity"]] == [
+        "created", "status_changed", "assigned", "note"
+    ]
+
+
+def test_case_rejects_invalid_status_and_unknown_alert(tmp_path):
+    store = make_store(tmp_path)
+    try:
+        store.create_case("Bad link", alert_id="missing-alert")
+        raise AssertionError("expected missing alert validation")
+    except ValueError as exc:
+        assert "alert not found" in str(exc)
+
+    case = store.create_case("Valid case")
+    try:
+        store.update_case(case["case_id"], status="magic")
+        raise AssertionError("expected invalid status validation")
+    except ValueError as exc:
+        assert "invalid case status" in str(exc)
+
+def test_sqlalchemy_adapter_supports_parameterized_idempotent_writes():
+    from sqlalchemy import create_engine, text
+
+    from shadow313.v4.shiatoali.service import _SQLAlchemyConnection
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    with engine.begin() as connection:
+        connection.execute(
+            text("CREATE TABLE adapter_probe (event_id TEXT PRIMARY KEY, message TEXT)")
+        )
+        adapter = _SQLAlchemyConnection(connection, text)
+        first = adapter.execute(
+            "INSERT OR IGNORE INTO adapter_probe (event_id, message) VALUES (?, ?)",
+            ("probe-1", "first"),
+        )
+        duplicate = adapter.execute(
+            "INSERT OR IGNORE INTO adapter_probe (event_id, message) VALUES (?, ?)",
+            ("probe-1", "duplicate"),
+        )
+        row = adapter.execute(
+            "SELECT event_id, message FROM adapter_probe WHERE event_id = ?",
+            ("probe-1",),
+        ).fetchone()
+
+    assert first.rowcount == 1
+    assert duplicate.rowcount == 0
+    assert row["event_id"] == "probe-1"
+    assert row[1] == "first"
+    engine.dispose()
+
+def test_sqlalchemy_store_backend_runs_event_and_case_workflows(monkeypatch):
+    import sqlalchemy
+    from sqlalchemy import create_engine
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    schema = (
+        """CREATE TABLE shiatoali_events (
+            event_id TEXT PRIMARY KEY, source TEXT NOT NULL, host TEXT NOT NULL,
+            event_type TEXT NOT NULL, message TEXT NOT NULL, severity TEXT NOT NULL,
+            username TEXT, src_ip TEXT, timestamp TEXT NOT NULL, raw_json TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_alerts (
+            alert_id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL UNIQUE,
+            event_id TEXT NOT NULL REFERENCES shiatoali_events(event_id),
+            rule_id TEXT NOT NULL, title TEXT NOT NULL, severity TEXT NOT NULL,
+            risk_score INTEGER NOT NULL, tactic TEXT NOT NULL, technique TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'open', created_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_cases (
+            case_id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL,
+            priority TEXT NOT NULL, status TEXT NOT NULL, assignee TEXT,
+            created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        )""",
+        """CREATE TABLE shiatoali_case_alerts (
+            case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+            alert_id TEXT NOT NULL REFERENCES shiatoali_alerts(alert_id),
+            linked_at TEXT NOT NULL, PRIMARY KEY (case_id, alert_id)
+        )""",
+        """CREATE TABLE shiatoali_case_activity (
+            activity_id TEXT PRIMARY KEY,
+            case_id TEXT NOT NULL REFERENCES shiatoali_cases(case_id),
+            actor TEXT NOT NULL, action TEXT NOT NULL, details TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""",
+    )
+    with engine.begin() as connection:
+        for statement in schema:
+            connection.exec_driver_sql(statement)
+
+    monkeypatch.setattr(sqlalchemy, "create_engine", lambda *args, **kwargs: engine)
+    monkeypatch.setenv(
+        "SHIAATOALI_DATABASE_URL",
+        "postgresql+psycopg://test:unused@localhost/shiatoali_test",
+    )
+    store = ShiatoAliStore()
+    event = store.ingest(EventInput(
+        source="windows",
+        host="pg-adapter-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="source-event-id-123",
+    ))
+    case = store.create_case(
+        "Adapter workflow case",
+        created_by="test-analyst",
+        alert_id=event["alerts_created"][0]["alert_id"],
+    )
+    store.update_case(case["case_id"], status="investigating", note="Adapter check")
+    detail = store.get_case(case["case_id"])
+
+    assert event["status"] == "accepted"
+    assert store.list_alerts()[0]["host"] == "pg-adapter-host"
+    assert detail["status"] == "investigating"
+    assert len(detail["alerts"]) == 1
+    assert detail["activity"][-1]["details"] == "Adapter check"
+    engine.dispose()
+
+def test_postgresql_configuration_refuses_an_unmigrated_database(monkeypatch):
+    import sqlalchemy
+    from sqlalchemy import create_engine
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    monkeypatch.setattr(sqlalchemy, "create_engine", lambda *args, **kwargs: engine)
+    monkeypatch.setenv(
+        "SHIAATOALI_DATABASE_URL",
+        "postgresql+psycopg://test:unused@localhost/empty_database",
+    )
+
+    try:
+        ShiatoAliStore()
+        raise AssertionError("expected missing-schema startup failure")
+    except RuntimeError as exc:
+        assert "schema is incomplete" in str(exc)
+    finally:
+        engine.dispose()
+
+
+def test_alert_listing_supports_time_cursor_and_chronological_order(tmp_path):
+    from datetime import datetime, timezone
+
+    store = make_store(tmp_path)
+    older = store.ingest(EventInput(
+        source="windows",
+        host="older-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand AAAA",
+        event_id="cursor-alert-older",
+    ))
+    newer = store.ingest(EventInput(
+        source="windows",
+        host="newer-host",
+        event_type="process_creation",
+        message="powershell.exe -EncodedCommand BBBB",
+        event_id="cursor-alert-newer",
+    ))
+    older_id = older["alerts_created"][0]["alert_id"]
+    newer_id = newer["alerts_created"][0]["alert_id"]
+
+    with store._session() as db:
+        db.execute(
+            "UPDATE shiatoali_alerts SET created_at = ? WHERE alert_id = ?",
+            ("2026-01-01T01:00:00+00:00", older_id),
+        )
+        db.execute(
+            "UPDATE shiatoali_alerts SET created_at = ? WHERE alert_id = ?",
+            ("2026-01-01T02:00:00+00:00", newer_id),
+        )
+
+    since = datetime(2026, 1, 1, 1, 30, tzinfo=timezone.utc)
+    alerts = store.list_alerts(limit=10, since=since, order="asc")
+
+    assert [alert["alert_id"] for alert in alerts] == [newer_id]
+    assert store.list_alerts(order="asc")[0]["alert_id"] == older_id
+
+def test_soc_database_calls_run_in_worker_threads(tmp_path, monkeypatch):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from shadow313.v4.shiatoali import router as soc_router
+
+    monkeypatch.setenv("SHIAATOALI_DB_PATH", str(tmp_path / "threadpool.sqlite3"))
+    original_run_in_threadpool = soc_router.run_in_threadpool
+    dispatched = []
+
+    async def track_threadpool(func, *args, **kwargs):
+        dispatched.append(func.__name__)
+        return await original_run_in_threadpool(func, *args, **kwargs)
+
+    monkeypatch.setattr(soc_router, "run_in_threadpool", track_threadpool)
+    app = FastAPI()
+    app.include_router(soc_router.build_router(lambda: "test-principal"))
+    client = TestClient(app)
+
+    assert client.get("/api/shiatoali/health").status_code == 200
+    event_response = client.post(
+        "/api/shiatoali/events",
+        json={
+            "source": "windows",
+            "host": "threadpool-host",
+            "event_type": "process_creation",
+            "message": "benign process start",
+            "event_id": "threadpool-event-001",
+        },
+    )
+    assert event_response.status_code == 202
+    assert client.get("/api/shiatoali/events").status_code == 200
+    assert client.get("/api/shiatoali/alerts").status_code == 200
+
+    spoofed_create = client.post(
+        "/api/shiatoali/cases",
+        json={"title": "Spoofed actor", "created_by": "attacker"},
+    )
+    assert spoofed_create.status_code == 422
+
+    case_response = client.post(
+        "/api/shiatoali/cases",
+        json={"title": "Threadpool regression"},
+    )
+    assert case_response.status_code == 201
+    assert case_response.json()["created_by"] == "test-principal"
+    case_id = case_response.json()["case_id"]
+    assert client.get("/api/shiatoali/cases").status_code == 200
+    assert client.get(f"/api/shiatoali/cases/{case_id}").status_code == 200
+    spoofed_update = client.patch(
+        f"/api/shiatoali/cases/{case_id}",
+        json={"actor": "attacker", "note": "spoofed"},
+    )
+    assert spoofed_update.status_code == 422
+    assert client.patch(
+        f"/api/shiatoali/cases/{case_id}",
+        json={"note": "database call stayed off the event loop"},
+    ).status_code == 200
+    detail = client.get(f"/api/shiatoali/cases/{case_id}").json()
+    assert detail["activity"][-1]["actor"] == "test-principal"
+
+    assert {
+        "health",
+        "ingest",
+        "list_events",
+        "list_alerts",
+        "create_case",
+        "list_cases",
+        "get_case",
+        "update_case",
+    } <= set(dispatched)
+
