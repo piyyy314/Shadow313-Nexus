@@ -113,7 +113,10 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     )
     assert "safety==3.8.1" in workflow
     assert "pip freeze --exclude-editable > requirements-audit-resolved.txt" in workflow
-    assert "safety-env/bin/safety\" check --json --check-unpinned-requirements -r requirements-audit-resolved.txt > nightly-safety.json" in workflow
+    assert "safety-env/bin/safety\" check --json --check-unpinned-requirements --save-json nightly-safety.json -r requirements-audit-resolved.txt > /dev/null" in workflow
+    assert "Safety report unavailable or invalid" in workflow
+    assert "safety_report.get(\"report_meta\")" in workflow
+    assert "> nightly-safety.json" not in workflow
     assert "pip-audit --local --skip-editable" in workflow
     assert "pip-audit --desc --format json -o nightly-pip-audit-requirements.json -r requirements.txt" in workflow
     assert "pip-audit==2.10.1" in workflow
