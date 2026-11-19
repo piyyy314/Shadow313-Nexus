@@ -1,6 +1,6 @@
 # Shadow313 Platform Integration Status
 
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-18
 
 This document is the integration control sheet for the Shadow313 repositories.
 It separates implemented code, work in review, and work that still requires
@@ -58,48 +58,56 @@ The PR's own limitations are important:
 
 ### Latest observed PR checks
 
-For PR #115 head `87aa028462f6fe1e60ab15872e3cd7fba1d725ca`:
+For PR #115 head `7c962bd5aee6116cbf090cd64f9068b796937c77`:
 
-- Unit tests for Python 3.11 and 3.12: passed.
-- Secret detection, SAST, dependency scan, Dockerfile lint, shell/config and
-  file-integrity checks: passed.
-- Python/API validation, config validation, file-integrity checks, shell
-  validation, HTML validation, quality checks, and live API endpoint validation:
-  passed.
-- Unit test matrix for Python 3.11 and 3.12: passed. The separate aggregate
-  Python Test Suite job was cancelled after the validation gate had already
-  failed; do not count that cancelled job as a pass.
-- Repository-wide Ruff lint: failed with thousands of existing diagnostics
-  across unrelated package files. The observed run emitted no Ruff diagnostics
-  for the new `shiatoali` package.
-- Security scan: failed because the full-tree Bandit scan returned findings.
-  Its uploaded report counted 69 medium and 106 low severity findings, and zero
-  high severity findings. No findings were listed under the new
-  `shiatoali` package in that report. These are baseline findings requiring
-  triage, not proof that every finding is exploitable.
-- The overall validation gate failed. Deployment, Docker build, and publishing
-  jobs were skipped; this PR has not demonstrated a production deployment.
+- PR Checks, full pre-deploy validation, API endpoint validation, and the CI/CD workflow completed successfully.
+- Python 3.11 and 3.12 unit-test jobs, SAST, secret detection, dependency scanning, Dockerfile lint, HTML validation, shell/config checks, file-integrity checks, and Python/API validation completed successfully in the observed runs.
+- The CI/CD workflow's Docker build and security scan completed successfully. PyPI and TestPyPI publication jobs were skipped.
+- The Vercel workflow's quality checks passed, but both production and preview deployment jobs were skipped. Do not describe this run as a deployment.
+- All 14 currently listed inline review threads on PR #115 are resolved. No human approval is recorded; the PR remains open, draft, and unmerged.
 
-Do not merge the draft until the latest checks complete, the lint baseline is
-handled transparently, and the runtime persistence/configuration review is
-complete.
+- External Snyk contexts are still not green on this head: both `code/snyk` contexts report `error`, and `security/snyk` reports `failure`. The earlier Snyk Code response was a provider test-quota limit; the security failure requires provider-side finding review. These external checks are unresolved and must not be described as passed.
 
-## Critical repository hygiene and deployment work
+Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831166), [pre-deploy validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831301), [CI/CD](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831258), [API validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831226).
 
-The following open PRs in Shadow313-Nexus require review:
+### PR #103 — cross-platform wheel verification
 
-1. [PR #107 — remove committed TLS private key](https://github.com/piyyy314/Shadow313-Nexus/pull/107).
-   Treat the old private key as compromised. Removing it from the current tree
-   does not remove it from Git history. Revoke/replace the certificate and key,
-   verify deployment references, and plan history cleanup before considering
-   the incident closed.
-2. [PR #108 — Debian and Python packaging security updates](https://github.com/piyyy314/Shadow313-Nexus/pull/108).
-   Review package compatibility and rebuild the production image; do not assume
-   a source-level dependency bump fixes the deployed image until it is rebuilt
-   and scanned.
-3. [PR #109 — Open WebUI URL and Nginx memory limit](https://github.com/piyyy314/Shadow313-Nexus/pull/109).
-   The PR body explicitly says the stack has not been run with this change.
-   Validate the Compose stack and upload path before deployment.
+The updated head `fec9e2415807562509f64ecd98c30ca8a911cdd9` completed its GitHub Actions checks successfully: Python 3.11/3.12 tests, lint, Bandit/Semgrep, Gitleaks, dependency audit, Docker build, distribution build, PR Checks, and full pre-deploy validation. PyPI/TestPyPI publication jobs and Vercel preview/production deployment jobs were skipped. The branch remains open and unmerged; platform-specific Windows/macOS coverage is not established by these Linux runner results.
+
+### Master nightly container and dependency security scan
+
+The latest master run, [Nightly Security Scan #44221496259](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44221496259), ran on 2026-11-18 at master SHA `38471258650dce774d7521831e3dda909517117c` and failed.
+
+- Gitleaks completed its full-history scan; the uploaded SARIF artifact contains zero results.
+- pip-audit 2.7.3 reported no known vulnerabilities in the audited environment.
+- Safety 3.1.0 failed to start with `AttributeError: module 'typer' has no attribute 'rich_utils'`; `nightly-safety.json` is empty. The master workflow masks this failure with `|| true`, so the green Full Dependency Audit job conclusion is not evidence of a completed Safety scan.
+- Bandit 1.7.8 produced 8 HIGH B324, 69 MEDIUM, and 312 LOW findings. The eight HIGH findings are weak-MD5 warnings in `pipeline.py`, `ghosthttp.py`, `adaptive_defense_loop.py`, and `advanced_detection_layer.py`. These are static-analysis findings requiring review, not proof of exploit.
+- Trivy completed the container scan at the configured `CRITICAL,HIGH` threshold and exited 1. SARIF upload to GitHub Code Scanning completed, but the SARIF payload and individual alerts were not retrievable through this connection; the CVE list therefore remains unverified.
+- The Docker Compose Security Audit job concluded success, but Checkov logged `There are no runners to run` because it was invoked with `--framework dockerfile` against `docker-compose.yml`. The seven custom Compose hardening assertions passed; Checkov did not perform a meaningful scan.
+
+PR #116 now corrects the Checkov target to the repository `Dockerfile` while retaining the separate Compose hardening assertions, with a regression test for the prior mismatched invocation. The nightly workflow is schedule/workflow-dispatch only, so the corrected Checkov command must be verified by a subsequent security-scan run; no successful Checkov result is claimed yet.
+
+### PR #116 — latest validated code state
+
+The latest code changes are on head `eedf4715601f38efad4c33813078a04ebafd78e8` ([commit](https://github.com/piyyy314/Shadow313-Nexus/commit/eedf4715601f38efad4c33813078a04ebafd78e8)). All five internal workflows completed successfully on 2026-11-18: [PR Checks #44332317172](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317172), [Full Pre-Deploy #44332317365](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317365), [CI/CD #44332317243](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317243), [API validation #44332317211](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317211), and [Vercel workflow #44332317179](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317179).
+
+Full Pre-Deploy reported 4,911 passed, 51 skipped, and one Starlette/httpx deprecation warning. Each Python PR-check matrix reported 4,854 passed, 51 skipped, and one warning. The CI/CD security job retained 171 Bandit findings with zero high-severity findings; pip-audit reported no known vulnerabilities. Gitleaks completed and reported no leaks. The HTML, route, API, configuration, shell, and Git hygiene checks all passed.
+
+All 10 inline review threads are resolved, but no human approval is recorded. GitGuardian is neutral, CodeRabbit is skipped, both `code/snyk` contexts are errors, and `security/snyk` is success. Ten other third-party check suites remain queued. Copilot's review was not completed because the requesting user had insufficient remaining quota. The Vercel workflow's quality job passed, but both preview and production deployment jobs were skipped; no deployment is claimed.
+
+The Checkov target correction is covered by a regression test, but the nightly security workflow is schedule/workflow-dispatch only and has not executed on this PR branch. Its successful scanner execution remains unverified.
+
+Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
+
+## Repository hygiene and deployment follow-up
+
+The following historical maintenance PRs are closed and merged:
+
+1. [PR #107 — remove committed TLS private key](https://github.com/piyyy314/Shadow313-Nexus/pull/107). The removal change is merged. Key/certificate rotation and any required Git-history cleanup are external follow-up actions and are **not verified by merge status alone**.
+2. [PR #108 — Debian and Python packaging security updates](https://github.com/piyyy314/Shadow313-Nexus/pull/108). The change is merged. Confirm the actual deployed image has been rebuilt and scanned before treating runtime exposure as resolved.
+3. [PR #109 — Open WebUI URL and Nginx memory limit](https://github.com/piyyy314/Shadow313-Nexus/pull/109). The change is merged. Validate the Compose stack and upload path in the target environment before asserting operational readiness.
+
+PR #115 (ShiatoAli SOC foundation) and PR #116 (CI repairs and site consistency) remain open. This document is a handoff, not a live deployment dashboard; recheck GitHub before acting.
 
 ## Shared integration contracts
 
@@ -156,9 +164,8 @@ Do not silently merge the distinct SQLite stores in the two repositories.
 
 - [ ] Revoke and rotate the exposed TLS private key; verify it is absent from
   current artifacts and handle Git history exposure.
-- [ ] Complete review and validation of PRs #107, #108, and #109.
-- [ ] Finish PR #115 CI checks and review the new SOC routes, store lifecycle,
-  permissions, and deployment configuration.
+- [ ] Verify external post-merge follow-up for PRs #107, #108, and #109: key rotation/history exposure, rebuilt and scanned images, and the Compose upload path. Merge status alone is not runtime evidence.
+- [ ] Obtain human review and complete provider-side Snyk triage for PR #115. Internal GitHub Actions are green on its current head, but the PR remains draft and its two code/snyk contexts are errors while security/snyk is failure.
 - [ ] Ensure all API startup paths fail closed when required credentials are
   absent.
 - [ ] Verify backups, restore, TLS termination, and external exposure boundaries.
@@ -196,6 +203,36 @@ Do not silently merge the distinct SQLite stores in the two repositories.
 - [ ] SOAR playbooks with dry-run mode, approval gates, least privilege, and
   rollback.
 - [ ] Live dashboard, investigation timeline, and operational health metrics.
+
+## README, API contract, and website consistency review (2026-11-13)
+
+PR #116 also updates the project README, OpenAPI contract, and public HTML
+content to remove unsupported operational and assurance claims. The reviewed
+changes distinguish source-implemented features from browser demonstrations,
+static snapshots, optional integrations, and unavailable remote services.
+
+Key corrections include:
+
+- The OpenAPI contract now identifies the MIT license and matches the Python
+  API request schemas and authentication requirements for detection, web-shell
+  scanning, receipt creation, ATT&CK coverage, and receipt retrieval.
+- The API receipt endpoint is documented as unsigned
+  `UNSIGNED-SHA3-512-DEMO`, process-local, capped, and not IPFS-anchored or
+  SLH-DSA-signed.
+- Reconnaissance, vulnerability, mobile, event-stream, and persisted-audit API
+  routes return explicit unavailable responses until their workers/backends
+  exist.
+- ATT&CK coverage is a static code-defined snapshot, not live SOC telemetry.
+- Public dashboards, marketplace analytics, case studies, ROI calculators,
+  and architecture pages are identified as illustrative unless backed by
+  current connected-service evidence.
+- Unsupported FIPS validation, FedRAMP/CMMC/SOC 2/PIPEDA compliance,
+  production-readiness, zero-PII, and subscription claims are withdrawn.
+- The public-site builder injects a general reference/demo notice into each
+  allowlisted HTML output. This notice supplements, but does not replace,
+  page-specific accuracy and source review.
+
+The latest validated PR #116 code head is `eedf4715601f38efad4c33813078a04ebafd78e8`; the five internal workflow runs above passed on that exact SHA. Both Snyk Code contexts remain `error` with no cause exposed in the status payload, while Snyk Security is `success`. GitGuardian is `neutral`, CodeRabbit is `skipped`, and no human approval is recorded. Vercel preview and production deployment jobs were skipped.
 
 ## Definition of done
 

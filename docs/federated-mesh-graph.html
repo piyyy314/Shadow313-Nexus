@@ -44,10 +44,11 @@ canvas{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:1
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Reference and simulation notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>REFERENCE / SIMULATION ONLY.</strong> This static page illustrates a workflow or interface. Feed status, peers, nodes, trust scores, CVE enrichment, RF/satellite readings, and events are not live or independently verified unless linked to current evidence. No external system is operated by this page.</aside>
 
 <div class="main">
   <h1>Federated Mesh <span>Graph</span></h1>
-  <p class="subtitle">Real-time visualization of the P2P threat intelligence mesh — gossip protocol, differential privacy, trust scoring</p>
+  <p class="subtitle">Illustrative P2P threat-intelligence mesh visualization. No live peer network or external intelligence feed is connected.</p>
   <canvas id="meshCanvas" width="1060" height="480"></canvas>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Trusted Node (score ≥ 0.7)</div>
@@ -56,9 +57,9 @@ canvas{background:var(--bg2);border:1px solid rgba(30,41,59,0.8);border-radius:1
     <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Local Node</div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-val" id="nodeCount">0</div><div class="stat-lbl">Active Nodes</div></div>
+    <div class="stat"><div class="stat-val" id="nodeCount">0</div><div class="stat-lbl">Sample Nodes</div></div>
     <div class="stat"><div class="stat-val" id="intelCount">0</div><div class="stat-lbl">Intel Packages</div></div>
-    <div class="stat"><div class="stat-val" id="trustAvg">0%</div><div class="stat-lbl">Avg Trust Score</div></div>
+    <div class="stat"><div class="stat-val" id="trustAvg">0%</div><div class="stat-lbl">Illustrative Trust Score</div></div>
     <div class="stat"><div class="stat-val" id="quarCount">0</div><div class="stat-lbl">Quarantined</div></div>
   </div>
 </div>

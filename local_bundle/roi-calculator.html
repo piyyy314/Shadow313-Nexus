@@ -6,9 +6,9 @@
 <nav class="nav"><div class="nav-hex">S3</div><div class="nav-brand">SHADOW<span>313</span> NEXUS</div><div class="nav-links"><a class="nav-link" href="./index.html">Home</a><a class="nav-link" href="./platform.html">Platform</a><a class="nav-link" href="./tools.html">Tools</a><a class="nav-link" href="./marketplace.html">Marketplace</a><a class="nav-link" href="./pricing.html">Pricing</a><a class="nav-link" href="./docs.html">Docs</a><a class="nav-link" href="./about.html">About</a></div><div class="nav-right"><a class="nav-link" href="./blog.html">Blog</a><a class="nav-cta" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank">GitHub ↗</a></div></nav>
 
 <div class="hero"><h1>ROI <span class="accent">Calculator</span></h1>
-<p>Calculate your return on investment with Shadow313 NEXUS — based on IBM Cost of a Data Breach 2025 and Ponemon Institute data.</p>
-<div class="badges"><span class="badge bg">847% 3-YEAR ROI</span><span class="badge bc">IBM 2025 BASELINE</span><span class="badge bp">$4.88M AVG BREACH</span></div></div>
-<div class="sec con">
+<p>Explore a user-defined scenario. This calculator is illustrative only and does not predict Shadow313 results or represent measured customer outcomes.</p>
+<div class="badges"><span class="badge bg">ILLUSTRATIVE SCENARIO — NOT A FORECAST</span><span class="badge bc">IBM 2025 BASELINE</span><span class="badge bp">$4.88M AVG BREACH</span></div></div>
+<div class="sec con"><p role="note" style="padding:14px;border:1px solid var(--amber);border-radius:8px;color:var(--amber)">Disclaimer: inputs and outputs are hypothetical planning assumptions, not independently validated benchmarks, product performance, guaranteed savings, or customer results.</p>
 <div class="g2">
 <div class="card">
 <div class="sec-title">📊 Your Environment</div>
@@ -26,16 +26,16 @@
 <div class="sec-title">💰 ROI Results</div>
 <div style="display:flex;flex-direction:column;gap:12px">
 <div style="background:rgba(0,0,0,0.4);border-radius:8px;padding:14px;text-align:center">
-<div style="font-size:32px;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--green)" id="roi-pct">847%</div>
-<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">3-Year ROI</div>
+<div style="font-size:32px;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--green)" id="roi-pct">Scenario only</div>
+<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Illustrative scenario result</div>
 </div>
 <div style="background:rgba(0,0,0,0.4);border-radius:8px;padding:14px;text-align:center">
 <div style="font-size:24px;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--cyan)" id="breach-saved">$4.59M</div>
-<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Breach Cost Avoided (per incident)</div>
+<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Hypothetical avoided cost (assumption-based)</div>
 </div>
 <div style="background:rgba(0,0,0,0.4);border-radius:8px;padding:14px;text-align:center">
-<div style="font-size:24px;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--amber)" id="mttd-new">1.2 min</div>
-<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">New MTTD with Shadow313</div>
+<div style="font-size:24px;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--amber)" id="mttd-new">Not measured</div>
+<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Shadow313 MTTD (not measured)</div>
 </div>
 </div></div></div></div>
 <script>
@@ -43,12 +43,12 @@ function calc(){
   const rev=parseFloat(document.getElementById('rev').value)||100000000;
   const inc=parseFloat(document.getElementById('inc').value)||3;
   const avgBreach=4880000;
-  const nexusMttd=1.2;
+  const nexusMttd=null;
   const saved=(avgBreach*0.941)*inc;
   const roi=Math.round((saved/50000-1)*100);
   document.getElementById('roi-pct').textContent=roi+'%';
   document.getElementById('breach-saved').textContent='$'+Math.round(avgBreach*0.941/1000)+'K';
-  document.getElementById('mttd-new').textContent=nexusMttd+' min';
+  document.getElementById('mttd-new').textContent='Not measured';
 }
 calc();
 </script>

@@ -1,52 +1,49 @@
 # Shadow313 NEXUS — Local Bundle
 
-## How to Use
+## How to use
 
-1. **Extract** this folder anywhere on your computer
-2. **Open** `index.html` in your browser (double-click it)
-3. **Navigate** using the top nav bar — internal page links work offline
+1. Extract this folder anywhere on your computer.
+2. Open `index.html` in a modern browser.
+3. Use the local navigation links. Pages are static browser-side demonstrations and reference material.
 
-## Files Included
+## Files included
 
-### Main Pages
-- `index.html` — Home / landing page (START HERE)
-- `tools.html` — Security tools hub
-- `marketplace.html` — Plugin marketplace (247 plugins)
-- `platform.html` — Platform module overview
-- `pricing.html` — Pricing tiers
-- `blog.html` — Blog / CVE research
-- `about.html` — About Shadow313 NEXUS
-- `docs.html` — Documentation hub
+### Main pages
+- `index.html` — landing page
+- `tools.html` — tool catalogue interface
+- `marketplace.html` — static sample catalogue; no checkout or live publisher verification
+- `platform.html` — platform/module overview
+- `pricing.html` — source licensing and availability information; no paid plans are published
+- `blog.html` — research and project articles
+- `about.html` — project overview
+- `docs.html` — documentation hub
 
-### Dashboards (open directly or via nav)
-- `dashboard.html` — Master Intelligence Dashboard
-- `threat-board.html` — Real-Time Threat Board v4
-- `command-center.html` — Command Center v6
-- `apt-simulation.html` — APT Simulation (APT29/BlackCat/FIN7)
-- `aegis-nexus.html` — Aegis NEXUS VSAT Dashboard
-- `vsat-tactical-suite.html` — VSAT Tactical Suite v5.0
-- `sovereign-shield.html` — Sovereign Shield (PQC)
-- `chronos.html` — Chronos Sentinel
-- `ssp.html` — SSP Compliance Dashboard
-- `coverage.html` — ATT&CK Coverage Matrix
-- `vendor-scorecard.html` — Vendor Scorecard
-- `roi-calculator.html` — ROI Calculator
+### Dashboards and demonstrations
+- `dashboard.html` — illustrative dashboard
+- `threat-board.html` — simulated threat-board interface
+- `command-center.html` — command-centre UI demonstration
+- `apt-simulation.html` — adversary simulation examples
+- `aegis-nexus.html` — VSAT security demonstration
+- `vsat-tactical-suite.html` — VSAT reference/simulation
+- `sovereign-shield.html` — PQC reference interface
+- `chronos.html` — timestamp/chronology demonstration
+- `ssp.html` — illustrative control-mapping interface, not a compliance assessment
+- `coverage.html` — code-defined ATT&CK mapping reference, not validated detection coverage
+- `vendor-scorecard.html` — comparison template; no verified vendor ranking
+- `roi-calculator.html` — editable scenario calculator, not measured savings
 
-### Platform Module Docs
+### Platform and documentation
 - `platform-recon.html` through `platform-exploit.html`
+- `docs-install.html`, `docs-quickstart.html`, `docs-api.html`, `docs-modules.html`, and `docs-pqc.html`
 
-### Documentation
-- `docs-install.html` — Installation guide
-- `docs-quickstart.html` — Quick start
-- `docs-api.html` — API reference
-- `docs-modules.html` — Module reference
-- `docs-pqc.html` — PQC guide
+## Important limitations
 
-## Notes
-- Internal page links use relative paths (./filename.html) — works offline
-- Google Fonts loads from CDN (requires internet for fonts, but pages work without it)
-- Dashboard data is embedded — no server needed
-- GitHub link opens github.com/piyyy314/Shadow313-Nexus in a new tab
+- **All dashboard counters, events, CVE-like scenarios, hostnames, ATT&CK mappings, vendor comparisons, install counts, ratings, prices, ROI values, performance figures, and compliance states are illustrative/sample content unless a page links to current source evidence.**
+- The bundle does not connect to production services, threat feeds, endpoint sensors, customer environments, satellite/RF hardware, or marketplace checkout.
+- The receipt-format demo does not verify digital signatures, trusted timestamps, durable chain history, or IPFS anchoring. The API demo's receipts are unsigned and process-local.
+- No paid Pro/Enterprise subscriptions, marketplace revenue share, or formal bounty rewards are currently published.
+- Relative page links work offline. External links and Google Fonts require internet access.
 
-## Live Version
-Visit shadow313.dev for the live Vercel deployment.
+## Public website
+
+The project website is listed at https://shadow313.dev. A domain URL alone does not establish current deployment health; check the current Vercel deployment and live service status separately.

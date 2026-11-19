@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Performance Load Test Report — Shadow313 NEXUS</title>
+<title>Illustrative Performance Review — Shadow313 NEXUS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 :root{--bg:#020617;--bg2:#0b1329;--border:rgba(30,41,59,0.8);--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;}
@@ -53,12 +53,12 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <nav class="nav">
   <div class="nav-hex">&#9650;</div>
   <span style="font-size:14px;font-weight:800;">PERFORMANCE <span style="color:var(--green);">LOAD TEST</span></span>
-  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:3px 10px;">15 PAGES &mdash; 50 CONCURRENT READS &mdash; SHADOW313 NEXUS</span>
+  <span style="font-size:10px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:3px 10px;">HISTORICAL REFERENCE · UNVERIFIED</span>
   <div style="margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);">shadow313.dev &nbsp;|&nbsp; Ottawa, ON</div>
 </nav>
-<div class="main" role="main" aria-label="Performance Report">
-<div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px;">Performance Load Test Report</div>
-<div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">15 pages &nbsp;|&nbsp; 50 concurrent reads per page &nbsp;|&nbsp; Render complexity scoring &nbsp;|&nbsp; 2026-10-16 &nbsp;|&nbsp; Ottawa, ON</div>
+<div role="note" style="margin:18px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:12px;line-height:1.6"><strong>Evidence notice:</strong> This is a historical, repository-hosted performance report, not a current benchmark certification. Treat figures as unverified until the test harness, environment, raw results, date, and reproducible run are supplied. Check exact-commit GitHub Actions for current CI status.</div><div class="main" role="main" aria-label="Illustrative Performance Review">
+<div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px;">Illustrative Performance Review</div>
+<div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">Historical figures · not independently reproduced · render complexity estimates &nbsp;|&nbsp; 2026-10-16 &nbsp;|&nbsp; Ottawa, ON</div>
 
 <div class="kpi-strip">
   <div class="kpi"><div class="kpi-val" style="color:var(--green)">15</div><div class="kpi-lbl">Pages Tested</div></div>
@@ -73,7 +73,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <div class="panel">
   <div class="panel-hdr">
     <span class="panel-title" style="color:var(--green);">&#128200; Full Performance Matrix — 15 Pages</span>
-    <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);padding:2px 8px;border-radius:4px;">50 concurrent reads per page</span>
+    <span style="font-size:9px;font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);padding:2px 8px;border-radius:4px;">Historical load assumption · not reproduced</span>
   </div>
   <div style="overflow-x:auto;">
     <table class="perf-table">
@@ -99,7 +99,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#ef4444;">78.9</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.02ms<br><span style="color:#64748b;">p95:0.024ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#ef4444;margin-top:2px;">⚠ File size 84KB exceeds 80KB threshold</div><div style="font-size:9px;color:#ef4444;margin-top:2px;">⚠ 3 animation loops — CPU intensive under load</div><div style="font-size:9px;color:#ef4444;margin-top:2px;">⚠ JS payload 31KB — consider code splitting</div><div style="font-size:9px;color:#ef4444;margin-top:2px;">⚠ Render complexity score 79 — high CPU cost</div>
         <div style="font-size:9px;color:#22c55e;margin-top:2px;">→ Split ATT&CK DRILLDOWN data (30KB) into separate JSON loaded on demand</div><div style="font-size:9px;color:#22c55e;margin-top:2px;">→ Visibility API added — animations now pause when tab is hidden</div><div style="font-size:9px;color:#22c55e;margin-top:2px;">→ Lazy-load ATT&CK data on first user interaction</div><div style="font-size:9px;color:#22c55e;margin-top:2px;">→ Add will-change CSS hints for animated elements</div>
@@ -120,10 +120,10 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <div style="width:60px;background:rgba(0,0,0,0.3);border-radius:3px;height:6px;">
             <div style="width:47%;background:#f59e0b;height:6px;border-radius:3px;"></div>
           </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">47.2</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">N/A</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.018ms<br><span style="color:#64748b;">p95:0.02ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;"Not measured<br><span style="color:#64748b;">No p95 data</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -147,7 +147,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">25.4</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.019ms<br><span style="color:#64748b;">p95:0.03ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -171,7 +171,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f59e0b;">24.9</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.016ms<br><span style="color:#64748b;">p95:0.02ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -195,7 +195,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">13.7</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.026ms<br><span style="color:#64748b;">p95:0.029ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -219,7 +219,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">12.4</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.016ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -243,7 +243,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.8</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.016ms<br><span style="color:#64748b;">p95:0.022ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -267,7 +267,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.7</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.015ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -291,7 +291,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.7</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.017ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -315,7 +315,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.6</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.016ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -339,7 +339,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.6</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.015ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -363,7 +363,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.6</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.015ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -387,7 +387,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.6</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.018ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -411,7 +411,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">6.5</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.016ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -435,7 +435,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#22c55e;">5.4</span>
         </div>
       </td>
-      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">0.015ms<br><span style="color:#64748b;">p95:0.015ms</span></td>
+      <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;">Not measured<br><span style="color:#64748b;">p95: not measured</span></td>
       <td style="padding:10px 12px;max-width:280px;">
         <div style="font-size:9px;color:#22c55e;">✅ No issues</div>
         
@@ -450,20 +450,20 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="panel-hdr"><span class="panel-title" style="color:var(--red);">&#9888; Performance Findings</span></div>
     <div style="padding:14px;">
       <div class="insight">
-        <div class="insight-title" style="color:var(--red);">Finding 1: Threat Board Is the Only High-Cost Page (Score: 78.7)</div>
-        <div class="insight-body">s313-threat-board.html (83.6KB) has 3 setInterval animation loops and 30KB of inline ATT&CK DRILLDOWN data. Under concurrent load, the 3 animation loops each consume a separate JS thread. The Visibility API fix (applied) pauses all loops when the tab is hidden, reducing idle CPU from ~15% to ~0%.</div>
+        <div class="insight-title" style="color:var(--red);">Unverified historical note: Threat Board page complexity</div>
+        <div class="insight-body">s313-threat-board.html (83.6KB) has 3 setInterval animation loops and 30KB of inline ATT&CK DRILLDOWN data. The page contains browser-side animation loops; actual CPU and concurrency impact has not been measured here. A proposed Visibility API approach can pause background animation loops; no reproducible CPU benchmark is published here.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--amber);">Finding 2: Project Roadmap Is Medium Cost (Score: 47.2)</div>
-        <div class="insight-body">project-roadmap.html (55.4KB) has 1 canvas element and 12KB of JS for the effort/impact scatter chart. No animation loops. Under concurrent load this performs well — the canvas is only drawn once on load, not continuously. No action needed.</div>
+        <div class="insight-title" style="color:var(--amber);">Unverified historical note: Project Roadmap page complexity</div>
+        <div class="insight-body">project-roadmap.html (55.4KB) has 1 canvas element and 12KB of JS for the effort/impact scatter chart. No animation loops. The page contains a canvas chart. No controlled concurrent-load test or performance conclusion is published here.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Finding 3: All 5 Priority Pages Are Low Cost (Score: 5-7)</div>
-        <div class="insight-body">Ghost-Watch Threat Map, ML Predictor, Threat Actor Map, Plugin Studio, and SOAR Playbook Builder all score 5-7 — well within acceptable range. No canvas, no animation loops, no external JS dependencies. These pages will handle high concurrent load without degradation.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: priority-page complexity</div>
+        <div class="insight-body">Ghost-Watch Threat Map, ML Predictor, Threat Actor Map, Plugin Studio, and SOAR Playbook Builder their current performance has not been measured. No canvas, no animation loops, no external JS dependencies. These pages will handle high concurrent load without degradation.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Finding 4: All Pages Respond in &lt;0.02ms Locally</div>
-        <div class="insight-body">All 15 pages respond in under 0.02ms for local file reads under 50 concurrent requests. On Vercel's CDN edge network, these will be served from cache with typical TTFB of 20-50ms globally. No server-side bottlenecks exist — all pages are static HTML.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical response-time claim — do not use as a benchmark</div>
+        <div class="insight-body">No reproducible timing dataset, test harness, CDN trace, or concurrency evidence is attached. Static HTML alone does not establish edge latency or the absence of all bottlenecks.</div>
       </div>
     </div>
   </div>
@@ -471,31 +471,31 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="panel-hdr"><span class="panel-title" style="color:var(--green);">&#9989; Optimizations Applied &amp; Recommendations</span></div>
     <div style="padding:14px;">
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: Visibility API (Threat Board)</div>
-        <div class="insight-body">Added document.visibilitychange listener to pause all 3 setInterval animation loops when the browser tab is hidden. Reduces idle CPU from ~15% to ~0% for background tabs. Estimated improvement: 60% reduction in CPU usage for users with multiple tabs open.</div>
+        <div class="insight-title" style="color:var(--green);">Suggested: Visibility API (Threat Board)</div>
+        <div class="insight-body">Design note: pause background animation loops with the Visibility API. Performance impact requires measurement in a controlled browser benchmark.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: will-change CSS Hints</div>
-        <div class="insight-body">Added will-change: transform to canvas elements and contain: content to live feed containers. Enables GPU compositing for animated elements, reducing main thread paint operations by ~40%.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: will-change CSS hints</div>
+        <div class="insight-body">The suggested CSS hints may affect compositing and paint behavior. No before/after browser profile is published to quantify an improvement.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--green);">Applied: Google Fonts Preconnect</div>
-        <div class="insight-body">Added &lt;link rel="preconnect"&gt; for fonts.googleapis.com and fonts.gstatic.com. Eliminates DNS lookup latency for font loading — reduces First Contentful Paint by ~150ms on first visit.</div>
+        <div class="insight-title" style="color:var(--green);">Unverified historical note: Google Fonts preconnect</div>
+        <div class="insight-body">Added &lt;link rel="preconnect"&gt; for fonts.googleapis.com and fonts.gstatic.com. Preconnect may reduce connection setup time in some environments. No measured First Contentful Paint result is supplied.</div>
       </div>
       <div class="insight">
         <div class="insight-title" style="color:var(--amber);">Recommended: Lazy-Load ATT&CK Data (Threat Board)</div>
-        <div class="insight-body">The 30KB DRILLDOWN constant in s313-threat-board.html could be moved to a separate JSON file loaded on first user interaction with the ATT&CK matrix. Would reduce initial JS parse time by ~40% and improve Time to Interactive by ~200ms on mobile.</div>
+        <div class="insight-body">The 30KB DRILLDOWN constant in s313-threat-board.html could be moved to a separate JSON file loaded on first user interaction with the ATT&CK matrix. Potential optimization only; no before/after profile or mobile benchmark is available.</div>
       </div>
       <div class="insight">
-        <div class="insight-title" style="color:var(--cyan);">Vercel CDN Performance Estimate</div>
-        <div class="insight-body">All pages are static HTML served from Vercel's edge CDN. Expected real-world performance: TTFB 15-40ms (edge cache hit), FCP 200-400ms, LCP 300-600ms. The Threat Board's 83KB size adds ~50ms on 3G connections — acceptable for a security operations tool targeting enterprise users on fast connections.</div>
+        <div class="insight-title" style="color:var(--cyan);">CDN performance — not measured</div>
+        <div class="insight-body">The repository contains static HTML pages. Current deployment routing, CDN cache behavior, TTFB, FCP, LCP, and mobile network performance have not been measured in a reproducible current-environment test.</div>
       </div>
     </div>
   </div>
 </div>
 
 </div>
-<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Performance Load Test Report &nbsp;|&nbsp; 15 Pages &nbsp;|&nbsp; 50 Concurrent Reads &nbsp;|&nbsp; Ottawa, ON, Canada</div>
+<div class="footer">Shadow313 NEXUS &nbsp;|&nbsp; Illustrative Performance Review &nbsp;|&nbsp; Historical figures unverified · no current benchmark &nbsp;|&nbsp; Ottawa, ON, Canada</div>
 <div style="position:fixed;bottom:24px;right:24px;z-index:999;">
   <button onclick="window.print()" style="background:var(--green);color:#000;border:none;border-radius:50px;padding:10px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;box-shadow:0 4px 20px rgba(34,197,94,0.4);">&#11015; Export Report</button>
 </div>
@@ -506,7 +506,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <a href="/pricing" style="color:#475569;text-decoration:none;">Pricing</a> &nbsp;·&nbsp;
 <a href="/privacy" style="color:#475569;text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
 <a href="/terms" style="color:#475569;text-decoration:none;">Terms</a> &nbsp;·&nbsp;
-MIT License &nbsp;·&nbsp; <span style="color:#22c55e;">Test status: see live CI results</span> &nbsp;·&nbsp; <span style="color:#a78bfa;">FIPS 203/204/205</span>
+MIT License &nbsp;·&nbsp; <span style="color:#22c55e;">Test status: see live CI results</span> &nbsp;·&nbsp; <span style="color:#a78bfa;">PQC audit utilities · implementation-specific</span>
 </footer>
 </body>
 </html>

@@ -134,13 +134,14 @@
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Simulation data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>SIMULATION / REFERENCE DATA ONLY.</strong> This is a static VSAT/security interface demonstration. Targets, addresses, findings, CVE-like labels, RF readings, firmware states, PQC readiness, and event logs are synthetic examples. No satellite, ground-station, customer network, RF link, or endpoint has been scanned or verified by this page.</aside>
 
 <header class="header">
   <div class="logo-hex">AX</div>
   <div class="logo-text">AEGIS <span>NEXUS</span></div>
   <span class="hdr-badge badge-cyan">VSAT TACTICAL v5.0</span>
-  <span class="hdr-badge badge-green">OPERATIONAL</span>
-  <span class="hdr-badge badge-red">7 CRITICAL FINDINGS</span>
+  <span class="hdr-badge badge-green">DEMO ONLY</span>
+  <span class="hdr-badge badge-red">7 SAMPLE FINDINGS</span>
   <div class="hdr-right">
     <div class="pulse"></div>
     <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)" id="clock"></span>
@@ -151,13 +152,13 @@
 <div class="hero">
   <div>
     <div class="hero-title">VSAT GROUND-STATION & <span class="accent">PQC CONTROL CENTER</span></div>
-    <div class="hero-sub">Target: 192.168.100.1/24 · Profile: DEEP · Telstar 11N (37.5°W) · Ku-band · Ottawa, ON</div>
+    <div class="hero-sub">Target: synthetic lab subnet · Profile: DEEP · Telstar 11N (37.5°W) · Ku-band · Ottawa, ON</div>
   </div>
   <div class="hero-kpis">
     <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--red)">7</div><div class="hero-kpi-lbl">Critical Findings</div></div>
     <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--amber)">5.9</div><div class="hero-kpi-lbl">SNR (dB)</div></div>
     <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--amber)">42.8%</div><div class="hero-kpi-lbl">PQC Score</div></div>
-    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--red)">40%</div><div class="hero-kpi-lbl">QKD QBER</div></div>
+    <div class="hero-kpi"><div class="hero-kpi-val" style="color:var(--red)">40%</div><div class="hero-kpi-lbl">Sample QKD simulation · QBER</div></div>
   </div>
 </div>
 
@@ -177,14 +178,14 @@
   <div class="panel col-span-2">
     <div class="panel-hdr">
       <span class="panel-title">🔍 Ground Segment Vulnerability Sweep — Findings</span>
-      <span class="panel-badge">7 critical · 192.168.100.1/24</span>
+      <span class="panel-badge">7 sample findings · synthetic lab subnet</span>
     </div>
     <div class="panel-body">
       <div class="finding">
         <span class="finding-sev sev-crit">CRITICAL</span>
         <div>
           <div class="finding-title">Telnet (Port 23) OPEN — Cleartext credentials</div>
-          <div class="finding-host">192.168.100.1 · T1040 Network Sniffing</div>
+          <div class="finding-host">lab-router (synthetic) · T1040 Network Sniffing</div>
           <div class="finding-fix">→ Disable telnet; deploy SSH (Ed25519)</div>
         </div>
       </div>
@@ -192,7 +193,7 @@
         <span class="finding-sev sev-crit">CRITICAL</span>
         <div>
           <div class="finding-title">FTP Anonymous Write (Port 21) OPEN</div>
-          <div class="finding-host">192.168.100.15 · T1190 Exploit Public-Facing App</div>
+          <div class="finding-host">lab-router (synthetic)5 · T1190 Exploit Public-Facing App</div>
           <div class="finding-fix">→ Disable FTP; deploy SFTP chroot</div>
         </div>
       </div>
@@ -207,8 +208,8 @@
       <div class="finding">
         <span class="finding-sev sev-crit">CRITICAL</span>
         <div>
-          <div class="finding-title">CVE-2026-3392 TR-069 CWMP — Unsigned provisioning</div>
-          <div class="finding-host">192.168.100.1 · T1542.001 Pre-OS Boot</div>
+          <div class="finding-title">Illustrative TR-069/CWMP scenario TR-069 CWMP — Unsigned provisioning</div>
+          <div class="finding-host">lab-router (synthetic) · T1542.001 Pre-OS Boot</div>
           <div class="finding-fix">→ Disable CWMP or enforce mutual TLS</div>
         </div>
       </div>
@@ -216,7 +217,7 @@
         <span class="finding-sev sev-crit">CRITICAL</span>
         <div>
           <div class="finding-title" id="firmware-finding">Unsigned Firmware Accepted — Arbitrary partition overwrite</div>
-          <div class="finding-host">192.168.100.1 · T1542.001 Firmware Integrity</div>
+          <div class="finding-host">lab-router (synthetic) · T1542.001 Firmware Integrity</div>
           <div class="finding-fix">→ Enable firmware signature verification (ML-DSA-65)</div>
         </div>
       </div>
@@ -224,7 +225,7 @@
         <span class="finding-sev sev-crit">CRITICAL</span>
         <div>
           <div class="finding-title">UART/JTAG Hardware Console — Unauthenticated</div>
-          <div class="finding-host">192.168.100.1 · T1200 Hardware Additions</div>
+          <div class="finding-host">lab-router (synthetic) · T1200 Hardware Additions</div>
           <div class="finding-fix">→ Physically secure debug headers</div>
         </div>
       </div>
@@ -259,12 +260,12 @@
     <div class="panel">
       <div class="panel-hdr">
         <span class="panel-title">🔐 PQC Readiness</span>
-        <span class="panel-badge">42.8% · FIPS 203/204/205</span>
+        <span class="panel-badge">DEMO · PQC not assessed</span>
       </div>
       <div class="panel-body">
-        <div class="pqc-row"><span class="pqc-name">ML-KEM-768</span><span class="pqc-status" style="color:var(--green)">✅ FIPS 203</span></div>
+        <div class="pqc-row"><span class="pqc-name">ML-KEM-768</span><span class="pqc-status" style="color:var(--green)">NOT VERIFIED</span></div>
         <div class="pqc-row"><span class="pqc-name">ML-DSA-65</span><span class="pqc-status" style="color:var(--amber)">⚠ PARTIAL</span></div>
-        <div class="pqc-row"><span class="pqc-name">SLH-DSA</span><span class="pqc-status" style="color:var(--green)">✅ FIPS 205</span></div>
+        <div class="pqc-row"><span class="pqc-name">SLH-DSA (reference)</span><span class="pqc-status" style="color:var(--amber)">NOT VERIFIED</span></div>
         <div class="pqc-row"><span class="pqc-name">RSA-2048</span><span class="pqc-status" style="color:var(--red)">❌ LEGACY</span></div>
         <div class="pqc-row"><span class="pqc-name">ECC-P256</span><span class="pqc-status" style="color:var(--red)">❌ LEGACY</span></div>
         <p style="color:var(--amber);font-size:12px">QKD reference: sample status only. This page does not run a BB84 simulator or measure a real quantum channel.</p>
@@ -284,13 +285,13 @@
         <div class="terminal-dot" style="background:#ef4444"></div>
         <div class="terminal-dot" style="background:#f59e0b"></div>
         <div class="terminal-dot" style="background:#22c55e"></div>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">aegis-nexus · sweep · 192.168.100.1/24</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-left:8px">aegis-nexus · sweep · synthetic lab subnet</span>
       </div>
       <div class="terminal-body" id="terminal-body">
-        <div class="log-info">[*] Target Subnet: 192.168.100.1/24 | Profile: DEEP</div>
+        <div class="log-info">[*] Target Subnet: synthetic lab subnet | Profile: DEEP</div>
         <div class="log-info">[*] PHASE 0: Network Discovery...</div>
-        <div class="log-ok">[+] Host 192.168.100.1 — VSAT Ground Terminal Modulator Hub</div>
-        <div class="log-ok">[+] Host 192.168.100.15 — Network Operations Center Console</div>
+        <div class="log-ok">[+] Host lab-router (synthetic) — Illustrative VSAT lab device</div>
+        <div class="log-ok">[+] Host lab-router (synthetic)5 — Illustrative lab console</div>
         <div class="log-info">[*] PHASE 1: Probing TCP/UDP Control Sockets...</div>
         <div class="log-crit">[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!</div>
         <div class="log-crit">[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!</div>
@@ -298,7 +299,7 @@
         <div class="log-ok">[✓] Port 161 (SNMP): SNMPv3 auth enforced — SECURE</div>
         <div class="log-info">[*] PHASE 2: Auditing TR-069 CWMP (Port 7547)...</div>
         <div class="log-warn">[!] Port 7547 (TR-069): Exposed to incoming networks</div>
-        <div class="log-crit">[!!!] CVE-2026-3392: Unsigned CWMP provisioning accepted — VULNERABLE!</div>
+        <div class="log-crit">[!!!] Illustrative TR-069/CWMP scenario: Unsigned CWMP provisioning accepted — EXAMPLE ONLY — NOT ASSESSED</div>
         <div class="log-info">[*] PHASE 3: Cryptographic Audit...</div>
         <div class="log-crit">[!!!] Unsigned firmware accepted — Arbitrary partition overwrite threat!</div>
         <div class="log-info">[*] PHASE 4: Hardware Debug Audit (JTAG/UART)...</div>
@@ -306,7 +307,7 @@
         <div class="log-info">[*] PHASE 5: RF Carrier Telemetry...</div>
         <div class="log-crit">[!!!] Carrier SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)</div>
         <div class="log-crit">[!!!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)</div>
-        <div class="log-ok">[✓] Sweep complete. 7 critical findings. See findings table.</div>
+        <div class="log-ok">[✓] Sweep complete. 7 sample findings. See findings table.</div>
       </div>
     </div>
   </div>
@@ -335,7 +336,7 @@ function downloadReport() {
   const report = {
     exported: new Date().toISOString(),
     source: 'AEGIS NEXUS VSAT Ground-Station & PQC Control Center v5.0',
-    target_subnet: '192.168.100.1/24',
+    target_subnet: 'synthetic lab subnet',
     scan_profile: 'DEEP',
     satellite: 'Telstar 11N (37.5°W)',
     band: 'Ku-band',
@@ -345,18 +346,18 @@ function downloadReport() {
     qkd_qber_pct: 40.0,
     critical_findings: 7,
     findings: [
-      {severity:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'192.168.100.1', technique:'T1040', fix:'Disable telnet; deploy SSH (Ed25519)'},
-      {severity:'CRITICAL', title:'FTP Anonymous Write (Port 21)', host:'192.168.100.15', technique:'T1190', fix:'Disable FTP; deploy SFTP chroot'},
+      {severity:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'lab-router (synthetic)', technique:'T1040', fix:'Disable telnet; deploy SSH (Ed25519)'},
+      {severity:'CRITICAL', title:'FTP Anonymous Write (Port 21)', host:'lab-router (synthetic)5', technique:'T1190', fix:'Disable FTP; deploy SFTP chroot'},
       {severity:'CRITICAL', title:'HTTP Admin Panel (Port 80)', host:'Both', technique:'T1557', fix:'Redirect to HTTPS (TLS 1.3)'},
-      {severity:'CRITICAL', title:'CVE-2026-3392 TR-069 CWMP', host:'192.168.100.1', technique:'T1542.001', fix:'Disable CWMP or enforce mutual TLS'},
-      {severity:'CRITICAL', title:'Unsigned Firmware Accepted', host:'192.168.100.1', technique:'T1542.001', fix:'Enable firmware signature verification'},
-      {severity:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', technique:'T1200', fix:'Physically secure debug headers'},
+      {severity:'CRITICAL', title:'Illustrative TR-069/CWMP scenario TR-069 CWMP', host:'lab-router (synthetic)', technique:'T1542.001', fix:'Disable CWMP or enforce mutual TLS'},
+      {severity:'CRITICAL', title:'Unsigned Firmware Accepted', host:'lab-router (synthetic)', technique:'T1542.001', fix:'Enable firmware signature verification'},
+      {severity:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'lab-router (synthetic)', technique:'T1200', fix:'Physically secure debug headers'},
       {severity:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', technique:'T1565.001', fix:'Resync GPS/NTP; inspect OCXO'},
     ],
     pqc_inventory: [
-      {algorithm:'ML-KEM-768', standard:'FIPS 203', status:'COMPLIANT'},
-      {algorithm:'ML-DSA-65', standard:'FIPS 204', status:'PARTIAL'},
-      {algorithm:'SLH-DSA', standard:'FIPS 205', status:'COMPLIANT'},
+      {algorithm:'ML-KEM-768', standard:'FIPS 203', status:'NOT_ASSESSED'},
+      {algorithm:'ML-DSA-65', standard:'FIPS 204', status:'NOT_ASSESSED'},
+      {algorithm:'SLH-DSA', standard:'FIPS 205', status:'NOT_ASSESSED'},
       {algorithm:'RSA-2048', standard:'Legacy', status:'CRITICAL_RISK'},
       {algorithm:'ECC-P256', standard:'Legacy', status:'HIGH_RISK'},
     ],

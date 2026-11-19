@@ -154,7 +154,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
   justify-content:center;border:1px solid}
 </style>
 </head>
-<body>
+<body><aside role="note" aria-label="Simulation data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>SIMULATION / REFERENCE DATA ONLY.</strong> This page is a static interface demonstration. Events, assets, hostnames, vulnerability examples, ATT&amp;CK mappings, compliance states, receipts, and counters are synthetic or code-defined examples. No live sensors, customer systems, threat feeds, endpoint actions, signed receipts, or verified compliance assessment are connected by this page.</aside>
 <div class="header">
 <div class="logo">
 <div class="logo-hex">⬡</div>
@@ -166,7 +166,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="header-right">
 <div style="display:flex;align-items:center;gap:6px">
 <div class="status-dot"></div>
-<span style="color:var(--green);font-size:10px">OPERATIONAL</span>
+<span style="color:var(--green);font-size:10px">DEMO ONLY</span>
 </div>
 <div class="defcon">DEFCON 4 · GREEN</div>
 <div class="time-display" id="clock">--:--:-- UTC</div>
@@ -187,74 +187,74 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-12">
 <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr)">
-<div class="kpi"><div class="kpi-num green">LIVE</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View CI results</a></div></div>
-<div class="kpi"><div class="kpi-num green">GREEN</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">CRIT=0 HIGH=0</div></div>
-<div class="kpi"><div class="kpi-num green">12/14</div><div class="kpi-lbl">CRQC Closed</div><div class="kpi-sub">DW-1/DW-2 planned</div></div>
-<div class="kpi"><div class="kpi-num cyan">FIPS 205</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">SLH-DSA active</div></div>
-<div class="kpi"><div class="kpi-num amber">~40%</div><div class="kpi-lbl">CMMC L2</div><div class="kpi-sub">~44/110 practices</div></div>
-<div class="kpi"><div class="kpi-num green">✅</div><div class="kpi-lbl">PIPEDA</div><div class="kpi-sub">Zero PII</div></div>
-<div class="kpi"><div class="kpi-num purple">103</div><div class="kpi-lbl">Modules</div><div class="kpi-sub">v1→v4 complete</div></div>
-<div class="kpi"><div class="kpi-num green">4</div><div class="kpi-lbl">DW Windows</div><div class="kpi-sub">Q4'26–Q2'27</div></div>
+<div class="kpi"><div class="kpi-num green">CI LINK</div><div class="kpi-lbl">Test status</div><div class="kpi-sub"><a href="https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml">View current CI results</a></div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">Posture</div><div class="kpi-sub">No live alert data connected</div></div>
+<div class="kpi"><div class="kpi-num amber">DEMO</div><div class="kpi-lbl">CRQC scenario states</div><div class="kpi-sub">Not independently verified</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT IMPLEMENTED</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">No signing service connected</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">CMMC L2 mapping</div><div class="kpi-sub">No compliance assessment</div></div>
+<div class="kpi"><div class="kpi-num amber">DEMO</div><div class="kpi-lbl">Privacy controls</div><div class="kpi-sub">Not assessed</div></div>
+<div class="kpi"><div class="kpi-num purple">NOT VERIFIED</div><div class="kpi-lbl">Module inventory</div><div class="kpi-sub">No completion claim</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT ASSESSED</div><div class="kpi-lbl">Migration windows</div><div class="kpi-sub">Planning placeholders only</div></div>
 </div>
 </div>
 <div class="col-4">
 <div class="panel">
-<div class="panel-title">Active Threat Feed</div>
-<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">CVE-2026-3392 TR-069 CWMP unsigned provisioning — 192.168.100.1</span><span class="threat-time">01:18</span></div>
+<div class="panel-title">Simulated Event Feed</div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Illustrative TR-069/CWMP scenario TR-069 CWMP unsigned provisioning — lab-router (synthetic)</span><span class="threat-time">01:18</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">UART/JTAG unauthenticated — device registers readable</span><span class="threat-time">01:19</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Unsigned firmware accepted — arbitrary partition overwrite</span><span class="threat-time">01:23</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Carrier SNR 5.9 dB — below 8.0 dB minimum threshold</span><span class="threat-time">02:07</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">Clock skew +55.1 Hz — exceeds ±10 Hz limit (OSCILLATOR_DRIFT)</span><span class="threat-time">02:07</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">QKD BB84 QBER 40% — eavesdropper detected, key dropped</span><span class="threat-time">03:08</span></div>
-<div class="threat-item"><span class="threat-sev sev-med">MEDIUM</span><span class="threat-text">CRQC-012 HMAC fallback — pyspx SLH-DSA now active</span><span class="threat-time">06:58</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">MEDIUM</span><span class="threat-text">Synthetic CRQC scenario; no SLH-DSA service is connected</span><span class="threat-time">06:58</span></div>
 </div>
 </div>
 <div class="col-4">
 <div class="panel">
-<div class="panel-title">CRQC Migration Status</div>
-<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-002 SHA-256</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-003 Ledger</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-004-008</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-007 PBKDF2</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">CRQC-012 HMAC</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">CLOSED</div></div>
-<div class="prog-row"><div class="prog-label">DW-1 liboqs</div><div class="prog-wrap"><div class="prog-fill" style="width:15%;background:var(--amber)"></div></div><div class="prog-val amber">Q4'26</div></div>
-<div class="prog-row"><div class="prog-label">DW-2 HSM</div><div class="prog-wrap"><div class="prog-fill" style="width:5%;background:var(--amber)"></div></div><div class="prog-val amber">Q1'27</div></div>
+<div class="panel-title">Illustrative CRQC scenario states</div>
+<div class="prog-row"><div class="prog-label">CRQC-001 ECDSA</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-002 SHA-256</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">NOT ASSESSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-003 Ledger</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">NOT ASSESSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-004-008</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">NOT ASSESSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-007 PBKDF2</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">NOT ASSESSED</div></div>
+<div class="prog-row"><div class="prog-label">CRQC-012 HMAC</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">NOT ASSESSED</div></div>
+<div class="prog-row"><div class="prog-label">DW-1 liboqs</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">DW-2 HSM</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
 </div>
 </div>
 <div class="col-4">
 <div class="panel">
 <div class="panel-title">Interconnections</div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green">ACTIVE</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">Secrets FIPS HSM</div><div class="ic-status green">ACTIVE</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static assets TLS 1.3</div><div class="ic-status green">ACTIVE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure AD B2C</div><div class="ic-flow">Auth tokens (inbound)</div><div class="ic-status green" >EXAMPLE</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Azure Key Vault</div><div class="ic-flow">No Key Vault integration verified</div><div class="ic-status amber">NOT CONNECTED</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Vercel CDN</div><div class="ic-flow">Static host; deployment status via Vercel</div><div class="ic-status amber">NOT VERIFIED</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--amber)"></div><div class="ic-name">IPFS Network</div><div class="ic-flow">Receipt anchors SHA3-256</div><div class="ic-status amber">NO-IPFS</div></div>
 <div class="ic-node"><div class="ic-dot" style="background:var(--cyan)"></div><div class="ic-name">OpenAI API</div><div class="ic-flow">Chat only — no sec data</div><div class="ic-status cyan">OPTIONAL</div></div>
-<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">relay.js port 3133</div><div class="ic-status green">LOCAL</div></div>
+<div class="ic-node"><div class="ic-dot" style="background:var(--green)"></div><div class="ic-name">Gemini Proxy</div><div class="ic-flow">Proxy integration not verified</div><div class="ic-status amber">NOT VERIFIED</div></div>
 </div>
 </div>
 <div class="col-6">
 <div class="panel">
 <div class="panel-title">CMMC Level 2 Domain Coverage</div>
-<div class="prog-row"><div class="prog-label">IR Incident</div><div class="prog-wrap"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div><div class="prog-val green">3/3</div></div>
-<div class="prog-row"><div class="prog-label">AU Audit</div><div class="prog-wrap"><div class="prog-fill" style="width:56%;background:var(--cyan)"></div></div><div class="prog-val cyan">5/9</div></div>
-<div class="prog-row"><div class="prog-label">RA Risk</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--cyan)"></div></div><div class="prog-val cyan">2/3</div></div>
-<div class="prog-row"><div class="prog-label">SI Integrity</div><div class="prog-wrap"><div class="prog-fill" style="width:43%;background:var(--amber)"></div></div><div class="prog-val amber">3/7</div></div>
-<div class="prog-row"><div class="prog-label">CM Config</div><div class="prog-wrap"><div class="prog-fill" style="width:44%;background:var(--amber)"></div></div><div class="prog-val amber">4/9</div></div>
-<div class="prog-row"><div class="prog-label">AC Access</div><div class="prog-wrap"><div class="prog-fill" style="width:23%;background:var(--amber)"></div></div><div class="prog-val amber">5/22</div></div>
-<div class="prog-row"><div class="prog-label">AT Training</div><div class="prog-wrap"><div class="prog-fill" style="width:67%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
-<div class="prog-row"><div class="prog-label">PS Personnel</div><div class="prog-wrap"><div class="prog-fill" style="width:75%;background:var(--green)"></div></div><div class="prog-val green">Wave1✅</div></div>
+<div class="prog-row"><div class="prog-label">IR Incident</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val green">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">AU Audit</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val cyan">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">RA Risk</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val cyan">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">SI Integrity</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">CM Config</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">AC Access</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">AT Training</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
+<div class="prog-row"><div class="prog-label">PS Personnel</div><div class="prog-wrap"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div><div class="prog-val amber">Not assessed</div></div>
 </div>
 </div>
 <div class="col-6">
 <div class="panel">
-<div class="panel-title">Wave 1 Documentation Status (Q4 2026)</div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Policy-S313.md — Security Awareness Training Policy</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">AT-Training-Records-S313.md — 16hr training documented</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-Policy-S313.md — Personnel Security Policy</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">PS-AUA-S313.md — Acceptable Use Agreement</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">IR-Plan-S313.md — Incident Response Plan</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">DONE</span><span class="threat-text">CA-Readiness-S313.md — 3PAO Engagement Package</span></div>
+<div class="panel-title">Illustrative documentation checklist — not verified</div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">AT-Policy-S313.md — sample policy reference; not assessed</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">AT-Training-Records-S313.md — sample record reference; not verified</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">PS-Policy-S313.md — sample policy reference; not assessed</span></div>
+<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)" >REFERENCE</span><span class="threat-text">PS-AUA-S313.md — sample agreement reference; not assessed</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">REFERENCE</span><span class="threat-text">IR-Plan-S313.md — Incident Response Plan</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">REFERENCE</span><span class="threat-text">CA-Readiness-S313.md — 3PAO Engagement Package</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">NEXT</span><span class="threat-text">Engage C3PAO — CMMC Level 2 assessment</span></div>
 </div>
 </div>
@@ -265,7 +265,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-8">
 <div class="panel">
-<div class="panel-title">ATT&amp;CK Kill Chain — Aegis Telemetry (2026-08-29)</div>
+<div class="panel-title">Sample ATT&amp;CK scenario — no live telemetry</div>
 <table style="width:100%;font-size:10px;border-collapse:collapse">
 <thead><tr style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">
 <th style="padding:5px;text-align:left">Stage</th><th>Technique</th><th>Tool</th><th>Status</th><th>Coverage</th>
@@ -299,13 +299,13 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="col-12">
 <div class="panel">
 <div class="panel-title">Post-Quantum Cryptographic Stack — NIST FIPS 203/204/205</div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">313-BIND temporal receipts — pyspx pure-Python, 17,088B signatures</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 204</span><span class="pqc-algo">ML-DSA-65 (proxy)</span><span class="pqc-desc">Plugin trust registry + ledger signing — HMAC-SHA3-256 proxy → liboqs DW-1</span><span class="pqc-status" style="color:var(--amber)">🔄 DW-1</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">Key encapsulation — @noble/post-quantum JS, 1184B pubkey, 1088B ciphertext</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Session encryption — cryptography library, quantum-safe symmetric</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">RFC 9106</span><span class="pqc-algo">Argon2id</span><span class="pqc-desc">Session key derivation — 64MB memory, t=3, p=4 — replaces PBKDF2-SHA256</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge">FIPS 202</span><span class="pqc-algo">SHA3-256/512</span><span class="pqc-desc">All security-critical hashing — Merkle chains, IPFS CIDs, payload hashes</span><span class="pqc-status">✅ ACTIVE</span></div>
-<div class="pqc-item"><span class="pqc-badge" style="color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1)">DEPRECATED</span><span class="pqc-algo" style="color:var(--amber)">ECDSA P-256</span><span class="pqc-desc">cosign legacy path — ML-DSA-65 is now primary, ECDSA is fallback only</span><span class="pqc-status" style="color:var(--amber)">⚠ LEGACY</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 205</span><span class="pqc-algo">SLH-DSA-SHAKE-128f</span><span class="pqc-desc">FIPS 205 reference; no signing service connected</span><span class="pqc-status">NOT IMPLEMENTED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 204</span><span class="pqc-algo">ML-DSA-65 (proxy)</span><span class="pqc-desc">FIPS 204 reference; production signing integration not verified</span><span class="pqc-status" style="color:var(--amber)">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 203</span><span class="pqc-algo">ML-KEM-768</span><span class="pqc-desc">FIPS 203 reference; production key exchange not verified</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 140-3</span><span class="pqc-algo">AES-256-GCM</span><span class="pqc-desc">Algorithm reference; deployment and FIPS validation not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">RFC 9106</span><span class="pqc-algo">Argon2id</span><span class="pqc-desc">Algorithm reference; deployed configuration not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge">FIPS 202</span><span class="pqc-algo">SHA3-256/512</span><span class="pqc-desc">Hash references; full security-critical coverage not assessed</span><span class="pqc-status">NOT ASSESSED</span></div>
+<div class="pqc-item"><span class="pqc-badge" style="color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1)">DEPRECATED</span><span class="pqc-algo" style="color:var(--amber)">ECDSA P-256</span><span class="pqc-desc">Legacy algorithm reference; current signing implementation not assessed</span><span class="pqc-status" style="color:var(--amber)">⚠ LEGACY</span></div>
 </div>
 </div>
 </div>
@@ -324,31 +324,31 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="gw-tier" style="border-color:rgba(245,158,11,.3)">
 <div class="gw-level" style="color:var(--amber);border-color:var(--amber)">L4</div>
 <div><div style="font-weight:700;color:var(--amber)">DEGRADE</div><div style="font-size:9px;color:var(--muted)">Returning PQC-encrypted poisoned data to exhaust adversary compute</div></div>
-<div style="font-size:9px;color:var(--amber)">ACTIVE</div>
+<div style="font-size:9px;color:var(--amber)">NOT CONNECTED</div>
 </div>
 <div class="gw-tier" style="border-color:rgba(0,212,255,.3)">
 <div class="gw-level" style="color:var(--cyan);border-color:var(--cyan)">L3</div>
 <div><div style="font-weight:700;color:var(--cyan)">REROUTE</div><div style="font-size:9px;color:var(--muted)">Transparently moving adversary session to AETHER AI honeypot</div></div>
-<div style="font-size:9px;color:var(--cyan)">READY</div>
+<div style="font-size:9px;color:var(--cyan)">NOT CONNECTED</div>
 </div>
 <div class="gw-tier" style="border-color:rgba(167,139,250,.3)">
 <div class="gw-level" style="color:var(--purple);border-color:var(--purple)">L2</div>
 <div><div style="font-weight:700;color:var(--purple)">DELAY</div><div style="font-size:9px;color:var(--muted)">Introduction of synthetic latencies to deter automated scanning</div></div>
-<div style="font-size:9px;color:var(--purple)">ACTIVE</div>
+<div style="font-size:9px;color:var(--purple)">NOT CONNECTED</div>
 </div>
 <div class="gw-tier" style="border-color:var(--dim)">
 <div class="gw-level" style="color:var(--green);border-color:var(--green)">L1</div>
 <div><div style="font-weight:700;color:var(--green)">MONITOR</div><div style="font-size:9px;color:var(--muted)">Passive collection of 'Digital Dust' — logging all lure interactions</div></div>
-<div style="font-size:9px;color:var(--green)">CONTINUOUS</div>
+<div style="font-size:9px;color:var(--green)">NOT CONNECTED</div>
 </div>
 </div>
 </div>
 <div class="col-6">
 <div class="panel">
 <div class="panel-title">WE-FORGE Watermark Status</div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Linguistic watermarking — SHA3-256 recipient hash</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Zero-width character embedding — binary watermark</span></div>
-<div class="threat-item"><span class="threat-sev" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">ACTIVE</span><span class="threat-text">Document hash chain — SHA3-256 (HNDL-safe)</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">NOT VERIFIED</span><span class="threat-text">Linguistic watermarking — SHA3-256 recipient hash</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">NOT VERIFIED</span><span class="threat-text">Zero-width character embedding — binary watermark</span></div>
+<div class="threat-item"><span class="threat-sev sev-med">NOT VERIFIED</span><span class="threat-text">Document hash chain — SHA3-256 (HNDL-safe)</span></div>
 <div class="threat-item"><span class="threat-sev sev-med">AETHER</span><span class="threat-text">AI honeypot decoys — VSAT, SSH, web shell lures</span></div>
 <div class="threat-item"><span class="threat-sev sev-med">DECOY</span><span class="threat-text">Fake file shares with watermarked documents</span></div>
 </div>
@@ -369,11 +369,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-6">
 <div class="panel">
-<div class="panel-title">Ground Segment Sweep — 192.168.100.1/24</div>
+<div class="panel-title">Ground Segment Sweep — lab-router (synthetic)/24</div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Telnet (Port 23) OPEN — cleartext credentials</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">FTP Anonymous Write (Port 21) — Both hosts</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">HTTP Admin Panel (Port 80) — Both hosts</span></div>
-<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">CVE-2026-3392 TR-069 CWMP unsigned provisioning</span></div>
+<div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Illustrative TR-069/CWMP scenario TR-069 CWMP unsigned provisioning</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">Unsigned firmware accepted — partition overwrite</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">CRITICAL</span><span class="threat-text">UART/JTAG unauthenticated — registers readable</span></div>
 <div class="threat-item"><span class="threat-sev sev-high">HIGH</span><span class="threat-text">SNR 5.9 dB / Skew +55.1 Hz — RF Link</span></div>
@@ -382,7 +382,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 </div>
 <div class="col-6">
 <div class="panel">
-<div class="panel-title">CWMP Hardening Status (CVE-2026-3392)</div>
+<div class="panel-title">CWMP Hardening Status (Illustrative TR-069/CWMP scenario)</div>
 <div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">ACS IP Allowlist — not configured</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">Mutual TLS — not enforced</span></div>
 <div class="threat-item"><span class="threat-sev sev-crit">OPEN</span><span class="threat-text">Firmware signature verification — disabled</span></div>
@@ -404,24 +404,24 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="grid">
 <div class="col-12">
 <div class="panel">
-<div class="panel-title">313 Temporal Binding Protocol — Receipt Chain Status</div>
+<div class="panel-title">313 Temporal Binding Protocol — Receipt UI demonstration — no verified chain</div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-<div class="kpi"><div class="kpi-num green">SLH-DSA</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">FIPS 205 pyspx</div></div>
-<div class="kpi"><div class="kpi-num green">SHA3-512</div><div class="kpi-lbl">Chain Hash</div><div class="kpi-sub">Quantum-safe</div></div>
-<div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Timestamp</div><div class="kpi-sub">Nanosecond entropy</div></div>
-<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">HybridAnchor active</div></div>
+<div class="kpi"><div class="kpi-num amber">NOT IMPLEMENTED</div><div class="kpi-lbl">Signature</div><div class="kpi-sub">No signing service connected</div></div>
+<div class="kpi"><div class="kpi-num cyan">SHA3-512</div><div class="kpi-lbl">Hash example</div><div class="kpi-sub">No attestation connected</div></div>
+<div class="kpi"><div class="kpi-num cyan">...313</div><div class="kpi-lbl">Display suffix</div><div class="kpi-sub">Not trusted time or entropy</div></div>
+<div class="kpi"><div class="kpi-num amber">NO-IPFS</div><div class="kpi-lbl">Anchor</div><div class="kpi-sub">No anchor service connected</div></div>
 </div>
-<div class="panel-title">Anchor Strategy Comparison</div>
+<div class="panel-title">Proposed Anchor Strategies — Not Assessed</div>
 <table style="width:100%;font-size:10px;border-collapse:collapse">
 <thead><tr style="color:var(--muted);font-size:9px;text-transform:uppercase">
 <th style="padding:5px;text-align:left">Strategy</th><th>Always Available</th><th>Offline</th><th>Quantum-Safe</th><th>Self-Contained</th><th>CMMC</th>
 </tr></thead>
 <tbody>
-<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px;font-weight:700">HybridAnchor ⭐</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">Partial</td><td style="color:var(--green)">BEST</td></tr>
-<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">MultiHashAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅ Full</td><td style="color:var(--cyan)">STRONG</td></tr>
-<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">LedgerAnchor</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--cyan)">STRONG</td></tr>
-<tr style="border-bottom:1px solid var(--dim)"><td style="padding:5px">IPFS (current)</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--green)">✅</td><td style="color:var(--amber)">No</td><td style="color:var(--amber)">MEDIUM</td></tr>
-<tr><td style="padding:5px">RFC3161Anchor</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--red)">❌</td><td style="color:var(--amber)">No</td><td style="color:var(--cyan)">LEGAL</td></tr>
+<tr><td style="padding:5px">HybridAnchor (proposed)</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+<tr><td style="padding:5px">MultiHashAnchor (proposed)</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+<tr><td style="padding:5px">LedgerAnchor (proposed)</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+<tr><td style="padding:5px">IPFS</td><td>Not connected</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+<tr><td style="padding:5px">RFC 3161</td><td>Not connected</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
 </tbody>
 </table>
 </div>
@@ -440,17 +440,17 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
 <div class="t-green">[BOOT] Shadow313 NEXUS v4.0.0 initialized</div>
 <div class="t-green">[AUTH] Operator: mohamad — Ottawa, ON, Canada</div>
 <div class="t-green">[LINK] Establishing mesh connection to Orbital Stack...</div>
-<div class="t-cyan">[PQC]  SLH-DSA-SHAKE-128f (FIPS 205) — pyspx active</div>
-<div class="t-cyan">[PQC]  ML-DSA-65 proxy — HardenedKeyInfrastructure loaded</div>
+<div class="t-cyan">[PQC]  Algorithm references only; no signing service connected</div>
+<div class="t-cyan">[PQC]  ML-DSA-65 reference only; implementation not assessed</div>
 <div class="t-cyan">[PQC]  Argon2id KDF — 64MB memory, t=3, p=4</div>
-<div class="t-green">[TEST] Test status: see live CI results</div>
-<div class="t-green">[SDS]  Posture scanner: GREEN (CRIT=0 HIGH=0)</div>
-<div class="t-green">[CRQC] 12/14 items closed — DW-1/DW-2 planned Q4'26/Q1'27</div>
+<div class="t-green">[TEST] Test status: see current GitHub Actions</div>
+<div class="t-green">[SDS]  Posture scanner: NOT ASSESSED — no live telemetry</div>
+<div class="t-green">[CRQC] Illustrative scenario states; not verified — DW-1/DW-2 planned Q4'26/Q1'27</div>
 <div class="t-amber">[VSAT] Ground segment sweep: 7 CRITICAL findings</div>
-<div class="t-amber">[VSAT] CVE-2026-3392 TR-069 CWMP — VULNERABLE</div>
-<div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — ACTIVE</div>
-<div class="t-green">[313]  Temporal binding chain — INTACT</div>
-<div class="t-green">[CMMC] Wave 1 documentation — COMPLETE</div>
+<div class="t-amber">[VSAT] Illustrative TR-069/CWMP scenario TR-069 CWMP — EXAMPLE ONLY</div>
+<div class="t-green">[GW]   Ghost-Watch CADL L1-L5 — reference concept; no live endpoint integration</div>
+<div class="t-green">[313]  Receipt chain — no trusted chain connected</div>
+<div class="t-green">[CMMC] Compliance status — not assessed</div>
 <div class="t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
 <div><span class="t-green">shadow313@nexus</span><span class="t-muted">:~$ </span><span class="blink t-green">▌</span></div>
 </div>
@@ -486,12 +486,12 @@ function show(id,btn){
 // Terminal
 const COMMANDS={
   'help':'Available: status, tests, crqc, pqc, vsat, cmmc, clear',
-  'status':'Posture: CRIT=0 HIGH=0 | Test status: see live CI results | CRQC: 12/14 closed',
-  'tests':'[PASS] Test status: see live CI results',
-  'crqc':'CRQC-001 ✅ CRQC-002 ✅ CRQC-003 ✅ CRQC-004-008 ✅ CRQC-007 ✅ CRQC-012 ✅ | DW-1 🔄 Q4\'26 | DW-2 🔄 Q1\'27',
-  'pqc':'SLH-DSA-SHAKE-128f (FIPS 205) | ML-DSA-65 proxy | ML-KEM-768 | AES-256-GCM | Argon2id | SHA3-256/512',
-  'vsat':'7 CRITICAL findings: Telnet/FTP/HTTP/CVE-2026-3392/Firmware/UART/QKD-QBER-40%',
-  'cmmc':'Wave 1 DONE: AT-Policy ✅ AT-Records ✅ PS-Policy ✅ PS-AUA ✅ IR-Plan ✅ CA-Readiness ✅',
+  'status':'Posture: not assessed; no live telemetry connected | Check current GitHub Actions for CI status | PQC status: not assessed',
+  'tests':'Open the current GitHub Actions workflow; this demo does not run tests',
+  'crqc':'CRQC workstream status: not assessed; DW-1/DW-2 planning placeholders only',
+  'pqc':'Reference algorithm names only; no production PQC signing or key-exchange service verified',
+  'vsat':'Synthetic lab scenarios only; no live target scan or findings verified',
+  'cmmc':'Compliance evidence not assessed; no independent authorization review',
   'clear':'__CLEAR__',
 };
 

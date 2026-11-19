@@ -1,6 +1,7 @@
 # Shadow313 NEXUS — Python Dependencies
 # Core
 requests>=2.32.5
+urllib3>=2.8.0
 dnspython>=2.4.0
 python-whois>=0.8.0
 scapy>=2.5.0
@@ -25,15 +26,6 @@ sqlalchemy>=2.1.8
 # Reporting
 jinja2>=3.1.0
 markdown>=3.11.3
-
-# Security
-bandit>=1.9.4
-safety>=3.8.1
-
-# Testing
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-cov>=7.1.0
 
 # Utilities
 rich>=13.0.0

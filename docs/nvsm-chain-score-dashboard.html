@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NVSM Chain Score — CVE-006+003+002 — Shadow313 NEXUS</title>
+<title>Illustrative NVSM Scenario Model — Shadow313 NEXUS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root{--green:#22c55e;--amber:#f59e0b;--cyan:#06b6d4;--purple:#a78bfa;--red:#ef4444;--blue:#3b82f6;--bg:#000;--bg2:#080808;--border:rgba(34,197,94,0.15);--border2:rgba(30,41,59,0.5);--text:#e2e8f0;--muted:#64748b;}
@@ -138,13 +138,14 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Demonstration data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>STATIC DEMONSTRATION ONLY.</strong> This page contains sample values and illustrative workflows. It does not connect to live telemetry, verify customer incidents, issue trusted timestamps, validate digital signatures, publish IPFS anchors, measure security coverage, or provide a production service.</aside>
 
 <!-- STICKY TOP BAR WITH DOWNLOAD -->
 <div class="top-bar">
   <div class="top-bar-left">
     <div class="hex">S3</div>
-    <div class="top-bar-title">SHADOW313 <span>NEXUS</span> — NVSM Chain Score Dashboard</div>
-    <span class="status-pill">CVE-006+003+002 · Mathematical Analysis</span>
+    <div class="top-bar-title">SHADOW313 <span>NEXUS</span> — Illustrative model score Dashboard</div>
+    <span class="status-pill">Synthetic inputs · exploratory model</span>
   </div>
   <div class="top-bar-right">
     <button class="dl-btn" onclick="downloadPage()">
@@ -156,9 +157,9 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge">⬡ Next-Generation Vulnerability Scoring Model · Mathematical Proof</div>
-  <h1>NVSM Composite <span>Chain Score</span></h1>
-  <p>Mathematical derivation of the CVE-006+003+002 attack chain score — showing why CVSS fundamentally fails to capture chain composability, EPSS delta, and forensic evasion potential.</p>
+  <div class="hero-badge">⬡ Exploratory vulnerability scoring concept · not validated</div>
+  <h1>Illustrative <span>Scenario Model</span></h1>
+  <p>Illustrative calculation using synthetic inputs to explore how a proposed chain score might combine CVSS, EPSS, and scenario-specific factors. This model has not been validated against observed incidents and does not establish that CVSS is deficient.</p>
 </div>
 
 <div class="main">
@@ -167,7 +168,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <div class="kpi-strip">
   <div class="kpi g"><div class="kpi-val" style="color:var(--red)">9.7</div><div class="kpi-lbl">NVSM Chain Score</div></div>
   <div class="kpi r"><div class="kpi-val" style="color:var(--amber)">9.1</div><div class="kpi-lbl">CVSS (Wrong)</div></div>
-  <div class="kpi a"><div class="kpi-val" style="color:var(--cyan)">0.98</div><div class="kpi-lbl">FEP Factor</div></div>
+  <div class="kpi a"><div class="kpi-val" style="color:var(--cyan)">0.98</div><div class="kpi-lbl">Illustrative FEP input</div></div>
   <div class="kpi c"><div class="kpi-val" style="color:var(--purple)">194</div><div class="kpi-lbl">Dwell Days</div></div>
   <div class="kpi p"><div class="kpi-val" style="color:var(--green)">3</div><div class="kpi-lbl">CVEs Chained</div></div>
   <div class="kpi b"><div class="kpi-val" style="color:var(--red)">2.77×</div><div class="kpi-lbl">Superlinear Scale</div></div>
@@ -181,7 +182,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   </div>
   <div class="cve-grid">
     <div class="cve-card critical">
-      <div class="cve-id">S313-CVE-2026-006</div>
+      <div class="cve-id">Internal scenario 006</div>
       <div class="cve-name">Path Traversal — Session Artifact Storage</div>
       <div class="cve-desc">Arbitrary file read via unsanitized path in session artifact storage. Allows attacker to read any file accessible to the Shadow313 process, including config files and stored credentials.</div>
       <div class="cve-metrics">
@@ -192,7 +193,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
       </div>
     </div>
     <div class="cve-card critical">
-      <div class="cve-id">S313-CVE-2026-003</div>
+      <div class="cve-id">Internal scenario 003</div>
       <div class="cve-name">SQL Injection — IOC Store</div>
       <div class="cve-desc">Unsanitized indicator input passed directly to SQLite query. Enables full database read/write, potential RCE via SQLite extensions, and complete IOC store compromise.</div>
       <div class="cve-metrics">
@@ -203,7 +204,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
       </div>
     </div>
     <div class="cve-card high">
-      <div class="cve-id">S313-CVE-2026-002</div>
+      <div class="cve-id">Internal scenario 002</div>
       <div class="cve-name">SSRF — Threat Intelligence Feed</div>
       <div class="cve-desc">Unvalidated URL in threat intelligence feed fetcher allows Server-Side Request Forgery. Enables internal network scanning, cloud metadata access (AWS/Azure IMDS), and credential theft.</div>
       <div class="cve-metrics">
@@ -248,7 +249,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
       <div class="chain-node-id">IMPACT</div>
       <div class="chain-node-name">Full Cloud Compromise</div>
       <div class="chain-node-score" style="color:var(--red)">9.7 NVSM</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px;">194-day dwell · FEP=0.98 · Undetected</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Illustrative dwell input · model output only · not observed</div>
     </div>
   </div>
 </div>
@@ -448,7 +449,7 @@ NVSM = <span class="val">9.8</span> × <span class="val">1.444</span> × (0.4×<
   </table>
   <div class="insight" style="margin-top:16px;">
     <div class="insight-title">Asymptotic Ceiling</div>
-    <div class="insight-text">The plateau duration converges toward ~451 days for nation-states (n=8). The marginal gain per additional CVE drops below 10 days after n=4, making the 3-CVE chain the optimal cost-efficiency point for ransomware groups. Nation-states continue to n=6+ because their operational tempo and zero-day stockpile economics justify the diminishing returns.</div>
+    <div class="insight-text">Illustrative model output only: the displayed plateau, CVE counts, and cost-efficiency curve are synthetic scenario parameters, not empirical measurements of ransomware groups or nation-state operations. No validated dataset or predictive model performance is published here.</div>
   </div>
 </div>
 
