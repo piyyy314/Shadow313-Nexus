@@ -14,15 +14,17 @@ from shadow313.v4.detection import adaptive_defense_loop
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_gitleaks_workflows_use_the_official_action():
-    workflow_paths = (
-        ROOT / ".github" / "workflows" / "pr-checks.yml",
-        ROOT / ".github" / "workflows" / "security-scan.yml",
+def test_gitleaks_workflows_use_the_official_scanners():
+    pr_workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+        encoding="utf-8"
     )
-    for path in workflow_paths:
-        workflow = path.read_text(encoding="utf-8")
-        assert "uses: gitleaks/gitleaks-action@v3" in workflow
-        assert "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}" in workflow
+    nightly_workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "uses: gitleaks/gitleaks-action@v3" in pr_workflow
+    assert "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}" in pr_workflow
+    assert "go install github.com/zricethezav/gitleaks/v8@v8.30.1" in nightly_workflow
+    assert "gitleaks git --redact --exit-code 1 --log-opts=\"--all\" ." in nightly_workflow
 
 
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
@@ -201,7 +203,7 @@ def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     assert "Run Checkov on Dockerfile" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
-    assert "checkov -f docker-compose.yml" not in workflow
+    assert "checkov -f docker-compose.yml --framework yaml --output cli" in workflow
     assert "Verify Compose hardening assertions" in workflow
     assert "with open('docker-compose.yml') as f:" in workflow
 
