@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 from typing import Tuple
 
-from .parser import PQCAuditResult
+from .parser import PQCAuditResult, PQCComponent
 from ...core.binding_sdk.binder import BindReceipt
 
 
