@@ -284,10 +284,10 @@ jobs:
         run: pip install checkov==3.2.0
 
       - name: Run Checkov on Dockerfile
-        run: |
-          checkov -f Dockerfile \
-            --framework dockerfile \
-            --output cli
+        run: checkov -f Dockerfile --framework dockerfile --output cli
+
+      - name: Run Checkov on Docker Compose
+        run: checkov -f docker-compose.yml --framework yaml --output cli
 
       - name: Verify Compose hardening assertions
         run: |
