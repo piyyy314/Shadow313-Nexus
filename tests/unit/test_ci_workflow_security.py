@@ -337,3 +337,18 @@ def test_secret_scanner_fixture_catalog_is_present_and_well_formed():
             and all(character in "0123456789abcdef" for character in fingerprint)
             for fingerprint in fingerprints
         )
+
+
+def test_publish_jobs_stage_only_distributions():
+    workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "twine check dist/*.whl dist/*.tar.gz" in workflow
+    publish_section = workflow[
+        workflow.index("# ── Publish to TestPyPI") : workflow.index("# ── Docker Build")
+    ]
+    assert publish_section.count("name: Stage publishable distributions") == 2
+    assert publish_section.count("packages-dir: dist/publish/") == 2
+    assert publish_section.count("find dist -maxdepth 1 -type f") == 2
+    assert "No wheel or source distribution found for TestPyPI." in publish_section
+    assert "No wheel or source distribution found for PyPI." in publish_section
