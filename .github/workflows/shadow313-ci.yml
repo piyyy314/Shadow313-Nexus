@@ -178,8 +178,9 @@ jobs:
     name: Publish → TestPyPI
     runs-on: ubuntu-latest
     needs: build
-    # Runs on every push to master/main (not just releases)
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    # TestPyPI publication is explicit/manual until the trusted publisher's
+    # configured project name and environment are verified. Never publish on every push.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
     environment: testpypi
     permissions:
       id-token: write   # OIDC trusted publishing
