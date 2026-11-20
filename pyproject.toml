@@ -7,7 +7,7 @@ name            = "shadow313-nexus"
 version         = "4.0.0"
 description     = "Shadow313 NEXUS — Local-First AI-Powered Security Intelligence CLI"
 readme          = "README.md"
-license         = {text = "MIT"}
+license         = "MIT"
 requires-python = ">=3.11"
 authors         = [{name = "Shadow313 Core Team / mohamad", email = "ops@shadow313.dev"}]
 keywords        = ["security","pentest","cli","ai","vulnerability","recon","quantum","nexus","pqc"]

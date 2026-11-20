@@ -214,7 +214,6 @@ NEXUS_DETECTION_MAP: dict[str, tuple[float, str]] = {
     "T1600.001": (0.92, "NEXUS quantum module PQC downgrade"),
     "T1105":     (0.93, "NEXUS eBPF execve + wget interception"),
     "T1110.001": (0.92, "NEXUS honeypot SSH trap + fail2ban"),
-    "T1552.004": (0.82, "NEXUS secrets_manager pattern detection"),
     # Additional coverage
     "T1595":     (0.75, "NEXUS recon module + honeypot scanner UA"),
     "T1595.002": (0.80, "NEXUS vuln module vulnerability scanning"),

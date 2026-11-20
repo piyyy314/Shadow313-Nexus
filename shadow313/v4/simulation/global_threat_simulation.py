@@ -497,7 +497,6 @@ class SimulationResult:
 # Shadow313 detection capabilities mapped to ATT&CK techniques
 SHADOW313_DETECTION_MAP = {
     # Fully detected (NEXUS Engine + enforcement)
-    "T1190": ("DETECTED", 0.92, 5),   # Exploit public-facing — CVE-2026-3392 detected
     "T1059.001": ("DETECTED", 0.88, 4), # PowerShell — encoded cmd detection
     "T1059.004": ("DETECTED", 0.85, 4), # Bash — eBPF syscall tracing
     "T1055": ("BLOCKED", 0.95, 5),    # Process injection — eBPF + EPT blocked

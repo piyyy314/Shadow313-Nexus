@@ -286,11 +286,8 @@ class SecurityKnowledgeBase:
         )
 
     # ── Query ──────────────────────────────────────────────────────────────
-    def query(self, question: str, namespace: str = "cve",
-              top_k: int = 5) -> list[dict]:
-        return self._stores.get(namespace,
-                                self._stores["general"]).query(question, top_k)
-
+    # NOTE: the single-namespace query() that used to live here was dead code,
+    # fully shadowed by the later query() definition below; removed.
     def query_all(self, question: str, top_k: int = 3) -> list[dict]:
         """Query all namespaces and merge results."""
         results = []
