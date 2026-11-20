@@ -5,7 +5,7 @@ requests>=2.32.5
 dnspython>=2.4.0
 python-whois>=0.8.0
 scapy>=2.5.0
-cryptography>=45.0.7
+cryptography>=46.0.5
 pycryptodome>=4.4.0
 
 # Post-Quantum Cryptography
@@ -42,3 +42,5 @@ click>=8.2.1
 python-dotenv>=1.2.4
 pyyaml>=6.0.3
 toml>=0.10.2
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+pygments>=2.20.0 # not directly required, pinned by Snyk to avoid a vulnerability
