@@ -342,8 +342,8 @@ def test_publish_jobs_stage_only_distributions():
     publish_section = workflow[
         workflow.index("# ── Publish to TestPyPI") : workflow.index("# ── Docker Build")
     ]
-    assert publish_section.count("name: Stage publishable distributions") == 2
+    assert publish_section.count("name: Stage only Python distributions") == 2
     assert publish_section.count("packages-dir: dist/publish/") == 2
-    assert publish_section.count("find dist -maxdepth 1 -type f") == 2
-    assert "No wheel or source distribution found for TestPyPI." in publish_section
-    assert "No wheel or source distribution found for PyPI." in publish_section
+    assert publish_section.count("packages=(dist/*.whl dist/*.tar.gz)") == 2
+    assert publish_section.count("No wheel or source distribution found in dist/.") == 2
+
