@@ -180,6 +180,9 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     assert '"urllib3==2.8.0"' in builder_patch
     assert '"setuptools==84.1.0"' not in dockerfile
 
+    python_base_images = [line.split()[1] for line in dockerfile.splitlines() if line.startswith("FROM python:")]
+    assert python_base_images == ["python:3.12-slim-trixie", "python:3.12-slim-trixie"]
+
     production_start = dockerfile.index("FROM production-base AS production")
     nexus_start = dockerfile.index("FROM production-base AS nexus")
     production_stage = dockerfile[production_start:nexus_start]
