@@ -2,7 +2,7 @@ name: Shadow313 NEXUS — Full Pre-Deploy Validation
 
 on:
   push:
-    branches: [master]
+    branches: ['**']
   pull_request:
     branches: [master]
   workflow_dispatch:
