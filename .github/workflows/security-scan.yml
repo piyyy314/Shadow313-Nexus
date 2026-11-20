@@ -31,13 +31,23 @@ jobs:
       - name: Install and audit all deps
         run: |
           pip install -e ".[dev]"
-          pip install pip-audit==2.7.3 safety==3.1.0 bandit==1.7.8
+          pip freeze --exclude-editable > safety-requirements.txt
+          pip install pip-audit==2.7.3 bandit==1.7.8 \
+            ruff==0.4.4 black==24.3.0 yamllint==1.35.1
           pip-audit --desc --format json -o nightly-pip-audit.json
-          safety check --full-report --json > nightly-safety.json || true
+          python -m venv .safety-venv
+          .safety-venv/bin/python -m pip install \
+            "setuptools<81" "marshmallow<4" "typer<0.13" "click<8.2" safety==3.1.0
+          .safety-venv/bin/safety check --json \
+            --file safety-requirements.txt > nightly-safety.json || true
           bandit -r shadow313/ nexus_toolkit/ \
             -x shadow313/tests,tests \
             --severity-level medium \
             -f json -o nightly-bandit.json || true
+          ruff check shadow313/ nexus_toolkit/ --output-format json > nightly-ruff.json || true
+          black --check --diff shadow313/ > nightly-black.txt 2>&1 || true
+          yamllint -f parsable -c .yamllint.yml .github/workflows docker-compose.yml \
+            > nightly-yamllint.txt 2>&1 || true
 
       - name: Upload audit reports
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -47,6 +57,9 @@ jobs:
             nightly-pip-audit.json
             nightly-safety.json
             nightly-bandit.json
+            nightly-ruff.json
+            nightly-black.txt
+            nightly-yamllint.txt
           retention-days: 30
 
   # ── Docker image scan ─────────────────────────────────────────────

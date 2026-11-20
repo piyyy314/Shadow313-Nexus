@@ -31,82 +31,89 @@ import signal
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
 
 log = logging.getLogger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 # ── Policy definitions ────────────────────────────────────────────────────────
 
 # Ports that are NEVER permitted for outbound connections from monitored hosts
 # These are canonical attacker/C2 ports with no legitimate use in production
-BLOCKED_OUTBOUND_PORTS: frozenset[int] = frozenset({
-    4444,   # Metasploit/nc default reverse shell — confirmed in telemetry
-    4445,   # Metasploit alternative
-    4446,   # Metasploit alternative
-    1234,   # Common reverse shell
-    1337,   # "Elite" port — common backdoor
-    31337,  # "Elite" port — common backdoor
-    9001,   # Tor relay default — confirmed in telemetry (svchost_local.exe)
-    9050,   # Tor SOCKS proxy
-    9150,   # Tor Browser SOCKS
-    6666,   # IRC/botnet
-    6667,   # IRC/botnet
-    6668,   # IRC/botnet
-    6669,   # IRC/botnet
-})
+BLOCKED_OUTBOUND_PORTS: frozenset[int] = frozenset(
+    {
+        4444,  # Metasploit/nc default reverse shell — confirmed in telemetry
+        4445,  # Metasploit alternative
+        4446,  # Metasploit alternative
+        1234,  # Common reverse shell
+        1337,  # "Elite" port — common backdoor
+        31337,  # "Elite" port — common backdoor
+        9001,  # Tor relay default — confirmed in telemetry (svchost_local.exe)
+        9050,  # Tor SOCKS proxy
+        9150,  # Tor Browser SOCKS
+        6666,  # IRC/botnet
+        6667,  # IRC/botnet
+        6668,  # IRC/botnet
+        6669,  # IRC/botnet
+    }
+)
 
 # Process names that should NEVER make outbound connections
 # Any outbound connection from these processes is an IOC
-RESTRICTED_PROCESSES: frozenset[str] = frozenset({
-    "nc",
-    "ncat",
-    "netcat",
-    "nmap",              # Should not make outbound connections in production
-    "backdoor_payload",  # Explicit IOC from Aegis telemetry
-    "payload",
-    "shell",
-    "reverse_shell",
-})
+RESTRICTED_PROCESSES: frozenset[str] = frozenset(
+    {
+        "nc",
+        "ncat",
+        "netcat",
+        "nmap",  # Should not make outbound connections in production
+        "backdoor_payload",  # Explicit IOC from Aegis telemetry
+        "payload",
+        "shell",
+        "reverse_shell",
+    }
+)
 
 # External IP ranges that monitored server processes should not connect to
 # (RFC1918 private ranges are always allowed)
-APPROVED_EXTERNAL_DESTINATIONS: frozenset[str] = frozenset({
-    # NVD API
-    "services.nvd.nist.gov",
-    # KEV feed
-    "www.cisa.gov",
-    # EPSS API
-    "api.first.org",
-    # MITRE ATT&CK STIX
-    "raw.githubusercontent.com",
-    # PyPI (for pip-audit)
-    "pypi.org",
-    "files.pythonhosted.org",
-})
+APPROVED_EXTERNAL_DESTINATIONS: frozenset[str] = frozenset(
+    {
+        # NVD API
+        "services.nvd.nist.gov",
+        # KEV feed
+        "www.cisa.gov",
+        # EPSS API
+        "api.first.org",
+        # MITRE ATT&CK STIX
+        "raw.githubusercontent.com",
+        # PyPI (for pip-audit)
+        "pypi.org",
+        "files.pythonhosted.org",
+    }
+)
 
 
 # ── Data classes ──────────────────────────────────────────────────────────────
 
+
 @dataclass
 class EnforcementAction:
     """Record of a D3-PT enforcement decision."""
-    pid:          int
+
+    pid: int
     process_name: str
-    dst_ip:       str
-    dst_port:     int
-    action:       str       # KILLED | BLOCKED | LOGGED | ALLOWED | WOULD_KILL
-    timestamp:    str
-    reason:       str
-    d3fend:       str = "D3-PT"
-    attack:       str = "T1095"
-    signal_sent:  Optional[int] = None
+    dst_ip: str
+    dst_port: int
+    action: str  # KILLED | BLOCKED | LOGGED | ALLOWED | WOULD_KILL
+    timestamp: str
+    reason: str
+    d3fend: str = "D3-PT"
+    attack: str = "T1095"
+    signal_sent: int | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -115,19 +122,21 @@ class EnforcementAction:
 @dataclass
 class OTFRule:
     """An outbound traffic filtering rule (D3-OTF)."""
-    rule_id:    str
-    dst_port:   Optional[int]
-    dst_ip:     Optional[str]
-    protocol:   str = "tcp"
-    action:     str = "DROP"
-    comment:    str = ""
-    applied:    bool = False
-    error:      str = ""
+
+    rule_id: str
+    dst_port: int | None
+    dst_ip: str | None
+    protocol: str = "tcp"
+    action: str = "DROP"
+    comment: str = ""
+    applied: bool = False
+    error: str = ""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # D3-PT: PROCESS TERMINATOR
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class ProcessTerminator:
     """
@@ -156,28 +165,28 @@ class ProcessTerminator:
 
     def __init__(
         self,
-        blocked_ports:     frozenset[int] = BLOCKED_OUTBOUND_PORTS,
-        restricted_procs:  frozenset[str] = RESTRICTED_PROCESSES,
-        enforcement_mode:  bool = True,
-        log_all:           bool = True,
+        blocked_ports: frozenset[int] = BLOCKED_OUTBOUND_PORTS,
+        restricted_procs: frozenset[str] = RESTRICTED_PROCESSES,
+        enforcement_mode: bool = True,
+        log_all: bool = True,
     ) -> None:
-        self._blocked_ports    = blocked_ports
+        self._blocked_ports = blocked_ports
         self._restricted_procs = restricted_procs
         self._enforcement_mode = enforcement_mode
-        self._log_all          = log_all
+        self._log_all = log_all
         self._actions: list[EnforcementAction] = []
-        self._kill_count   = 0
-        self._block_count  = 0
-        self._allow_count  = 0
+        self._kill_count = 0
+        self._block_count = 0
+        self._allow_count = 0
 
     # ── Public API ────────────────────────────────────────────────────────────
 
     def evaluate_connection(
         self,
-        pid:          int,
+        pid: int,
         process_name: str,
-        dst_ip:       str,
-        dst_port:     int,
+        dst_ip: str,
+        dst_port: int,
     ) -> EnforcementAction:
         """
         Evaluate an outbound connection attempt and enforce policy.
@@ -192,18 +201,26 @@ class ProcessTerminator:
         # Policy 1: blocked port — highest priority
         if dst_port in self._blocked_ports:
             return self._enforce(
-                pid, process_name, dst_ip, dst_port, now,
+                pid,
+                process_name,
+                dst_ip,
+                dst_port,
+                now,
                 reason=f"Port {dst_port} is in blocked outbound port list "
-                       f"(canonical C2/reverse-shell port)",
+                f"(canonical C2/reverse-shell port)",
                 attack="T1095",
             )
 
         # Policy 2: restricted process name
         if process_name.lower() in self._restricted_procs:
             return self._enforce(
-                pid, process_name, dst_ip, dst_port, now,
+                pid,
+                process_name,
+                dst_ip,
+                dst_port,
+                now,
                 reason=f"Process '{process_name}' is in restricted process list — "
-                       f"should never make outbound connections",
+                f"should never make outbound connections",
                 attack="T1095",
             )
 
@@ -211,16 +228,24 @@ class ProcessTerminator:
         if self._is_external(dst_ip) and self._is_server_process(process_name):
             # Log but do not kill — server processes legitimately make external calls
             return self._log_only(
-                pid, process_name, dst_ip, dst_port, now,
+                pid,
+                process_name,
+                dst_ip,
+                dst_port,
+                now,
                 reason=f"Server process '{process_name}' connecting to external "
-                       f"IP {dst_ip} — monitoring",
+                f"IP {dst_ip} — monitoring",
             )
 
         # Allowed
         self._allow_count += 1
         action = EnforcementAction(
-            pid=pid, process_name=process_name, dst_ip=dst_ip, dst_port=dst_port,
-            action="ALLOWED", timestamp=now,
+            pid=pid,
+            process_name=process_name,
+            dst_ip=dst_ip,
+            dst_port=dst_port,
+            action="ALLOWED",
+            timestamp=now,
             reason="Policy: permitted outbound connection",
         )
         if self._log_all:
@@ -250,8 +275,11 @@ class ProcessTerminator:
                 return {"pid": pid, "action": "NOT_FOUND", "reason": reason, "timestamp": now}
             log.error("D3-PT: Failed to terminate PID %d: %s", pid, exc)
             return {
-                "pid": pid, "action": "ERROR", "reason": reason,
-                "timestamp": now, "error": str(exc),
+                "pid": pid,
+                "action": "ERROR",
+                "reason": reason,
+                "timestamp": now,
+                "error": str(exc),
             }
 
     def find_and_kill_process(self, process_name: str) -> list[dict]:
@@ -263,7 +291,10 @@ class ProcessTerminator:
         expected_name = process_name.casefold()
         for pid, name in self._iter_processes():
             image_name = Path(name).name.casefold()
-            if expected_name in (image_name, Path(image_name).stem):
+            matches = expected_name == image_name
+            if sys.platform == "win32" and image_name.endswith(".exe"):
+                matches = matches or expected_name == Path(image_name).stem
+            if matches:
                 result = self.kill_pid(pid, f"process name match: {process_name}")
                 results.append(result)
         return results
@@ -303,7 +334,9 @@ class ProcessTerminator:
                 if not pid_dir.name.isdigit():
                     continue
                 try:
-                    process_name = (pid_dir / "comm").read_text().strip()
+                    process_name = (
+                        (pid_dir / "comm").read_text(encoding="utf-8", errors="replace").strip()
+                    )
                 except OSError as exc:
                     log.debug("Unable to read process name for PID %s: %s", pid_dir.name, exc)
                     continue
@@ -323,27 +356,38 @@ class ProcessTerminator:
                 yield int(fields[0]), fields[1]
 
     def _enforce(
-        self, pid: int, process_name: str, dst_ip: str,
-        dst_port: int, now: str, reason: str, attack: str = "T1095",
+        self,
+        pid: int,
+        process_name: str,
+        dst_ip: str,
+        dst_port: int,
+        now: str,
+        reason: str,
+        attack: str = "T1095",
     ) -> EnforcementAction:
         """Kill the process (enforcement mode) or log (monitoring mode)."""
         if self._enforcement_mode:
             termination_signal = self._termination_signal()
             try:
                 os.kill(pid, termination_signal)
-                action_str  = "KILLED"
+                action_str = "KILLED"
                 signal_sent = termination_signal
                 self._kill_count += 1
                 log.critical(
                     "D3-PT ENFORCEMENT [%s]: Killed PID %d (%s) → %s:%d — %s",
-                    attack, pid, process_name, dst_ip, dst_port, reason,
+                    attack,
+                    pid,
+                    process_name,
+                    dst_ip,
+                    dst_port,
+                    reason,
                 )
             except ProcessLookupError:
-                action_str  = "ALREADY_DEAD"
+                action_str = "ALREADY_DEAD"
                 signal_sent = None
                 log.warning("D3-PT: PID %d already terminated", pid)
             except PermissionError:
-                action_str  = "PERMISSION_DENIED"
+                action_str = "PERMISSION_DENIED"
                 signal_sent = None
                 log.error(
                     "D3-PT: Cannot kill PID %d — insufficient privileges. "
@@ -359,31 +403,54 @@ class ProcessTerminator:
                     action_str = "ERROR"
                     log.error("D3-PT: Failed to terminate PID %d: %s", pid, exc)
         else:
-            action_str  = "WOULD_KILL"
+            action_str = "WOULD_KILL"
             signal_sent = None
             self._block_count += 1
             log.warning(
                 "D3-PT MONITORING [%s]: Would kill PID %d (%s) → %s:%d — %s "
                 "(enforcement_mode=False)",
-                attack, pid, process_name, dst_ip, dst_port, reason,
+                attack,
+                pid,
+                process_name,
+                dst_ip,
+                dst_port,
+                reason,
             )
 
         action = EnforcementAction(
-            pid=pid, process_name=process_name, dst_ip=dst_ip, dst_port=dst_port,
-            action=action_str, timestamp=now, reason=reason,
-            d3fend="D3-PT", attack=attack, signal_sent=signal_sent,
+            pid=pid,
+            process_name=process_name,
+            dst_ip=dst_ip,
+            dst_port=dst_port,
+            action=action_str,
+            timestamp=now,
+            reason=reason,
+            d3fend="D3-PT",
+            attack=attack,
+            signal_sent=signal_sent,
         )
         self._actions.append(action)
         return action
 
     def _log_only(
-        self, pid: int, process_name: str, dst_ip: str,
-        dst_port: int, now: str, reason: str,
+        self,
+        pid: int,
+        process_name: str,
+        dst_ip: str,
+        dst_port: int,
+        now: str,
+        reason: str,
     ) -> EnforcementAction:
         action = EnforcementAction(
-            pid=pid, process_name=process_name, dst_ip=dst_ip, dst_port=dst_port,
-            action="LOGGED", timestamp=now, reason=reason,
-            d3fend="D3-PT", attack="T1095",
+            pid=pid,
+            process_name=process_name,
+            dst_ip=dst_ip,
+            dst_port=dst_port,
+            action="LOGGED",
+            timestamp=now,
+            reason=reason,
+            d3fend="D3-PT",
+            attack="T1095",
         )
         self._actions.append(action)
         log.warning("D3-PT MONITOR: %s", reason)
@@ -394,13 +461,22 @@ class ProcessTerminator:
         """Returns True if IP is not RFC1918 private or loopback."""
         try:
             parts = [int(x) for x in ip.split(".")]
-            if parts[0] == 10:                              return False
-            if parts[0] == 172 and 16 <= parts[1] <= 31:   return False
-            if parts[0] == 192 and parts[1] == 168:         return False
-            if parts[0] == 127:                             return False
-            if parts[0] == 169 and parts[1] == 254:         return False
-        except Exception as _exc:
-            import logging as _log; _log.getLogger(__name__).debug("suppressed: %s", _exc)
+            if len(parts) != 4:
+                raise ValueError("expected an IPv4 address")
+        except ValueError as exc:
+            log.debug("Unable to classify invalid IPv4 address %r: %s", ip, exc)
+            return True
+
+        if parts[0] == 10:
+            return False
+        if parts[0] == 172 and 16 <= parts[1] <= 31:
+            return False
+        if parts[0] == 192 and parts[1] == 168:
+            return False
+        if parts[0] == 127:
+            return False
+        if parts[0] == 169 and parts[1] == 254:
+            return False
         return True
 
     @staticmethod
@@ -414,11 +490,11 @@ class ProcessTerminator:
     def get_stats(self) -> dict:
         return {
             "enforcement_mode": self._enforcement_mode,
-            "total_actions":    len(self._actions),
-            "killed":           self._kill_count,
-            "blocked":          self._block_count,
-            "allowed":          self._allow_count,
-            "blocked_ports":    sorted(self._blocked_ports),
+            "total_actions": len(self._actions),
+            "killed": self._kill_count,
+            "blocked": self._block_count,
+            "allowed": self._allow_count,
+            "blocked_ports": sorted(self._blocked_ports),
             "restricted_procs": sorted(self._restricted_procs),
         }
 
@@ -432,6 +508,7 @@ class ProcessTerminator:
 # ═══════════════════════════════════════════════════════════════════════════════
 # D3-OTF: OUTBOUND TRAFFIC FILTER
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class OutboundTrafficFilter:
     """
@@ -454,10 +531,10 @@ class OutboundTrafficFilter:
     def __init__(
         self,
         blocked_ports: frozenset[int] = BLOCKED_OUTBOUND_PORTS,
-        dry_run:       bool = False,
+        dry_run: bool = False,
     ) -> None:
         self._blocked_ports = blocked_ports
-        self._dry_run       = dry_run
+        self._dry_run = dry_run
         self._rules: list[OTFRule] = []
         self._applied_rules: list[OTFRule] = []
 
@@ -465,23 +542,27 @@ class OutboundTrafficFilter:
         """Generate iptables rules for all blocked ports."""
         rules = []
         for port in sorted(self._blocked_ports):
-            rules.append(OTFRule(
-                rule_id  = f"OTF-PORT-{port}",
-                dst_port = port,
-                dst_ip   = None,
-                protocol = "tcp",
-                action   = "DROP",
-                comment  = f"D3-OTF: block C2 port {port} (T1095/T1071)",
-            ))
+            rules.append(
+                OTFRule(
+                    rule_id=f"OTF-PORT-{port}",
+                    dst_port=port,
+                    dst_ip=None,
+                    protocol="tcp",
+                    action="DROP",
+                    comment=f"D3-OTF: block C2 port {port} (T1095/T1071)",
+                )
+            )
             # Also block UDP (some C2 tools use UDP)
-            rules.append(OTFRule(
-                rule_id  = f"OTF-PORT-{port}-UDP",
-                dst_port = port,
-                dst_ip   = None,
-                protocol = "udp",
-                action   = "DROP",
-                comment  = f"D3-OTF: block C2 port {port} UDP",
-            ))
+            rules.append(
+                OTFRule(
+                    rule_id=f"OTF-PORT-{port}-UDP",
+                    dst_port=port,
+                    dst_ip=None,
+                    protocol="udp",
+                    action="DROP",
+                    comment=f"D3-OTF: block C2 port {port} UDP",
+                )
+            )
         self._rules = rules
         return rules
 
@@ -491,8 +572,8 @@ class OutboundTrafficFilter:
             self.generate_rules()
 
         applied = 0
-        failed  = 0
-        errors  = []
+        failed = 0
+        errors = []
 
         for rule in self._rules:
             cmd = self._build_iptables_cmd(rule)
@@ -503,9 +584,7 @@ class OutboundTrafficFilter:
                 continue
 
             try:
-                result = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=10
-                )
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 if result.returncode == 0:
                     rule.applied = True
                     applied += 1
@@ -527,12 +606,12 @@ class OutboundTrafficFilter:
 
         return {
             "total_rules": len(self._rules),
-            "applied":     applied,
-            "failed":      failed,
-            "errors":      errors,
-            "dry_run":     self._dry_run,
-            "d3fend":      "D3-OTF",
-            "timestamp":   _now_iso(),
+            "applied": applied,
+            "failed": failed,
+            "errors": errors,
+            "dry_run": self._dry_run,
+            "d3fend": "D3-OTF",
+            "timestamp": _now_iso(),
         }
 
     def flush_rules(self) -> dict:
@@ -548,8 +627,8 @@ class OutboundTrafficFilter:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 if result.returncode == 0:
                     removed += 1
-            except Exception as _exc:
-                import logging as _log; _log.getLogger(__name__).debug("suppressed: %s", _exc)
+            except (OSError, subprocess.SubprocessError) as exc:
+                log.debug("Unable to flush D3-OTF rule: %s", exc)
         return {"removed": removed, "timestamp": _now_iso()}
 
     def get_rules_as_bash(self) -> str:
@@ -571,7 +650,7 @@ class OutboundTrafficFilter:
     @staticmethod
     def _build_iptables_cmd(rule: OTFRule, delete: bool = False) -> list[str]:
         flag = "-D" if delete else "-A"
-        cmd  = ["iptables", flag, "OUTPUT", "-p", rule.protocol]
+        cmd = ["iptables", flag, "OUTPUT", "-p", rule.protocol]
         if rule.dst_port:
             cmd += ["--dport", str(rule.dst_port)]
         if rule.dst_ip:
@@ -589,8 +668,8 @@ class OutboundTrafficFilter:
 # These tokens extend the zero_evasion_countermeasure.py ZERO_EVASION_TOKENS
 # to cover T1620 (Reflective Code Loading / fileless execution)
 T1620_TOKENS = {
-    "memfd_create":  33,  # Anonymous executable memory — fileless malware
-    "execveat":      34,  # Execute from file descriptor — memfd execution
+    "memfd_create": 33,  # Anonymous executable memory — fileless malware
+    "execveat": 34,  # Execute from file descriptor — memfd execution
     "mprotect_exec": 35,  # Memory permission change to executable
 }
 
@@ -598,40 +677,40 @@ T1620_TOKENS = {
 T1620_SENSITIVE_SYSCALLS = {
     "memfd_create": {
         "target_process": "any",
-        "severity":       "CRITICAL",
-        "note":           "Anonymous executable memory — T1620 fileless malware pattern. "
-                          "Legitimate uses: memfd for IPC (rare). "
-                          "Malicious use: download payload → write to memfd → execveat.",
-        "d3fend":         "D3-SCA",
-        "attack":         "T1620",
+        "severity": "CRITICAL",
+        "note": "Anonymous executable memory — T1620 fileless malware pattern. "
+        "Legitimate uses: memfd for IPC (rare). "
+        "Malicious use: download payload → write to memfd → execveat.",
+        "d3fend": "D3-SCA",
+        "attack": "T1620",
     },
     "execveat": {
         "target_process": "any",
-        "severity":       "CRITICAL",
-        "note":           "Execute from file descriptor — T1620 memfd execution. "
-                          "execveat(fd, '', argv, envp, AT_EMPTY_PATH) executes "
-                          "the file referred to by fd without a filesystem path.",
-        "d3fend":         "D3-SCA",
-        "attack":         "T1620",
+        "severity": "CRITICAL",
+        "note": "Execute from file descriptor — T1620 memfd execution. "
+        "execveat(fd, '', argv, envp, AT_EMPTY_PATH) executes "
+        "the file referred to by fd without a filesystem path.",
+        "d3fend": "D3-SCA",
+        "attack": "T1620",
     },
     "mprotect": {
         "target_process": "any",
-        "severity":       "HIGH",
-        "note":           "Memory permission change — shellcode staging. "
-                          "mprotect(addr, len, PROT_EXEC) makes a memory region executable. "
-                          "Legitimate uses: JIT compilers. "
-                          "Malicious use: mark shellcode region as executable before execution.",
-        "d3fend":         "D3-SCA + D3-PSMD",
-        "attack":         "T1620 / T1055",
+        "severity": "HIGH",
+        "note": "Memory permission change — shellcode staging. "
+        "mprotect(addr, len, PROT_EXEC) makes a memory region executable. "
+        "Legitimate uses: JIT compilers. "
+        "Malicious use: mark shellcode region as executable before execution.",
+        "d3fend": "D3-SCA + D3-PSMD",
+        "attack": "T1620 / T1055",
     },
     "process_vm_writev": {
         "target_process": "any",
-        "severity":       "CRITICAL",
-        "note":           "Write to another process's memory — T1055 process injection. "
-                          "process_vm_writev() writes directly to another process's address space "
-                          "without ptrace, bypassing some monitoring tools.",
-        "d3fend":         "D3-SCA + D3-PSMD",
-        "attack":         "T1055.009",
+        "severity": "CRITICAL",
+        "note": "Write to another process's memory — T1055 process injection. "
+        "process_vm_writev() writes directly to another process's address space "
+        "without ptrace, bypassing some monitoring tools.",
+        "d3fend": "D3-SCA + D3-PSMD",
+        "attack": "T1055.009",
     },
 }
 
@@ -639,6 +718,7 @@ T1620_SENSITIVE_SYSCALLS = {
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMBINED ENFORCEMENT ENGINE
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class EnforcementEngine:
     """
@@ -660,10 +740,10 @@ class EnforcementEngine:
     def __init__(
         self,
         enforcement_mode: bool = True,
-        dry_run:          bool = False,
+        dry_run: bool = False,
     ) -> None:
         self.terminator = ProcessTerminator(enforcement_mode=enforcement_mode)
-        self.otf        = OutboundTrafficFilter(dry_run=dry_run)
+        self.otf = OutboundTrafficFilter(dry_run=dry_run)
         self._start_time = _now_iso()
 
     def apply_network_filters(self) -> dict:
@@ -672,18 +752,20 @@ class EnforcementEngine:
 
     def on_connect(
         self,
-        pid:          int,
+        pid: int,
         process_name: str,
-        dst_ip:       str,
-        dst_port:     int,
+        dst_ip: str,
+        dst_port: int,
     ) -> EnforcementAction:
         """
         Handle an eBPF sys_enter_connect event.
         Applies D3-PT policy and returns the enforcement action.
         """
         return self.terminator.evaluate_connection(
-            pid=pid, process_name=process_name,
-            dst_ip=dst_ip, dst_port=dst_port,
+            pid=pid,
+            process_name=process_name,
+            dst_ip=dst_ip,
+            dst_port=dst_port,
         )
 
     def emergency_kill(self, pid: int, reason: str = "emergency") -> dict:
@@ -696,9 +778,9 @@ class EnforcementEngine:
 
     def get_status(self) -> dict:
         return {
-            "start_time":   self._start_time,
-            "terminator":   self.terminator.get_stats(),
-            "otf_rules":    len(self.otf._applied_rules),
-            "d3fend":       ["D3-PT", "D3-OTF"],
+            "start_time": self._start_time,
+            "terminator": self.terminator.get_stats(),
+            "otf_rules": len(self.otf._applied_rules),
+            "d3fend": ["D3-PT", "D3-OTF"],
             "attack_countered": ["T1095", "T1071.001", "T1071.004", "T1105"],
         }

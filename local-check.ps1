@@ -24,6 +24,13 @@ $PythonCommand = $Python.Source
 $PythonArgs = @()
 if ($Python.Name -eq "py.exe") { $PythonArgs = @("-3") }
 
+function Get-PythonModuleProbeExitCode {
+    param([string]$ModuleName)
+
+    & $PythonCommand @PythonArgs -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('$ModuleName') else 2)"
+    return $LASTEXITCODE
+}
+
 Write-Host "`n== Python syntax check =="
 & $PythonCommand @PythonArgs -m compileall -q .
 if ($LASTEXITCODE -eq 0) {
@@ -37,36 +44,54 @@ if ($LASTEXITCODE -eq 0) {
 Write-Host "`n== Tests =="
 $HasTests = (Test-Path ".\tests") -or (Test-Path ".\pytest.ini") -or (Test-Path ".\pyproject.toml")
 if ($HasTests) {
-    & $PythonCommand @PythonArgs -m pytest --version *> $null
-    if ($LASTEXITCODE -eq 0) {
-        & $PythonCommand @PythonArgs -m pytest -q
-        if ($LASTEXITCODE -eq 0) {
-            $TestStatus = "PASS"
-            Write-Host "PASS: Tests completed." -ForegroundColor Green
-        } else {
+    $PytestProbeExitCode = Get-PythonModuleProbeExitCode "pytest"
+    if ($PytestProbeExitCode -eq 0) {
+        & $PythonCommand @PythonArgs -m pytest --version
+        if ($LASTEXITCODE -ne 0) {
             $TestStatus = "FAIL"
-            Write-Host "FAIL: Tests reported errors." -ForegroundColor Red
+            Write-Host "FAIL: pytest failed during startup." -ForegroundColor Red
+        } else {
+            & $PythonCommand @PythonArgs -m pytest -q
+            if ($LASTEXITCODE -eq 0) {
+                $TestStatus = "PASS"
+                Write-Host "PASS: Tests completed." -ForegroundColor Green
+            } else {
+                $TestStatus = "FAIL"
+                Write-Host "FAIL: Tests reported errors." -ForegroundColor Red
+            }
         }
-    } else {
+    } elseif ($PytestProbeExitCode -eq 2) {
         Write-Host "SKIPPED: pytest isn't installed. Install the repo's development dependencies to run tests."
+    } else {
+        $TestStatus = "FAIL"
+        Write-Host "FAIL: Could not determine whether pytest is installed." -ForegroundColor Red
     }
 } else {
     Write-Host "SKIPPED: No obvious pytest configuration or tests folder found."
 }
 
 Write-Host "`n== Dependency vulnerability check =="
-& $PythonCommand @PythonArgs -m pip_audit --version *> $null
-if ($LASTEXITCODE -eq 0) {
-    & $PythonCommand @PythonArgs -m pip_audit
-    if ($LASTEXITCODE -eq 0) {
-        $AuditStatus = "PASS"
-        Write-Host "PASS: Dependency audit completed." -ForegroundColor Green
-    } else {
+$AuditProbeExitCode = Get-PythonModuleProbeExitCode "pip_audit"
+if ($AuditProbeExitCode -eq 0) {
+    & $PythonCommand @PythonArgs -m pip_audit --version
+    if ($LASTEXITCODE -ne 0) {
         $AuditStatus = "FAIL"
-        Write-Host "FAIL: Audit found issues or could not complete." -ForegroundColor Red
+        Write-Host "FAIL: pip-audit failed during startup." -ForegroundColor Red
+    } else {
+        & $PythonCommand @PythonArgs -m pip_audit
+        if ($LASTEXITCODE -eq 0) {
+            $AuditStatus = "PASS"
+            Write-Host "PASS: Dependency audit completed." -ForegroundColor Green
+        } else {
+            $AuditStatus = "FAIL"
+            Write-Host "FAIL: Audit found issues or could not complete." -ForegroundColor Red
+        }
     }
-} else {
+} elseif ($AuditProbeExitCode -eq 2) {
     Write-Host "SKIPPED: pip-audit isn't installed. Optional install: python -m pip install pip-audit"
+} else {
+    $AuditStatus = "FAIL"
+    Write-Host "FAIL: Could not determine whether pip-audit is installed." -ForegroundColor Red
 }
 
 Write-Host "`n== Summary =="
