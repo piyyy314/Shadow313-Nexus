@@ -195,7 +195,7 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     assert nexus_install_index < nexus_cleanup_index
 
 
-def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
+def test_compose_audit_uses_yaml_framework_for_compose():
     workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
         encoding="utf-8"
     )
@@ -203,7 +203,7 @@ def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     assert "Run Checkov on Dockerfile" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
-    assert "checkov -f docker-compose.yml" not in workflow
+    assert "checkov -f docker-compose.yml --framework yaml --output cli" in workflow
     assert "Verify Compose hardening assertions" in workflow
     assert "with open('docker-compose.yml') as f:" in workflow
 
