@@ -14,10 +14,10 @@ BUG FIXES vs v1:
 from __future__ import annotations
 
 import importlib
-from pathlib import Path
-import time
 import traceback
-from typing import Any, Callable
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 from .config    import Config
 from .session   import Session
