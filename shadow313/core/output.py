@@ -68,7 +68,7 @@ class OutputFormatter:
         self.color   = color and sys.stdout.isatty()
         self.verbose = verbose
         self._has_rich = False
-        self._rich_console = None
+        self._rich_console: Any = None
         self._try_rich()
 
     def _try_rich(self) -> None:
