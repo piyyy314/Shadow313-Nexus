@@ -1,0 +1,1486 @@
+{
+  "manifest_version": "1.0",
+  "schema": "shadow313-delivery-manifest",
+  "platform_version": "4.0.0",
+  "git_sha": "3a13142",
+  "git_branch": "master",
+  "generated_at": "2026-11-20T02:42:06.829460+00:00",
+  "timestamp_313": 1795142526829466313,
+  "total_files": 147,
+  "total_size_kb": 2394.3,
+  "files": [
+    {
+      "name": "s313-command-center-v6.html",
+      "path": "docs/s313-command-center-v6.html",
+      "size": 49603,
+      "size_kb": 48.4,
+      "sha3_256": "07a3090f58d0adba701a038dd93d3f792017e53b703280e9e828dcabe6cd3af6",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "s313-threat-board.html",
+      "path": "docs/s313-threat-board.html",
+      "size": 67101,
+      "size_kb": 65.5,
+      "sha3_256": "c835be0bd2b946ad453224ad84cae8c0cb083ab9c44a615f4c3088ba33395534",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-nexus-dashboard.html",
+      "path": "docs/shadow313-nexus-dashboard.html",
+      "size": 45918,
+      "size_kb": 44.8,
+      "sha3_256": "ee6c823a122cc6c9108daad344d657cc0f578c873c7ad11d0e3647b02e8ce8c4",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": true,
+      "type": "html"
+    },
+    {
+      "name": "313-bind-verification-portal.html",
+      "path": "docs/313-bind-verification-portal.html",
+      "size": 35040,
+      "size_kb": 34.2,
+      "sha3_256": "7ab691c99bb354beb416e417de56203e3b74d6a51761ca336aa4a31b157c2785",
+      "modified": "2026-11-20T02:41:55.103296+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "BADGE_STRATEGY.md",
+      "path": "docs/BADGE_STRATEGY.md",
+      "size": 466,
+      "size_kb": 0.5,
+      "sha3_256": "50029d2e7c33d6220473e72de51ee92895220236b0b65753b2d96fbac01c04e2",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "CyberShield-Suite.html",
+      "path": "docs/CyberShield-Suite.html",
+      "size": 2793,
+      "size_kb": 2.7,
+      "sha3_256": "c477dffbfc1103ce7242e853cf475e0b9eec43d8c87963150dab0fe48c341a58",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "FEDRAMP_HIGH_ROADMAP.md",
+      "path": "docs/FEDRAMP_HIGH_ROADMAP.md",
+      "size": 559,
+      "size_kb": 0.5,
+      "sha3_256": "678dae9cdb68dea15048407729cc2e7bfeaeedda6eccfb48325a8feed930311a",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "INSTALL.md",
+      "path": "docs/INSTALL.md",
+      "size": 6741,
+      "size_kb": 6.6,
+      "sha3_256": "b8061078eb7d4269a23392624aa16b6fe027e678f270a95c28e850eddccf5c32",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "PLATFORM_INTEGRATION_STATUS.md",
+      "path": "docs/PLATFORM_INTEGRATION_STATUS.md",
+      "size": 10798,
+      "size_kb": 10.5,
+      "sha3_256": "afa5d2c08410c69642f81d0ac4d4fbfef7dafde05ab137b42d6fe65c648246ca",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Attack-Surface-Blind-Spot-Analysis.md",
+      "path": "docs/S313-Attack-Surface-Blind-Spot-Analysis.md",
+      "size": 31080,
+      "size_kb": 30.4,
+      "sha3_256": "18122885885424078df45448b4a7cf2e8811da83b88f79dee71bfd832ab3b47d",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-CVE-Blog-SHA3-Bypass-2026.md",
+      "path": "docs/S313-CVE-Blog-SHA3-Bypass-2026.md",
+      "size": 7065,
+      "size_kb": 6.9,
+      "sha3_256": "027025144fa701cc2423eb70b2570421b7cbcc408910744ff5fb534b0d63a2c6",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Deployment-Guide-shadow313dev.md",
+      "path": "docs/S313-Deployment-Guide-shadow313dev.md",
+      "size": 5703,
+      "size_kb": 5.6,
+      "sha3_256": "ef7e88fbf032054ac1d1b163d67c5408bdddd3647fd5734f09de40e3ed2dc505",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-GAP-ANALYSIS-2026-001.md",
+      "path": "docs/S313-GAP-ANALYSIS-2026-001.md",
+      "size": 11420,
+      "size_kb": 11.2,
+      "sha3_256": "0edaec43a16ee2776cfe739ff6cfcf2e22112ca008bb66c87919fd6a2c6c71a8",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Industry-Benchmark-Comparison-2026.md",
+      "path": "docs/S313-Industry-Benchmark-Comparison-2026.md",
+      "size": 41285,
+      "size_kb": 40.3,
+      "sha3_256": "b3acc2387ddc35cb809a98c9b880d66168325dcacb896629add9373bac9dd423",
+      "modified": "2026-11-20T02:41:55.103504+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-Nexus-Dashboard-v3.html",
+      "path": "docs/S313-Nexus-Dashboard-v3.html",
+      "size": 41357,
+      "size_kb": 40.4,
+      "sha3_256": "2e1cdeca18ba38720282006cb6173d0cfc64e06eed12ad86a09a942769f6d262",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "S313-Production-Readiness-Gap-Analysis-2026.md",
+      "path": "docs/S313-Production-Readiness-Gap-Analysis-2026.md",
+      "size": 18101,
+      "size_kb": 17.7,
+      "sha3_256": "9b56ca152eef42f8444366b8b57d2a5ddf3e3d04db71108926026ea7fc7d34c2",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SOC2-Type2-Readiness-Plan-2026.md",
+      "path": "docs/S313-SOC2-Type2-Readiness-Plan-2026.md",
+      "size": 11138,
+      "size_kb": 10.9,
+      "sha3_256": "15107adbc46f68d27e4233ca1312093e2b108b45f33b94b7cc43a9e7949991e2",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SSP-2026-001.md",
+      "path": "docs/S313-SSP-2026-001.md",
+      "size": 11641,
+      "size_kb": 11.4,
+      "sha3_256": "abd50391be2670d5005b08e536eb8f04d900a0b81e0cfb6b41e9fbac358ed042",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-SSP-Dashboard.html",
+      "path": "docs/S313-SSP-Dashboard.html",
+      "size": 42926,
+      "size_kb": 41.9,
+      "sha3_256": "0a7db8f2a19a35c6f2ca10b251dabf411a8d00579949721ef7aee400c12a4d21",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "S313-Security-Coverage-Remediation-Roadmap.md",
+      "path": "docs/S313-Security-Coverage-Remediation-Roadmap.md",
+      "size": 35751,
+      "size_kb": 34.9,
+      "sha3_256": "7d473b9597580ab6ec1e0542f29c8e2a06504cbd476ad63dd90d3241e3de8055",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "S313-ZTAS-Architecture-Spec.md",
+      "path": "docs/S313-ZTAS-Architecture-Spec.md",
+      "size": 3105,
+      "size_kb": 3.0,
+      "sha3_256": "395f6a2de9b3f340fb6e901f9da956e2aa21bcb6e5ccbfd8caf0b721fc222845",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "SHA-6-docker-openwebui-setup.md",
+      "path": "docs/SHA-6-docker-openwebui-setup.md",
+      "size": 1276,
+      "size_kb": 1.2,
+      "sha3_256": "62d9377a3d35f9ec9e31b2248b1185ff343c009902ff15dabf366dd487489882",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "adversarial-adaptation.html",
+      "path": "docs/adversarial-adaptation.html",
+      "size": 3454,
+      "size_kb": 3.4,
+      "sha3_256": "56744ead3b42b67a1856aa954d2be22b17b6682cd10ddb0a68f992c7b8ad055d",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "adversarial-pivot-analysis.html",
+      "path": "docs/adversarial-pivot-analysis.html",
+      "size": 10012,
+      "size_kb": 9.8,
+      "sha3_256": "c70d2caedc80e4cef4aaee590ddf742e718001100faed04edc9c19a191a91c23",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "adversarial-pivot-dashboard.html",
+      "path": "docs/adversarial-pivot-dashboard.html",
+      "size": 36196,
+      "size_kb": 35.3,
+      "sha3_256": "44c9ef6a4b9b9ba941a860afd34e5d6c36eab1d671cd4765fc984c08440bf00b",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "aegis_nexus.html",
+      "path": "docs/aegis_nexus.html",
+      "size": 23380,
+      "size_kb": 22.8,
+      "sha3_256": "fc88e789a33a02023cfbbbbb50f8d0dd0646321c53cda2600d925b9a35691760",
+      "modified": "2026-11-20T02:41:55.103771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "api.html",
+      "path": "docs/api.html",
+      "size": 13278,
+      "size_kb": 13.0,
+      "sha3_256": "265ee933288ce9bd1ed8bbfad5fd2c71fdcf72be586d511ce96c88a8f5dc0651",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "apt-simulation-69167.html",
+      "path": "docs/apt-simulation-69167.html",
+      "size": 8158,
+      "size_kb": 8.0,
+      "sha3_256": "c407236b665611111cbcb92156c660753629982760248440535d4a6461f93a17",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "arch-e-stress-test.html",
+      "path": "docs/arch-e-stress-test.html",
+      "size": 10089,
+      "size_kb": 9.9,
+      "sha3_256": "1bace29a3afe6352366a9b32797cc6c1750de40f2644f2b7296d5735d0e26e8d",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "archetype-deception-erosion.html",
+      "path": "docs/archetype-deception-erosion.html",
+      "size": 3464,
+      "size_kb": 3.4,
+      "sha3_256": "e2dae684e53f221bf8672e98fba9405c4a1c1487f24dd9dea6af16c0d3746164",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "asymmetric-cost-gametheory.html",
+      "path": "docs/asymmetric-cost-gametheory.html",
+      "size": 3462,
+      "size_kb": 3.4,
+      "sha3_256": "c126b57ef82a73afd376763389ab725b87eac1336c91234c8405382f3ba6a44a",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "attack-chain-cvss-epss.html",
+      "path": "docs/attack-chain-cvss-epss.html",
+      "size": 8124,
+      "size_kb": 7.9,
+      "sha3_256": "e1927668d05dde490063cbbbe0c9bde7be72b3c5ef3b46b6377ed3f5652fe984",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "attack_chain_mapping.md",
+      "path": "docs/attack_chain_mapping.md",
+      "size": 29027,
+      "size_kb": 28.3,
+      "sha3_256": "c993f1b374da118e4a31afd975e0282c065923818781e6d03c73075468c385f3",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "attck-coverage-graph.html",
+      "path": "docs/attck-coverage-graph.html",
+      "size": 6860,
+      "size_kb": 6.7,
+      "sha3_256": "817ec3de4fef8394bf7c294e501c60de72be3b1599e4ec91fdbbc66af05e7316",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "attck-drilldown.json",
+      "path": "docs/attck-drilldown.json",
+      "size": 21027,
+      "size_kb": 20.5,
+      "sha3_256": "3bf640817bfb7b72969e7331acf990ab14a805f7af696a75070bac790c9f99f7",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "json"
+    },
+    {
+      "name": "attck.html",
+      "path": "docs/attck.html",
+      "size": 14097,
+      "size_kb": 13.8,
+      "sha3_256": "173911f75309faec2d5d36eaabbf389d6265cdf91f93d930eeb0824ecc45c18a",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "audit-repair-handoff.md",
+      "path": "docs/audit-repair-handoff.md",
+      "size": 12899,
+      "size_kb": 12.6,
+      "sha3_256": "e7044333e82120dfc09ab2186af9beff5ade8d3f778d98900ab9c5b4ef179947",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "blackcat-lateral-mitigation.html",
+      "path": "docs/blackcat-lateral-mitigation.html",
+      "size": 8156,
+      "size_kb": 8.0,
+      "sha3_256": "a85266b71153b02436c667f0bf56a603533b7761f55af5b68dcd98e1aba42a95",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "blue-team-soc.html",
+      "path": "docs/blue-team-soc.html",
+      "size": 8104,
+      "size_kb": 7.9,
+      "sha3_256": "72058b086fe0c9c303f065b9e33c493ea57c55b7ccbd92b4a65356da294aef15",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "braid-ep-countermeasures.html",
+      "path": "docs/braid-ep-countermeasures.html",
+      "size": 8132,
+      "size_kb": 7.9,
+      "sha3_256": "78fb5bfb0d787ce8a27e79f0d04ce3e76d11611a5236b0841711df3b7390c0c3",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "byovd-ebpf-machtrap.html",
+      "path": "docs/byovd-ebpf-machtrap.html",
+      "size": 3448,
+      "size_kb": 3.4,
+      "sha3_256": "0d041a06b92a4c16b6080f6b4b39aa7716d85e16fabaddde1e408289d3d3b195",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "careers.html",
+      "path": "docs/careers.html",
+      "size": 11747,
+      "size_kb": 11.5,
+      "sha3_256": "1a3a6eb3bcf4bc20ab8d34a3cc1edfccfafef10fbebc549a20f93d6d62a810bb",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "case-studies.html",
+      "path": "docs/case-studies.html",
+      "size": 11788,
+      "size_kb": 11.5,
+      "sha3_256": "b8fdb46f93b328fee9d756be30d03dbdc080044038ddd9725471ad4edad4e389",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "changelog.html",
+      "path": "docs/changelog.html",
+      "size": 12565,
+      "size_kb": 12.3,
+      "sha3_256": "70f43981c0c013f11dea3214a99a35ee66605d59e06c79ead193d584844eecd6",
+      "modified": "2026-11-20T02:41:55.104771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "chronos-sentinel.html",
+      "path": "docs/chronos-sentinel.html",
+      "size": 25477,
+      "size_kb": 24.9,
+      "sha3_256": "714fab68d194352605f560b5bb55ca72b7e6444a83034484aa925af8b0f0e9f4",
+      "modified": "2026-11-20T02:41:55.105771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "competitive-analysis.html",
+      "path": "docs/competitive-analysis.html",
+      "size": 8096,
+      "size_kb": 7.9,
+      "sha3_256": "3b66465b967abfa49737e88533b81eb8ed6d02d2a49228856c7505a14a611446",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "compliance.html",
+      "path": "docs/compliance.html",
+      "size": 12955,
+      "size_kb": 12.7,
+      "sha3_256": "7622d1558d8d97dc82212765de12a0b9d7e3f47f98eb87bedeb81b78b17b1545",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "contact.html",
+      "path": "docs/contact.html",
+      "size": 13283,
+      "size_kb": 13.0,
+      "sha3_256": "ba27c279e602d2a8903c4e9ddc71e5b475a9637a4b37ab9add6cf1f00f1c5c05",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "coverage_matrix.html",
+      "path": "docs/coverage_matrix.html",
+      "size": 14168,
+      "size_kb": 13.8,
+      "sha3_256": "64b38289ab6e5601e43f57a7b8ddd191c31c1a98f7944d8bf947d58ab7390ba7",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "cross-platform-wheel-checks.md",
+      "path": "docs/cross-platform-wheel-checks.md",
+      "size": 4541,
+      "size_kb": 4.4,
+      "sha3_256": "2d7fd1112cf597776087daf182578001d776a9b5038c1b522546d92f387d3ae6",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "crqc001_exploit_simulation.md",
+      "path": "docs/crqc001_exploit_simulation.md",
+      "size": 23380,
+      "size_kb": 22.8,
+      "sha3_256": "be5ea24dcd0d219959f7abc92dc8c8a056251efdb30d177bf1a2d310ec45c808",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "crqc_attack_surface_analysis.md",
+      "path": "docs/crqc_attack_surface_analysis.md",
+      "size": 21705,
+      "size_kb": 21.2,
+      "sha3_256": "cc9054d81a240d29ec4d863ae14b4b37b6eac51eb60c3ad617eb67c1e0ccf86f",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "cve-intelligence.html",
+      "path": "docs/cve-intelligence.html",
+      "size": 8114,
+      "size_kb": 7.9,
+      "sha3_256": "5e1f8cfd57441eecd8d62fdab0dac2c6f128a33a4e26a6ef6e82634f8c698ad1",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "cve-submission-report.html",
+      "path": "docs/cve-submission-report.html",
+      "size": 8118,
+      "size_kb": 7.9,
+      "sha3_256": "4038bd419be2868ece6c65fe46a64bbd1a41b58f8644e3faafe0cd5d79aa8bb7",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "cvss-deprecation-nvsm.html",
+      "path": "docs/cvss-deprecation-nvsm.html",
+      "size": 8152,
+      "size_kb": 8.0,
+      "sha3_256": "72f993851726d5bd7aaf89f5a61468ecd052facebc20dfb5fd020527d8ede6da",
+      "modified": "2026-11-20T02:41:55.106390+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "d3fend_gap_closure_plan.md",
+      "path": "docs/d3fend_gap_closure_plan.md",
+      "size": 32650,
+      "size_kb": 31.9,
+      "sha3_256": "1543702a46ac788cbfe76eedaf9f17a7312a410ec9746f88f3fe9d5e5571e7d0",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "d3fend_mapping.md",
+      "path": "docs/d3fend_mapping.md",
+      "size": 42310,
+      "size_kb": 41.3,
+      "sha3_256": "2f36a600d3dcd8e1ca16fb5a9fa6488f2202a2c4b540cd0bda909cd01326f713",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "dark-web-demystifier.html",
+      "path": "docs/dark-web-demystifier.html",
+      "size": 8124,
+      "size_kb": 7.9,
+      "sha3_256": "5ada70386b28a21520c8c689da93b481e7273f41806528451ebac1535f97ab74",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "dark-web-monitor.html",
+      "path": "docs/dark-web-monitor.html",
+      "size": 8114,
+      "size_kb": 7.9,
+      "sha3_256": "6b0f89980d81d2506ea54d51bcbf61a7d3a3619433fdd9a3b47171f84b45b911",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "dashboards.html",
+      "path": "docs/dashboards.html",
+      "size": 8740,
+      "size_kb": 8.5,
+      "sha3_256": "35ee6cb366a2ee642cab508531c5e65858922022de017a5e72bb4dda2034759b",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "deception-vs-architectural.html",
+      "path": "docs/deception-vs-architectural.html",
+      "size": 3462,
+      "size_kb": 3.4,
+      "sha3_256": "2dd523b01369846baee59247bc26cde6f4656e9e6188d9c69f4b9f0e3204ef25",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "deployment-api-audit-2026-10-29.md",
+      "path": "docs/deployment-api-audit-2026-10-29.md",
+      "size": 10657,
+      "size_kb": 10.4,
+      "sha3_256": "61941967fed87c48042e209f29b0928be7f7fa218fa7c0355c0db979ff072f2b",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "detection-engineering-gametheory.html",
+      "path": "docs/detection-engineering-gametheory.html",
+      "size": 3474,
+      "size_kb": 3.4,
+      "sha3_256": "513e0b7ea67615f8b8a8b2c0dbed392dfe7eb6f2f1905a85054d90ebdeba3a24",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "detection-tripwire-analysis.html",
+      "path": "docs/detection-tripwire-analysis.html",
+      "size": 10240,
+      "size_kb": 10.0,
+      "sha3_256": "287b25bb5847c5845af93ea75ec45d60b7ac995bac28e16c26aa8b1285c01384",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "distribution-rename.md",
+      "path": "docs/distribution-rename.md",
+      "size": 4462,
+      "size_kb": 4.4,
+      "sha3_256": "5cc475011a1e48dda0b40ad8c8ae1ea8e74bf5ce1e562af214107edc5ff97f9d",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "evasion_technique_analysis.md",
+      "path": "docs/evasion_technique_analysis.md",
+      "size": 44417,
+      "size_kb": 43.4,
+      "sha3_256": "fb6efa253f07742c290487f65647c20ab706c7f581113b85033a62648b4de18a",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "federated-mesh-graph.html",
+      "path": "docs/federated-mesh-graph.html",
+      "size": 7360,
+      "size_kb": 7.2,
+      "sha3_256": "1cc2f28574023c136a90b2497d89e094668234034c32a93894cef1d1f75e48c5",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "federated-mesh.html",
+      "path": "docs/federated-mesh.html",
+      "size": 26585,
+      "size_kb": 26.0,
+      "sha3_256": "6267f18e2be88f7e7c00d614a1db4852dc7778db29ed44301d4cebc0b4fdbf71",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "fep-dwell-time-analysis.html",
+      "path": "docs/fep-dwell-time-analysis.html",
+      "size": 3456,
+      "size_kb": 3.4,
+      "sha3_256": "a10bfb2c3577e4cd5901cc890a2cc04812d24d654e8fdbf6ddb281bd1cbff0dc",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "framework_comparison_313bind_slsa_ssdf.md",
+      "path": "docs/framework_comparison_313bind_slsa_ssdf.md",
+      "size": 35735,
+      "size_kb": 34.9,
+      "sha3_256": "acf86770181e3a34bb9e5a8924922828669aa393f2d12076a4c2d4c01a44726c",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "ghost-watch-c2.html",
+      "path": "docs/ghost-watch-c2.html",
+      "size": 8136,
+      "size_kb": 7.9,
+      "sha3_256": "783cec271d6ddc6dcc953840a2e513a461c93b4d14f6719e30c02df6a4791d6c",
+      "modified": "2026-11-20T02:41:55.106771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ghost-watch-threatmap.html",
+      "path": "docs/ghost-watch-threatmap.html",
+      "size": 9581,
+      "size_kb": 9.4,
+      "sha3_256": "5d8f37688c6cfc11da22f0962b3833a4577336b02cf50e74da415e2491516fb9",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ghost-watch.html",
+      "path": "docs/ghost-watch.html",
+      "size": 3432,
+      "size_kb": 3.4,
+      "sha3_256": "8eb950939fe8debe9db9c82d5b3d80a8db5dfc4d5123d3a16a7c5e0685a20fc2",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "honeypot-network.html",
+      "path": "docs/honeypot-network.html",
+      "size": 8122,
+      "size_kb": 7.9,
+      "sha3_256": "b175340f7077088294fbdc97b0ab96fb65be29b9142d27e6f87c8e2ae4a8278a",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "i2p-browser-deepdive.html",
+      "path": "docs/i2p-browser-deepdive.html",
+      "size": 8110,
+      "size_kb": 7.9,
+      "sha3_256": "a66d3d2a4692e9534c91ce8ad06234cb9a6cd9bbda5ee535f92b5238029d0baa",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "identity-platform.html",
+      "path": "docs/identity-platform.html",
+      "size": 8136,
+      "size_kb": 7.9,
+      "sha3_256": "aad448ce5cc5233c6ba6cf214afe2b4416d06a3900acc6f8c95cb7107412fa5c",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "index.html",
+      "path": "docs/index.html",
+      "size": 3341,
+      "size_kb": 3.3,
+      "sha3_256": "4737fb0b3de0e6d3349237a6296b828e3e2a00b3f33fd5130f18ae385dfde31d",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "install.html",
+      "path": "docs/install.html",
+      "size": 9090,
+      "size_kb": 8.9,
+      "sha3_256": "64d3ba1e2c1f5c3ed26037128c78561661f06f04dfe46c04f663e83fcb23549d",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ir-playbook-attck-map.html",
+      "path": "docs/ir-playbook-attck-map.html",
+      "size": 8136,
+      "size_kb": 7.9,
+      "sha3_256": "d2dcead132d8e84391afd71a19a56c05198559a29c2cc5fdac57a5d6b047421b",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "kernel-detection-comparison.html",
+      "path": "docs/kernel-detection-comparison.html",
+      "size": 3464,
+      "size_kb": 3.4,
+      "sha3_256": "a40a3862fd845081f098b66344e9bbdea30ff54122bd3d7811848422fb64a2bd",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "kill-chain-graph.html",
+      "path": "docs/kill-chain-graph.html",
+      "size": 7528,
+      "size_kb": 7.4,
+      "sha3_256": "0dd183870c6dba9b39c179bc3a53dd8ca077e1d5376920fe9c18a2adc99cbb8f",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "lateral-movement-analysis.html",
+      "path": "docs/lateral-movement-analysis.html",
+      "size": 8170,
+      "size_kb": 8.0,
+      "sha3_256": "d3d712dd611f6bbc1cbd8449109d24390ee4530d57e66a48f5ccd03163c1dacf",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "launch-checklist.html",
+      "path": "docs/launch-checklist.html",
+      "size": 39779,
+      "size_kb": 38.8,
+      "sha3_256": "efa381e2cc3ed5cbff730255188edff2ae2ecd245b4d085866f46fb85510d1bd",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "live-operations.html",
+      "path": "docs/live-operations.html",
+      "size": 8102,
+      "size_kb": 7.9,
+      "sha3_256": "7a76b458b4c3cb90ba1232ca070e32e9cdd5c7715eba7665ddb3e72b060f2967",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "lotl-killchain-hardening.html",
+      "path": "docs/lotl-killchain-hardening.html",
+      "size": 3458,
+      "size_kb": 3.4,
+      "sha3_256": "6621000fbadce21ad84544f8e8b83e94833426308c33fcf4f3e72afe3c9a271d",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "ml-threat-predictor.html",
+      "path": "docs/ml-threat-predictor.html",
+      "size": 9047,
+      "size_kb": 8.8,
+      "sha3_256": "b2792127ddd2e0a69618480517caeabd13dc3d4ccc69dac4bfd19b563f2fc7be",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "module-design-doc.html",
+      "path": "docs/module-design-doc.html",
+      "size": 8086,
+      "size_kb": 7.9,
+      "sha3_256": "21535636563bdb8f71f4581bf8e563ed1ec5359f7f3753bd58fc500e294e4815",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "modules.html",
+      "path": "docs/modules.html",
+      "size": 13758,
+      "size_kb": 13.4,
+      "sha3_256": "8757c1013aa77a82dfba60dc50ee5846d59b78d5c782bfa87e7490958f1295ec",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nsa-tor-deanon-simulation.html",
+      "path": "docs/nsa-tor-deanon-simulation.html",
+      "size": 8124,
+      "size_kb": 7.9,
+      "sha3_256": "0fb613c768e3ecc643a795024f14f44905d86d674fc6c78082dc24e0f132d1f8",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-4cve-chain.html",
+      "path": "docs/nvsm-4cve-chain.html",
+      "size": 3440,
+      "size_kb": 3.4,
+      "sha3_256": "d3980d1a6d6b78ac6ccb4dd80a9dd6ee8f633956a0c0ae7c43d3dbf4bec7655b",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-4cve-model.html",
+      "path": "docs/nvsm-4cve-model.html",
+      "size": 3440,
+      "size_kb": 3.4,
+      "sha3_256": "54b0e302f3b4b43f78934d8e3ce8bfb6ddff8f0347d0fbb1f82e865a97683610",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-asymptotic-model.html",
+      "path": "docs/nvsm-asymptotic-model.html",
+      "size": 3452,
+      "size_kb": 3.4,
+      "sha3_256": "787c8937c30740df8f70ce5d72d676f1df6c0c33e9b2dc82e53035071bceb60b",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-chain-comparison.html",
+      "path": "docs/nvsm-chain-comparison.html",
+      "size": 3452,
+      "size_kb": 3.4,
+      "sha3_256": "bec01b939c624a8788814a8742bf0b4212ab211cb2856b9cd0268752728ce228",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-chain-score-dashboard.html",
+      "path": "docs/nvsm-chain-score-dashboard.html",
+      "size": 30421,
+      "size_kb": 29.7,
+      "sha3_256": "10ac11d5247d73f9524d426cfa366667557e68b539c3747707216b298b88d30e",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-chain-score.html",
+      "path": "docs/nvsm-chain-score.html",
+      "size": 3442,
+      "size_kb": 3.4,
+      "sha3_256": "96ee0fb556abe2262dfebfcdf01fae26b86ad04824568b34691b4da4051f3e2d",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "nvsm-temporal-decay.html",
+      "path": "docs/nvsm-temporal-decay.html",
+      "size": 3448,
+      "size_kb": 3.4,
+      "sha3_256": "6263e79127b188c84fb83eb783cb555c3085ae455fbe5b10f51ec93ee2147f1e",
+      "modified": "2026-11-20T02:41:55.107771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "p0-attck-mitigation-mapping.md",
+      "path": "docs/p0-attck-mitigation-mapping.md",
+      "size": 7176,
+      "size_kb": 7.0,
+      "sha3_256": "834a002d3a3e45ee087ad2e5ef283b68af7b38cd219cf000415b1f483957165f",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "partners.html",
+      "path": "docs/partners.html",
+      "size": 10343,
+      "size_kb": 10.1,
+      "sha3_256": "43196034af098038fb4376096bf9a58dee5750029cfbaaea4ea67c2cda939139",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "performance-report.html",
+      "path": "docs/performance-report.html",
+      "size": 39064,
+      "size_kb": 38.1,
+      "sha3_256": "98943a52365c799963c9e9c427eb595b3db6376742bfa8739912a520d1a95e50",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "pipeline-security-analysis.md",
+      "path": "docs/pipeline-security-analysis.md",
+      "size": 13802,
+      "size_kb": 13.5,
+      "sha3_256": "cfe66ccf5ceb254e83ac0cf47e33e77e9127d17da2d6773d62d93980e32fe289",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "plugin-studio.html",
+      "path": "docs/plugin-studio.html",
+      "size": 9194,
+      "size_kb": 9.0,
+      "sha3_256": "6967c1300a71c20a30e6d9dccbff87a3c787e42bdc94f888883ee74abb91923e",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "post-exploitation-60min.html",
+      "path": "docs/post-exploitation-60min.html",
+      "size": 3456,
+      "size_kb": 3.4,
+      "sha3_256": "17ee0387a5d3333261b5475f55c74c16239a84633f1d5ecdd0a0be2ff7e6a66e",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "pq_threat_landscape_slhdsa_evolution.md",
+      "path": "docs/pq_threat_landscape_slhdsa_evolution.md",
+      "size": 49964,
+      "size_kb": 48.8,
+      "sha3_256": "35a13124461ac8a5271b0d977f28e2a1a4d388886fa80d6a654775266caf75ba",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "pqc-migration-graph.html",
+      "path": "docs/pqc-migration-graph.html",
+      "size": 9305,
+      "size_kb": 9.1,
+      "sha3_256": "75f6a564d984c646a4293396bb8336b51a824ede56624d261d642b70ff1485c9",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "pqc.html",
+      "path": "docs/pqc.html",
+      "size": 9538,
+      "size_kb": 9.3,
+      "sha3_256": "68b8f7ed7290c231d26e87d8afddce5f0da4cb0b722f2a54baa9bf4f298b05bc",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "pricing.html",
+      "path": "docs/pricing.html",
+      "size": 13777,
+      "size_kb": 13.5,
+      "sha3_256": "e39025d4cf749d723be1fd459aeaac66934f07b87ef1423b03846ff565fed415",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "privacy.html",
+      "path": "docs/privacy.html",
+      "size": 9763,
+      "size_kb": 9.5,
+      "sha3_256": "50381a16cea1cd1dd13d89886d74a92b3ea11ab0482d7d991fbfd5be7804e8a7",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "project-roadmap.html",
+      "path": "docs/project-roadmap.html",
+      "size": 58664,
+      "size_kb": 57.3,
+      "sha3_256": "3e04de9cedf2f6278536cc85c6f1abff2eccc3457de32532f53dc381be92c11e",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "purple-team.html",
+      "path": "docs/purple-team.html",
+      "size": 8044,
+      "size_kb": 7.9,
+      "sha3_256": "899b1f911278caa83a55d211dc545c64729410a6ee903d367c52b6a430de670f",
+      "modified": "2026-11-20T02:41:55.108771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "quantum-lab.html",
+      "path": "docs/quantum-lab.html",
+      "size": 8088,
+      "size_kb": 7.9,
+      "sha3_256": "e46456676a0387b7cdc010ebed9788d603a1a3093a6d2d0db12068dc66ee4384",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "quickstart.html",
+      "path": "docs/quickstart.html",
+      "size": 9061,
+      "size_kb": 8.8,
+      "sha3_256": "01fd6926b4fcdd3525bb6675be3f872b3de5f348cdbdff4f07f727a60692f536",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "race-condition-ids-comparison.html",
+      "path": "docs/race-condition-ids-comparison.html",
+      "size": 8174,
+      "size_kb": 8.0,
+      "sha3_256": "2cf3d6f52a18de7a7794304b6c8bd72daeab796a822b2f2ece853b09e54ff4e7",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "recon.html",
+      "path": "docs/recon.html",
+      "size": 14961,
+      "size_kb": 14.6,
+      "sha3_256": "24f7447f8a00bfb0bf21c0c8f7dbd31538d4434e23f0e35bc62165fe5e3cbaf4",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "red-team-ops.html",
+      "path": "docs/red-team-ops.html",
+      "size": 3434,
+      "size_kb": 3.4,
+      "sha3_256": "19f6c661a598c87329e397eb990666ac9639976ea53c8601052d9eede8dd07f2",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "repository-review-2026-11-13.md",
+      "path": "docs/repository-review-2026-11-13.md",
+      "size": 7621,
+      "size_kb": 7.4,
+      "sha3_256": "3f8ffdd2c4ca5ce32dec161d8ff8825dd41e25d6790acb532e8eda626040609e",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "roi-calculator.html",
+      "path": "docs/roi-calculator.html",
+      "size": 9297,
+      "size_kb": 9.1,
+      "sha3_256": "3058f0c8144f5239ff9cd88c5eb75f64f061340882f40210025106992ad68ce0",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "s313-apt-simulation.html",
+      "path": "docs/s313-apt-simulation.html",
+      "size": 32132,
+      "size_kb": 31.4,
+      "sha3_256": "f8d75cfda82bff4f3ff87d8a329a1f3c6ecfa864e2a2503c35f0976c9fa15c1c",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "satexpert_tsi_v7.html",
+      "path": "docs/satexpert_tsi_v7.html",
+      "size": 86105,
+      "size_kb": 84.1,
+      "sha3_256": "4938731c2a85c44cef59ef40844a383f85174291402f7abaa638418dd32876d0",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "security-gap-analysis.html",
+      "path": "docs/security-gap-analysis.html",
+      "size": 8126,
+      "size_kb": 7.9,
+      "sha3_256": "6dc861e4c644ea9fe42e1ad7a4b1c29816e14e33e64a2aecc86a0431d38b17ba",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "security-policy.html",
+      "path": "docs/security-policy.html",
+      "size": 9941,
+      "size_kb": 9.7,
+      "sha3_256": "6776c9594b298b4cdf37b2524a0be5b1da61e57c7fba009be76cd810b73fb679",
+      "modified": "2026-11-20T02:41:55.109771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-ai-stack-map.html",
+      "path": "docs/shadow313-ai-stack-map.html",
+      "size": 30966,
+      "size_kb": 30.2,
+      "sha3_256": "5687e8baf1a9ad3e6245ea606349a8e0e07eaba97ab54ea0e60dc3979cce532f",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-analysis.html",
+      "path": "docs/shadow313-analysis.html",
+      "size": 37855,
+      "size_kb": 37.0,
+      "sha3_256": "5a7a54975587fe65ef82d28d1ebd3d64794fc67ad6e64aa2508cc59081ba3646",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-download-portal.html",
+      "path": "docs/shadow313-download-portal.html",
+      "size": 130149,
+      "size_kb": 127.1,
+      "sha3_256": "1db50bf3abd4d083ead9616c68852d82b276d666bcb3270329ce58a1dfd4fd5a",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-file-portal.html",
+      "path": "docs/shadow313-file-portal.html",
+      "size": 179679,
+      "size_kb": 175.5,
+      "sha3_256": "02bacf6cdefc606b83e4dbeaca47d8ba40ecdef16421ccbbe79389adb6e62233",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shadow313-nexus-architecture.html",
+      "path": "docs/shadow313-nexus-architecture.html",
+      "size": 41980,
+      "size_kb": 41.0,
+      "sha3_256": "64b317c9eb3baa09e7b9728a11ceb32cc6fee0d48dd658e0d0a1b27e7cdeb261",
+      "modified": "2026-11-20T02:41:55.110771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shiatoali-console.html",
+      "path": "docs/shiatoali-console.html",
+      "size": 17325,
+      "size_kb": 16.9,
+      "sha3_256": "0a50077c8316cd48118b6254958f570e306c54c3a073c6e8fe751a9ea37a2a54",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "shiatoali-soc.md",
+      "path": "docs/shiatoali-soc.md",
+      "size": 4925,
+      "size_kb": 4.8,
+      "sha3_256": "212fc2493601e953b4c4d6efa7f2c87300dd3d1660f98841d0f6754434b3388a",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "md"
+    },
+    {
+      "name": "soar-playbook-builder.html",
+      "path": "docs/soar-playbook-builder.html",
+      "size": 9289,
+      "size_kb": 9.1,
+      "sha3_256": "36701be4a461b26349a0a512ffe15443697702b919a1d21807047fed667e096b",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-analyst-cognitive-load.html",
+      "path": "docs/soc-analyst-cognitive-load.html",
+      "size": 3462,
+      "size_kb": 3.4,
+      "sha3_256": "1c4864ed3608a3bee2eb5bacfcc765f1501241d2de2f6bcd5c1f51df0f79b1c7",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-response-byovd.html",
+      "path": "docs/soc-response-byovd.html",
+      "size": 3446,
+      "size_kb": 3.4,
+      "sha3_256": "c368f26aa8d3ee6e195c900922febe3f02a87a69b3bbc7ba77515431acc7e2a1",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "soc-staffing-roi.html",
+      "path": "docs/soc-staffing-roi.html",
+      "size": 3442,
+      "size_kb": 3.4,
+      "sha3_256": "6cc7a0b414ace72d10fc96fc8f67e9730c060ae7ae150daa2972a1fd387c899a",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "swift-cascade-topology.html",
+      "path": "docs/swift-cascade-topology.html",
+      "size": 15049,
+      "size_kb": 14.7,
+      "sha3_256": "336e749edfadc044af9ed7586c928e0c23e0f5cda45cd9a0e417a7c5fc7e1068",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "swift-choke-point-hardening.html",
+      "path": "docs/swift-choke-point-hardening.html",
+      "size": 10075,
+      "size_kb": 9.8,
+      "sha3_256": "43417ee273d00612cb92d6c1a04b2763fcf753a26f2e077bb0eac2060cdb1524",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "technical-deep-dive.html",
+      "path": "docs/technical-deep-dive.html",
+      "size": 8128,
+      "size_kb": 7.9,
+      "sha3_256": "91368ce31fa9c027780387f40eb111d1aeb575586e792311bb8af5550e04b5f2",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "temporal-attack-roi.html",
+      "path": "docs/temporal-attack-roi.html",
+      "size": 3448,
+      "size_kb": 3.4,
+      "sha3_256": "c229b1463243686c75cbf029cdd7458ee090ba34f2c462a209275018d8537f6b",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "terms.html",
+      "path": "docs/terms.html",
+      "size": 10322,
+      "size_kb": 10.1,
+      "sha3_256": "805b04e8f3fdf11701ad8c1e3ffa700057e84e676ea17ace78d67b8be1ab7b5a",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "threat-actor-map.html",
+      "path": "docs/threat-actor-map.html",
+      "size": 9355,
+      "size_kb": 9.1,
+      "sha3_256": "f66bac87871075041e73bf71509146820efe03b99b6502d342f3c16e1e0196a4",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "threat-intel-feed.html",
+      "path": "docs/threat-intel-feed.html",
+      "size": 8973,
+      "size_kb": 8.8,
+      "sha3_256": "f43e11ce02b1ab9c1fa28803476b1ae2c420dcf57b1730f47dfd9c05868bafa5",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "threat-landscape-graph.html",
+      "path": "docs/threat-landscape-graph.html",
+      "size": 6389,
+      "size_kb": 6.2,
+      "sha3_256": "5052b28d3135eb042af468a6ad779288841159528d4739d442a4f56bb6b1f560",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "tor-i2p-vpn-analysis.html",
+      "path": "docs/tor-i2p-vpn-analysis.html",
+      "size": 8134,
+      "size_kb": 7.9,
+      "sha3_256": "96e2fbc12023691667d4386a56f1838abd0933a0bb323be6c1d082be57e1e024",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "tor-vpn-proxy-comparison.html",
+      "path": "docs/tor-vpn-proxy-comparison.html",
+      "size": 8110,
+      "size_kb": 7.9,
+      "sha3_256": "d76e98d80844f32a38206014f50cea5e2107e053fa37e73aa9f52fbc9d78a3ce",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "vendor-scorecard.html",
+      "path": "docs/vendor-scorecard.html",
+      "size": 13297,
+      "size_kb": 13.0,
+      "sha3_256": "e8619ff0f0f53e764b2c15009157c9c63566e0a804e29217f05adb1f7dfd3830",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "vsat-intelligence.html",
+      "path": "docs/vsat-intelligence.html",
+      "size": 8110,
+      "size_kb": 7.9,
+      "sha3_256": "33739e02aecd3ee80c704fc58917948efeedfa92c8c1f45e2bfb49fb6b8797bd",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "vsat-tactical-suite.html",
+      "path": "docs/vsat-tactical-suite.html",
+      "size": 30478,
+      "size_kb": 29.8,
+      "sha3_256": "79b527a23bf6ee330f438976293d38a50ee9f3ac7d187a459b86a114ff255f47",
+      "modified": "2026-11-20T02:41:55.111771+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "web3_security_explorer.html",
+      "path": "docs/web3_security_explorer.html",
+      "size": 25987,
+      "size_kb": 25.4,
+      "sha3_256": "4a8f1bc6e972c87b82c82bbb88ca2c118d610f3d44007594a79b8f3204c759be",
+      "modified": "2026-11-20T02:41:55.112776+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "xkeyscore-nh-analysis.html",
+      "path": "docs/xkeyscore-nh-analysis.html",
+      "size": 8124,
+      "size_kb": 7.9,
+      "sha3_256": "03bbb09fa8cbacdb945b77ea734788dd0d0efcc53a2d580afb022baaaf1646fb",
+      "modified": "2026-11-20T02:41:55.113225+00:00",
+      "priority": false,
+      "type": "html"
+    },
+    {
+      "name": "zeroday-halflife-forensics.html",
+      "path": "docs/zeroday-halflife-forensics.html",
+      "size": 3462,
+      "size_kb": 3.4,
+      "sha3_256": "f0ee016d5bed49cf4b969e52a1e7668faa3c3d312bfc262269506a2a32bec4a6",
+      "modified": "2026-11-20T02:41:55.113225+00:00",
+      "priority": false,
+      "type": "html"
+    }
+  ],
+  "provenance_class": "REAL_OBSERVATION",
+  "delivery_id": "DEL-BFEC88BC",
+  "manifest_hash": "sha3_256:8bc18fb7a000612896587d5143038d4e746ef2b94b67fa9957ac9240a531adb3"
+}
