@@ -19,10 +19,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from .config    import Config
-from .session   import Session
-from .output    import OutputFormatter
 from .ai_engine import AIEngine
+from .config import Config
+from .output import OutputFormatter
+from .session import Session
 
 
 class Kernel:
