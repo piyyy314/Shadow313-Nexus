@@ -1,50 +1,36 @@
 # Security Policy
 
-## Supported Versions
+## Current project version
 
-| Version | Supported |
-|---------|-----------|
-| v4.0.0-NEXUS | ✅ Active |
-| v3.x | ⚠️ Security fixes only |
-| v2.x | ❌ End of life |
-| v1.x | ❌ End of life |
+The repository package version is **4.0.0**. This identifies the source/package version; it is not a statement that every optional integration or deployment is supported or production-ready. Support commitments for older releases are not currently published.
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-Shadow313 NEXUS takes security seriously. We welcome responsible disclosure.
+Please report suspected vulnerabilities privately before publishing exploit details.
 
-**Email:** security@shadow313.dev (or matarmohamad313@duck.com)
-**Subject:** `[CVE DISCLOSURE] Brief description`
-**Response time:** Within 24 hours
+- **Email:** security@shadow313.dev or matarmohamad313@duck.com
+- **Subject:** `[SECURITY] Brief description`
+- Include the affected repository/component and version, reproduction steps, impact, and a safe way to contact you.
+- Do not include secrets, personal data, or live customer information in an initial report.
 
-### What to include
-- Affected component and version
-- Step-by-step reproduction steps
-- Impact assessment
-- Your contact info for credit
+We will review reports and coordinate remediation and disclosure where appropriate. No fixed acknowledgement or remediation SLA is currently promised. Good-faith, authorized testing is welcome; this policy does not authorize testing systems you do not own or have permission to assess.
 
-### Our commitment
-- Acknowledge within 24 hours
-- Resolution timeline within 72 hours
-- Credit in changelog (unless anonymity requested)
-- No legal action against good-faith researchers
+## Scope
 
-## Bug Bounty
+This policy covers code and configuration maintained in [Shadow313-Nexus](https://github.com/piyyy314/Shadow313-Nexus), including its Python packages, API, CLI, Docker configuration, static website, and repository workflows.
 
-| Severity | Examples | Reward |
-|----------|----------|--------|
-| Critical | RCE, auth bypass, key extraction | $500–$2,000 + CVE credit |
-| High | Path traversal, SSRF, privilege escalation | $100–$500 + CVE credit |
-| Medium | Information disclosure, CSRF | $25–$100 + credit |
-| Low | Minor issues, best-practice violations | Public credit |
+Third-party services and dependencies are not operated by this project. Report vulnerabilities in those products to their respective maintainers. Do not perform denial-of-service, social-engineering, physical, or other disruptive testing.
 
-## Known CVEs
+## Bounty and rewards
 
-| ID | Component | Severity | Status |
-|----|-----------|----------|--------|
-| S313-CVE-2026-001 | Session path traversal (encrypted writes) | HIGH | ✅ Fixed v4.0.1 |
-| S313-CVE-2026-002 | SSRF in AI engine URL handling | MEDIUM | ✅ Fixed v4.0.1 |
-| S313-CVE-2026-003 | Crypto plaintext downgrade on import failure | HIGH | ✅ Fixed v4.0.1 |
-| S313-CVE-2026-006 | ECDSA P-256 cosign (CRQC vulnerable) | CRITICAL | 🔄 Migrating Q4 2026 |
+No formal paid bug-bounty program, reward schedule, or guaranteed payout is currently published. Do not assume that a report qualifies for compensation.
 
-Full security policy: https://shadow313.dev/security-policy
+## CVE and advisory status
+
+This repository does not use project-internal tracking labels as externally assigned CVE identifiers. A project issue or internal label is not a CVE assignment, a published security advisory, or proof that a fix shipped in a released artifact.
+
+For externally assigned identifiers and public advisories, consult the repository's [GitHub Security Advisories](https://github.com/piyyy314/Shadow313-Nexus/security/advisories). Verify the affected commit and release artifact before describing a vulnerability as fixed.
+
+## Release and deployment verification
+
+A passing CI job is evidence only for the checks that ran on that commit. It does not prove that production systems, optional integrations, external services, or deployed artifacts are secure or operational. Review the current [GitHub Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) and deployment records separately.

@@ -39,13 +39,20 @@ def main():
     match = pattern.search(text)
     if match:
         files = json.loads(match[2])
-        payload = json.dumps({name: (ROOT / 'docs' / name).read_text() for name in files},
-                             ensure_ascii=False).replace('<', r'\u003c')
+        expected_files = {
+            name: (ROOT / 'docs' / name).read_text(encoding='utf-8')
+            for name in files
+        }
+        payload = json.dumps(expected_files, ensure_ascii=False).replace('<', r'\u003c')
         updated = text[:match.start(2)] + payload + text[match.end(2):]
-        if updated != text:
+        # Compare payload data, not JSON whitespace/key serialization.
+        if files != expected_files:
             stale.append(str(portal.relative_to(ROOT)))
             if not args.check:
                 portal.write_text(updated)
+    if args.check:
+        for item in stale:
+            print(f'STALE: {item}')
     print(f'{len(stale)} navigation sections {"out of date" if args.check else "updated"}')
     return int(args.check and bool(stale))
 

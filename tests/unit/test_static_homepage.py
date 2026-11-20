@@ -28,7 +28,7 @@ class StaticHomepageTests(unittest.TestCase):
         self.assertEqual(route["destination"], "/index.html")
         page = (ROOT / "index.html").read_text()
         self.assertIn("--accent:         #7b61ff", page)
-        self.assertIn("Advanced Quantum-Ready CLI Platform", page)
+        self.assertIn("Python Security-Intelligence Toolkit", page)
         self.assertNotIn('http-equiv="refresh"', page)
 
     def test_all_rewrite_destinations_exist(self):

@@ -48,7 +48,7 @@
   .row:last-child{border-bottom:none;}
   @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr;}}
   @media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}.nav-links{display:none;}}
-</style></head><body>
+</style></head><body><aside role="note" aria-label="Local bundle demonstration notice" style="margin:14px 20px;padding:12px 16px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font:12px/1.6 system-ui,sans-serif"><strong>STATIC REFERENCE / SIMULATION ONLY.</strong> This standalone page is a browser-side interface demonstration. Metrics, findings, CVEs, RF readings, compliance states, cryptographic labels, event feeds, and receipt records are illustrative unless independently verified in source and current test evidence. No live target, customer system, sensor, production service, signature, No external anchor, or compliance certification is established here.</aside>
 <nav class="nav">
   <div class="nav-hex">S3</div>
   <div class="nav-brand">SHADOW<span>313</span> NEXUS</div>
@@ -73,15 +73,15 @@
 <div class="sec con"><div class="g3" style="margin-bottom:28px">
 <div class="card"><h3 style="color:var(--green);font-family:JetBrains Mono,monospace;font-size:16px">ML-KEM-768</h3><p style="font-size:10px;color:var(--muted);margin-bottom:10px">NIST FIPS 203 · Key Encapsulation</p><p>Replaces RSA/ECDH for quantum-safe key exchange. Shor-resistant. PubKey: 1184B · SecKey: 2400B · CT: 1088B · NIST Level 3</p></div>
 <div class="card"><h3 style="color:var(--cyan);font-family:JetBrains Mono,monospace;font-size:16px">ML-DSA-65</h3><p style="font-size:10px;color:var(--muted);margin-bottom:10px">NIST FIPS 204 · Digital Signatures</p><p>Replaces ECDSA/RSA for quantum-safe signing. Used for plugin signing and auth. Sig: 3309B · NIST Level 3</p></div>
-<div class="card"><h3 style="color:var(--purple);font-family:JetBrains Mono,monospace;font-size:16px">SLH-DSA</h3><p style="font-size:10px;color:var(--muted);margin-bottom:10px">NIST FIPS 205 · Hash-Based Signatures</p><p>Root of trust for 313-BIND receipts. Secure even if lattice assumptions fail. PubKey: 32B · Sig: 17088B · NIST Level 5</p></div>
+<div class="card"><h3 style="color:var(--purple);font-family:JetBrains Mono,monospace;font-size:16px">SLH-DSA</h3><p style="font-size:10px;color:var(--muted);margin-bottom:10px">NIST FIPS 205 · Hash-Based Signatures</p><p>Reference description only. This page does not generate keys, sign receipts, verify signatures, or establish a production root of trust. PubKey: 32B · Sig: 17088B · NIST Level 5</p></div>
 </div>
 <div class="sec-title">🔐 313 Temporal Binding Protocol</div>
-<div class="code-block">bind_id:      <span style="color:var(--cyan)">313-BIND-A4F2C1</span>
+<div class="code-block">bind_id:      <span style="color:var(--cyan)">SAMPLE-BIND-PLACEHOLDER</span>
 timestamp_ns: <span style="color:var(--green)">1727234567890123<span style="color:var(--amber)">313</span></span>  <span style="color:#475569"># ends in ...313</span>
 payload_hash: <span style="color:var(--cyan)">sha3_256:a4f2c1d8e9b3...</span>
 chain_hash:   <span style="color:var(--cyan)">sha3_512:prev_hash + payload + ts</span>
 signature:    <span style="color:var(--purple)">SLH-DSA-SHAKE-128f (FIPS 205)</span>
-ipfs_cid:     <span style="color:#475569">QmX7k9... (IPFS anchor)</span>
+ipfs_cid:     <span style="color:#475569">No IPFS anchor · sample placeholder only</span>
 bind_index:   <span style="color:#475569">sequential — gap detection prevents tampering</span></div></div>
 <footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>

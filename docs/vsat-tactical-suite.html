@@ -194,9 +194,9 @@
     </div>
   </div>
   <div class="tac-status">
-    <div class="status-pill"><div class="pulse-dot"></div>SAT-LINK BIND ACTIVE</div>
+    <div class="status-pill"><div class="pulse-dot"></div>SAT-LINK DEMO · NOT CONNECTED</div>
     <div class="status-pill" style="color:var(--amber);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.08)">⚠ DEFCON 3</div>
-    <div class="status-pill" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.08)">🔴 7 CRITICAL FINDINGS</div>
+    <div class="status-pill" style="color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.08)">🔴 7 SAMPLE FINDINGS</div>
   </div>
 </div>
 
@@ -211,7 +211,7 @@
 <aside class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Mission Control</div>
-    <a class="sidebar-item" href="#vsat-dashboard"><span>📊 Operational Dashboard<small class="nav-detail">Demo overview</small></span></a>
+    <a class="sidebar-item" href="#vsat-dashboard"><span>📊 Simulation Dashboard<small class="nav-detail">Demo overview</small></span></a>
     <a class="sidebar-item" href="/vsat-intelligence"><span>🔍 VSAT Threat Intel<small class="nav-detail">Reference page</small></span></a>
     <a class="sidebar-item" href="#rf-health"><span>📡 RF Link Health<small class="nav-detail">Telemetry demo — not a live analyzer</small></span></a>
     <a class="sidebar-item" href="/docs/pqc"><span>🔐 PQC Audit<small class="nav-detail">PQC guide — runs locally via CLI</small></span></a>
@@ -239,7 +239,7 @@
     <div class="kpi red">
       <div class="kpi-label">CISA KEV Matches</div>
       <div class="kpi-value" style="color:var(--red)">2</div>
-      <div class="kpi-sub">CVE-2026-3392 · CVE-2024-6199</div>
+      <div class="kpi-sub">Illustrative TR-069/CWMP scenario · CVE-2024-6199</div>
     </div>
     <div class="kpi green">
       <div class="kpi-label">Telemetry Accuracy</div>
@@ -248,7 +248,7 @@
     </div>
     <div class="kpi cyan">
       <div class="kpi-label">NSA Compliance</div>
-      <div class="kpi-value" style="color:var(--cyan)">100%</div>
+      <div class="kpi-value" style="color:var(--cyan)">DEMO</div>
       <div class="kpi-sub">CNSA 2.0 aligned</div>
     </div>
     <div class="kpi amber">
@@ -285,7 +285,7 @@
   <div class="elements-grid">
     <a class="element-card" href="/platform/vuln">
       <div class="element-header"><span class="element-icon">🔍</span><span class="element-num">01</span><span class="element-title">Vulnerability Scanner</span></div>
-      <div class="element-desc">CVE-2026-3392 TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
+      <div class="element-desc">Illustrative TR-069/CWMP scenario TR-069 CWMP · Unsigned firmware · Telnet/FTP/HTTP exposure</div>
       <span class="element-badge badge-cyan">CLI module guide</span>
     </a>
     <a class="element-card" href="/apt-simulation">
@@ -326,7 +326,7 @@
     <div class="harden-card">
       <div class="harden-header"><span class="harden-icon">🔐</span><button class="harden-toggle on" onclick="toggleHarden(this)"></button></div>
       <div class="harden-title">SSH Ed25519</div>
-      <div class="harden-status on">✅ ACTIVE</div>
+      <div class="harden-status on">DEMO · NOT VERIFIED</div>
     </div>
     <div class="harden-card">
       <div class="harden-header"><span class="harden-icon">🛡️</span><button class="harden-toggle off" onclick="toggleHarden(this)"></button></div>
@@ -355,7 +355,7 @@
       <div class="log-ok">[+] Host 192.168.100.15 — Network Operations Center Console</div>
       <div class="log-crit">[!!!] Port 23 (Telnet): OPEN — Cleartext credentials visible!</div>
       <div class="log-crit">[!!!] Port 21 (FTP): OPEN — Anonymous read/write enabled!</div>
-      <div class="log-crit">[!!!] CVE-2026-3392: Unsigned CWMP provisioning — VULNERABLE!</div>
+      <div class="log-crit">[!!!] Illustrative TR-069/CWMP scenario: Unsigned CWMP provisioning — VULNERABLE!</div>
       <div class="log-crit">[!!!] Firmware hash mismatch — Arbitrary partition overwrite threat!</div>
       <div class="log-warn">[!] SNR: 5.9 dB — CRITICAL (threshold: 8.0 dB)</div>
       <div class="log-warn">[!] Clock Skew: +55.1 Hz — CRITICAL (threshold: ±10 Hz)</div>
@@ -369,7 +369,7 @@
 
 <div class="tac-footer">
   <span>VSAT Tactical Security Suite v5.0 Ultra · Shadow313 NEXUS · Ottawa, ON, Canada</span>
-  <span>313-BIND: INTACT · NSA CNSA 2.0 · FIPS 203/204/205</span>
+  <span>313-BIND: NOT VERIFIED · PQC implementation not assessed</span>
   <span id="footer-clock" class="mono"></span>
 </div>
 
@@ -417,7 +417,7 @@ function addLog(type, msg) {
 // Actions
 function runSweep() {
   addLog('info', '[*] Initiating ground segment sweep...');
-  setTimeout(() => addLog('crit', '[!!!] CVE-2026-3392 confirmed — TR-069 CWMP unsigned'), 800);
+  setTimeout(() => addLog('crit', '[!!!] Illustrative TR-069/CWMP scenario confirmed — TR-069 CWMP unsigned'), 800);
   setTimeout(() => addLog('warn', '[!] SNR degradation detected — 5.9 dB'), 1400);
   setTimeout(() => addLog('ok', '[+] 313-BIND receipt generated: 313-SWEEP-' + Math.random().toString(16).slice(2,10).toUpperCase()), 2000);
 }
@@ -425,7 +425,7 @@ function runSweep() {
 function runHardening() {
   addLog('info', '[*] Applying quick hardening profile...');
   setTimeout(() => addLog('ok', '[+] Telnet disabled — SSH Ed25519 enforced'), 600);
-  setTimeout(() => addLog('ok', '[+] FTP disabled — SFTP chroot deployed'), 1200);
+  setTimeout(() => addLog('ok', '[+] FTP disabled — SFTP chroot simulation — no system change performed'), 1200);
   setTimeout(() => addLog('ok', '[+] HTTP redirected to HTTPS (TLS 1.3)'), 1800);
   setTimeout(() => addLog('ok', '[+] Hardening complete — 3/7 findings remediated'), 2400);
 }
@@ -446,7 +446,7 @@ function exportReport() {
     findings: [
       {sev:'CRITICAL', title:'Telnet (Port 23) OPEN', host:'192.168.100.1', cve:'T1040'},
       {sev:'CRITICAL', title:'FTP Anonymous Write', host:'192.168.100.15', cve:'T1190'},
-      {sev:'CRITICAL', title:'CVE-2026-3392 TR-069 CWMP', host:'192.168.100.1', cve:'T1542.001'},
+      {sev:'CRITICAL', title:'Illustrative TR-069/CWMP scenario TR-069 CWMP', host:'192.168.100.1', cve:'T1542.001'},
       {sev:'CRITICAL', title:'Unsigned Firmware', host:'192.168.100.1', cve:'T1542.001'},
       {sev:'CRITICAL', title:'UART/JTAG Unauthenticated', host:'192.168.100.1', cve:'T1200'},
       {sev:'HIGH', title:'SNR 5.9 dB / Clock Skew +55.1 Hz', host:'RF Link', cve:'T1565.001'},

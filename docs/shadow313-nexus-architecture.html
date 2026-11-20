@@ -65,7 +65,7 @@ body { font-family: 'Segoe UI', system-ui, monospace; background: var(--bg); col
 .comp-port { font-size: 10px; font-family: monospace; color: var(--green); margin-bottom: 4px; }
 .comp-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
 .comp-status { position: absolute; top: 10px; right: 10px; width: 7px; height: 7px; border-radius: 50%; }
-.status-live { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+.status-demo { background: var(--amber); box-shadow: none; }
 .status-ready { background: var(--amber); }
 .status-planned { background: var(--dim); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
@@ -157,20 +157,21 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 </div>
 <div class="header-badges">
 <span class="badge badge-green">Test status: see live CI results</span>
-<span class="badge badge-cyan">29 Detectors</span>
-<span class="badge badge-amber">313-BIND Active</span>
+<span class="badge badge-cyan">DEMO DETECTORS</span>
+<span class="badge badge-amber">313-BIND CONCEPT</span>
 <span class="badge badge-purple">Post-Quantum</span>
 </div>
 </div>
+<div role="note" style="margin:16px 24px;padding:12px 16px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px">Architecture view only. Counts and component states are not live telemetry or verified deployment measurements; use the repository source and current CI for evidence.</div>
 <div class="main">
 <!-- ── STATS ── -->
 <div class="stats-row">
-<div class="stat-card"><div class="stat-num" style="color:var(--green)">2648</div><div class="stat-label">Tests Passing</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--cyan)">29</div><div class="stat-label">Active Detectors</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--amber)">35</div><div class="stat-label">Security Tools</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--purple)">28</div><div class="stat-label">CLI Modules</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--green)">4</div><div class="stat-label">AI Models</div></div>
-<div class="stat-card"><div class="stat-num" style="color:var(--blue)">16GB</div><div class="stat-label">RAM Available</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">—</div><div class="stat-label">CI status · see commit checks</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--cyan)">—</div><div class="stat-label">Detector count · verify source</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--amber)">—</div><div class="stat-label">Tool count · verify source</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--purple)">—</div><div class="stat-label">Module count · verify source</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--green)">—</div><div class="stat-label">AI model count · not verified</div></div>
+<div class="stat-card"><div class="stat-num" style="color:var(--blue)">—</div><div class="stat-label">Host RAM · not measured</div></div>
 </div>
 <!-- ── ARCHITECTURE CANVAS ── -->
 <div class="section-title">Trust Boundary Architecture</div>
@@ -180,14 +181,14 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">☁️ Internet / Cloud</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('claude')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🤖</div>
 <div class="comp-name">Claude (Anthropic)</div>
 <div class="comp-port">api.anthropic.com:443</div>
 <div class="comp-desc">This chat. Cloud AI. No security data transmitted.</div>
 </div>
 <div class="comp" onclick="showDetail('ollama-com')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🦙</div>
 <div class="comp-name">Ollama.com Registry</div>
 <div class="comp-port">ollama.com:443</div>
@@ -201,7 +202,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">piyyy314/Shadow313-Nexus repo. CI/CD via Actions.</div>
 </div>
 <div class="comp" onclick="showDetail('ipfs')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🌐</div>
 <div class="comp-name">IPFS Network</div>
 <div class="comp-port">ipfs.io:443</div>
@@ -221,7 +222,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">🪟 Windows 11 Pro Host — Dell Latitude 5490 (16GB RAM)</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('ollama')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🦙</div>
 <div class="comp-name">Ollama Engine</div>
 <div class="comp-port">localhost:11434</div>
@@ -235,21 +236,21 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">Encrypted tunnel to Hetzner VPS. Kill-switch capable.</div>
 </div>
 <div class="comp" onclick="showDetail('docker-desktop')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🐳</div>
 <div class="comp-name">Docker Desktop</div>
 <div class="comp-port">host.docker.internal</div>
 <div class="comp-desc">WSL2 backend. Manages all containers.</div>
 </div>
 <div class="comp" onclick="showDetail('burp')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔍</div>
 <div class="comp-name">Burp Suite 2026</div>
 <div class="comp-port">localhost:8080</div>
 <div class="comp-desc">HTTP proxy for web app security testing.</div>
 </div>
 <div class="comp" onclick="showDetail('dns')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔐</div>
 <div class="comp-name">Quad9 DoH DNS</div>
 <div class="comp-port">9.9.9.9:443</div>
@@ -262,42 +263,42 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span class="zone-label">🐧 WSL2 — Ubuntu 24.04 + Kali Linux 2026.2</span>
 <div class="comp-grid">
 <div class="comp" onclick="showDetail('shadow313-cli')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">⬡</div>
 <div class="comp-name">Shadow313 CLI v4</div>
 <div class="comp-port">/workspace/</div>
-<div class="comp-desc">30 modules. Test status: see live CI results. 29 detectors active.</div>
+<div class="comp-desc">Illustrative architecture map. Component indicators are not live service health; module and detector availability must be verified from the running backend and exact-commit tests.</div>
 </div>
 <div class="comp" onclick="showDetail('fastapi')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">⚡</div>
-<div class="comp-name">FastAPI Event Bus</div>
-<div class="comp-port">localhost:8000</div>
+<div class="comp-name">Shadow313 FastAPI API</div>
+<div class="comp-port">localhost:8313</div>
 <div class="comp-desc">NEXUS detection pipeline REST API. Audit server.</div>
 </div>
 <div class="comp" onclick="showDetail('nexus-engine')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🧠</div>
 <div class="comp-name">NEXUS ML Engine</div>
 <div class="comp-port">Internal</div>
-<div class="comp-desc">Isolation Forest + RF + Quantum scorer. 29 detectors.</div>
+<div class="comp-desc">Example analytics pipeline; detector inventory requires source verification.</div>
 </div>
 <div class="comp" onclick="showDetail('313-bind')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔗</div>
 <div class="comp-name">313-BIND Protocol</div>
 <div class="comp-port">Internal + IPFS</div>
 <div class="comp-desc">SLH-DSA + SHA3-512 + nanosecond ...313 timestamp.</div>
 </div>
 <div class="comp" onclick="showDetail('kali')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🐉</div>
 <div class="comp-name">Kali Linux 2026.2</div>
 <div class="comp-port">wsl -d kali-linux</div>
 <div class="comp-desc">Metasploit, nmap 7.99, wordlists. shia313 user.</div>
 </div>
 <div class="comp" onclick="showDetail('ollama-wsl')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔌</div>
 <div class="comp-name">Ollama API Access</div>
 <div class="comp-port">host.docker.internal:11434</div>
@@ -317,14 +318,14 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="comp-desc">ChatGPT-like UI for local Ollama models. Install pending.</div>
 </div>
 <div class="comp" onclick="showDetail('shadow313-api')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🔌</div>
 <div class="comp-name">Shadow313 API</div>
-<div class="comp-port">localhost:8000</div>
+<div class="comp-port">localhost:8313</div>
 <div class="comp-desc">FastAPI audit server. 6 routes. 313-BIND receipts.</div>
 </div>
 <div class="comp" onclick="showDetail('postgres')">
-<div class="comp-status status-live"></div>
+<div class="comp-status status-demo"></div>
 <div class="comp-icon">🗄️</div>
 <div class="comp-name">PostgreSQL</div>
 <div class="comp-port">localhost:5432</div>
@@ -351,7 +352,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="bind-step">
 <div class="bind-step-num">STEP 2</div>
 <div class="bind-step-name">Timestamp ...313</div>
-<div class="bind-step-detail">time.time_ns() nudged to end in ...313 (~1ms entropy)</div>
+<div class="bind-step-detail">Display suffix convention only; not a trusted timestamp or entropy source</div>
 </div>
 <div class="bind-arrow">→</div>
 <div class="bind-step">
@@ -369,7 +370,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div class="bind-step">
 <div class="bind-step-num">STEP 5</div>
 <div class="bind-step-name">SLH-DSA Sign</div>
-<div class="bind-step-detail">FIPS 205 signature over chain_hash (pyspx or HMAC fallback)</div>
+<div class="bind-step-detail">API receipt is UNSIGNED-SHA3-512-DEMO; process-local only, no SLH-DSA signature</div>
 </div>
 <div class="bind-arrow">→</div>
 <div class="bind-step">
@@ -427,7 +428,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <tbody>
 <tr><td class="port-num">11434</td><td class="port-service">Ollama AI Engine</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Bound to 127.0.0.1 — never exposed externally</td></tr>
 <tr><td class="port-num">3000</td><td class="port-service">Open WebUI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Docker container — localhost access only</td></tr>
-<tr><td class="port-num">8000</td><td class="port-service">Shadow313 FastAPI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Audit server + event bus REST API</td></tr>
+<tr><td class="port-num">8313</td><td class="port-service">Shadow313 FastAPI</td><td class="port-proto">HTTP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Audit server + event bus REST API</td></tr>
 <tr><td class="port-num">8080</td><td class="port-service">Burp Suite Proxy</td><td class="port-proto">HTTP</td><td>Intercept</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Configure browser proxy → 127.0.0.1:8080</td></tr>
 <tr><td class="port-num">5432</td><td class="port-service">PostgreSQL (Metasploit)</td><td class="port-proto">TCP</td><td>Internal</td><td><span class="port-trust trust-local">LOCAL ONLY</span></td><td style="color:var(--muted);font-size:10px">Kali Linux Metasploit database</td></tr>
 <tr><td class="port-num">51820</td><td class="port-service">WireGuard VPN</td><td class="port-proto">UDP</td><td>Outbound</td><td><span class="port-trust trust-encrypted">ENCRYPTED</span></td><td style="color:var(--muted);font-size:10px">Tunnel to Hetzner VPS — or port 443 obfuscated</td></tr>
@@ -437,7 +438,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 </table>
 </div>
 <!-- ── DETECTOR MAP ── -->
-<div class="section-title">Shadow313 v4 Detector Stack — 29 Active Detectors</div>
+<div class="section-title">Shadow313 v4 Detector Stack — Detector count not verified</div>
 <div class="arch-canvas">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
 <div>
@@ -469,7 +470,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 </div>
 </div>
 <div>
-<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">PQC Stack (FIPS 203/204/205)</div>
+<div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">PQC Standards Reference (not validation)</div>
 <div style="font-size:10px;font-family:monospace;line-height:2;color:var(--muted)">
 <span style="color:var(--cyan)">FIPS 203</span> ML-KEM-768 → Key Encapsulation<br/>
 <span style="color:var(--cyan)">FIPS 204</span> ML-DSA-65 → Digital Signatures<br/>
@@ -477,7 +478,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <span style="color:var(--green)">313-BIND</span> ts...313 + SHA3-512 + IPFS<br/>
 <span style="color:var(--amber)">HNDL</span> Harvest-Now-Decrypt-Later defense<br/>
 <span style="color:var(--red)">CRQC</span> Timeline: 2030-2035 (plan NOW)<br/>
-<span style="color:var(--green)">pyspx</span> SLH-DSA signing (installed)<br/>
+<span style="color:var(--green)">pyspx</span> Optional pyspx dependency; API signing is not connected<br/>
 <span style="color:var(--amber)">DW-1</span> liboqs ML-DSA-65 → Q4 2026
       </div>
 </div>
@@ -487,7 +488,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 <div style="text-align:center;padding:20px 0;font-size:10px;color:var(--dim);font-family:monospace">
   Shadow313 NEXUS v4.0.0 · Architecture Dashboard · Ottawa, ON, Canada · 2026 ·
   <span style="color:var(--green)">Test status: see live CI results</span> ·
-  <span style="color:var(--cyan)">313-BIND Active</span>
+  <span style="color:var(--cyan)">313-BIND demo workflow</span>
 </div>
 </div><!-- /main -->
 <script>
@@ -506,7 +507,7 @@ const DETAILS = {
     {label:'URL', value:'ollama.com/matarmohamad313/shadow313-nexus'},
     {label:'Pull command', value:'ollama pull matarmohamad313/shadow313-nexus'},
     {label:'ATT&CK coverage', value:'100+ techniques across 14 tactics'},
-    {label:'Status', value:'✅ Live and pushed'},
+    {label:'Status', value:'Reference view · not live'},
   ]},
   'github': { title: '🐙 GitHub Repository', items: [
     {label:'Repo', value:'piyyy314/Shadow313-Nexus'},
@@ -570,21 +571,21 @@ const DETAILS = {
     {label:'Protocol', value:'DNS-over-HTTPS (encrypted)'},
     {label:'Features', value:'Malware blocking, privacy, no logging'},
     {label:'IPv6', value:'2620:fe::fe'},
-    {label:'Status', value:'✅ Active on all adapters'},
+    {label:'Status', value:'Illustrative configuration; not detected by this page'},
   ]},
   'shadow313-cli': { title: '⬡ Shadow313 CLI v4', items: [
     {label:'Version', value:'4.0.0'},
     {label:'Location', value:'/workspace/'},
-    {label:'Tests', value:'2648 passing / 0 failing'},
-    {label:'Modules', value:'28 (v1+v2) + v3/v4 NEXUS stack'},
-    {label:'Detectors', value:'29 active (FIX-12 → IDENTITY-8)'},
-    {label:'Tools', value:'35 (red/blue/purple/AI categories)'},
+    {label:'CI status', value:'Not reported here; see commit-specific GitHub Actions'},
+    {label:'Modules', value:'Review source tree; count not verified'},
+    {label:'Detectors', value:'Not measured by this page'},
+    {label:'Tools', value:'Not measured by this page'},
   ]},
   'fastapi': { title: '⚡ FastAPI Event Bus', items: [
-    {label:'Port', value:'localhost:8000'},
+    {label:'Port', value:'localhost:8313'},
     {label:'Routes', value:'POST /api/audit-code, GET /api/audit/chain, POST /api/link-budget'},
     {label:'Purpose', value:'313-BIND audit server + NEXUS event bus'},
-    {label:'Auth', value:'None (localhost only)'},
+    {label:'Auth', value:'Depends on local configuration'},
     {label:'Status', value:'✅ Implemented and tested'},
     {label:'File', value:'shadow313/api/audit_server.py'},
   ]},
@@ -625,14 +626,14 @@ const DETAILS = {
     {label:'Docker image', value:'ghcr.io/open-webui/open-webui:main'},
     {label:'Connects to', value:'Ollama at host.docker.internal:11434'},
     {label:'Install command', value:'docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main'},
-    {label:'Status', value:'⏳ Not yet deployed (SHA-6 in Linear)'},
+    {label:'Status', value:'Reference configuration · not deployed'},
     {label:'After install', value:'Open http://localhost:3000 in browser'},
   ]},
   'shadow313-api': { title: '🔌 Shadow313 API Container', items: [
-    {label:'Port', value:'localhost:8000'},
+    {label:'Port', value:'localhost:8313'},
     {label:'Framework', value:'FastAPI 0.116.1'},
     {label:'Routes', value:'6 endpoints (audit, link-budget, health, public-key)'},
-    {label:'Auth', value:'None required (localhost)'},
+    {label:'Auth', value:'Depends on local configuration'},
     {label:'Status', value:'✅ Implemented'},
     {label:'File', value:'shadow313/api/audit_server.py'},
   ]},

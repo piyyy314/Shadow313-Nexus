@@ -82,7 +82,7 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
     </div>
     <div class="panel">
       <h3>🔐 Post-Quantum Cryptography</h3>
-      <p><strong>pyspx</strong> — SLH-DSA (FIPS 205) signing for 313-BIND receipts. <strong>liboqs</strong> — ML-KEM-768 and ML-DSA-65 (planned Q4 2026). <strong>pycryptodome</strong> — AES-256-GCM symmetric layer.</p>
+      <p><strong>pyspx</strong> — optional dependency; the API demo does not connect a signing service or issue SLH-DSA-signed receipts. <strong>liboqs</strong> — optional PQC library; runtime integration and algorithm use must be verified in the target build. <strong>pycryptodome</strong> — AES-256-GCM symmetric layer.</p>
       <div style="margin-top:12px"><span class="badge badge-green">INTEGRATED</span> <span class="badge badge-amber">PARTIAL</span></div>
     </div>
     <div class="panel">
@@ -128,7 +128,7 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(34,197,94,0.08);colo
 </div>
 
 </div>
-<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · PIPEDA Compliant</div>
+<div class="footer">Shadow313 NEXUS · Ottawa, ON, Canada · matarmohamad313@duck.com · MIT License · Privacy compliance not assessed</div>
 <script>function downloadPage(){const h=document.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=location.pathname.split('/').pop()||'page.html';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}</script>
 </body>
 </html>

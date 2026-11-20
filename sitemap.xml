@@ -6,11 +6,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://shadow313.dev/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
     <loc>https://shadow313.dev/about</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

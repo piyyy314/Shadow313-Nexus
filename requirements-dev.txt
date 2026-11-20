@@ -1,0 +1,14 @@
+# Shadow313 NEXUS — Development and test tooling
+# Install after requirements.txt, or use the preferred editable extra: pip install -e ".[dev]".
+-r requirements.txt
+
+# Static analysis and dependency auditing
+bandit>=1.9.4
+pip-audit>=2.10.1
+
+# Test tooling
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=7.1.0
+
+# Safety CLI is installed by CI after the application dependency audit; it is not an application dependency.

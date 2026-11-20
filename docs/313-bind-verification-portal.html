@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>313-BIND Verification Portal — Shadow313 NEXUS</title>
+<title>313-BIND Receipt Format Demo — Shadow313 NEXUS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root{
@@ -123,17 +123,18 @@ tr:last-child td{border-bottom:none;}
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Demonstration data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>STATIC DEMONSTRATION ONLY.</strong> This page contains sample values and illustrative workflows. It does not connect to live telemetry, verify customer incidents, issue trusted timestamps, validate digital signatures, publish IPFS anchors, measure security coverage, or provide a production service.</aside>
 
 <div class="hero">
-  <div class="hero-badge">⬡ Zero-Trust · Independently Verifiable · No Account Required</div>
-  <h1>313-BIND <span>Verification Portal</span></h1>
-  <p>Verify any Shadow313 cryptographic audit receipt independently — without trusting Shadow313. Every receipt is signed with SLH-DSA (FIPS 205) and anchored to IPFS.</p>
+  <div class="hero-badge">⬡ Receipt Format Demo · Sample Data · No Backend</div>
+  <h1>313-BIND <span>Receipt Format Demo</span></h1>
+  <p>Inspect illustrative receipt fields in your browser. This page does not verify digital signatures, trusted time, durable chain continuity, or IPFS publication. The API demo issues unsigned, process-local receipts.</p>
   <div class="trust-badges">
-    <span class="trust-badge tb-green">⬡ SLH-DSA FIPS 205</span>
-    <span class="trust-badge tb-cyan">⬡ SHA3-512 Chain</span>
-    <span class="trust-badge tb-purple">⬡ IPFS Anchored</span>
+    <span class="trust-badge tb-green">NO SIGNATURE VERIFICATION</span>
+    <span class="trust-badge tb-cyan">SAMPLE HASH FIELDS</span>
+    <span class="trust-badge tb-purple">NO IPFS CONNECTION</span>
     <span class="trust-badge tb-green">⬡ No Account Needed</span>
-    <span class="trust-badge tb-cyan">⬡ Open Source Verifiable</span>
+    <span class="trust-badge tb-cyan">SAMPLE FIELDS ONLY</span>
   </div>
 </div>
 
@@ -141,12 +142,12 @@ tr:last-child td{border-bottom:none;}
 
   <!-- ── Verify Box ── -->
   <div class="verify-box">
-    <h2>⬡ Verify a Receipt</h2>
-    <p>Paste a 313-BIND receipt ID (format: <code style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:12px">313-XXXX-XXXXXXXX</code>) or paste the full JSON receipt below.</p>
+    <h2>Inspect a Sample Receipt</h2>
+    <p>Enter a sample 313-BIND receipt ID (format: <code style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:12px">313-XXXX-XXXXXXXX</code>) or paste the full JSON receipt below.</p>
     <div class="input-row">
       <input class="bind-input" id="bind-input" type="text" placeholder="313-VSAT-A4F2C1 or paste full JSON receipt...">
       <button class="paste-btn" onclick="pasteFromClipboard()">📋 Paste</button>
-      <button class="verify-btn" id="verify-btn" onclick="verifyReceipt()">Verify →</button>
+      <button class="verify-btn" id="verify-btn" onclick="verifyReceipt()">Inspect →</button>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <span style="font-size:11px;color:var(--muted)">Try a sample:</span>
@@ -161,7 +162,7 @@ tr:last-child td{border-bottom:none;}
       <div class="result-header" id="result-header">
         <div class="result-icon" id="result-icon">⬡</div>
         <div>
-          <div class="result-title" id="result-title">Verifying...</div>
+          <div class="result-title" id="result-title">Loading sample...</div>
           <div class="result-sub" id="result-sub"></div>
         </div>
       </div>
@@ -182,30 +183,30 @@ tr:last-child td{border-bottom:none;}
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">1</div>
-        <div class="step-title">Nanosecond Timestamp</div>
-        <div class="step-desc">time.time_ns() nudged to end in ...313. Provides entropy unique to each receipt.</div>
+        <div class="step-title">Timestamp Field Example</div>
+        <div class="step-desc">A sample timestamp value. A suffix of 313 is not entropy, trusted time, or proof of uniqueness.</div>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
         <div class="step-title">SHA3-256 Payload Hash</div>
-        <div class="step-desc">Canonical JSON of the security finding is hashed. Any change breaks the hash.</div>
+        <div class="step-desc">A sample payload-hash field. This page does not establish its provenance or recompute a trusted attestation.</div>
       </div>
       <div class="step-card">
         <div class="step-num">3</div>
         <div class="step-title">SHA3-512 Chain Hash</div>
-        <div class="step-desc">Chain = hash(payload + prev_hash + timestamp). Sequential — gaps are instantly detected.</div>
+        <div class="step-desc">A sample chain-hash field. This page does not verify a durable sequence or detect deleted history.</div>
       </div>
       <div class="step-card">
         <div class="step-num">4</div>
-        <div class="step-title">SLH-DSA Signature</div>
-        <div class="step-desc">FIPS 205 hash-based signature over chain_hash. Quantum-safe — survives CRQC attacks.</div>
+        <div class="step-title">Signature Field</div>
+        <div class="step-desc">No digital signature is created or verified by this page.</div>
       </div>
     </div>
   </div>
 
   <!-- ── Comparison ── -->
   <div class="compare-section">
-    <h2>313-BIND vs Traditional Audit Systems</h2>
+    <h2>Receipt Demo Limitations</h2>
     <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;">
       <table>
         <thead>
@@ -218,15 +219,15 @@ tr:last-child td{border-bottom:none;}
           </tr>
         </thead>
         <tbody>
-          <tr><td>Quantum-safe signatures</td><td class="yes">✅ SLH-DSA FIPS 205</td><td class="no">❌ RSA/ECDSA</td><td class="no">❌ RSA/ECDSA</td><td class="partial">⚠ SHA-256 only</td></tr>
-          <tr><td>Independent verification</td><td class="yes">✅ No trust in Shadow313</td><td class="no">❌ Requires vendor</td><td class="partial">⚠ Requires TSA</td><td class="yes">✅ Public chain</td></tr>
-          <tr><td>Nanosecond entropy</td><td class="yes">✅ ...313 timestamp</td><td class="no">❌ Second precision</td><td class="partial">⚠ Second precision</td><td class="no">❌ Block time (~10min)</td></tr>
-          <tr><td>Gap detection</td><td class="yes">✅ bind_index sequence</td><td class="partial">⚠ Manual audit</td><td class="no">❌ None</td><td class="partial">⚠ Block gaps</td></tr>
-          <tr><td>IPFS immutability</td><td class="yes">✅ CIDv1 anchor</td><td class="no">❌ Mutable DB</td><td class="no">❌ TSA controlled</td><td class="yes">✅ Immutable</td></tr>
-          <tr><td>Recomputation attack</td><td class="yes">✅ Blocked (SLH-DSA)</td><td class="no">❌ 0.22ms bypass</td><td class="partial">⚠ Key compromise</td><td class="yes">✅ Blocked</td></tr>
-          <tr><td>Local-first / offline</td><td class="yes">✅ Full offline mode</td><td class="yes">✅ Local logs</td><td class="no">❌ Requires TSA online</td><td class="no">❌ Requires network</td></tr>
-          <tr><td>Free to verify</td><td class="yes">✅ This portal</td><td class="no">❌ Vendor access</td><td class="partial">⚠ TSA fees</td><td class="yes">✅ Public</td></tr>
-          <tr><td>CRQC survivability</td><td class="yes">✅ Hash-based (FIPS 205)</td><td class="no">❌ Broken by CRQC</td><td class="no">❌ Broken by CRQC</td><td class="no">❌ SHA-256 vulnerable</td></tr>
+          <tr><td>Quantum-safe signatures</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Independent verification</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Trusted nanosecond time</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Sequence gap detection</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>External immutable anchoring</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Signature forgery resistance</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Offline operation</td><td>Browser-only example; API not connected</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Public verification</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+          <tr><td>Post-quantum security</td><td>Not implemented by this demo</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
         </tbody>
       </table>
     </div>
@@ -234,48 +235,48 @@ tr:last-child td{border-bottom:none;}
 
   <!-- ── Sample Receipts ── -->
   <div style="margin-bottom:32px;">
-    <h2 style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15)">Sample Receipts — Click to Verify</h2>
+    <h2 style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(34,197,94,0.15)">Sample Receipt Formats — Click to Inspect</h2>
     <div class="samples">
       <div class="sample-card" onclick="loadSample('vsat')">
         <div class="sample-type">VSAT Security Sweep</div>
         <div class="sample-id">313-VSAT-A4F2C1</div>
-        <div class="sample-desc">7 critical findings · CVE-2026-3392 · RF telemetry · 313-BIND anchored</div>
+        <div class="sample-desc">Synthetic VSAT scenario · no real findings, CVE, RF telemetry, or anchor</div>
       </div>
       <div class="sample-card" onclick="loadSample('apt')">
         <div class="sample-type">APT Detection</div>
         <div class="sample-id">313-APT-B8E391</div>
-        <div class="sample-desc">APT29 lateral movement · 8 techniques · LSASS dump · DCSync</div>
+        <div class="sample-desc">Synthetic APT-style scenario; techniques are illustrative and no incident was detected.</div>
       </div>
       <div class="sample-card" onclick="loadSample('supply')">
         <div class="sample-type">Supply Chain Audit</div>
         <div class="sample-id">313-SUPPLY-C7D445</div>
-        <div class="sample-desc">Plugin signing verification · HMAC chain · cosign attestation</div>
+        <div class="sample-desc">Synthetic supply-chain scenario; no HMAC or cosign verification was performed.</div>
       </div>
       <div class="sample-card" onclick="loadSample('webshell')">
         <div class="sample-type">WebShell Detection</div>
         <div class="sample-id">313-WSD-F1A823</div>
-        <div class="sample-desc">China Chopper detected · F1=1.000 · 45 signatures · T1505.003</div>
+        <div class="sample-desc">Synthetic web-shell scenario; no detection benchmark or F1 score was measured.</div>
       </div>
       <div class="sample-card" onclick="loadSample('pqc')">
         <div class="sample-type">PQC Audit</div>
         <div class="sample-id">313-PQC-E2B156</div>
-        <div class="sample-desc">CRQC-001 through CRQC-013 · 12/14 patched · DW-1/DW-2 pending</div>
+        <div class="sample-desc">Illustrative PQC scenario; no cryptographic audit or patch status was verified.</div>
       </div>
       <div class="sample-card" onclick="loadSample('invalid')" style="border-color:rgba(239,68,68,0.2)">
         <div class="sample-type" style="color:var(--red)">Tampered Receipt</div>
         <div class="sample-id" style="color:var(--red)">313-TAMPER-000000</div>
-        <div class="sample-desc">Chain hash mismatch · Demonstrates tamper detection</div>
+        <div class="sample-desc">Synthetic malformed sample; no trusted chain or signature is verified.</div>
       </div>
     </div>
   </div>
 
   <!-- ── CLI Verification ── -->
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:32px;">
-    <h2 style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:16px">Verify via CLI (Offline)</h2>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">You can verify any receipt without this portal using the Shadow313 CLI or raw cryptographic tools:</p>
+    <h2 style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:16px">CLI verification notes (not executed here)</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">This page does not provide a working verifier. Consult the current CLI help and implementation before attempting offline verification.</p>
     <div style="background:#000;border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#94a3b8;line-height:1.8">
       <div style="color:var(--green)"># Method 1: Shadow313 CLI</div>
-      <div>shadow313 verify 313-VSAT-A4F2C1</div>
+      <div>shadow313 temporal --verify 313-VSAT-A4F2C1</div>
       <div style="margin-top:8px;color:var(--green)"># Method 2: IPFS (if anchored)</div>
       <div>ipfs cat QmX7k9abc123... | python3 -m json.tool</div>
       <div style="margin-top:8px;color:var(--green)"># Method 3: Manual SHA3-512 verification</div>
@@ -288,8 +289,8 @@ tr:last-child td{border-bottom:none;}
 </div>
 
 <div class="footer">
-  Shadow313 NEXUS · 313-BIND Verification Portal · Ottawa, ON, Canada · matarmohamad313@duck.com<br>
-  SLH-DSA FIPS 205 · SHA3-512 · IPFS · Zero-Trust · No account required · Open source verifiable
+  Shadow313 NEXUS · 313-BIND Receipt Format Demo · Ottawa, ON, Canada · matarmohamad313@duck.com<br>
+  Unsigned sample receipt · no live signature, IPFS, trusted time, or independent verification
 </div>
 
 <script>
@@ -308,15 +309,15 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:45:09.313Z",
     payload_hash: "sha3_256:a4f2c1d8e9b3f7a2c5d1e8f4b7a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4",
     chain_hash: "sha3_512:b8e391f2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
-    ipfs_cid: "QmX7k9abc123def456ghi789jkl012mno345pqr678stu901",
-    ipfs_anchored: true,
+    signature_algorithm: "Not provided — unsigned demo receipt",
+    ipfs_cid: null,
+    ipfs_anchored: false,
     app_id: "shadow313-nexus",
     app_version: "4.0.0",
     bind_index: 1247,
     prev_chain_hash: "sha3_512:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
-    payload: {type:"vsat_sweep",target:"192.168.100.1/24",findings:7,critical:6,high:1,cve:"CVE-2026-3392"},
-    valid: true
+    payload: {type:"vsat_sweep",target:"synthetic lab subnet",findings:7,critical:6,high:1,cve:"illustrative TR-069/CWMP scenario"},
+    valid: false
   },
   apt: {
     bind_id: "313-APT-B8E391",
@@ -324,15 +325,15 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:45:34.313Z",
     payload_hash: "sha3_256:b8e391a2c5d8f1b4e7a0c3d6f9b2e5a8c1d4f7b0e3a6c9d2f5b8e1a4c7d0f3",
     chain_hash: "sha3_512:c9f402b5d8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
-    ipfs_cid: "QmY8l0bcd234efg567hij890klm123nop456qrs789tuv012",
-    ipfs_anchored: true,
+    signature_algorithm: "Not provided — unsigned demo receipt",
+    ipfs_cid: null,
+    ipfs_anchored: false,
     app_id: "shadow313-nexus",
     app_version: "4.0.0",
     bind_index: 1248,
     prev_chain_hash: "sha3_512:b8e391f2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3",
     payload: {type:"apt_detection",actor:"APT29",techniques:["T1566.001","T1003.001","T1550.002","T1003.006"],hosts_compromised:4,detected:8,missed:0},
-    valid: true
+    valid: false
   },
   supply: {
     bind_id: "313-SUPPLY-C7D445",
@@ -340,15 +341,15 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:45:56.313Z",
     payload_hash: "sha3_256:c7d445e8f1a4b7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9",
     chain_hash: "sha3_512:d0e513c6d9f2a5b8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    signature_algorithm: "Not provided — unsigned demo receipt",
     ipfs_cid: null,
     ipfs_anchored: false,
     app_id: "shadow313-nexus",
     app_version: "4.0.0",
     bind_index: 1249,
     prev_chain_hash: "sha3_512:c9f402b5d8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6",
-    payload: {type:"supply_chain_audit",plugin:"custom-ai-threat-analyzer",hmac_valid:true,cosign_verified:true,slhdsa_signed:true},
-    valid: true
+    payload: {type:"supply_chain_audit",plugin:"custom-ai-threat-analyzer",hmac_valid:false,cosign_verified:false,slhdsa_signed:false},
+    valid: false
   },
   webshell: {
     bind_id: "313-WSD-F1A823",
@@ -356,15 +357,15 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:46:21.313Z",
     payload_hash: "sha3_256:f1a823b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9d2e5",
     chain_hash: "sha3_512:e1f624d7e0f3a6b9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
-    ipfs_cid: "QmZ9m1cde345fgh678ijk901lmn234opq567rst890uvw123",
-    ipfs_anchored: true,
+    signature_algorithm: "Not provided — unsigned demo receipt",
+    ipfs_cid: null,
+    ipfs_anchored: false,
     app_id: "shadow313-nexus",
     app_version: "4.0.0",
     bind_index: 1250,
     prev_chain_hash: "sha3_512:d0e513c6d9f2a5b8e1f4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7",
     payload: {type:"webshell_detection",file:"uploads/image.php",signature:"China Chopper",score:0.990,technique:"T1505.003",f1_score:1.000},
-    valid: true
+    valid: false
   },
   pqc: {
     bind_id: "313-PQC-E2B156",
@@ -372,15 +373,15 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:45:09.313Z",
     payload_hash: "sha3_256:e2b156c9d2e5f8a1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0",
     chain_hash: "sha3_512:f2a735e8f1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9d2e5f8a1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6c9",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    signature_algorithm: "Not provided — unsigned demo receipt",
     ipfs_cid: null,
     ipfs_anchored: false,
     app_id: "shadow313-nexus",
     app_version: "4.0.0",
     bind_index: 1251,
     prev_chain_hash: "sha3_512:e1f624d7e0f3a6b9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8a1c4d7e0f3b6a9c2d5e8f1b4a7c0d3e6f9b2a5c8d1e4f7b0a3c6d9e2f5b8",
-    payload: {type:"pqc_audit",crqc_items_total:14,crqc_patched:12,dw1_status:"planned_q4_2026",dw2_status:"planned_q1_2027",fips_203:"active",fips_204:"proxy",fips_205:"active"},
-    valid: true
+    payload: {type:"pqc_audit",crqc_items_total:null,crqc_patched:null,dw1_status:"not_assessed",dw2_status:"not_assessed",fips_203:"not_implemented_by_demo",fips_204:"not_implemented_by_demo",fips_205:"not_implemented_by_demo"},
+    valid: false
   },
   invalid: {
     bind_id: "313-TAMPER-000000",
@@ -388,7 +389,7 @@ const SAMPLES = {
     timestamp_iso: "2026-09-23T03:45:09.313Z",
     payload_hash: "sha3_256:TAMPERED_HASH_000000000000000000000000000000000000000000000000000",
     chain_hash: "sha3_512:TAMPERED_CHAIN_HASH_00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    signature_algorithm: "SLH-DSA-SHAKE-128f (FIPS 205) via pyspx",
+    signature_algorithm: "Not provided — unsigned demo receipt",
     ipfs_cid: null,
     ipfs_anchored: false,
     app_id: "shadow313-nexus",
@@ -462,11 +463,11 @@ function showNotFound(input) {
   document.getElementById('field-grid').innerHTML = `
     <div class="field" style="grid-column:1/-1">
       <div class="field-label">Status</div>
-      <div class="field-value amber">Receipt ID not found in local index. If this is a real receipt, connect to the Shadow313 API or IPFS to verify.</div>
+      <div class="field-value amber">Sample receipt only. This page cannot validate a real receipt or connect to the Shadow313 API or IPFS.</div>
     </div>
     <div class="field" style="grid-column:1/-1">
       <div class="field-label">Manual Verification</div>
-      <div class="field-value">shadow313 verify ${input}</div>
+      <div class="field-value">shadow313 temporal --verify ${input}</div>
     </div>`;
   document.getElementById('chain-viz').style.display = 'none';
   document.getElementById('verify-actions').innerHTML = '';
@@ -475,95 +476,23 @@ function showNotFound(input) {
 function showResult(receipt) {
   const panel = document.getElementById('result-panel');
   panel.style.display = 'block';
-
-  const valid = receipt.valid !== false;
-  const color = valid ? 'var(--green)' : 'var(--red)';
-  const bg = valid ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)';
-
-  document.getElementById('result-header').style.background = bg;
-  document.getElementById('result-icon').textContent = valid ? '✅' : '❌';
-  document.getElementById('result-title').textContent = valid ? 'Receipt VALID — Chain Intact' : 'Receipt INVALID — Tamper Detected';
-  document.getElementById('result-title').style.color = color;
-  document.getElementById('result-sub').textContent = receipt.bind_id + ' · ' + receipt.timestamp_iso;
-
-  // Fields
-  const ipfsStatus = receipt.ipfs_anchored
-    ? `<span class="yes">✅ Anchored: ${receipt.ipfs_cid?.slice(0,20)}...</span>`
-    : `<span class="amber">⚠ Not anchored (local only)</span>`;
-
+  document.getElementById('result-header').style.background = 'rgba(245,158,11,0.08)';
+  document.getElementById('result-icon').textContent = 'ℹ️';
+  document.getElementById('result-title').textContent = 'Sample Receipt — Not Verified';
+  document.getElementById('result-title').style.color = 'var(--amber)';
+  document.getElementById('result-sub').textContent = (receipt.bind_id || 'Unlabelled sample') + ' · DEMO DATA ONLY';
   document.getElementById('field-grid').innerHTML = `
-    <div class="field">
-      <div class="field-label">Bind ID</div>
-      <div class="field-value green">${receipt.bind_id}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Timestamp (ns)</div>
-      <div class="field-value">${receipt.timestamp_ns}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Timestamp (UTC)</div>
-      <div class="field-value">${receipt.timestamp_iso}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Bind Index</div>
-      <div class="field-value ${valid ? 'green' : 'red'}">#${receipt.bind_index} ${valid ? '(sequential ✅)' : '(gap detected ❌)'}</div>
-    </div>
-    <div class="field" style="grid-column:1/-1">
-      <div class="field-label">Payload Hash (SHA3-256)</div>
-      <div class="field-value ${valid ? '' : 'red'}">${receipt.payload_hash}</div>
-    </div>
-    <div class="field" style="grid-column:1/-1">
-      <div class="field-label">Chain Hash (SHA3-512)</div>
-      <div class="field-value ${valid ? '' : 'red'}">${receipt.chain_hash?.slice(0,80)}...</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Signature Algorithm</div>
-      <div class="field-value amber">${receipt.signature_algorithm}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">IPFS Anchor</div>
-      <div class="field-value">${ipfsStatus}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">App</div>
-      <div class="field-value">${receipt.app_id} v${receipt.app_version}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Payload Type</div>
-      <div class="field-value">${receipt.payload?.type || 'unknown'}</div>
-    </div>`;
-
-  // Chain verification steps
-  const chainViz = document.getElementById('chain-viz');
-  chainViz.style.display = 'block';
-  const steps = [
-    {num:1, label:'Timestamp Entropy', detail:`${receipt.timestamp_ns} ends in ...313 ✅`, ok:valid},
-    {num:2, label:'Payload Hash (SHA3-256)', detail:receipt.payload_hash?.slice(0,40)+'...', ok:valid},
-    {num:3, label:'Chain Hash (SHA3-512)', detail:'hash(payload + prev_hash + ts) verified', ok:valid},
-    {num:4, label:'SLH-DSA Signature (FIPS 205)', detail:receipt.signature_algorithm, ok:valid},
-    {num:5, label:'Bind Index Sequence', detail:`#${receipt.bind_index} — no gaps detected`, ok:valid},
-    {num:6, label:'IPFS Anchor', detail:receipt.ipfs_anchored ? `CID: ${receipt.ipfs_cid?.slice(0,30)}...` : 'Local only (not anchored)', ok:receipt.ipfs_anchored},
-  ];
-  document.getElementById('chain-steps').innerHTML = steps.map(s => `
-    <div class="chain-step">
-      <div class="chain-num" style="background:${s.ok ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'};color:${s.ok ? 'var(--green)' : 'var(--red)'}">${s.num}</div>
-      <div>
-        <div class="chain-label">${s.label} ${s.ok ? '✅' : '❌'}</div>
-        <div class="chain-detail">${s.detail}</div>
-      </div>
-    </div>`).join('');
-
-  // Actions
-  const actions = valid ? [
-    {label:'📋 Copy Receipt JSON', color:'rgba(34,197,94,0.1)', textColor:'var(--green)', border:'1px solid rgba(34,197,94,0.3)', fn:`copyJSON(${JSON.stringify(receipt)})`},
-    {label:'🔗 View on IPFS', color:'rgba(6,182,212,0.1)', textColor:'var(--cyan)', border:'1px solid rgba(6,182,212,0.3)', fn:receipt.ipfs_anchored ? `window.open('https://ipfs.io/ipfs/${receipt.ipfs_cid}','_blank')` : "alert('Not anchored to IPFS')"},
-    {label:'⬇ Download Receipt', color:'rgba(167,139,250,0.1)', textColor:'var(--purple)', border:'1px solid rgba(167,139,250,0.3)', fn:`downloadReceipt(${JSON.stringify(receipt)})`},
-  ] : [
-    {label:'⚠ Report Tampering', color:'rgba(239,68,68,0.1)', textColor:'var(--red)', border:'1px solid rgba(239,68,68,0.3)', fn:"window.open('mailto:matarmohamad313@duck.com?subject=Tampered Receipt: '+encodeURIComponent(document.getElementById('bind-input').value))"},
-  ];
-  document.getElementById('verify-actions').innerHTML = actions.map(a =>
-    `<button class="action-btn" onclick="${a.fn}" style="background:${a.color};color:${a.textColor};border:${a.border}">${a.label}</button>`
-  ).join('');
+    <div class="field"><div class="field-label">Bind ID</div><div class="field-value">${receipt.bind_id || 'Not supplied'}</div></div>
+    <div class="field"><div class="field-label">Timestamp field</div><div class="field-value">${receipt.timestamp_iso || 'Not supplied'}</div></div>
+    <div class="field"><div class="field-label">Bind index</div><div class="field-value">${receipt.bind_index ?? 'Not supplied'}</div></div>
+    <div class="field"><div class="field-label">Signature status</div><div class="field-value amber">Not verified by this page</div></div>
+    <div class="field" style="grid-column:1/-1"><div class="field-label">Payload hash field</div><div class="field-value">${receipt.payload_hash || 'Not supplied'}</div></div>
+    <div class="field" style="grid-column:1/-1"><div class="field-label">Chain hash field</div><div class="field-value">${receipt.chain_hash || 'Not supplied'}</div></div>
+    <div class="field"><div class="field-label">IPFS status</div><div class="field-value amber">Not independently checked</div></div>
+    <div class="field"><div class="field-label">Payload type</div><div class="field-value">${receipt.payload?.type || 'unknown'}</div></div>
+    <div class="field" style="grid-column:1/-1"><div class="field-label">Important</div><div class="field-value amber">Displayed values are examples. No signature, trusted timestamp, external anchor, or historical chain continuity was verified.</div></div>`;
+  document.getElementById('chain-viz').style.display = 'none';
+  document.getElementById('verify-actions').innerHTML = '';
 }
 
 function copyJSON(receipt) {

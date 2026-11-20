@@ -191,6 +191,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Reference and simulation notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>REFERENCE / SIMULATION ONLY.</strong> This static page illustrates a workflow or interface. Feed status, peers, nodes, trust scores, CVE enrichment, RF/satellite readings, and events are not live or independently verified unless linked to current evidence. No external system is operated by this page.</aside>
 
 <div id="app">
 
@@ -234,7 +235,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   </div>
   <div class="orbital-main">
     <div class="panel orbital-canvas-wrap">
-      <div class="panel-title">ORBITAL MECHANICS — REAL-TIME PROPAGATION</div>
+      <div class="panel-title">ORBITAL MECHANICS — SIMULATED PROPAGATION</div>
       <div class="canvas-wrap" style="height:calc(100% - 30px)">
         <canvas id="orbitalCanvas"></canvas>
       </div>
@@ -289,7 +290,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   </div>
   <div class="doppler-layout">
     <div class="panel" style="display:flex;flex-direction:column">
-      <div class="panel-title">DOPPLER SHIFT — REAL-TIME VELOCITY PROFILE</div>
+      <div class="panel-title">DOPPLER SHIFT — SIMULATED VELOCITY PROFILE</div>
       <div class="canvas-wrap" style="flex:1;min-height:200px">
         <canvas id="dopplerCanvas"></canvas>
       </div>
@@ -458,7 +459,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   <div class="signal-layout">
     <div style="display:flex;flex-direction:column;gap:8px">
       <div class="panel" style="flex:1">
-        <div class="panel-title">SPECTRUM ANALYZER — REAL-TIME FFT</div>
+        <div class="panel-title">SPECTRUM ANALYZER — SIMULATED FFT</div>
         <div class="canvas-wrap" style="height:180px">
           <canvas id="specAnalyzerCanvas"></canvas>
         </div>
