@@ -197,7 +197,7 @@ jobs:
       - name: Build wheel + sdist
         run: python -m build
       - name: Check distribution
-        run: twine check dist/*
+        run: twine check dist/*.whl dist/*.tar.gz
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v7
         with:
