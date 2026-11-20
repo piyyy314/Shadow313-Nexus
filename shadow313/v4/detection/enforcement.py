@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.detection.enforcement — NEXUS Complete
 D3-PT (Process Termination) + D3-OTF (Outbound Traffic Filtering)
@@ -22,13 +21,16 @@ ATT&CK techniques countered:
   T1105  Ingress Tool Transfer (curl download)
 """
 
-import hmac
+from __future__ import annotations
+
+import csv
+import errno
 import logging
 import os
 import signal
 import subprocess
-import time
-from dataclasses import dataclass, field, asdict
+import sys
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -136,10 +138,11 @@ class ProcessTerminator:
 
     The critical gap this closes:
       nc PID 14209 was detected 3× over 35 minutes and never killed.
-      This class adds os.kill(pid, SIGKILL) to the enforcement path.
+      This class adds process termination to the enforcement path. It uses
+      SIGKILL where available and SIGTERM on platforms such as Windows.
 
     Enforcement modes:
-      enforcement_mode=True:  SIGKILL delivered immediately on policy violation
+      enforcement_mode=True:  termination signal delivered on policy violation
       enforcement_mode=False: Log only (monitoring mode — the current gap)
 
     Kernel alternative:
@@ -229,8 +232,9 @@ class ProcessTerminator:
         Directly kill a PID. Used for manual enforcement (e.g., kill nc PID 14209).
         """
         now = _now_iso()
+        termination_signal = self._termination_signal()
         try:
-            os.kill(pid, signal.SIGKILL)
+            os.kill(pid, termination_signal)
             self._kill_count += 1
             log.critical("D3-PT MANUAL KILL: PID %d — %s", pid, reason)
             return {"pid": pid, "action": "KILLED", "reason": reason, "timestamp": now}
@@ -240,6 +244,15 @@ class ProcessTerminator:
         except PermissionError:
             log.error("D3-PT: Cannot kill PID %d — insufficient privileges", pid)
             return {"pid": pid, "action": "PERMISSION_DENIED", "reason": reason, "timestamp": now}
+        except OSError as exc:
+            if self._is_process_not_found(exc):
+                log.warning("D3-PT: PID %d not found (already terminated)", pid)
+                return {"pid": pid, "action": "NOT_FOUND", "reason": reason, "timestamp": now}
+            log.error("D3-PT: Failed to terminate PID %d: %s", pid, exc)
+            return {
+                "pid": pid, "action": "ERROR", "reason": reason,
+                "timestamp": now, "error": str(exc),
+            }
 
     def find_and_kill_process(self, process_name: str) -> list[dict]:
         """
@@ -247,20 +260,67 @@ class ProcessTerminator:
         Used for: kill_process("nc") to terminate all nc instances.
         """
         results = []
-        for pid_dir in Path("/proc").iterdir():
-            if not pid_dir.name.isdigit():
-                continue
-            try:
-                comm = (pid_dir / "comm").read_text().strip()
-                if comm.lower() == process_name.lower():
-                    result = self.kill_pid(int(pid_dir.name), f"process name match: {process_name}")
-                    results.append(result)
-            except Exception as _exc:
-                import logging as _log; _log.getLogger(__name__).debug("suppressed: %s", _exc)
-                continue
+        expected_name = process_name.casefold()
+        for pid, name in self._iter_processes():
+            image_name = Path(name).name.casefold()
+            if expected_name in (image_name, Path(image_name).stem):
+                result = self.kill_pid(pid, f"process name match: {process_name}")
+                results.append(result)
         return results
 
     # ── Internal ──────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _termination_signal() -> int:
+        """Use a forceful signal where supported and the portable signal otherwise."""
+        return getattr(signal, "SIGKILL", signal.SIGTERM)
+
+    @staticmethod
+    def _is_process_not_found(error: OSError) -> bool:
+        if isinstance(error, ProcessLookupError) or error.errno == errno.ESRCH:
+            return True
+        return os.name == "nt" and getattr(error, "winerror", None) in (87, 1168)
+
+    @staticmethod
+    def _iter_processes():
+        """Yield process IDs and names using the current platform's process API."""
+        if sys.platform == "win32":
+            result = subprocess.run(
+                ["tasklist", "/FO", "CSV", "/NH"],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            for row in csv.reader(result.stdout.splitlines()):
+                if len(row) >= 2 and row[1].isdigit():
+                    yield int(row[1]), row[0]
+            return
+
+        proc_dir = Path("/proc")
+        if proc_dir.is_dir():
+            for pid_dir in proc_dir.iterdir():
+                if not pid_dir.name.isdigit():
+                    continue
+                try:
+                    process_name = (pid_dir / "comm").read_text().strip()
+                except OSError as exc:
+                    log.debug("Unable to read process name for PID %s: %s", pid_dir.name, exc)
+                    continue
+                yield int(pid_dir.name), process_name
+            return
+
+        result = subprocess.run(
+            ["ps", "-A", "-o", "pid=", "-o", "comm="],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        for line in result.stdout.splitlines():
+            fields = line.strip().split(None, 1)
+            if len(fields) == 2 and fields[0].isdigit():
+                yield int(fields[0]), fields[1]
 
     def _enforce(
         self, pid: int, process_name: str, dst_ip: str,
@@ -268,10 +328,11 @@ class ProcessTerminator:
     ) -> EnforcementAction:
         """Kill the process (enforcement mode) or log (monitoring mode)."""
         if self._enforcement_mode:
+            termination_signal = self._termination_signal()
             try:
-                os.kill(pid, signal.SIGKILL)
+                os.kill(pid, termination_signal)
                 action_str  = "KILLED"
-                signal_sent = signal.SIGKILL
+                signal_sent = termination_signal
                 self._kill_count += 1
                 log.critical(
                     "D3-PT ENFORCEMENT [%s]: Killed PID %d (%s) → %s:%d — %s",
@@ -289,6 +350,14 @@ class ProcessTerminator:
                     "Shadow313 must run as root or with CAP_KILL for enforcement.",
                     pid,
                 )
+            except OSError as exc:
+                signal_sent = None
+                if self._is_process_not_found(exc):
+                    action_str = "ALREADY_DEAD"
+                    log.warning("D3-PT: PID %d already terminated", pid)
+                else:
+                    action_str = "ERROR"
+                    log.error("D3-PT: Failed to terminate PID %d: %s", pid, exc)
         else:
             action_str  = "WOULD_KILL"
             signal_sent = None

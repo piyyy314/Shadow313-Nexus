@@ -44,13 +44,13 @@ jobs:
         run: pip install ruff==0.4.4 black==24.3.0 yamllint==1.35.1
 
       - name: Run ruff
-        run: ruff check shadow313/ nexus_toolkit/ --output-format github || true
+        run: ruff check shadow313/ nexus_toolkit/ --output-format github
 
       - name: Run black format check
-        run: black --check --diff shadow313/ || true
+        run: black --check --diff shadow313/
 
       - name: Run yamllint
-        run: yamllint -c .yamllint.yml .github/workflows/ docker-compose.yml || true
+        run: yamllint -c .yamllint.yml .github/workflows/ docker-compose.yml
 
   # ── Unit Tests ────────────────────────────────────────────────────
   unit-tests:
@@ -99,11 +99,7 @@ jobs:
           bandit -r shadow313/ nexus_toolkit/ \
             -x shadow313/tests,tests \
             --severity-level medium \
-            -f json -o bandit-report.json || true
-          bandit -r shadow313/ nexus_toolkit/ \
-            -x shadow313/tests,tests \
-            --severity-level high \
-            --exit-zero
+            -f json -o bandit-report.json
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -145,11 +141,10 @@ jobs:
       - name: Run pip-audit
         run: |
           pip install -e ".[dev]"
-          pip-audit --desc --format json -o pip-audit-report.json || true
-          pip-audit --desc
+          pip-audit --desc --format json -o pip-audit-report.json
 
       - name: Run Safety check
-        run: safety check --full-report || true
+        run: safety check --full-report
 
   # ── Docker Lint ───────────────────────────────────────────────────
   docker-lint:
