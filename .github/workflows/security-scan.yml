@@ -40,9 +40,12 @@ jobs:
           python -m venv .safety-venv
           .safety-venv/bin/python -m pip install \
             safety==3.8.1
+          set +e
           .safety-venv/bin/safety check --json \
             --file safety-requirements.txt > nightly-safety.json
-          echo "safety_status=$?" >> "$GITHUB_OUTPUT"
+          safety_status=$?
+          set -e
+          echo "safety_status=$safety_status" >> "$GITHUB_OUTPUT"
           bandit -r shadow313/ nexus_toolkit/ \
             -x shadow313/tests,tests \
             --severity-level medium \
