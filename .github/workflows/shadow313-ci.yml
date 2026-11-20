@@ -192,13 +192,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist/publish
-          find dist -maxdepth 1 -type f \\( -name '*.whl' -o -name '*.tar.gz' \\) -exec cp {} dist/publish/ \;
+          find dist -maxdepth 1 -type f \( -name '*.whl' -o -name '*.tar.gz' \) -exec cp {} dist/publish/ \;
           count="$(find dist/publish -maxdepth 1 -type f | wc -l)"
           if [ "$count" -eq 0 ]; then
             echo "No wheel or source distribution found for TestPyPI." >&2
             exit 1
           fi
-          printf 'Staged %s publishable distribution(s).\\n' "$count"
+          printf 'Staged %s publishable distribution(s).\n' "$count"
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -226,13 +226,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist/publish
-          find dist -maxdepth 1 -type f \\( -name '*.whl' -o -name '*.tar.gz' \\) -exec cp {} dist/publish/ \;
+          find dist -maxdepth 1 -type f \( -name '*.whl' -o -name '*.tar.gz' \) -exec cp {} dist/publish/ \;
           count="$(find dist/publish -maxdepth 1 -type f | wc -l)"
           if [ "$count" -eq 0 ]; then
             echo "No wheel or source distribution found for PyPI." >&2
             exit 1
           fi
-          printf 'Staged %s publishable distribution(s).\\n' "$count"
+          printf 'Staged %s publishable distribution(s).\n' "$count"
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
