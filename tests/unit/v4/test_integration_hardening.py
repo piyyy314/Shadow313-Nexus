@@ -320,7 +320,8 @@ class TestNexusBridgeOptionalComponents:
             ("ERROR", False),
             ("KILLED", True),
             ("NOT_FOUND", True),
-            ("PERMISSION_DENIED", True),
+            ("PERMISSION_DENIED", False),
+            ("UNKNOWN", False),
         ],
     )
     def test_bridge_enforce_reports_kill_action(self, action, expected_enforced):

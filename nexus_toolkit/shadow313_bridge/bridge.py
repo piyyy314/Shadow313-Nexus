@@ -127,7 +127,7 @@ class Shadow313Bridge:
                     pid, f"nexus_toolkit: {detection.threat_level} threat"
                 )
                 action = kill_result.get("action", "unknown")
-                result.enforced = action != "ERROR"
+                result.enforced = action in ("KILLED", "NOT_FOUND")
                 result.enforcement_action = f"{action} PID {pid}"
             except Exception as exc:
                 logger.warning("Enforcement failed for PID %s: %s", pid, exc)
