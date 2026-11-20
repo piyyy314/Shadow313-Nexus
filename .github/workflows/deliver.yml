@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       delivery_id: ${{ steps.pipeline.outputs.delivery_id }}
-      version:     ${{ steps.pipeline.outputs.version }}
+      version: ${{ steps.pipeline.outputs.version }}
 
     steps:
       - uses: actions/checkout@v7
@@ -135,6 +135,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dist/manifest.json dist/receipts/ || true
+          git add -f dist/manifest.json dist/receipts/
           git diff --staged --quiet || git commit -m "chore(delivery): update manifest ${{ needs.build.outputs.delivery_id }} [skip ci]"
-          git push origin master || true
+          git push origin master

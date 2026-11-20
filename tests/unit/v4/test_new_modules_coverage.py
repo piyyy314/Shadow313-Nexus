@@ -791,6 +791,19 @@ class TestNexusToolkitLogParser:
         names = fe.feature_names()
         assert len(names) == 37
 
+    def test_temp_write_uses_path_components(self):
+        from nexus_toolkit.core.log_parser import FeatureExtractor, LogEntry
+
+        extractor = FeatureExtractor()
+        paths = [
+            ("/tmp/file", 1.0),
+            ("/tmpx/file", 0.0),
+            ("C:\\Temp\\file", 1.0),
+        ]
+        for path, expected in paths:
+            features = extractor.extract(LogEntry({"file_path": path}))
+            assert features[15] == expected
+
     def test_all_values_in_range(self):
         from nexus_toolkit.core.log_parser import FeatureExtractor, LogEntry
         fe = FeatureExtractor()

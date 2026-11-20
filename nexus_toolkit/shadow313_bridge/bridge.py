@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger("nexus_toolkit.bridge")
 
@@ -22,8 +21,8 @@ logger = logging.getLogger("nexus_toolkit.bridge")
 class BridgeResult:
     """Result of routing a detection through the Shadow313 bridge."""
     detection_id:   str
-    bind_id:        Optional[str]
-    ledger_seq:     Optional[int]
+    bind_id:        str | None
+    ledger_seq:     int | None
     enforced:       bool
     enforcement_action: str = ""
     error:          str = ""
@@ -115,7 +114,7 @@ class Shadow313Bridge:
             error        = error,
         )
 
-    def enforce(self, detection, pid: Optional[int] = None) -> BridgeResult:
+    def enforce(self, detection, pid: int | None = None) -> BridgeResult:
         """
         Trigger enforcement for a critical detection.
         Kills the offending process if PID is provided.
@@ -127,8 +126,9 @@ class Shadow313Bridge:
                 kill_result = self._enforcement.terminator.kill_pid(
                     pid, f"nexus_toolkit: {detection.threat_level} threat"
                 )
-                result.enforced = True
-                result.enforcement_action = f"killed PID {pid}: {kill_result.get('status', 'unknown')}"
+                action = kill_result.get("action", "unknown")
+                result.enforced = action != "ERROR"
+                result.enforcement_action = f"{action} PID {pid}"
             except Exception as exc:
                 logger.warning("Enforcement failed for PID %s: %s", pid, exc)
 
