@@ -5,10 +5,10 @@ name: Shadow313 CI/CD
 
 on:
   push:
-    branches: [main, master, develop, "feature/**", "fix/**"]
+    branches: ["**"]
     tags: ["v*.*.*"]          # triggers PyPI publish
   pull_request:
-    branches: [main, master]
+    branches: ["**"]
   release:
     types: [published]
   schedule:
