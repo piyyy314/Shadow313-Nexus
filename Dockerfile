@@ -63,8 +63,7 @@ LABEL org.opencontainers.image.url="https://shadow313.dev"
 # Install runtime deps with retry
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
-        tcpdump=4.99.5-2 nmap=7.95+dfsg-3 bind9-dnsutils=1:9.20.30-1~deb13u1 \
-        iputils-ping=3:20240905-3 libssl3t64=3.5.7-1~deb13u3 \
+        libssl3t64=3.5.7-1~deb13u3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Apply the latest Debian security fixes to base-image packages
@@ -122,6 +121,7 @@ USER root
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
         python3-dev=3.13.5-1 libpcap-dev=1.10.5-2 whois=5.6.3 nmap=7.95+dfsg-3 \
+        tcpdump=4.99.5-2 bind9-dnsutils=1:9.20.30-1~deb13u1 iputils-ping=3:20240905-3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
