@@ -36,6 +36,7 @@ class _C:
     DIM = "\033[2m"
     PURPLE = "\033[95m"
 
+
 SEVERITY_COLORS = {
     "critical": _C.RED,
     "high": _C.RED,
