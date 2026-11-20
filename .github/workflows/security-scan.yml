@@ -6,6 +6,18 @@ name: Nightly Security Scan
 on:
   schedule:
     - cron: "0 2 * * *"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/security-scan.yml"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "shadow313/**"
+      - "nexus_toolkit/**"
+      - "scripts/**"
   workflow_dispatch:
 
 permissions:
@@ -28,29 +40,109 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install and audit all deps
+      - name: Install pip-audit
+        run: pip install pip-audit==2.10.1
+
+      - name: Install project dependencies
         run: |
           pip install -e ".[dev]"
-          pip freeze --exclude-editable > safety-requirements.txt
-          pip install pip-audit==2.7.3 bandit==1.7.8 \
-            ruff==0.4.4 black==24.3.0 yamllint==1.35.1
-          audit_status=0
-          pip-audit --desc --format json -o nightly-pip-audit.json || audit_status=$?
-          echo "audit_status=$audit_status" >> "$GITHUB_OUTPUT"
-          python -m venv .safety-venv
-          .safety-venv/bin/python -m pip install \
-            "setuptools<81" "marshmallow<4" "typer<0.13" "click<8.2" safety==3.1.0
-          .safety-venv/bin/safety check --json \
-            --file safety-requirements.txt > nightly-safety.json || true
+
+      - name: Audit installed project dependencies
+        id: pip_audit_local
+        continue-on-error: true
+        run: pip-audit --local --skip-editable --desc --format json -o nightly-pip-audit-local.json
+
+      - name: Audit runtime requirements
+        id: pip_audit_requirements
+        continue-on-error: true
+        run: pip-audit --desc --format json -o nightly-pip-audit-requirements.json -r requirements.txt
+
+      - name: Freeze resolved application dependencies for Safety
+        run: python -m pip freeze --exclude-editable > requirements-audit-resolved.txt
+
+      - name: Install supplementary scanners
+        run: pip install bandit==1.9.4
+
+      - name: Run Safety against resolved application dependencies
+        id: safety_scan
+        continue-on-error: true
+        run: |
+          python -m venv "$RUNNER_TEMP/safety-env"
+          "$RUNNER_TEMP/safety-env/bin/python" -m pip install --disable-pip-version-check safety==3.8.1
+          "$RUNNER_TEMP/safety-env/bin/safety" check --json --check-unpinned-requirements --save-json nightly-safety.json -r requirements-audit-resolved.txt > /dev/null
+
+      - name: Run Bandit (retain all severities)
+        id: bandit_scan
+        continue-on-error: true
+        run: |
           bandit -r shadow313/ nexus_toolkit/ \
             -x shadow313/tests,tests \
-            --severity-level medium \
-            -f json -o nightly-bandit.json || true
-          ruff check shadow313/ nexus_toolkit/ --output-format json > nightly-ruff.json || true
-          black --check --diff shadow313/ > nightly-black.txt 2>&1 || true
-          yamllint -f parsable -c .yamllint.yml .github/workflows docker-compose.yml \
-            > nightly-yamllint.txt 2>&1 || true
-        id: audit
+            -f json -o nightly-bandit.json \
+            --exit-zero
+
+      - name: Enforce dependency and SAST results
+        if: always()
+        env:
+          PIP_AUDIT_LOCAL_OUTCOME: ${{ steps.pip_audit_local.outcome }}
+          PIP_AUDIT_REQUIREMENTS_OUTCOME: ${{ steps.pip_audit_requirements.outcome }}
+          SAFETY_OUTCOME: ${{ steps.safety_scan.outcome }}
+          BANDIT_OUTCOME: ${{ steps.bandit_scan.outcome }}
+        run: |
+          python3 <<'PYEOF'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          outcomes = {
+              "pip-audit local": os.environ["PIP_AUDIT_LOCAL_OUTCOME"],
+              "pip-audit requirements": os.environ["PIP_AUDIT_REQUIREMENTS_OUTCOME"],
+              "Safety": os.environ["SAFETY_OUTCOME"],
+              "Bandit execution": os.environ["BANDIT_OUTCOME"],
+          }
+          failed = [name for name, outcome in outcomes.items() if outcome != "success"]
+          for name, outcome in outcomes.items():
+              print(f"{name}: {outcome}")
+
+          try:
+              safety_report = json.loads(
+                  Path("nightly-safety.json").read_text(encoding="utf-8")
+              )
+              safety_meta = safety_report.get("report_meta")
+              if not isinstance(safety_meta, dict):
+                  raise ValueError("Safety JSON report has no report_meta object")
+              safety_vulnerabilities = safety_meta.get("vulnerabilities_found")
+              if not isinstance(safety_vulnerabilities, int):
+                  raise ValueError("Safety JSON report has no vulnerability count")
+              print(
+                  f"Safety report valid: {safety_vulnerabilities} vulnerabilities found."
+              )
+          except Exception as exc:
+              print(f"Safety report unavailable or invalid: {exc}", file=sys.stderr)
+              failed.append("Safety report")
+
+          try:
+              report = json.loads(Path("nightly-bandit.json").read_text(encoding="utf-8"))
+              findings = report.get("results")
+              if not isinstance(findings, list):
+                  raise ValueError("Bandit JSON report has no results list")
+          except Exception as exc:
+              print(f"Bandit report unavailable or invalid: {exc}", file=sys.stderr)
+              sys.exit(1)
+
+          high = [item for item in findings if item.get("issue_severity", "").upper() == "HIGH"]
+          print(f"Bandit findings retained: {len(findings)} total; {len(high)} high severity.")
+          for item in high:
+              print(
+                  f"HIGH: {item.get('filename')}:{item.get('line_number')} "
+                  f"{item.get('test_id')} — {item.get('issue_text')}"
+              )
+
+          if failed or high:
+              print("At least one dependency or SAST scanner failed or reported high-severity findings.", file=sys.stderr)
+              sys.exit(1)
+          print("Dependency and high-severity SAST gates passed.")
+          PYEOF
 
       - name: Upload audit reports
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -58,21 +150,13 @@ jobs:
         with:
           name: nightly-security-reports
           path: |
-            nightly-pip-audit.json
+            nightly-pip-audit-local.json
+            nightly-pip-audit-requirements.json
+            requirements-audit-resolved.txt
             nightly-safety.json
             nightly-bandit.json
-            nightly-ruff.json
-            nightly-black.txt
-            nightly-yamllint.txt
           retention-days: 30
-
-      - name: Report pip-audit failure
-        if: always() && steps.audit.outputs.audit_status != '' && steps.audit.outputs.audit_status != '0'
-        env:
-          AUDIT_STATUS: ${{ steps.audit.outputs.audit_status }}
-        run: |
-          echo "pip-audit failed with exit code $AUDIT_STATUS"
-          exit "$AUDIT_STATUS"
+          if-no-files-found: warn
 
   # ── Docker image scan ─────────────────────────────────────────────
   container-scan:
@@ -83,17 +167,41 @@ jobs:
 
       - name: Build image for scanning
         run: |
-          docker build --target production -t shadow313-scan:nightly . || true
+          docker build --target production -t shadow313-scan:nightly .
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: "shadow313-scan:nightly"
           severity: "CRITICAL,HIGH"
+          version: "v0.76.2"
           format: "sarif"
           limit-severities-for-sarif: true
           output: "trivy-container.sarif"
           exit-code: "1"
+
+      - name: Generate Trivy JSON diagnostic report
+        if: always()
+        continue-on-error: true
+        run: |
+          trivy image \
+            --scanners vuln \
+            --severity CRITICAL,HIGH \
+            --format json \
+            --output trivy-container.json \
+            --exit-code 0 \
+            shadow313-scan:nightly
+
+      - name: Archive Trivy SARIF for diagnosis
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: trivy-container-sarif
+          path: |
+            trivy-container.sarif
+            trivy-container.json
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
@@ -111,15 +219,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Gitleaks full history
-        uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_SUMMARY: true
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
 
-  # ── Docker compose security check ─────────────────────────────────
+      - name: Install Gitleaks CLI
+        run: |
+          go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Scan full Git history with Gitleaks
+        run: gitleaks git --redact --exit-code 1 --log-opts="--all" .
+
+  # ── Dockerfile and Compose security checks ────────────────────────
   compose-security:
-    name: Docker Compose Security Audit
+    name: Dockerfile and Compose Security Audit
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -127,13 +241,13 @@ jobs:
       - name: Install checkov
         run: pip install checkov==3.2.0
 
-      - name: Run checkov on docker-compose
+      - name: Run Checkov on Dockerfile
         run: |
-          checkov -f docker-compose.yml \
+          checkov -f Dockerfile \
             --framework dockerfile \
             --output cli
 
-      - name: Verify security hardening
+      - name: Verify Compose hardening assertions
         run: |
           python3 << 'PYEOF'
           import sys
