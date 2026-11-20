@@ -221,11 +221,23 @@ jobs:
         with:
           name: dist-packages
           path: dist/
+      - name: Stage only Python distributions
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(dist/*.whl dist/*.tar.gz)
+          if (( ${#packages[@]} == 0 )); then
+            echo "::error::No wheel or source distribution found in dist/."
+            exit 1
+          fi
+          mkdir -p dist/publish
+          cp -- "${packages[@]}" dist/publish/
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
+          packages-dir: dist/publish/
 
 # ── Publish to PyPI (releases only) ──────────────────────────────────────────
   publish-pypi:
@@ -243,8 +255,21 @@ jobs:
         with:
           name: dist-packages
           path: dist/
+      - name: Stage only Python distributions
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(dist/*.whl dist/*.tar.gz)
+          if (( ${#packages[@]} == 0 )); then
+            echo "::error::No wheel or source distribution found in dist/."
+            exit 1
+          fi
+          mkdir -p dist/publish
+          cp -- "${packages[@]}" dist/publish/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/publish/
 
 # ── Docker Build ──────────────────────────────────────────────────────────────
   docker:
