@@ -59,3 +59,4 @@ class TestConfig:
         config_path = tmp_path / "new_config.yaml"
         cfg = Config(config_path=config_path)
         assert cfg.get("ai", "backend") is not None
+
