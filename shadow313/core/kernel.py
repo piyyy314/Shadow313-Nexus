@@ -158,8 +158,8 @@ class Kernel:
         for name, cls_path in self._BUILTIN_MODULES:
             try:
                 mod_path, cls_name = cls_path.rsplit(".", 1)
-                module   = importlib.import_module(mod_path)
-                cls      = getattr(module, cls_name)
+                module = importlib.import_module(mod_path)
+                cls = getattr(module, cls_name)
                 instance = cls(kernel=self)
                 self._modules[name] = instance
                 if hasattr(instance, "register"):
@@ -169,17 +169,13 @@ class Kernel:
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
                 )
                 # Optional dependency missing — expected, log at verbose level
-                self.out.verbose_msg(
-                    f"[kernel] Module '{name}' skipped (missing dep): {exc}"
-                )
+                self.out.verbose_msg(f"[kernel] Module '{name}' skipped (missing dep): {exc}")
             except ImportError as exc:
                 self._load_errors.append(
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
                 )
                 # FIX: distinguish import errors from syntax/runtime errors
-                self.out.verbose_msg(
-                    f"[kernel] Module '{name}' import error: {exc}"
-                )
+                self.out.verbose_msg(f"[kernel] Module '{name}' import error: {exc}")
             except Exception as exc:
                 self._load_errors.append(
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
@@ -200,11 +196,11 @@ class Kernel:
         if available and self.ai.backend == "ollama":
             models = self.ai.list_models()
         return {
-            "backend":   self.ai.backend,
-            "model":     self.ai.model,
-            "endpoint":  self.ai.endpoint,
+            "backend": self.ai.backend,
+            "model": self.ai.model,
+            "endpoint": self.ai.endpoint,
             "available": available,
-            "models":    models,
+            "models": models,
         }
 
     def __repr__(self) -> str:
