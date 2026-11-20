@@ -13,6 +13,7 @@ BUG FIXES vs v1:
   - Kernel had no __repr__ for debugging — added.
 """
 import importlib
+from pathlib import Path
 import time
 import traceback
 from typing import Any, Callable
@@ -39,7 +40,7 @@ class Kernel:
         load_v2: bool = True,   # v2 compatibility flag
         **kwargs,               # absorb future keyword arguments
     ) -> None:
-        self.config  = Config(config_path)
+        self.config  = Config(Path(config_path) if config_path is not None else None)
         self.session = Session(
             sessions_dir = self.config.get("storage", "sessions_dir",
                                            default="~/.shadow313/sessions"),
