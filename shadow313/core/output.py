@@ -171,8 +171,10 @@ class OutputFormatter:
                 max(len(str(headers[i])), max(len(str(r[i])) for r in rows))
                 for i in range(len(headers))
             ]
+
             def fmt_row(cols: list[Any]) -> str:
                 return "  " + "  ".join(str(c).ljust(w) for c, w in zip(cols, widths, strict=False))
+
             print(self._c(_C.CYAN, fmt_row(headers)))
             print(self._c(_C.DIM, "  " + "  ".join("─" * w for w in widths)))
             for row in rows:
