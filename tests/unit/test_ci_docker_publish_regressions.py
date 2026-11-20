@@ -29,3 +29,25 @@ def test_docker_base_images_match_supported_python_matrix() -> None:
         "python:3.12-slim-trixie",
         "python:3.12-slim-trixie",
     ]
+
+
+def test_buildx_uses_supported_no_cache_filters_input() -> None:
+    workflow = (ROOT / ".github/workflows/shadow313-ci.yml").read_text(encoding="utf-8")
+    assert "no-cache-filters:" in workflow
+    assert "no-cache-filter:" not in workflow
+
+
+def test_nightly_security_scanners_do_not_mask_build_or_safety_failures() -> None:
+    workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
+    assert "safety==3.8.1" in workflow
+    assert "nightly-safety.json || true" not in workflow
+    assert "docker build --pull --target production -t shadow313-scan:nightly ." in workflow
+    assert "checkov -f Dockerfile --framework dockerfile" in workflow
+    assert "checkov -f docker-compose.yml --framework yaml" in workflow
+
+
+def test_pr_safety_scanner_does_not_pin_incompatible_cli_dependencies() -> None:
+    workflow = (ROOT / ".github/workflows/pr-checks.yml").read_text(encoding="utf-8")
+    assert "safety==3.8.1" in workflow
+    assert "typer<0.13" not in workflow
+    assert "click<8.2" not in workflow
