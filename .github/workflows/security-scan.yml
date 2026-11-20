@@ -39,9 +39,13 @@ jobs:
           echo "audit_status=$audit_status" >> "$GITHUB_OUTPUT"
           python -m venv .safety-venv
           .safety-venv/bin/python -m pip install \
-            "setuptools<81" "marshmallow<4" "typer<0.13" "click<8.2" safety==3.1.0
+            safety==3.8.1
+          set +e
           .safety-venv/bin/safety check --json \
-            --file safety-requirements.txt > nightly-safety.json || true
+            --file safety-requirements.txt > nightly-safety.json
+          safety_status=$?
+          set -e
+          echo "safety_status=$safety_status" >> "$GITHUB_OUTPUT"
           bandit -r shadow313/ nexus_toolkit/ \
             -x shadow313/tests,tests \
             --severity-level medium \
@@ -67,12 +71,14 @@ jobs:
           retention-days: 30
 
       - name: Report pip-audit failure
-        if: always() && steps.audit.outputs.audit_status != '' && steps.audit.outputs.audit_status != '0'
+        if: always() && (steps.audit.outputs.audit_status != '0' || steps.audit.outputs.safety_status != '0')
         env:
           AUDIT_STATUS: ${{ steps.audit.outputs.audit_status }}
+          SAFETY_STATUS: ${{ steps.audit.outputs.safety_status }}
         run: |
-          echo "pip-audit failed with exit code $AUDIT_STATUS"
-          exit "$AUDIT_STATUS"
+          if [ "$AUDIT_STATUS" != "0" ]; then echo "::error::pip-audit failed with exit code $AUDIT_STATUS"; fi
+          if [ "$SAFETY_STATUS" != "0" ]; then echo "::error::Safety failed with exit code $SAFETY_STATUS"; fi
+          exit 1
 
   # ── Docker image scan ─────────────────────────────────────────────
   container-scan:
@@ -83,7 +89,7 @@ jobs:
 
       - name: Build image for scanning
         run: |
-          docker build --target production -t shadow313-scan:nightly . || true
+          docker build --pull --target production -t shadow313-scan:nightly .
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -129,9 +135,8 @@ jobs:
 
       - name: Run checkov on docker-compose
         run: |
-          checkov -f docker-compose.yml \
-            --framework dockerfile \
-            --output cli
+          checkov -f Dockerfile --framework dockerfile --output cli
+          checkov -f docker-compose.yml --framework yaml --output cli
 
       - name: Verify security hardening
         run: |

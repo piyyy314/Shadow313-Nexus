@@ -217,7 +217,7 @@ jobs:
         run: |
           python -m venv .safety-venv
           .safety-venv/bin/python -m pip install \
-            "setuptools<81" "marshmallow<4" "typer<0.13" "click<8.2" safety==3.1.0
+            safety==3.8.1
           .safety-venv/bin/safety check --full-report --file safety-requirements.txt
 
   # ── Docker Lint ───────────────────────────────────────────────────
