@@ -48,12 +48,14 @@ jobs:
 
       - name: Run Ruff on changed Python files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA...HEAD")
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
           files=()
-          while IFS= read -r path; do
+          while IFS= read -r -d '' path; do
             [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
             files+=("$path")
-          done <<< "$changed_files"
+          done < "$changed_files"
           if ((${#files[@]})); then
             ruff check "${files[@]}" --output-format github
           else
@@ -62,12 +64,14 @@ jobs:
 
       - name: Run Black on changed Shadow313 files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA...HEAD")
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
           files=()
-          while IFS= read -r path; do
+          while IFS= read -r -d '' path; do
             [[ "$path" =~ ^shadow313/.*\.py$ ]] || continue
             files+=("$path")
-          done <<< "$changed_files"
+          done < "$changed_files"
           if ((${#files[@]})); then
             black --check --diff "${files[@]}"
           else
@@ -76,12 +80,14 @@ jobs:
 
       - name: Run yamllint on changed workflow files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA...HEAD")
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
           files=()
-          while IFS= read -r path; do
+          while IFS= read -r -d '' path; do
             [[ "$path" =~ ^\.github/workflows/.*\.ya?ml$ || "$path" == "docker-compose.yml" ]] || continue
             files+=("$path")
-          done <<< "$changed_files"
+          done < "$changed_files"
           if ((${#files[@]})); then
             yamllint -c .yamllint.yml "${files[@]}"
           else
@@ -134,15 +140,17 @@ jobs:
 
       - name: Run Bandit on changed Python files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA...HEAD")
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
           files=()
-          while IFS= read -r path; do
+          while IFS= read -r -d '' path; do
             [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
             if [[ "$path" =~ (^|/)tests/ ]]; then
               continue
             fi
             files+=("$path")
-          done <<< "$changed_files"
+          done < "$changed_files"
           if ((${#files[@]})); then
             bandit --severity-level medium -f json -o bandit-report.json "${files[@]}"
           else

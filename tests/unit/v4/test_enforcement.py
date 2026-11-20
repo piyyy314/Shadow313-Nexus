@@ -300,7 +300,7 @@ class TestProcessTerminatorEnforcement:
             lambda value: proc_dir if value == "/proc" else Path(value),
         )
 
-        assert list(ProcessTerminator._iter_processes()) == [
+        assert sorted(ProcessTerminator._iter_processes()) == [
             (1234, "worker�"),
             (1235, "another-worker"),
         ]
