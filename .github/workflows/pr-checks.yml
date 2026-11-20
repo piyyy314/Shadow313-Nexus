@@ -1,5 +1,5 @@
 # Shadow313 NEXUS — PR Gate Checks
-# Triggered: pull_request to master or develop
+# Triggered: pull_request to every branch
 # All jobs run in parallel. All must pass for merge.
 
 name: PR Checks
@@ -7,8 +7,7 @@ name: PR Checks
 on:
   pull_request:
     branches:
-      - master
-      - develop
+      - '**'
     types: [opened, synchronize, reopened]
 
 concurrency:
