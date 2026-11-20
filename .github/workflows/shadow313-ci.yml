@@ -5,10 +5,10 @@ name: Shadow313 CI/CD
 
 on:
   push:
-    branches: [main, master, develop, "feature/**", "feat/**"]
+    branches: ["**"]
     tags: ["v*.*.*"]          # triggers PyPI publish
   pull_request:
-    branches: [main, master]
+    branches: ["**"]
   release:
     types: [published]
   schedule:
@@ -210,8 +210,8 @@ jobs:
     name: Publish → TestPyPI
     runs-on: ubuntu-latest
     needs: build
-    # Runs on every push to master/main (not just releases)
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    # TestPyPI publishing is manual until the trusted publisher's project mapping is verified.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
     environment: testpypi
     permissions:
       id-token: write   # OIDC trusted publishing
