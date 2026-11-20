@@ -18,7 +18,7 @@ ARG HTTPS_PROXY=""
 ARG NO_PROXY="localhost,127.0.0.1"
 
 # ── Stage 1: Builder ──────────────────────────────────────────────
-FROM python:3.15-slim-trixie AS builder
+FROM python:3.12-slim-trixie AS builder
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -48,7 +48,7 @@ RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
 
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
-FROM python:3.15-slim-trixie AS production-base
+FROM python:3.12-slim-trixie AS production-base
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
