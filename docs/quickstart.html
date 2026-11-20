@@ -35,7 +35,7 @@
 <a class="sidebar-link" href="/platform/recon">Recon Module</a>
 <a class="sidebar-link" href="/platform/vuln">Vuln Module</a>
 <a class="sidebar-link" href="/platform/quantum">Quantum Module</a>
-</div><div class="docs-content" style="flex:1;padding:40px;max-width:800px">
+</div><div class="docs-content" style="flex:1;padding:40px;max-width:800px"><div role="note" style="background:#251b0b;border:1px solid #a16207;padding:14px;border-radius:8px;margin-bottom:22px;color:#fde68a;font-size:12px">Examples below are illustrative command/output snippets, not test results or a guarantee that external feeds, cryptographic providers, or remote services are connected. Verify installed optional dependencies and consult the CLI help for the current command surface.</div>
 <h1 style="font-size:28px;font-weight:800;margin-bottom:8px">Quick Start</h1>
 <p style="color:var(--muted);margin-bottom:28px">Run your first security scan in 60 seconds.</p>
 <h2 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--green)">1. Recon Scan</h2>
@@ -55,8 +55,8 @@ shadow313 recon --target example.com --mode passive --stealth
 <span style="color:var(--amber)">[!] CVE-2023-46604: EPSS=0.934 KEV=YES CVSS=9.8</span></div>
 <h2 style="font-size:16px;font-weight:700;margin:24px 0 12px;color:var(--green)">3. Quantum Audit</h2>
 <div class="code-block">shadow313 quantum --scan-host example.com:443
-<span style="color:var(--green)">[+] ML-KEM-768: COMPLIANT (FIPS 203)</span>
-<span style="color:var(--red)">[!] RSA-2048: LEGACY_UNSAFE — migrate to ML-DSA-65</span></div>
+<span style="color:var(--green)">[DEMO] PQC algorithm status depends on the installed implementation; no FIPS validation is implied</span>
+<span style="color:var(--red)">[DEMO] Review cryptographic inventory and migration policy; do not treat this sample as a live host scan</span></div>
 <div style="margin-top:24px;display:flex;gap:12px">
 <a href="/docs/api" class="btn btn-green">API Reference →</a>
 <a href="/platform" class="btn btn-outline">Platform Docs →</a>

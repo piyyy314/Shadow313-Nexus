@@ -41,11 +41,14 @@ COPY nexus_toolkit/ ./nexus_toolkit/
 COPY MANIFEST.in LICENSE CHANGELOG.md SECURITY.md requirements.txt ./
 
 RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
-    && pip install --no-cache-dir --prefix=/install .
+    && pip install --no-cache-dir --prefix=/install . \
+    && pip install --no-cache-dir --prefix=/install --upgrade \
+        "urllib3==2.8.0" \
+        "msgpack==1.2.3"
 
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
-FROM python:3.12-slim-trixie AS production
+FROM python:3.12-slim-trixie AS production-base
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -60,20 +63,19 @@ LABEL org.opencontainers.image.url="https://shadow313.dev"
 # Install runtime deps with retry
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
-        tcpdump=4.99.5-2 nmap=7.95+dfsg-3 bind9-dnsutils=1:9.20.30-1~deb13u1 \
-        iputils-ping=3:20240905-3 libssl3t64=3.5.7-1~deb13u3 \
+        libssl3t64=3.5.7-1~deb13u3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Apply the latest Debian security fixes to base-image packages
 RUN apt-get update -o Acquire::Retries=3 && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-# Refresh pip and setuptools (pip bundles urllib3 and msgpack)
-RUN pip install --no-cache-dir --upgrade pip==26.2.2 setuptools==80.9.0
-
 # Clear proxy env after apt (don't leak into runtime)
 ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
+
+# Keep pip in this shared base because the derived NEXUS stage installs optional dependencies.
+# Final image targets remove pip and setuptools after all package installation is complete.
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
@@ -98,8 +100,17 @@ ENTRYPOINT ["shadow313"]
 CMD ["--help"]
 
 
-# ── Stage 3: Full NEXUS (all optional deps) ───────────────────────
-FROM production AS nexus
+# ── Stage 3: Slim production runtime ──────────────────────────────
+FROM production-base AS production
+
+USER root
+RUN python -m pip check \
+    && python -m pip uninstall -y pip setuptools
+USER shadow313
+
+
+# ── Stage 4: Full NEXUS (all optional deps) ───────────────────────
+FROM production-base AS nexus
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -110,6 +121,7 @@ USER root
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
         python3-dev=3.13.5-1 libpcap-dev=1.10.5-2 whois=5.6.3 nmap=7.95+dfsg-3 \
+        tcpdump=4.99.5-2 bind9-dnsutils=1:9.20.30-1~deb13u1 iputils-ping=3:20240905-3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
@@ -123,9 +135,11 @@ RUN pip install --no-cache-dir \
     "networkx>=3.2" \
     "scikit-learn>=1.3" \
     "joblib>=1.3" \
-    "sqlalchemy>=2.0" \
     "psycopg[binary]>=3.1" \
     "alembic>=1.13"
+
+RUN python -m pip check \
+    && python -m pip uninstall -y pip setuptools
 
 ENV http_proxy="" https_proxy=""
 USER shadow313

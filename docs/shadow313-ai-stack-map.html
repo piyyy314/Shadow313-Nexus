@@ -99,6 +99,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Reference data notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>REFERENCE / DEMO ONLY.</strong> This page is an architecture or interface illustration, not live system telemetry. Component counts, service states, vendor comparisons, performance values, and event data are not verified unless tied to current source or runtime evidence.</aside>
 
 <div class="hero">
   <h1>Full Stack <span>Architecture Map</span></h1>
@@ -137,7 +138,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="step">
       <div class="step-num" style="background:rgba(34,197,94,0.15);color:var(--green)">5</div>
       <div class="step-title">Docker Desktop</div>
-      <div class="step-desc">WSL2 backend, Open WebUI container (port 3000), Shadow313 API (port 8000), PostgreSQL</div>
+      <div class="step-desc">WSL2 backend, Open WebUI container (port 3000), Shadow313 API (port 8313), PostgreSQL</div>
       <span class="step-status badge-amber">⚠ NEEDS RESTART</span>
     </div>
     <div class="step">
@@ -149,7 +150,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="step">
       <div class="step-num" style="background:rgba(59,130,246,0.15);color:var(--blue)">7</div>
       <div class="step-title">Shadow313 CLI v4</div>
-      <div class="step-desc">pip install -e .[full], Test status: see live CI results, 313-BIND active, FIPS 203/204/205</div>
+      <div class="step-desc">pip install -e .[full], Test status: see live CI results, 313-BIND demo workflow, FIPS 203/204/205</div>
       <span class="step-status badge-green">✅ DONE</span>
     </div>
     <div class="step">
@@ -252,7 +253,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
         <div class="comp">
           <div class="comp-status status-green"></div>
           <div class="comp-title">🦙 Ollama Engine</div>
-          <div class="comp-sub">localhost:11434<br>4 models loaded<br>CPU inference<br>~13.3GB storage</div>
+          <div class="comp-sub">localhost:11434<br>model availability depends on local configuration<br>CPU inference<br>~13.3GB storage</div>
           <span class="comp-port">HTTP:11434</span>
         </div>
         <div class="comp">
@@ -383,14 +384,14 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
             NEXUS detection pipeline<br>
             Audit server · SARIF export
           </div>
-          <span class="comp-port">localhost:8000</span>
+          <span class="comp-port">localhost:8313</span>
         </div>
         <div class="comp" style="border-color:rgba(6,182,212,0.2)">
           <div class="comp-status status-amber"></div>
           <div class="comp-title">📱 Telegram Bot</div>
           <div class="comp-sub">
             shadow313.integrations.telegram<br>
-            Polls shadow313-api:8000/api/events<br>
+            Polls shadow313-api:8313/api/events<br>
             Forwards HIGH/CRITICAL alerts<br>
             Profile: --profile telegram
           </div>
@@ -482,7 +483,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
         <tbody>
           <tr><td>11434</td><td>Ollama AI Engine</td><td>HTTP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Bound to 127.0.0.1 — never expose externally</td></tr>
           <tr><td>3000</td><td>Open WebUI</td><td>HTTP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Docker container — localhost access only</td></tr>
-          <tr><td>8000</td><td>Shadow313 FastAPI</td><td>HTTP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Audit server + event bus REST API</td></tr>
+          <tr><td>8313</td><td>Shadow313 FastAPI</td><td>HTTP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Audit server + event bus REST API</td></tr>
           <tr><td>8080</td><td>Burp Suite Proxy</td><td>HTTP</td><td>Intercept</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Configure browser proxy → 127.0.0.1:8080</td></tr>
           <tr><td>5432</td><td>PostgreSQL (Metasploit)</td><td>TCP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Kali Linux Metasploit database</td></tr>
           <tr><td>7313</td><td>Shadow313 HTTP</td><td>HTTP</td><td>Internal</td><td><span class="badge badge-green">LOCAL ONLY</span></td><td>Nginx reverse proxy (HTTP)</td></tr>

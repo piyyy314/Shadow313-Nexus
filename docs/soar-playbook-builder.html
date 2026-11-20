@@ -36,7 +36,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <link rel="stylesheet" href="/assets/site-nav.css">
 <link rel="stylesheet" href="/assets/site-theme.css">
 </head>
-<body class="site-page">
+<body class="site-page"><aside role="note" style="margin:12px 24px;padding:12px 16px;border:1px solid #a16207;border-radius:8px;background:#251b0b;color:#fde68a">DESIGN DEMO ONLY: this visual editor does not execute playbooks or connect to a live SIEM/SOAR platform. Playbook counts and production readiness are not verified.</aside>
 <!-- Shared navigation: edit assets/site-nav.html.template, then run scripts/render-site-nav.py. -->
 <nav id="site-nav" aria-label="Primary navigation">
   <a class="site-brand" href="/"><span class="site-symbol" aria-hidden="true">⬡</span> SHADOW<span class="site-number">313</span></a>
@@ -59,18 +59,18 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="panel" style="margin-bottom:20px;">
       <div class="panel-hdr">
         <span class="panel-title" style="color:#f59e0b;">Playbook Engine Status</span>
-        <span class="panel-badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;">37 Playbooks Active</span>
+        <span class="panel-badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;">PLAYBOOK COUNT NOT VERIFIED</span>
       </div>
       <div style="padding:16px;"><div class="grid-3">
-               <div class="stat"><div class="stat-val">37</div><div class="stat-lbl">Active Playbooks</div></div>
-               <div class="stat"><div class="stat-val">262ms</div><div class="stat-lbl">Avg Response Time</div></div>
-               <div class="stat"><div class="stat-val">98.7%</div><div class="stat-lbl">Execution Success</div></div>
+               <div class="stat"><div class="stat-val">DEMO</div><div class="stat-lbl">Sample playbook designs</div></div>
+               <div class="stat"><div class="stat-val">DEMO</div><div class="stat-lbl">Response time · not measured</div></div>
+               <div class="stat"><div class="stat-val">NOT MEASURED</div><div class="stat-lbl">Execution success</div></div>
              </div></div>
     </div>
     <div class="panel" style="margin-bottom:20px;">
       <div class="panel-hdr">
         <span class="panel-title" style="color:#f59e0b;">Built-in Playbooks</span>
-        <span class="panel-badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;">Production Ready</span>
+        <span class="panel-badge" style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;">NOT PRODUCTION-VERIFIED</span>
       </div>
       <div style="padding:16px;"><div style="display:flex;flex-direction:column;gap:8px;">
                <div class="card"><div class="card-title">PB-001: Malicious IP Auto-Block</div><div class="card-body">Trigger: CRITICAL alert with external IP | Actions: BGP null-route → firewall block → IOC store update → Telegram alert | Avg time: 180ms</div></div>

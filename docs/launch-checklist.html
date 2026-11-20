@@ -87,6 +87,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <a class="site-github" href="https://github.com/piyyy314/Shadow313-Nexus" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </nav>
+<aside role="note" aria-label="Checklist status notice" style="margin:16px 24px;padding:14px 18px;background:#251b0b;border:1px solid #a16207;border-radius:8px;color:#fde68a;font-size:13px;line-height:1.6"><strong>CHECKLIST TEMPLATE — NOT EXECUTED.</strong> The commands, provider setup, deployment steps, hostnames, and acceptance checks below are instructions and placeholders. They are not evidence that infrastructure is provisioned, a production release is deployed, alerts are delivered, or the checklist has been completed. Verify every step in the target environment.</aside>
 
 <div class="hero">
   <h1>Shadow313 NEXUS <span>Launch Checklist</span></h1>
@@ -104,7 +105,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <!-- Connection Diagram -->
 <div class="conn-diagram">
   <div><span class="node">Users</span> <span class="arrow">──HTTPS──▶</span> <span class="node">Vercel</span> <span class="label">(shadow313.dev)</span> <span class="arrow">◀──git push──</span> <span class="node">GitHub</span></div>
-  <div><span class="node">Vercel</span> <span class="arrow">──serves──▶</span> <span class="label">HTML/JS/CSS (158 routes)</span></div>
+  <div><span class="node">Vercel</span> <span class="arrow">──serves──▶</span> <span class="label">HTML/JS/CSS (configured routes)</span></div>
   <div><span class="node">Browser</span> <span class="arrow">──API calls──▶</span> <span class="node">Hetzner VPS</span> <span class="label">(:8000 Shadow313 API)</span></div>
   <div><span class="node">Hetzner VPS</span> <span class="arrow">──WireGuard──▶</span> <span class="node">Your Laptop</span> <span class="label">(encrypted tunnel)</span></div>
   <div><span class="node">Hetzner VPS</span> <span class="arrow">──runs──▶</span> <span class="label">Docker: API + Telegram Bot + PostgreSQL + Nginx</span></div>
@@ -148,14 +149,14 @@ netsh interface ip show dns "Wi-Fi"</div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Start Docker stack <span class="badge-now">DO NOW</span></div>
       <div class="step-desc">Start Shadow313 API + all services (Open WebUI already running)</div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 docker compose up -d
 docker ps  # verify all containers running</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Fix Ollama context window <span class="badge-now">DO NOW</span></div>
       <div class="step-desc">System prompt is 9,918 tokens but num_ctx was 8,192 — causes HTTP 400 errors in Open WebUI</div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus\ollama
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"\ollama
 # Edit Modelfile — change num_ctx 8192 to num_ctx 16384
 (Get-Content Modelfile) -replace 'num_ctx 8192','num_ctx 16384' | Set-Content Modelfile
 ollama create matarmohamad313/shadow313-nexus -f Modelfile
@@ -175,17 +176,17 @@ ollama push matarmohamad313/shadow313-nexus</div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Buy the server <span class="badge-1hr">1 HOUR</span></div>
-      <div class="step-desc">hetzner.com/cloud → Add Server → exact config below</div>
+      <div class="step-desc">hetzner.com/cloud → review the example configuration below and verify current availability and terms before ordering</div>
       <div class="config-box">
-        <div class="config-title">Exact Hetzner Configuration</div>
+        <div class="config-title">Example Hetzner Configuration (verify at checkout)</div>
         <div class="config-row"><span class="config-key">Plan</span><span class="config-val">CX22 — 2 vCPU, 4GB RAM, 40GB SSD</span></div>
-        <div class="config-row"><span class="config-key">Price</span><span class="config-val">€3.29/mo (~$4.80 CAD)</span></div>
-        <div class="config-row"><span class="config-key">Location</span><span class="config-val">Ashburn, VA (closest to Ottawa)</span></div>
+        <div class="config-row"><span class="config-key">Price</span><span class="config-val">Verify current regional pricing in the provider console before ordering</span></div>
+        <div class="config-row"><span class="config-key">Location</span><span class="config-val">Choose a region after checking latency, data residency, and provider availability</span></div>
         <div class="config-row"><span class="config-key">Image</span><span class="config-val">Ubuntu 24.04 LTS</span></div>
         <div class="config-row"><span class="config-key">SSH Key</span><span class="config-val">Add your public key (generate below)</span></div>
         <div class="config-row"><span class="config-key">Firewall</span><span class="config-val">Create new: allow 22/tcp, 51820/udp, 80/tcp, 443/tcp</span></div>
         <div class="config-row"><span class="config-key">Name</span><span class="config-val">shadow313-nexus-vps</span></div>
-        <div class="config-row"><span class="config-key">Backups</span><span class="config-val">Enable (€0.66/mo extra — worth it)</span></div>
+        <div class="config-row"><span class="config-key">Backups</span><span class="config-val">Verify current backup pricing, retention, and restore requirements before enabling</span></div>
       </div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
@@ -276,7 +277,7 @@ docker compose -f docker-compose.yml up -d shadow313-api postgresql nginx
 docker ps</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Connect WireGuard on your laptop <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Connect WireGuard on your laptop <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd"># On your laptop — generate client keys:
 wg genkey | Out-File -Encoding ASCII "$env:USERPROFILE\.ssh\wg-private.key"
 Get-Content "$env:USERPROFILE\.ssh\wg-private.key" | wg pubkey | Out-File -Encoding ASCII "$env:USERPROFILE\.ssh\wg-public.key"
@@ -300,7 +301,7 @@ $conf | Out-File "$env:USERPROFILE\shadow313-vpn.conf" -Encoding ASCII
 # Import in WireGuard app → "Import tunnel from file"</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Test VPN connection <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Test VPN connection <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd"># Activate VPN in WireGuard app, then:
 Invoke-WebRequest -Uri "https://api.ipify.org" -UseBasicParsing | Select-Object -ExpandProperty Content
 # Should show Hetzner IP, not your home IP ✅</div>
@@ -318,15 +319,15 @@ Invoke-WebRequest -Uri "https://api.ipify.org" -UseBasicParsing | Select-Object 
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Choose ONE email provider <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Choose ONE email provider <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Use Google Workspace ($6/mo) — better spam filtering, Meet, Drive integration, more professional for enterprise. Keep Zoho as backup alias only.</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add shadow313.dev domain to Google Workspace <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add shadow313.dev domain to Google Workspace <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">workspace.google.com → Admin Console → Domains → Add domain → shadow313.dev</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add DNS records in Vercel/Cloudflare <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add DNS records in Vercel/Cloudflare <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd"># Add these MX records to shadow313.dev DNS:
 MX  @  ASPMX.L.GOOGLE.COM       priority: 1
 MX  @  ALT1.ASPMX.L.GOOGLE.COM  priority: 5
@@ -335,15 +336,15 @@ TXT @  "v=spf1 include:_spf.google.com ~all"
 # Also add DKIM record from Google Admin Console</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Create email addresses <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Create email addresses <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd">mohamad@shadow313.dev      # Primary — you
-security@shadow313.dev     # CVE reports / bug bounty
+security@shadow313.dev     # Security disclosures; no paid bounty program
 support@shadow313.dev      # Customer support
 billing@shadow313.dev      # License / payment
 noreply@shadow313.dev      # Automated emails</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Update contact info across all pages <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Update contact info across all pages <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Update contact.html, security-policy.html, privacy.html, footer — replace matarmohamad313@duck.com with mohamad@shadow313.dev</div>
     </div></div>
   </div>
@@ -359,33 +360,33 @@ noreply@shadow313.dev      # Automated emails</div>
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Fix GitHub Pages <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Fix GitHub Pages <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">github.com/piyyy314/Shadow313-Nexus → Settings → Pages → Source: Deploy from branch → Branch: master → Folder: /docs</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Create v4.0.0 release tag <span class="badge-today">TODAY</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-title">Create v4.0.0 release tag <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 git tag -a v4.0.0 -m "Shadow313 NEXUS v4.0.0 — Test status: see live CI results"
 git push origin v4.0.0</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Enable branch protection on master <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Enable branch protection on master <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Settings → Branches → Add rule → Branch: master → ✅ Require status checks → ✅ Require branches to be up to date</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add repository topics/description <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add repository topics/description <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">github.com/piyyy314/Shadow313-Nexus → About (gear icon) → Description + Topics for discoverability</div>
       <div class="step-cmd">Description: "Local-first AI-powered security intelligence CLI with post-quantum cryptography, 313-BIND temporal binding, and Ghost-Watch deception"
 Topics: cybersecurity, post-quantum, cli, python, mitre-attack, threat-detection, fips-205, slh-dsa, vsat-security, ottawa</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add SECURITY.md to repo root <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add SECURITY.md to repo root <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">GitHub shows a "Security" tab when SECURITY.md exists — links to your security policy</div>
       <div class="step-cmd">echo "# Security Policy\nSee https://shadow313.dev/security-policy for our responsible disclosure policy.\nReport vulnerabilities to: security@shadow313.dev" > SECURITY.md
 git add SECURITY.md && git commit -m "docs: add SECURITY.md" && git push</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Verify CI/CD is GREEN <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Verify CI/CD is GREEN <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">github.com/piyyy314/Shadow313-Nexus/actions → all workflows should pass after push</div>
     </div></div>
   </div>
@@ -395,38 +396,38 @@ git add SECURITY.md && git commit -m "docs: add SECURITY.md" && git push</div>
 <div class="phase">
   <div class="phase-header" style="background:rgba(34,197,94,0.08);border-bottom:1px solid rgba(34,197,94,0.2)" onclick="togglePhase(this)">
     <div class="phase-num" style="background:rgba(34,197,94,0.15);color:var(--green)">4</div>
-    <div class="phase-title" style="color:var(--green)">Vercel — shadow313.dev Live</div>
+    <div class="phase-title" style="color:var(--green)">Vercel deployment — verify current state</div>
     <div class="phase-meta">5 steps · ~15 min</div>
     <span style="color:var(--muted);font-size:18px">▼</span>
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Verify deployment is live <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Verify deployment in the target environment <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">After GitHub push, Vercel auto-deploys in ~30 seconds</div>
       <div class="step-cmd">Start-Process "https://shadow313.dev"
 Start-Process "https://shadow313.dev/pricing"
 Start-Process "https://shadow313.dev/313-bind-verification-portal"</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add environment variables to Vercel <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add environment variables to Vercel <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">vercel.com → shadow313-nexus project → Settings → Environment Variables</div>
       <div class="step-cmd">SHADOW313_ENV=production
 SHADOW313_API_URL=https://api.shadow313.dev  # Hetzner VPS URL
 SHADOW313_CORS_ORIGINS=https://shadow313.dev,https://shadow313.com</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add custom domain shadow313.com <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add custom domain shadow313.com <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Vercel → Project → Settings → Domains → Add shadow313.com → follow DNS instructions</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Test all 158 routes <span class="badge-today">TODAY</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-title">Validate configured public routes <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\shadow313-html-auditor.ps1</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Enable Vercel Analytics <span class="badge-today">TODAY</span></div>
-      <div class="step-desc">Vercel → Project → Analytics → Enable — free tier shows page views, visitors, performance</div>
+      <div class="step-title">Enable Vercel Analytics <span class="badge-today">PLANNED</span></div>
+      <div class="step-desc">Review current plan availability, pricing, privacy, and consent settings; verify analytics after deployment</div>
     </div></div>
   </div>
 </div>
@@ -441,18 +442,18 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Create Telegram bot <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Create Telegram bot <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Open Telegram → search @BotFather → /newbot → name: Shadow313 NEXUS → username: shadow313nexus_bot → copy token</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Get your chat ID <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Get your chat ID <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Create a private channel → add your bot as admin → send a message → visit URL below</div>
       <div class="step-cmd">https://api.telegram.org/bot YOUR_TOKEN/getUpdates
 # Look for "chat":{"id": -1001234567890} — that's your CHAT_ID</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add to .env and start bot <span class="badge-today">TODAY</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-title">Add to .env and start bot <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 # Add to .env:
 Add-Content .env "TELEGRAM_BOT_TOKEN=your_token_here"
 Add-Content .env "TELEGRAM_CHAT_ID=-1001234567890"
@@ -461,9 +462,9 @@ docker compose --profile telegram up -d telegram-bot
 docker logs telegram-bot</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Test alert delivery <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Verify alert delivery in the target environment <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Bot should send startup message to your channel. Trigger a test alert via Shadow313 CLI.</div>
-      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/shiatoali/shadow313-nexus && python3 -c \"from shadow313.integrations.telegram.bot import send_message; send_message('✅ Shadow313 NEXUS test alert — system operational')\""</div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "cd /mnt/c/Users/shiatoali/shadow313-nexus && python3 -c \"from shadow313.integrations.telegram.bot import send_message; send_message('✅ Shadow313 NEXUS test alert — verify configured service before sending')\""</div>
     </div></div>
   </div>
 </div>
@@ -478,15 +479,15 @@ docker logs telegram-bot</div>
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Connect GitHub repo to Netlify <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Connect GitHub repo to Netlify <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">netlify.com → Add new site → Import from Git → GitHub → piyyy314/Shadow313-Nexus → Build: none → Publish: docs/</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add shadow313.com as Netlify domain <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Add shadow313.com as Netlify domain <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Netlify → Domain settings → Add custom domain → shadow313.com (failover if Vercel goes down)</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Enable Netlify Forms for contact page <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Enable Netlify Forms for contact page <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Add netlify attribute to contact form → free form submissions without backend</div>
     </div></div>
   </div>
@@ -502,31 +503,34 @@ docker logs telegram-bot</div>
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Install Shadow313 CLI in Ubuntu <span class="badge-today">TODAY</span></div>
-      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -c "
-cd /mnt/c/Users/shiatoali/shadow313-nexus
-pip install -e '.[full]' --break-system-packages
-pip install pyspx --break-system-packages
-shadow313 --version"</div>
+      <div class="step-title">Install Shadow313 CLI in Ubuntu <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">wsl -d Ubuntu-24.04 -- bash -lc '
+cd "$HOME/Shadow313-Nexus"
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[full]"
+shadow313 --version
+'</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Verify Open WebUI connects to Ollama <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Verify Open WebUI connects to Ollama <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Open http://localhost:3000 → Settings → Connections → Ollama URL: http://host.docker.internal:11434 → Save → should show your models</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Enable BitLocker on C: <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Enable BitLocker on C: <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Open Windows PowerShell 5 as Admin → save recovery key to KeePassXC first</div>
       <div class="step-cmd">powershell.exe -Command "manage-bde -protectors -get C:"
 # Save the 48-digit key to KeePassXC
 powershell.exe -Command "Resume-BitLocker -MountPoint C:"</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Set up KeePassXC database <span class="badge-today">TODAY</span></div>
+      <div class="step-title">Set up KeePassXC database <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">Open KeePassXC → New Database → save to OneDrive → add entries for: GitHub token, Hetzner SSH key, Telegram token, API keys, BitLocker key, Zoho/Google passwords</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Run full system verification <span class="badge-today">TODAY</span></div>
-      <div class="step-cmd">cd C:\Users\shiatoali\shadow313-nexus
+      <div class="step-title">Run full system verification <span class="badge-today">PLANNED</span></div>
+      <div class="step-cmd">cd "$env:USERPROFILE\Shadow313-Nexus"
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\full-system-check.ps1</div>
     </div></div>
@@ -543,12 +547,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">docs/status.html — Live system status <span class="badge-week">THIS WEEK</span></div>
-      <div class="step-desc">Shows: test count (3614 GREEN), POSTURE, uptime, last deploy, API health</div>
+      <div class="step-title">docs/status.html — proposed status page (verify route and implementation) <span class="badge-week">THIS WEEK</span></div>
+      <div class="step-desc">Shows: a link to the current CI run and commit; uptime and API health only when backed by active monitors</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">docs/roadmap.html — Public roadmap <span class="badge-week">THIS WEEK</span></div>
-      <div class="step-desc">Q4 2026: liboqs ML-DSA, Stripe payments, 313-BIND portal live API. Q1 2027: HSM, mobile app, federated mesh beta</div>
+      <div class="step-desc">Proposed, uncommitted roadmap only: evaluate liboqs/ML-DSA integration, payment processing, the 313-BIND API, HSM support, a mobile client, and federated mesh; publish dates only after implementation is scoped</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">docs/platform/ — 9 module pages <span class="badge-week">THIS WEEK</span></div>

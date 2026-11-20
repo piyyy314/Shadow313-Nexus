@@ -362,7 +362,7 @@ class TestSecurityFixes:
         with open(root_path("pyproject.toml")) as f:
             content = f.read()
         assert "pyjwt>=2.9.1" in content, "pyjwt CVE-2026-2156 patch missing"
-        assert "urllib3>=2.2.3" in content, "urllib3 CVE-2026-4471 patch missing"
+        assert "urllib3>=2.8.0" in content, "urllib3 patched-version baseline missing"
         assert "requests>=2.32.4" in content, "requests CVE-2026-4471 patch missing"
         assert "click>=8.1.8" in content, "click CVE-2026-0892 patch missing"
 
