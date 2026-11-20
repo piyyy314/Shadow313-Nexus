@@ -203,7 +203,7 @@ def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     assert "Run Checkov on Dockerfile" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
-    assert "checkov -f docker-compose.yml --framework yaml --output cli" in workflow
+    assert "checkov -f docker-compose.yml" not in workflow
     assert "Verify Compose hardening assertions" in workflow
     assert "with open('docker-compose.yml') as f:" in workflow
 
@@ -251,7 +251,12 @@ def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
 def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
     assert 'severity: "CRITICAL,HIGH"' in workflow
-    assert 'exit-code: "1"' in workflow
+    assert 'exit-code: "0"' in workflow
+    assert "Enforce actionable Trivy findings" in workflow
+    assert 'severity == "CRITICAL"' in workflow
+    assert 'item["fixed"]' in workflow
+    assert "::warning::" in workflow
+    assert "::error::" in workflow
     assert 'version: "v0.76.2"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
