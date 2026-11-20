@@ -2,7 +2,7 @@ name: Shadow313 NEXUS — API Endpoint Validation
 
 on:
   push:
-    branches: [master]
+    branches: ['**']
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip -q
-          pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q || true
+          pip install -e ".[dev]" -q 2>/dev/null || pip install -r requirements.txt -q
           pip install fastapi uvicorn httpx -q
 
       - name: Start API server
