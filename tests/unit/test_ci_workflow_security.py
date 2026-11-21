@@ -177,6 +177,8 @@ def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
 
 def test_runtime_image_removes_build_tools_after_dependency_check():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    ci_workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(encoding="utf-8")
+    assert "no-cache-filters: production-base,production" in ci_workflow
     install_index = dockerfile.index("pip install --no-cache-dir --prefix=/install .")
     patch_index = dockerfile.index(
         "pip install --no-cache-dir --prefix=/install --upgrade"
