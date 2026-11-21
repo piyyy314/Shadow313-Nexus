@@ -214,6 +214,9 @@ ollama pull mistral:7b
 
 ## 📖 Usage
 
+Use `shadow313 commands` to inspect command-to-handler availability, or `shadow313 --help` for argument details. The `nexus`, `temporal`, and `stix` command handlers are loaded by the core kernel.
+
+
 ### V1 Core Commands
 ```bash
 # Reconnaissance
