@@ -7,7 +7,7 @@ import collections.abc
 import json
 import os
 import urllib.error
-import urllib.request
+from urllib import request
 
 
 class AIEngine:
@@ -87,7 +87,7 @@ class AIEngine:
             raise ValueError("AI endpoint must use http or https")
         if not host or parsed.username is not None or parsed.password is not None:
             raise ValueError("AI endpoint must include a host and must not include user info")
-        # Accessing .port validates malformed port strings before any urllib.request.
+        # Accessing .port validates malformed port strings before any request.
         _ = parsed.port
         if host in self._BLOCKED_HOSTS:
             raise ValueError(f"AI endpoint host '{host}' is blocked")
@@ -161,8 +161,8 @@ class AIEngine:
             return False
         try:
             if self.backend == "ollama":
-                req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with urllib.request.urlopen(req, timeout=5):  # nosec B310
+                req = request.Request(f"{self.endpoint}/api/tags", method="GET")
+                with request.urlopen(req, timeout=5):  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -174,8 +174,8 @@ class AIEngine:
         if self.backend != "ollama":
             return []
         try:
-            req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
+            req = request.Request(f"{self.endpoint}/api/tags", method="GET")
+            with request.urlopen(req, timeout=10) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -204,14 +204,14 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req  = request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib.error.URLError as exc:
@@ -232,14 +232,14 @@ class AIEngine:
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req  = request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -276,7 +276,7 @@ class AIEngine:
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req  = request.Request(
             (
                 f"{self.endpoint}/chat/completions"
                 if self.endpoint.endswith("/v1")
@@ -290,7 +290,7 @@ class AIEngine:
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:
