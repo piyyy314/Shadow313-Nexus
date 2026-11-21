@@ -9,8 +9,13 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_distribution_name_and_entrypoint_are_distinct():
     config = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert config["project"]["name"] == "shadow313-nexus"
-    assert config["project"]["scripts"] == {"shadow313": "shadow313.cli.main:main"}
+    assert config["project"]["scripts"] == {
+        "shadow313": "shadow313.cli.main:main",
+        "s313-cli": "shadow313.cli.main:main",
+    }
     assert config["project"]["version"] == "4.0.0"
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "`s313-cli` is a compatibility alias" in readme
     assert (ROOT / "shadow313/__init__.py").is_file()
 
 

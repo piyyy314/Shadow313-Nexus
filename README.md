@@ -26,7 +26,7 @@ Shadow313 NEXUS is a Python security-intelligence toolkit. The repository contai
 | `scripts/` | Build, validation, and maintenance scripts |
 | `.github/workflows/` | GitHub Actions automation |
 
-The CLI entry point is `shadow313`, implemented by `shadow313.cli.main:main`. Python imports use `shadow313`.
+The primary CLI entry point is `shadow313`; `s313-cli` is a compatibility alias. Both resolve to `shadow313.cli.main:main`. Python imports use `shadow313`.
 
 ## Requirements
 
