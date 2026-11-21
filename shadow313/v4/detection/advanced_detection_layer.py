@@ -35,7 +35,6 @@ import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 
-
 # ── IDENTITY-6: MLAnomalyProfiler ────────────────────────────────────────────
 
 class IsolationTree:
@@ -49,8 +48,8 @@ class IsolationTree:
         self.max_depth = max_depth
         self.split_feature: int | None = None
         self.split_value: float | None = None
-        self.left: "IsolationTree" | None = None
-        self.right: "IsolationTree" | None = None
+        self.left: IsolationTree | None = None
+        self.right: IsolationTree | None = None
         self.size: int = 0
         self._rng = random.Random()
 
