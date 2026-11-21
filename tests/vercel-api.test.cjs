@@ -183,3 +183,13 @@ test('malformed request targets return JSON and leave the server healthy', async
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+test('health does not report a backend connected when the health payload is unhealthy', async () => {
+  const handler = handlerModule.createHandler({
+    env: { SHADOW313_BACKEND_URL: 'https://api.example.test' },
+    fetch: async () => new Response('{"status":"degraded"}', { status: 200 }),
+  });
+  const response = await request(handler, '/api/health');
+  assert.equal(response.status, 503);
+  assert.equal(response.body.backend_connected, false);
+});
