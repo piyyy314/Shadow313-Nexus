@@ -42,14 +42,14 @@ from pathlib import Path
 
 logger = logging.getLogger("shadow313.telegram")
 
-BOT_TOKEN       = os.getenv("TELEGRAM_BOT_TOKEN", "")
-CHAT_ID         = os.getenv("TELEGRAM_CHAT_ID", "")
-API_URL         = os.getenv("SHADOW313_API_URL", "http://shadow313-api:8313")
-OLLAMA_URL      = os.getenv("OLLAMA_URL", "http://ollama:11434")
-OLLAMA_MODEL    = os.getenv("OLLAMA_MODEL", "matarmohamad313/shadow313-nexus")
-AI_BACKEND      = os.getenv("SHADOW313_AI_BACKEND", "ollama")
-AI_ENDPOINT     = os.getenv("SHADOW313_AI_ENDPOINT", OLLAMA_URL)
-AI_MODEL        = os.getenv("SHADOW313_AI_MODEL", OLLAMA_MODEL)
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+API_URL = os.getenv("SHADOW313_API_URL", "http://shadow313-api:8313")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "matarmohamad313/shadow313-nexus")
+AI_BACKEND = os.getenv("SHADOW313_AI_BACKEND", "ollama")
+AI_ENDPOINT = os.getenv("SHADOW313_AI_ENDPOINT", OLLAMA_URL)
+AI_MODEL = os.getenv("SHADOW313_AI_MODEL", OLLAMA_MODEL)
 PROCESSED_ALERT_IDS: set[str] = set()
 PROCESSED_ALERT_TIMESTAMPS: dict[str, float] = {}
 STATE_PATH = Path(
@@ -59,18 +59,16 @@ STATE_PATH = Path(
     )
 ).expanduser()
 try:
-    INITIAL_LOOKBACK_SECONDS = max(
-        0, int(os.getenv("TELEGRAM_INITIAL_LOOKBACK_SECONDS", "900"))
-    )
+    INITIAL_LOOKBACK_SECONDS = max(0, int(os.getenv("TELEGRAM_INITIAL_LOOKBACK_SECONDS", "900")))
 except ValueError:
     INITIAL_LOOKBACK_SECONDS = 900
 EVENT_PROVIDER_WARNED = False
-MIN_SEVERITY    = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
-POLL_INTERVAL   = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
+MIN_SEVERITY = os.getenv("TELEGRAM_MIN_SEVERITY", "HIGH").upper()
+POLL_INTERVAL = int(os.getenv("TELEGRAM_POLL_INTERVAL", "2"))
 
-SEVERITY_ORDER  = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}
-SEVERITY_EMOJI  = {"LOW": "🔵", "MEDIUM": "🟡", "HIGH": "🟠", "CRITICAL": "🔴"}
-TELEGRAM_API    = f"https://api.telegram.org/bot{BOT_TOKEN}"
+SEVERITY_ORDER = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}
+SEVERITY_EMOJI = {"LOW": "🔵", "MEDIUM": "🟡", "HIGH": "🟠", "CRITICAL": "🔴"}
+TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
 def _tg_request(method: str, payload: dict) -> dict | None:
@@ -79,9 +77,9 @@ def _tg_request(method: str, payload: dict) -> dict | None:
         return None
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
     data = json.dumps(payload).encode()
-    req = urllib.request.Request(url, data=data,
-                                  headers={"Content-Type": "application/json"},
-                                  method="POST")
+    req = urllib.request.Request(
+        url, data=data, headers={"Content-Type": "application/json"}, method="POST"
+    )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310
             return json.loads(resp.read())
@@ -97,12 +95,14 @@ def _ai_engine():
     """Build the same configured AI engine used by the main Python API."""
     from shadow313.core.ai_engine import AIEngine
 
-    return AIEngine({
-        "backend": AI_BACKEND,
-        "model": AI_MODEL,
-        "endpoint": AI_ENDPOINT,
-        "timeout": 120,
-    })
+    return AIEngine(
+        {
+            "backend": AI_BACKEND,
+            "model": AI_MODEL,
+            "endpoint": AI_ENDPOINT,
+            "timeout": 120,
+        }
+    )
 
 
 def _ai_generate(prompt: str) -> str:
@@ -191,28 +191,31 @@ def _fetch_updates(offset: int) -> list[dict]:
         {"offset": offset, "timeout": 1, "allowed_updates": ["message"]},
     )
     return result.get("result", []) if result and result.get("ok") else []
-def send_message(
-    text: str, parse_mode: str = "HTML", chat_id: object = None
-) -> dict | None:
+
+
+def send_message(text: str, parse_mode: str = "HTML", chat_id: object = None) -> dict | None:
     destination = CHAT_ID if chat_id is None else chat_id
     if not destination:
         logger.warning("Telegram chat ID not set")
         return None
-    return _tg_request("sendMessage", {
-        "chat_id": destination,
-        "text": text,
-        "parse_mode": parse_mode,
-        "disable_web_page_preview": True,
-    })
+    return _tg_request(
+        "sendMessage",
+        {
+            "chat_id": destination,
+            "text": text,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": True,
+        },
+    )
 
 
 def send_alert(event: dict) -> bool:
-    severity  = str(event.get("severity", "UNKNOWN")).upper()
-    emoji     = SEVERITY_EMOJI.get(severity, "⚪")
-    source    = event.get("source", event.get("module", "NEXUS"))
-    message   = event.get("message", event.get("msg", str(event)))
-    ts        = event.get("timestamp", datetime.datetime.now(datetime.UTC).isoformat())
-    bind_id   = event.get("bind_id", "")
+    severity = str(event.get("severity", "UNKNOWN")).upper()
+    emoji = SEVERITY_EMOJI.get(severity, "⚪")
+    source = event.get("source", event.get("module", "NEXUS"))
+    message = event.get("message", event.get("msg", str(event)))
+    ts = event.get("timestamp", datetime.datetime.now(datetime.UTC).isoformat())
+    bind_id = event.get("bind_id", "")
     technique = event.get("technique", event.get("tid", ""))
 
     lines = [
@@ -257,12 +260,14 @@ def _fetch_events(since_ts: float) -> list[dict]:
     try:
         for page in range(max_pages):
             cursor = datetime.datetime.fromtimestamp(since_ts, datetime.UTC).isoformat()
-            query = urllib.parse.urlencode({
-                "limit": page_size,
-                "offset": page * page_size,
-                "since": cursor,
-                "order": "asc",
-            })
+            query = urllib.parse.urlencode(
+                {
+                    "limit": page_size,
+                    "offset": page * page_size,
+                    "since": cursor,
+                    "order": "asc",
+                }
+            )
             url = f"{API_URL.rstrip('/')}/api/shiatoali/alerts?{query}"
             req = urllib.request.Request(
                 url,
@@ -305,23 +310,24 @@ def _fetch_events(since_ts: float) -> list[dict]:
                 continue
             host = str(alert.get("host") or "unknown host")
             title = str(alert.get("title") or "Security alert")
-            events.append({
-                "id": alert_id,
-                "alert_id": alert_id,
-                "severity": str(alert.get("severity", "LOW")).upper(),
-                "source": "ShiatoAli SOC",
-                "message": f"{title} on {host} (risk {alert.get('risk_score', 'n/a')})",
-                "timestamp": created_at,
-                "timestamp_unix": created_unix,
-                "technique": alert.get("technique", ""),
-                "host": host,
-            })
+            events.append(
+                {
+                    "id": alert_id,
+                    "alert_id": alert_id,
+                    "severity": str(alert.get("severity", "LOW")).upper(),
+                    "source": "ShiatoAli SOC",
+                    "message": f"{title} on {host} (risk {alert.get('risk_score', 'n/a')})",
+                    "timestamp": created_at,
+                    "timestamp_unix": created_unix,
+                    "technique": alert.get("technique", ""),
+                    "host": host,
+                }
+            )
         events.sort(key=lambda event: (event["timestamp_unix"], event["alert_id"]))
         return events
     except Exception as exc:
         logger.debug("ShiatoAli alert poll failed (API may be starting): %s", exc)
         return []
-
 
 
 def _advance_alert_cursor(since_ts: float) -> float:
@@ -341,7 +347,6 @@ def _advance_alert_cursor(since_ts: float) -> float:
     return latest
 
 
-
 def _load_delivery_state() -> tuple[float, set[str], dict[str, float]]:
     """Restore the delivery cursor so bot restarts do not skip SOC alerts."""
     try:
@@ -352,9 +357,7 @@ def _load_delivery_state() -> tuple[float, set[str], dict[str, float]]:
             for alert_id, timestamp in state.get("processed_alert_timestamps", {}).items()
         }
         processed_ids = {
-            str(alert_id)
-            for alert_id in state.get("processed_alert_ids", [])
-            if alert_id
+            str(alert_id) for alert_id in state.get("processed_alert_ids", []) if alert_id
         }
         processed_ids.update(timestamps)
         return since_ts, processed_ids, timestamps
@@ -397,8 +400,7 @@ def send_startup_message() -> None:
 
 async def run_bot() -> None:
     logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
     )
     if not BOT_TOKEN:
         logger.error("TELEGRAM_BOT_TOKEN is not set. Set it in .env or docker-compose.yml")
@@ -407,8 +409,9 @@ async def run_bot() -> None:
         logger.error("TELEGRAM_CHAT_ID is not set. Set it in .env or docker-compose.yml")
         return
 
-    logger.info("Shadow313 Telegram Bot starting — min_severity=%s poll=%ss",
-                MIN_SEVERITY, POLL_INTERVAL)
+    logger.info(
+        "Shadow313 Telegram Bot starting — min_severity=%s poll=%ss", MIN_SEVERITY, POLL_INTERVAL
+    )
     send_startup_message()
     since_ts, saved_ids, saved_timestamps = _load_delivery_state()
     PROCESSED_ALERT_IDS.update(saved_ids)

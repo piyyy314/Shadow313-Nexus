@@ -326,10 +326,10 @@ class DashboardModule:
 
     def __init__(self, kernel) -> None:
         self.kernel = kernel
-        self.out    = kernel.out
-        cfg         = kernel.config.get("dashboard", default={})
-        self._port  = int(cfg.get("port", 7313))
-        self._host  = cfg.get("host", "127.0.0.1")
+        self.out = kernel.out
+        cfg = kernel.config.get("dashboard", default={})
+        self._port = int(cfg.get("port", 7313))
+        self._host = cfg.get("host", "127.0.0.1")
         self._auto_open = cfg.get("auto_open", True)
 
     def register(self, kernel) -> None:
@@ -366,7 +366,7 @@ class DashboardModule:
         from fastapi import FastAPI
         from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
-        app    = FastAPI(title="Shadow313 NEXUS Dashboard")
+        app = FastAPI(title="Shadow313 NEXUS Dashboard")
         kernel = self.kernel
 
         @app.get("/", response_class=HTMLResponse)
@@ -379,24 +379,27 @@ class DashboardModule:
 
         @app.get("/api/stats")
         async def stats():
-            sessions_dir = pathlib.Path(kernel.config.get("storage","sessions_dir",
-                                                   default="~/.shadow313/sessions")).expanduser()
+            sessions_dir = pathlib.Path(
+                kernel.config.get("storage", "sessions_dir", default="~/.shadow313/sessions")
+            ).expanduser()
             session_count = len(list(sessions_dir.glob("*"))) if sessions_dir.exists() else 0
             findings = (kernel.session.read("findings.json") or {}).get("findings", [])
             temporal = kernel.get_module("temporal")
             receipts = len(temporal.engine.list_receipts()) if temporal else 0
             return {
-                "sessions":  session_count,
-                "findings":  len(findings),
-                "critical":  sum(1 for f in findings if f.get("severity","").upper() == "CRITICAL"),
-                "receipts":  receipts,
+                "sessions": session_count,
+                "findings": len(findings),
+                "critical": sum(1 for f in findings if f.get("severity", "").upper() == "CRITICAL"),
+                "receipts": receipts,
             }
 
         @app.get("/api/findings")
         async def get_findings(severity: str = "", limit: int = 50):
             findings = (kernel.session.read("findings.json") or {}).get("findings", [])
             if severity:
-                findings = [f for f in findings if f.get("severity","").upper() == severity.upper()]
+                findings = [
+                    f for f in findings if f.get("severity", "").upper() == severity.upper()
+                ]
             return findings[:limit]
 
         @app.post("/api/chat")
@@ -437,6 +440,7 @@ class DashboardModule:
         self.out.success(f"Dashboard starting at http://{host}:{port}")
         if not no_browser and self._auto_open:
             import webbrowser
+
             webbrowser.open(f"http://{host}:{port}")
 
         uvicorn.run(app, host=host, port=port, log_level="warning")
@@ -451,6 +455,7 @@ class DashboardModule:
                 self.send_header("Content-Type", "text/html")
                 self.end_headers()
                 self.wfile.write(DASHBOARD_HTML.encode())
+
             def log_message(self, *args):
                 pass
 

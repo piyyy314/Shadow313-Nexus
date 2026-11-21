@@ -27,6 +27,19 @@ def test_gitleaks_workflows_use_supported_official_installers():
     assert "github.com/gitleaks/gitleaks/v8" not in pr_checks + security_scan
 
 
+def test_ci_workflows_pin_the_same_black_formatter():
+    expected = "black==24.3.0"
+    pr_checks = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+        encoding="utf-8"
+    )
+    shadow313_ci = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert expected in pr_checks
+    assert expected in shadow313_ci
+
+
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
     secret_file = tmp_path / "settings.py"
     secret_file.write_text('password = "sample-secret-value-123"\n', encoding="utf-8")
