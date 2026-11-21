@@ -41,6 +41,8 @@ def test_buildx_uses_supported_no_cache_filters_input() -> None:
 def test_nightly_security_scanners_do_not_mask_build_or_safety_failures() -> None:
     workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
     assert "safety==3.8.1" in workflow
+    assert workflow.count('"shadow313_sdk/**"') == 2
+    assert workflow.count('"shadow313_platform/**"') == 2
     assert "nightly-safety.json || true" not in workflow
     assert "docker build --pull --target production -t shadow313-scan:nightly ." in workflow
     assert "checkov -f Dockerfile --framework dockerfile" in workflow
