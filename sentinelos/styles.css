@@ -3037,3 +3037,27 @@ textarea.form-control {
     font-size: 12px;
     color: rgba(230, 241, 255, 0.7);
 }
+
+
+/* NEXUS API connection indicator: state is populated from /api/status. */
+.nexus-backend-status {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 10000;
+    padding: 7px 12px;
+    color: #e2e8f8;
+    background: #0b1229;
+    border-top: 1px solid rgba(72, 219, 251, 0.28);
+    text-align: center;
+    font: 600 11px/1.4 'Fira Code', monospace;
+    letter-spacing: .04em;
+}
+.nexus-backend-status[data-state="connected"] {
+    color: #b7f7d8;
+    border-top-color: rgba(29, 209, 161, .65);
+}
+.nexus-backend-status[data-state="disconnected"],
+.nexus-backend-status[data-state="unavailable"] {
+    color: #ffe0a3;
+    border-top-color: rgba(254, 202, 87, .65);
+}
