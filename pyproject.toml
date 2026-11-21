@@ -65,7 +65,8 @@ dev = [
 ]
 
 [project.scripts]
-shadow313 = "shadow313.cli.main:main"\ns313-cli = "shadow313.cli.main:main"
+shadow313 = "shadow313.cli.main:main"
+s313-cli = "shadow313.cli.main:main"
 
 [project.urls]
 Homepage   = "https://shadow313.dev"
