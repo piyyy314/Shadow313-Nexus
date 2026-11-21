@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.report
 ─────────────────────────────────────────
@@ -12,12 +11,13 @@ Every report includes:
   - Verification instructions
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Tuple
 
-from .parser import PQCAuditResult, PQCComponent
 from ...core.binding_sdk.binder import BindReceipt
+from .parser import PQCAuditResult, PQCComponent
 
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -32,9 +32,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     --cyan:#06b6d4; --purple:#a78bfa;
   }}
   * {{ box-sizing:border-box; margin: 0; padding: 0; }}
-  body {{ font-family:'Segoe UI',system-ui,sans-serif; background:#050a05; color:#e2e8f0; padding:24px; }}
+  body {{ font-family:'Segoe UI',system-ui,sans-serif;
+          background:#050a05; color:#e2e8f0; padding:24px; }}
   .header {{ background:linear-gradient(135deg,#0a1a0a,#0d2a0d);
-             border-bottom:2px solid var(--green); padding:20px; margin-bottom:20px; border-radius:8px; }}
+             border-bottom:2px solid var(--green); padding:20px;
+             margin-bottom:20px; border-radius:8px; }}
   .header h1 {{ font-size:22px; color:var(--green); letter-spacing:.05em; }}
   .header .sub {{ font-size:12px; color:#94a3b8; margin-top:6px; font-family:monospace; }}
   .receipt-banner {{
@@ -202,7 +204,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
-def _component_html(comp: "PQCComponent") -> str:
+def _component_html(comp: PQCComponent) -> str:
     risk_class = f"risk-{comp.risk_level}"
     fix_html = ""
     if comp.pqc_replacement:
@@ -214,7 +216,10 @@ def _component_html(comp: "PQCComponent") -> str:
         failure_html = f'<div class="comp-detail">&#x26A0;&#xFE0F; {comp.failure_channel}</div>'
     code_html = ""
     if comp.target_code_line:
-        code_html = f'<div class="comp-detail" style="font-family:monospace">&#x1F4CD; {comp.target_code_line}</div>'
+        code_html = (
+            '<div class="comp-detail" style="font-family:monospace">'
+            f'&#x1F4CD; {comp.target_code_line}</div>'
+        )
 
     safe_color = "#22c55e" if comp.is_quantum_safe else "#ef4444"
     return f"""
@@ -225,7 +230,9 @@ def _component_html(comp: "PQCComponent") -> str:
     <span class="comp-algo">{comp.algorithm}</span>
     <span style="margin-left:auto;font-size:10px;color:#475569;">{comp.crypto_type}</span>
   </div>
-  <div class="comp-detail">PQC Readiness: <span style="color:{safe_color}">{comp.pqc_readiness}</span></div>
+  <div class="comp-detail">PQC Readiness:
+    <span style="color:{safe_color}">{comp.pqc_readiness}</span>
+  </div>
   {failure_html}
   {code_html}
   {fix_html}
@@ -236,7 +243,7 @@ def generate_bound_report(
     audit: PQCAuditResult,
     receipt: BindReceipt,
     output_dir: str = "aegis_bound_reports",
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """
     Generate HTML and JSON reports with embedded 313 receipt.
 
