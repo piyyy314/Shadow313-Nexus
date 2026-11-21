@@ -155,7 +155,9 @@ jobs:
 
       - name: Resolve current PR base SHA
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git fetch origin "$BASE_REF" --depth=1
           echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
