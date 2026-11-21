@@ -46,3 +46,25 @@ def test_startup_banner_is_boxed_and_has_no_location(capsys):
     assert "LOCAL-FIRST SECURITY OPERATIONS" in output
     assert "Ottawa" not in output
     assert "╭" in output and "╰" in output
+
+
+
+def test_advanced_nexus_cli_commands_have_registered_handlers():
+    cases = {
+        "orchestrate": ["orchestrate", "--intent", "summarize security posture"],
+        "nexus-router": ["nexus-router", "--health"],
+        "ledger": ["ledger", "--stats"],
+        "workflow": ["workflow", "--list"],
+        "tools": ["tools", "--list-tools"],
+        "simulate": ["simulate", "--sim", "ndi"],
+    }
+    for command, argv in cases.items():
+        args = build_parser().parse_args(argv)
+        assert args.command == command
+        assert _required_namespaces(args) == [command.replace("-", "_")]
+
+
+def test_advanced_commands_are_in_command_directory():
+    args = build_parser().parse_args(["commands", "--all"])
+    assert args.command == "commands"
+    assert _required_namespaces(args) == []
