@@ -365,8 +365,7 @@ Provide:
                         title=f"Internal IP Disclosure in Header: {header_name}",
                         severity="MEDIUM",
                         description=(
-                            f"Header '{header_name}' reveals internal IP: "
-                            f"{ip_match.group(0)}"
+                            f"Header '{header_name}' reveals internal IP: " f"{ip_match.group(0)}"
                         ),
                         data={"header": header_name, "ip": ip_match.group(0)},
                         remediation=f"Remove or sanitize the {header_name} header",
@@ -503,8 +502,7 @@ Provide:
                                         "tech": probe["tech"],
                                     },
                                     remediation=(
-                                        f"Restrict access to {probe['path']} "
-                                        "if not required"
+                                        f"Restrict access to {probe['path']} " "if not required"
                                     ),
                                     mitre_technique="T1083",
                                 )
