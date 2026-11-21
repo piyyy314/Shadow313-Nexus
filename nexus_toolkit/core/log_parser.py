@@ -16,8 +16,8 @@ Feature vector dimensions:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Any, Optional
+import tempfile
+from dataclasses import dataclass
 
 
 # ── Log entry ─────────────────────────────────────────────────────────────────
@@ -139,7 +139,13 @@ class FeatureExtractor:
 
         # ── Dims 0-4: Event metadata ──────────────────────────────────────────
         v[0] = min(1.0, entry.event_id / 10000.0)
-        v[1] = {"critical": 1.0, "high": 0.75, "medium": 0.5, "low": 0.25, "info": 0.0}.get(entry.severity, 0.0)
+        v[1] = {
+            "critical": 1.0,
+            "high": 0.75,
+            "medium": 0.5,
+            "low": 0.25,
+            "info": 0.0,
+        }.get(entry.severity, 0.0)
         v[2] = {"process_creation": 0.8, "network_connection": 0.6, "process_access": 0.9,
                 "directory_service_access": 0.7, "file_creation": 0.4}.get(entry.event_type, 0.2)
         v[3] = min(1.0, (hash(entry.host) % 1000) / 1000.0)
@@ -153,7 +159,12 @@ class FeatureExtractor:
         v[9] = 1.0 if ("obfuscat" in cmd or "char(" in cmd or "chr(" in cmd) else 0.0
 
         # ── Dims 10-14: Network indicators ────────────────────────────────────
-        v[10] = 1.0 if entry.dest_ip and not entry.dest_ip.startswith(("10.", "192.168.", "172.")) else 0.0
+        v[10] = (
+            1.0
+            if entry.dest_ip
+            and not entry.dest_ip.startswith(("10.", "192.168.", "172."))
+            else 0.0
+        )
         v[11] = 1.0 if entry.dest_port in _TOR_PORTS else 0.0
         v[12] = 1.0 if entry.dest_port in _C2_PORTS else 0.0
         v[13] = 1.0 if ("dns" in entry.event_type and len(entry.dest_ip) > 30) else 0.0
@@ -161,7 +172,9 @@ class FeatureExtractor:
 
         # ── Dims 15-19: File indicators ───────────────────────────────────────
         fp = entry.file_path
-        v[15] = 1.0 if "\\temp\\" in fp or "/tmp/" in fp else 0.0
+        normalized_fp = fp.replace("\\", "/").lower()
+        temp_dir = tempfile.gettempdir().replace("\\", "/").lower()
+        v[15] = 1.0 if "/temp/" in normalized_fp or temp_dir in normalized_fp else 0.0
         v[16] = 1.0 if "\\system32\\" in fp or "\\windows\\" in fp else 0.0
         v[17] = 1.0 if fp.endswith((".ps1", ".vbs", ".js", ".bat", ".cmd", ".hta")) else 0.0
         v[18] = 1.0 if ("7z" in proc or "zip" in proc or "rar" in proc or "-p" in cmd) else 0.0
@@ -180,7 +193,11 @@ class FeatureExtractor:
         v[26] = 1.0 if any(p in cmd for p in _DCSYNC_PATTERNS) else 0.0
         v[27] = 1.0 if ("pass-the-hash" in cmd or "pth" in cmd or "ntlm" in cmd) else 0.0
         v[28] = 1.0 if ("winrm" in cmd or "invoke-command" in cmd) else 0.0
-        v[29] = 1.0 if ("psexec" in proc or ("services.exe" == parent and "cmd.exe" == proc)) else 0.0
+        v[29] = (
+            1.0
+            if "psexec" in proc or (parent == "services.exe" and proc == "cmd.exe")
+            else 0.0
+        )
 
         # ── Dims 30-31: Exfil/Impact ──────────────────────────────────────────
         v[30] = 1.0 if ("s3" in cmd or "blob.core" in cmd or "drive.google" in cmd) else 0.0
@@ -188,11 +205,21 @@ class FeatureExtractor:
 
         # ── Dims 32-36: Evasion dimensions (NEW) ─────────────────────────────
         # dim32: process injection
-        v[32] = 1.0 if (entry.event_id == 10 and "lsass" in entry.raw.get("TargetImage", "").lower()) else 0.0
+        v[32] = (
+            1.0
+            if entry.event_id == 10
+            and "lsass" in entry.raw.get("TargetImage", "").lower()
+            else 0.0
+        )
         # dim33: PE mismatch (process name doesn't match expected path)
         v[33] = 1.0 if ("svchost" in proc and "system32" not in entry.file_path) else 0.0
         # dim34: file deletion (shadow copies, logs)
-        v[34] = 1.0 if ("vssadmin" in proc or ("del" in cmd and ("shadow" in cmd or "log" in cmd))) else 0.0
+        v[34] = (
+            1.0
+            if "vssadmin" in proc
+            or ("del" in cmd and ("shadow" in cmd or "log" in cmd))
+            else 0.0
+        )
         # dim35: DLL anomaly
         v[35] = 1.0 if ("rundll32" in proc and "appdata" in cmd) else 0.0
         # dim36: token misuse (UAC bypass, SeImpersonate)
