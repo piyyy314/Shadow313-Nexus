@@ -114,7 +114,7 @@ OT_SYSTEM_PROFILES = {
         "location": "STIA Cyber Defense Malware Sandbox",
         "shield_pct": 50.0,
         "shield_status": "CONTAINED",
-        "risk":       "MEDIUM",
+        "risk": "MEDIUM",
     },
 }
 
@@ -122,6 +122,7 @@ OT_SYSTEM_PROFILES = {
 @dataclass
 class DNSInterceptEntry:
     """A single DNS intercept log entry."""
+
     timestamp: str
     target: str
     resolved_ip: str
@@ -137,6 +138,7 @@ class DNSInterceptEntry:
 @dataclass
 class DNSInterceptReport:
     """Complete DNS intercept report matching the real output format."""
+
     report_timestamp: str = field(default_factory=_now_iso)
     target: str = ""
     entries: list[DNSInterceptEntry] = field(default_factory=list)
@@ -159,7 +161,7 @@ class DNSInterceptReport:
                     f"[{entry.timestamp}] [{'SUCCESS' if entry.shield_pct >= 90 else 'WARN'}] "
                     f"SHIELD_STATUS: Integrity Level: {entry.shield_pct}% "
                     f"{entry.shield_status}",
-                    f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: " f"{entry.location}",
+                    f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: {entry.location}",
                     f"[{entry.timestamp}] [SUCCESS] SUCCESS: Resolved IP -> {entry.resolved_ip} "
                     "(Internal Link Secured)",
                     f"[{entry.timestamp}] [INFO] INIT: Intercepting DNS signal for "
@@ -396,8 +398,7 @@ class DNSInterceptModule:
             )
             result["geo_deck"] = deck
             self.out.success(
-                f"Geo deck: {deck['totalTraces']} traces, "
-                f"{deck['criticalCount']} critical"
+                f"Geo deck: {deck['totalTraces']} traces, " f"{deck['criticalCount']} critical"
             )
 
         if save and result:
