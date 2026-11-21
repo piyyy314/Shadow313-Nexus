@@ -12,7 +12,7 @@ import socket
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 
 def _now_iso() -> str:
@@ -23,9 +23,22 @@ def _now_log() -> str:
     return datetime.now(UTC).strftime("%H:%M:%S")
 
 
+class OTSystemProfile(TypedDict):
+    """Typed metadata for a known OT/ICS/SCADA system."""
+
+    ot_type: str
+    port: int
+    protocol: str
+    description: str
+    location: str
+    shield_pct: float
+    shield_status: str
+    risk: str
+
+
 # ── OT/ICS System Profiles ────────────────────────────────────────────────────
 
-OT_SYSTEM_PROFILES = {
+OT_SYSTEM_PROFILES: dict[str, OTSystemProfile] = {
     "industrial-iot-bridge.int": {
         "ot_type": "OPC-UA",
         "port": 4840,
