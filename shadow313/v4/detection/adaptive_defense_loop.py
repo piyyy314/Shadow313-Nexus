@@ -36,6 +36,11 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+def _fingerprint_id(prefix: str, value: str) -> str:
+    digest = hashlib.md5(value.encode(), usedforsecurity=False).hexdigest()[:8].upper()
+    return f"{prefix}-{digest}"
+
+
 # ── Shared paths ───────────────────────────────────────────────────────────────
 ADL_LOG_PATH    = Path(tempfile.gettempdir()) / "shadow313_adl_log.jsonl"
 ADL_REPORT_PATH = Path(tempfile.gettempdir()) / "shadow313_adl_report.json"
@@ -273,7 +278,7 @@ class RedTeamEmulator:
         detection_rate = len(detected) / len(ttps) if ttps else 0.0
 
         result = RedTeamResult(
-            run_id=f"RED-{hashlib.md5(f'{persona_name}{time.time_ns()}'.encode()).hexdigest()[:8].upper()}",
+            run_id=_fingerprint_id("RED", f"{persona_name}{time.time_ns()}"),
             persona=persona_name,
             ttps_attempted=ttps,
             ttps_detected=detected,
@@ -500,7 +505,7 @@ class RuleEvolutionEngine:
                 continue
 
             rule = EvolvedRule(
-                rule_id=f"RULE-{hashlib.md5(f'{technique}{time.time_ns()}'.encode()).hexdigest()[:8].upper()}",
+                rule_id=_fingerprint_id("RULE", f"{technique}{time.time_ns()}"),
                 rule_type=template["rule_type"],
                 technique=technique,
                 trigger=gap,
@@ -671,7 +676,11 @@ class AdaptiveDefenseLoop:
         logger.debug("  Rules deployed:  %s", deployed)
         logger.debug("  Est. coverage gain: +%.1f%%", coverage_gain * 100)
         for rule in new_rules:
-            logger.debug("    ✓ [%s] %s", rule.rule_type, rule.rule_content.get("title", rule.rule_id))
+            logger.debug(
+                "    ✓ [%s] %s",
+                rule.rule_type,
+                rule.rule_content.get("title", rule.rule_id),
+            )
 
         self._audit("RULE_EVOLUTION", {
             "cycle":         cycle_num,
@@ -707,7 +716,11 @@ class AdaptiveDefenseLoop:
         """Run the full adaptive defense loop for max_cycles iterations."""
         print("\n" + "="*70)
         print("  SHADOW313 v3 — ADAPTIVE DEFENSE LOOP")
-        logger.debug("  Cycles: %s  |  Mode: %s", self.max_cycles, "DRY-RUN" if self.dry_run else "LIVE")
+        logger.debug(
+            "  Cycles: %s  |  Mode: %s",
+            self.max_cycles,
+            "DRY-RUN" if self.dry_run else "LIVE",
+        )
         print("="*70)
 
         t_start = time.perf_counter()
