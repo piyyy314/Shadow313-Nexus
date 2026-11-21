@@ -35,6 +35,9 @@ class _C:
     WHITE = "\033[97m"
     DIM = "\033[2m"
     PURPLE = "\033[95m"
+    GOLD = "\033[38;5;220m"
+    LIME = "\033[38;5;154m"
+    ELECTRIC_BLUE = "\033[38;5;75m"
 
 
 SEVERITY_COLORS = {
@@ -45,7 +48,7 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = f"Shadow313 NEXUS v{__version__} | Verifiable Security Intelligence | Ottawa, ON, Canada"
+BANNER = f"SHADOW313 NEXUS v{__version__} | VERIFIABLE SECURITY INTELLIGENCE"
 
 
 class OutputFormatter:
@@ -78,15 +81,49 @@ class OutputFormatter:
 
     # ── Banner ────────────────────────────────────────────────────────────────
     def banner(self) -> None:
-        if self.fmt == "json":
+        """Render the boxed NEXUS identity in the gold/lime/blue terminal palette."""
+        if self.fmt in ("json", "sarif", "junit"):
             return
+
         if self._has_rich:
+            from rich.panel import Panel
             from rich.text import Text
 
-            t = Text(BANNER, style="bold cyan")
-            self._rich_console.print(t)
-        else:
-            print(self._c(_C.CYAN, BANNER))
+            body = Text()
+            body.append("SHADOW", style="bold #E8C547")
+            body.append("313", style="bold #A6CE39")
+            body.append("\n")
+            body.append("NEXUS", style="bold #4EA5E8")
+            body.append("  •  VERIFIABLE SECURITY INTELLIGENCE", style="bold #A6CE39")
+            body.append(f"\nv{__version__}  •  LOCAL-FIRST SECURITY OPERATIONS", style="#E8C547")
+            self._rich_console.print(
+                Panel(body, border_style="#A6CE39", padding=(0, 2), expand=False)
+            )
+            return
+
+        top = "╭" + "─" * 62 + "╮"
+        bottom = "╰" + "─" * 62 + "╯"
+        brand = "SHADOW313"
+        identity = "NEXUS  •  VERIFIABLE SECURITY INTELLIGENCE"
+        version = f"v{__version__}  •  LOCAL-FIRST SECURITY OPERATIONS"
+        print(self._c(_C.LIME, top))
+        print(
+            self._c(_C.LIME, "│") + "  "
+            + self._c(_C.GOLD, "SHADOW") + self._c(_C.LIME, "313")
+            + " " * (62 - len(brand) - 2) + self._c(_C.LIME, "│")
+        )
+        print(
+            self._c(_C.LIME, "│") + "  "
+            + self._c(_C.ELECTRIC_BLUE, "NEXUS")
+            + self._c(_C.LIME, "  •  VERIFIABLE SECURITY INTELLIGENCE")
+            + " " * max(0, 62 - len(identity) - 2) + self._c(_C.LIME, "│")
+        )
+        print(
+            self._c(_C.LIME, "│") + "  "
+            + self._c(_C.GOLD, version)
+            + " " * max(0, 62 - len(version) - 2) + self._c(_C.LIME, "│")
+        )
+        print(self._c(_C.LIME, bottom))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
     def info(self, msg: str, prefix: str = "•") -> None:
