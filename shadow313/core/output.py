@@ -108,20 +108,27 @@ class OutputFormatter:
         version = f"v{__version__}  •  LOCAL-FIRST SECURITY OPERATIONS"
         print(self._c(_C.LIME, top))
         print(
-            self._c(_C.LIME, "│") + "  "
-            + self._c(_C.GOLD, "SHADOW") + self._c(_C.LIME, "313")
-            + " " * (62 - len(brand) - 2) + self._c(_C.LIME, "│")
+            self._c(_C.LIME, "│")
+            + "  "
+            + self._c(_C.GOLD, "SHADOW")
+            + self._c(_C.LIME, "313")
+            + " " * (62 - len(brand) - 2)
+            + self._c(_C.LIME, "│")
         )
         print(
-            self._c(_C.LIME, "│") + "  "
+            self._c(_C.LIME, "│")
+            + "  "
             + self._c(_C.ELECTRIC_BLUE, "NEXUS")
             + self._c(_C.LIME, "  •  VERIFIABLE SECURITY INTELLIGENCE")
-            + " " * max(0, 62 - len(identity) - 2) + self._c(_C.LIME, "│")
+            + " " * max(0, 62 - len(identity) - 2)
+            + self._c(_C.LIME, "│")
         )
         print(
-            self._c(_C.LIME, "│") + "  "
+            self._c(_C.LIME, "│")
+            + "  "
             + self._c(_C.GOLD, version)
-            + " " * max(0, 62 - len(version) - 2) + self._c(_C.LIME, "│")
+            + " " * max(0, 62 - len(version) - 2)
+            + self._c(_C.LIME, "│")
         )
         print(self._c(_C.LIME, bottom))
 
