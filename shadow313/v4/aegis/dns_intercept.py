@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 """
 shadow313.v4.aegis.dns_intercept  — NEXUS Complete
 DNS Intercept and OT/ICS/SCADA/Satellite monitoring module.
@@ -19,12 +18,10 @@ Capabilities:
 import json
 import random
 import socket
-import time
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
-from urllib import request as urlreq
+from typing import Any
 
 
 def _now_iso() -> str:
@@ -170,7 +167,8 @@ class DNSInterceptReport:
                 f"[{entry.timestamp}] [{'SUCCESS' if entry.shield_pct >= 90 else 'WARN'}] "
                 f"SHIELD_STATUS: Integrity Level: {entry.shield_pct}% {entry.shield_status}",
                 f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: {entry.location}",
-                f"[{entry.timestamp}] [SUCCESS] SUCCESS: Resolved IP -> {entry.resolved_ip} (Internal Link Secured)",
+                f"[{entry.timestamp}] [SUCCESS] SUCCESS: Resolved IP -> {entry.resolved_ip} "
+                "(Internal Link Secured)",
                 f"[{entry.timestamp}] [INFO] INIT: Intercepting DNS signal for [{entry.target}]",
             ])
         return "\n".join(lines)
@@ -238,7 +236,9 @@ class DNSInterceptor:
 
         report.total_intercepted = len(report.entries)
         report.high_risk_count   = sum(1 for e in report.entries if e.risk in ("HIGH","CRITICAL"))
-        report.ot_systems_found  = list(set(e.ot_type for e in report.entries if e.ot_type != "UNKNOWN"))
+        report.ot_systems_found = list(
+            {entry.ot_type for entry in report.entries if entry.ot_type != "UNKNOWN"}
+        )
         return report
 
     def scan_ot_systems(self) -> DNSInterceptReport:
@@ -396,7 +396,10 @@ class DNSInterceptModule:
                 threat_indicators  = indicators,
             )
             result["geo_deck"] = deck
-            self.out.success(f"Geo deck: {deck['totalTraces']} traces, {deck['criticalCount']} critical")
+            self.out.success(
+                f"Geo deck: {deck['totalTraces']} traces, "
+                f"{deck['criticalCount']} critical"
+            )
 
         if save and result:
             Path(save).write_text(json.dumps(result, indent=2, default=str))
