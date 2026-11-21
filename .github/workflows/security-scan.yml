@@ -233,15 +233,15 @@ jobs:
                       "fixed": finding.get("FixedVersion"),
                       "severity": severity,
                   }
-                  if severity == "CRITICAL" or item["fixed"]:
+                  if item["fixed"]:
                       actionable.append(item)
                   else:
                       unpatched.append(item)
 
           print(f"Trivy actionable CRITICAL/HIGH findings: {len(actionable)}")
-          print(f"Trivy HIGH findings without a published fixed version: {len(unpatched)}")
+          print(f"Trivy HIGH/CRITICAL findings without a published fixed version: {len(unpatched)}")
           if unpatched:
-              print("::warning::Debian/vendor has not published a fixed package version for these HIGH findings; see retained SARIF/JSON artifacts.")
+              print("::warning::Debian/vendor has not published a fixed package version for these HIGH/CRITICAL findings; see retained SARIF/JSON artifacts.")
           if actionable:
               for item in actionable:
                   print(f"::error::{item['severity']} {item['id']} {item['package']} {item['installed']} -> {item['fixed'] or 'no fixed version'}")
