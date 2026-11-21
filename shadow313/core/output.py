@@ -45,7 +45,11 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = f"Shadow313 NEXUS v{__version__} | Verifiable Security Intelligence | Ottawa, ON, Canada"
+BANNER = (
+    f"SHADOW313 NEXUS  |  v{__version__}\n"
+    "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
+)
+BANNER_WIDTH = 62
 
 
 class OutputFormatter:
@@ -78,15 +82,41 @@ class OutputFormatter:
 
     # ── Banner ────────────────────────────────────────────────────────────────
     def banner(self) -> None:
-        if self.fmt == "json":
+        if self.fmt in ("json", "markdown"):
             return
+
+        top = "╔" + "═" * BANNER_WIDTH + "╗"
+        bottom = "╚" + "═" * BANNER_WIDTH + "╝"
+        title = f"SHADOW313 NEXUS  |  v{__version__}"
+        tagline = "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
+        welcome = "WELCOME TO SHADOW313 NEXUS"
+
         if self._has_rich:
+            from rich.align import Align
+            from rich.box import DOUBLE
+            from rich.panel import Panel
             from rich.text import Text
 
-            t = Text(BANNER, style="bold cyan")
-            self._rich_console.print(t)
-        else:
-            print(self._c(_C.CYAN, BANNER))
+            body = Text()
+            body.append("⬡  SHADOW313 NEXUS", style="bold bright_cyan")
+            body.append(f"  v{__version__}\n", style="bold white")
+            body.append(tagline + "\n", style="cyan")
+            body.append(welcome, style="bold bright_magenta")
+            self._rich_console.print(
+                Panel(Align.center(body), box=DOUBLE, border_style="bright_cyan", padding=(1, 2))
+            )
+            return
+
+        lines = (
+            top,
+            "║" + title.center(BANNER_WIDTH) + "║",
+            "║" + tagline.center(BANNER_WIDTH) + "║",
+            "║" + welcome.center(BANNER_WIDTH) + "║",
+            bottom,
+        )
+        for index, line in enumerate(lines):
+            color = _C.PURPLE if index in (0, 4) else _C.CYAN
+            print(self._c(color, line))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
     def info(self, msg: str, prefix: str = "•") -> None:
