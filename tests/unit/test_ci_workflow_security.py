@@ -131,6 +131,7 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     assert "bandit==1.9.4" in workflow
     assert "Enforce dependency and SAST results" in workflow
     assert "BANDIT_OUTCOME" in workflow
+    assert 'report.get("errors")' in workflow
     assert "--exit-zero" in workflow
     assert "--severity-level high" not in workflow
     assert "issue_severity" in workflow
