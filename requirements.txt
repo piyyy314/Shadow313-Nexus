@@ -33,3 +33,4 @@ click>=8.2.1
 python-dotenv>=1.2.4
 pyyaml>=6.0.3
 toml>=0.10.2
+filelock>=4.2.1  # CVE-2026-112940 fix
