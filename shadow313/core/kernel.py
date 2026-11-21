@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.core.kernel  — v4
 Central orchestration layer: module registry, command bus, lifecycle management.
@@ -12,15 +11,17 @@ BUG FIXES vs v1:
   - ai_status() called list_models() even when backend was 'disabled' — fixed.
   - Kernel had no __repr__ for debugging — added.
 """
-import importlib
-import time
-import traceback
-from typing import Any, Callable
 
-from .config    import Config
-from .session   import Session
-from .output    import OutputFormatter
+from __future__ import annotations
+import importlib
+import traceback
+from collections.abc import Callable
+from typing import Any
+
 from .ai_engine import AIEngine
+from .config import Config
+from .output import OutputFormatter
+from .session import Session
 
 
 class Kernel:
