@@ -1,3 +1,7 @@
+"""Shadow313 DNS interception and OT/ICS/SCADA monitoring module.
+
+Provides DNS resolution logging, OT/ICS profile correlation, and geo-traced
+threat-intelligence reporting.
 """
 
 from __future__ import annotations
@@ -11,13 +15,12 @@ from pathlib import Path
 from typing import Any
 
 
-
 def _now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
 def _now_log() -> str:
-    return datetime.now(timezone.utc).strftime("%H:%M:%S")
+    return datetime.now(UTC).strftime("%H:%M:%S")
 
 
 # ── OT/ICS System Profiles ────────────────────────────────────────────────────
