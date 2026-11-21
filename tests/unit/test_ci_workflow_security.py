@@ -85,6 +85,9 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     assert "Run Ruff on changed Python files" in workflow
     assert "Run Black on changed Shadow313 files" in workflow
     assert "Run yamllint on changed workflow files" in workflow
+    assert "set -o pipefail" in workflow
+    assert "$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" in workflow
+    assert 'select(.status != "removed")' in workflow
     for line in workflow.splitlines():
         if any(
             command in line
