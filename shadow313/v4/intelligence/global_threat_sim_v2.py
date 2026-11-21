@@ -24,7 +24,6 @@ import random
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-
 # ── Q2-Q3 2026 Worldwide Threat Catalog ──────────────────────────────────────
 
 GLOBAL_THREATS_2026: list[dict] = [
