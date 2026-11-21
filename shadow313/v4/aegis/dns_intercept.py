@@ -193,16 +193,19 @@ class DNSInterceptor:
     def intercept(self, target: str) -> DNSInterceptEntry:
         """Intercept and analyze a DNS query for a target domain."""
         # Look up profile
-        profile = OT_SYSTEM_PROFILES.get(target, {
-            "ot_type":     "UNKNOWN",
-            "port":        0,
-            "protocol":    "UNKNOWN",
-            "description": "Unknown system — no OT profile found",
-            "location":    "Unknown",
-            "shield_pct":  50.0,
-            "shield_status":"UNKNOWN",
-            "risk": "MEDIUM",
-        })
+        profile = OT_SYSTEM_PROFILES.get(
+            target,
+            {
+                "ot_type": "UNKNOWN",
+                "port": 0,
+                "protocol": "UNKNOWN",
+                "description": "Unknown system — no OT profile found",
+                "location": "Unknown",
+                "shield_pct": 50.0,
+                "shield_status": "UNKNOWN",
+                "risk": "MEDIUM",
+            },
+        )
 
         # Attempt real DNS resolution
         resolved_ip = self._resolve(target)
@@ -266,6 +269,7 @@ class DNSInterceptor:
 
 # ── Geo-Traced Intel Deck ─────────────────────────────────────────────────────
 
+
 class GeoTracedIntelDeck:
     """
     Generates geo-traced intelligence decks matching GEO_TRACED_INTEL_DECK format.
@@ -327,6 +331,7 @@ class GeoTracedIntelDeck:
 
 
 # ── DNS Intercept Module ──────────────────────────────────────────────────────
+
 
 class DNSInterceptModule:
     """shadow313.v4.aegis.dns_intercept — DNS Intercept command handler."""
