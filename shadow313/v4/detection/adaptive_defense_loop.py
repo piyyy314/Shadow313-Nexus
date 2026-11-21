@@ -36,7 +36,9 @@ logger = logging.getLogger(__name__)
 
 
 def _fingerprint_id(prefix: str, value: str) -> str:
-    digest = hashlib.md5(value.encode(), usedforsecurity=False).hexdigest()[:8].upper()
+    digest = hashlib.md5(
+        value.encode(), usedforsecurity=False
+    ).hexdigest()[:8].upper()
     return f"{prefix}-{digest}"
 
 
