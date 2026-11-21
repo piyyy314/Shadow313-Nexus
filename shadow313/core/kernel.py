@@ -135,6 +135,12 @@ class Kernel:
         ("siem", "shadow313.v3.siem.siem.SIEMModule"),
         ("collab", "shadow313.v3.collab.collab.CollabModule"),
         ("malware", "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule"),
+        # V4 platform command modules (CLI-dispatched namespaces)
+        ("nexus", "shadow313.v4.nexus.nexus.NEXUSModule"),
+        ("temporal", "shadow313.v4.temporal_binding.temporal_binding.TemporalBindingModule"),
+        ("stix", "shadow313.v4.stix.stix_handler.STIXModule"),
+        ("mobile_api", "shadow313.v4.mobile_api.mobile_api.MobileAPIModule"),
+        ("finetune", "shadow313.v4.finetune_ui.finetune_ui.FineTuneModule"),
         # V4 NEXUS Complete modules
         ("orchestrate", "shadow313.v4.agent.orchestrator.OrchestratorModule"),
         ("nexus_router", "shadow313.v4.nexus_router.nexus_router.NexusRouterModule"),
