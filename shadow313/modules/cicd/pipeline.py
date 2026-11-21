@@ -26,9 +26,9 @@ SECRET_PATTERNS = [
 class CICDPipeline:
     def __init__(self, repo_path: str = "."):
         self.repo_path = Path(repo_path)
-        self._findings: list[Dict] = []
+        self._findings: list[dict[str, Any]] = []
 
-    def scan_secrets(self, paths: list[str] | None = None) -> Dict:
+    def scan_secrets(self, paths: list[str] | None = None) -> dict[str, Any]:
         findings = []
         scan_paths = [Path(p) for p in (paths or [str(self.repo_path)])]
         for sp in scan_paths:
@@ -72,7 +72,7 @@ class CICDPipeline:
             logger.warning("Secret scan failed for %s: %s", path, exc)
         return findings
 
-    def generate_sarif(self) -> Dict:
+    def generate_sarif(self) -> dict[str, Any]:
         rules = []
         results = []
         for f in self._findings:
