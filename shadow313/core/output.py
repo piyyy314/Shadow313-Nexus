@@ -35,6 +35,9 @@ class _C:
     WHITE = "\033[97m"
     DIM = "\033[2m"
     PURPLE = "\033[95m"
+    GOLD = "\033[38;5;220m"
+    LIME = "\033[38;5;154m"
+    ELECTRIC_BLUE = "\033[38;5;75m"
 
 
 SEVERITY_COLORS = {

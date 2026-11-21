@@ -221,7 +221,7 @@ class DNSInterceptor:
             shield_status= profile["shield_status"],
             shield_pct   = profile["shield_pct"],
             location     = profile["location"],
-            status       = "SUCCESS" if resolved_ip else "FAILED",
+            status       = "SUCCESS" if resolved_ip and resolved_ip != "UNRESOLVED" else "FAILED",
             risk         = profile["risk"],
         )
         self._intercepts.append(entry)
@@ -332,7 +332,7 @@ class GeoTracedIntelDeck:
 # ── DNS Intercept Module ──────────────────────────────────────────────────────
 
 class DNSInterceptModule:
-    """shadow313.v4.aegis.dns_intercept — DNS Intercept. Registered: dns_intercept_ot"""
+    """shadow313.v4.aegis.dns_intercept — DNS Intercept command handler."""
 
     def __init__(self, kernel) -> None:
         self.kernel      = kernel
@@ -342,6 +342,8 @@ class DNSInterceptModule:
         self.geo_deck    = GeoTracedIntelDeck()
 
     def register(self, kernel) -> None:
+        # Canonical namespace for the current CLI; retain the legacy alias.
+        kernel.register("dns_intercept", self.run)
         kernel.register("dns_intercept_ot", self.run)
 
     def run(
