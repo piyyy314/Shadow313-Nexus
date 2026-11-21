@@ -178,6 +178,16 @@ Docs:
     p_sess.add_argument("--purge", metavar="UUID")
     p_sess.add_argument("--rekey", metavar="UUID")
 
+    # ── OmniSkill management ─────────────────────────────────────────────────
+    p_skill = sub.add_parser("skill", help="Discover, inspect, and validate local OmniSkills")
+    p_skill.add_argument("--root", help="Repository root or skills/ directory")
+    skill_sub = p_skill.add_subparsers(dest="skill_action", required=True)
+    skill_sub.add_parser("list", help="List installed repository skills")
+    p_skill_show = skill_sub.add_parser("show", help="Display a skill entrypoint")
+    p_skill_show.add_argument("skill_id")
+    p_skill_validate = skill_sub.add_parser("validate", help="Validate skill metadata and references")
+    p_skill_validate.add_argument("skill_id", nargs="?", help="Skill ID; omit to validate all skills")
+
     # ── update ────────────────────────────────────────────────────────────────
     p_upd = sub.add_parser("update", help="Update local databases (CVE, ExploitDB, KEV, EPSS)")
     p_upd.add_argument("--db",      metavar="DB", choices=["cve","exploitdb","kev","epss","all"], required=True)
@@ -426,6 +436,16 @@ Docs:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args   = parser.parse_args(argv)
+
+    # Skill discovery is local and standard-library-only; do not boot the NEXUS kernel.
+    if args.command == "skill":
+        from shadow313.cli.skills import run_skill_command
+        skill_args = argparse.Namespace(
+            root=args.root,
+            action=args.skill_action,
+            skill_id=getattr(args, "skill_id", None),
+        )
+        return run_skill_command(skill_args)
 
     if args.command is None:
         _boot(args)
