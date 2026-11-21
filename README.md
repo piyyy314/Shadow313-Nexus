@@ -67,6 +67,24 @@ For the API and dashboard extras, install `.[dashboard]`; other optional
 features may require their corresponding extras. Check the live CI workflow
 for the authoritative status of a specific commit.
 
+## OmniSkill CLI
+
+Shadow313 NEXUS includes local discovery and structural validation for skills
+stored in the repository's `skills/` directory. These commands use only the
+Python standard library and do not start the NEXUS kernel or AI services:
+
+```bash
+shadow313 skill list
+shadow313 skill show shadow313-nexus-engineer
+shadow313 skill validate
+shadow313 skill validate shadow313-nexus-engineer
+```
+
+To point the command at another checkout, pass its repository root before the
+subcommand, for example `shadow313 skill --root /path/to/Shadow313-Nexus list`.
+The validator checks required entrypoint metadata and local Markdown references;
+it is a structural check, not a full OmniSkill behavioral evaluation.
+
 ## Local AI and API
 
 The default AI backend is local Ollama at `http://localhost:11434`. Select it
