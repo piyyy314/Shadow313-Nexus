@@ -45,7 +45,7 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = f"Shadow313 NEXUS v{__version__} | Verifiable Security Intelligence | Ottawa, ON, Canada"
+BANNER = f"Shadow313 NEXUS v{__version__} | LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
 
 
 class OutputFormatter:
@@ -78,15 +78,56 @@ class OutputFormatter:
 
     # ── Banner ────────────────────────────────────────────────────────────────
     def banner(self) -> None:
-        if self.fmt == "json":
+        """Print the boxed Shadow313 NEXUS identity header."""
+        if self.fmt in ("json", "sarif", "junit"):
             return
+
+        top = "╔" + "═" * 76 + "╗"
+        bottom = "╚" + "═" * 76 + "╝"
+        brand = f"  SHADOW313  NEXUS  |  v{__version__}"
+        tagline = "  LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
+        mission = "  DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE"
+        rows = (brand, tagline, mission)
+
         if self._has_rich:
+            from rich.box import DOUBLE
+            from rich.panel import Panel
             from rich.text import Text
 
-            t = Text(BANNER, style="bold cyan")
-            self._rich_console.print(t)
-        else:
-            print(self._c(_C.CYAN, BANNER))
+            content = Text()
+            content.append("◈  ", style="bold bright_yellow")
+            content.append("SHADOW313", style="bold bright_green")
+            content.append("  NEXUS", style="bold bright_cyan")
+            content.append(f"  v{__version__}", style="bold bright_blue")
+            content.append("\\n")
+            content.append("   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE", style="bold bright_cyan")
+            content.append("\\n")
+            content.append("   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE", style="bold bright_green")
+            self._rich_console.print(
+                Panel(
+                    content,
+                    box=DOUBLE,
+                    border_style="bright_green",
+                    padding=(0, 2),
+                    expand=False,
+                )
+            )
+            return
+
+        print(self._c(_C.YELLOW, top))
+        print(
+            self._c(_C.GREEN, "║") + self._c(_C.YELLOW, " ◈ ") +
+            self._c(_C.GREEN, brand.ljust(74)) + self._c(_C.GREEN, "║")
+        )
+        print(
+            self._c(_C.GREEN, "║") + self._c(_C.CYAN, tagline.ljust(77)) +
+            self._c(_C.GREEN, "║")
+        )
+        print(
+            self._c(_C.GREEN, "║") + self._c(_C.BLUE, mission.ljust(77)) +
+            self._c(_C.GREEN, "║")
+        )
+        print(self._c(_C.YELLOW, bottom))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
     def info(self, msg: str, prefix: str = "•") -> None:
