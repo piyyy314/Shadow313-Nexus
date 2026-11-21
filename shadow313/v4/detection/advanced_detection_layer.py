@@ -78,6 +78,9 @@ class IsolationTree:
         self.left.fit(left_data, depth + 1)
         self.right.fit(right_data, depth + 1)
 
+    def path_length(self, point: list[float], depth: int = 0) -> float:
+        if self.split_feature is None or self.split_value is None:
+            return depth + self._c(self.size)
 
         if point[self.split_feature] < self.split_value:
             return self.left.path_length(point, depth + 1) if self.left else depth
@@ -100,10 +103,9 @@ class IsolationForest:
     Score > 0.6 = anomaly, Score > 0.8 = high confidence anomaly.
     """
 
-    def __init__(self, n_trees: int = 50, max_samples: int = 256,
-                 contamination: float = 0.1):
-        self.n_trees      = n_trees
-        self.max_samples  = max_samples
+    def __init__(self, n_trees: int = 50, max_samples: int = 256, contamination: float = 0.1):
+        self.n_trees = n_trees
+        self.max_samples = max_samples
         self.contamination = contamination
         self.trees: list[IsolationTree] = []
         self._c_norm: float = 0.0
@@ -130,14 +132,11 @@ class IsolationForest:
         if not self._fitted or not self.trees or self._c_norm == 0:
             return 0.5
 
-        avg_path = statistics.mean(
-            tree.path_length(point) for tree in self.trees
-        )
+        avg_path = statistics.mean(tree.path_length(point) for tree in self.trees)
         score = 2.0 ** (-avg_path / self._c_norm)
         return score
 
-    def is_anomaly(self, point: list[float],
-                   threshold: float = 0.65) -> bool:
+    def is_anomaly(self, point: list[float], threshold: float = 0.65) -> bool:
         return self.anomaly_score(point) > threshold
 
 
@@ -171,7 +170,7 @@ class StatisticalProcessControl:
 
         data = list(self._history)
         mean = statistics.mean(data)
-        std  = statistics.stdev(data) if len(data) > 1 else 0.0
+        std = statistics.stdev(data) if len(data) > 1 else 0.0
 
         if std == 0:
             return {"signals": [], "out_of_control": False, "value": value}
@@ -191,7 +190,7 @@ class StatisticalProcessControl:
         # Rule 3: 6 consecutive trending
         if len(data) >= 6:
             last6 = data[-6:]
-            diffs = [last6[i+1] - last6[i] for i in range(5)]
+            diffs = [last6[i + 1] - last6[i] for i in range(5)]
             if all(d > 0 for d in diffs) or all(d < 0 for d in diffs):
                 signals.append("spc_rule3:6_consecutive_trend")
 
@@ -235,9 +234,9 @@ class MLAnomalyProfiler:
       [7] error_rate          — backspace/delete frequency
     """
 
-    ANOMALY_THRESHOLD     = 0.65   # Isolation Forest score threshold
-    SPC_WINDOW            = 30     # SPC history window
-    MIN_BASELINE_SESSIONS = 15     # Minimum sessions before ML detection
+    ANOMALY_THRESHOLD = 0.65  # Isolation Forest score threshold
+    SPC_WINDOW = 30  # SPC history window
+    MIN_BASELINE_SESSIONS = 15  # Minimum sessions before ML detection
 
     def __init__(self):
         # account → IsolationForest
@@ -254,28 +253,27 @@ class MLAnomalyProfiler:
         self._account_roles: dict[str, str] = {}
         self._lock = threading.Lock()
 
-    def _extract_features(self, keystrokes: list,
-                           commands: list[str],
-                           session_duration: float = 0.0) -> list[float]:
+    def _extract_features(
+        self, keystrokes: list, commands: list[str], session_duration: float = 0.0
+    ) -> list[float]:
         """Extract 8-dimensional feature vector from session data."""
         if not keystrokes:
             return [0.0] * 8
 
-        dwells  = [k.dwell_ms for k in keystrokes]
+        dwells = [k.dwell_ms for k in keystrokes]
         flights = []
         for i in range(len(keystrokes) - 1):
-            f = (keystrokes[i+1].press_ts - keystrokes[i].press_ts) * 1000
+            f = (keystrokes[i + 1].press_ts - keystrokes[i].press_ts) * 1000
             flights.append(f)
 
         dwell_mean = statistics.mean(dwells)
-        dwell_std  = statistics.stdev(dwells) if len(dwells) > 1 else 0.0
-        dwell_cv   = dwell_std / dwell_mean if dwell_mean > 0 else 0.0
+        dwell_std = statistics.stdev(dwells) if len(dwells) > 1 else 0.0
+        dwell_cv = dwell_std / dwell_mean if dwell_mean > 0 else 0.0
 
         flight_mean = statistics.mean(flights) if flights else 0.0
 
         duration = session_duration or (
-            (keystrokes[-1].release_ts - keystrokes[0].press_ts)
-            if len(keystrokes) > 1 else 1.0
+            (keystrokes[-1].release_ts - keystrokes[0].press_ts) if len(keystrokes) > 1 else 1.0
         )
         duration_min = max(duration / 60, 1e-6)
         wpm = len(keystrokes) / 5 / duration_min
@@ -286,7 +284,7 @@ class MLAnomalyProfiler:
             freq = {}
             for c in commands:
                 freq[c] = freq.get(c, 0) + 1
-            entropy = -sum((v/total) * math.log2(v/total) for v in freq.values())
+            entropy = -sum((v / total) * math.log2(v / total) for v in freq.values())
             diversity = len(freq) / total
         else:
             entropy = 0.0
@@ -294,8 +292,9 @@ class MLAnomalyProfiler:
 
         # Error rate (backspace/delete keys)
         error_keys = {"backspace", "delete", "\x7f", "\x08"}
-        error_rate = sum(1 for k in keystrokes
-                        if k.key.lower() in error_keys) / max(len(keystrokes), 1)
+        error_rate = sum(1 for k in keystrokes if k.key.lower() in error_keys) / max(
+            len(keystrokes), 1
+        )
 
         return [
             dwell_mean,
@@ -308,10 +307,14 @@ class MLAnomalyProfiler:
             error_rate,
         ]
 
-    def record_baseline_session(self, account: str, role: str,
-                                  keystrokes: list,
-                                  commands: list[str],
-                                  session_duration: float = 0.0) -> None:
+    def record_baseline_session(
+        self,
+        account: str,
+        role: str,
+        keystrokes: list,
+        commands: list[str],
+        session_duration: float = 0.0,
+    ) -> None:
         """Record a normal session to build the ML baseline."""
         features = self._extract_features(keystrokes, commands, session_duration)
 
@@ -321,10 +324,7 @@ class MLAnomalyProfiler:
 
             # Initialize SPC controllers
             if account not in self._spc:
-                self._spc[account] = [
-                    StatisticalProcessControl(self.SPC_WINDOW)
-                    for _ in range(8)
-                ]
+                self._spc[account] = [StatisticalProcessControl(self.SPC_WINDOW) for _ in range(8)]
 
             # Update SPC with baseline values
             for i, val in enumerate(features):
@@ -340,15 +340,13 @@ class MLAnomalyProfiler:
             if len(self._baselines[account]) >= self.MIN_BASELINE_SESSIONS:
                 mean_features = [
                     statistics.mean(
-                        self._baselines[account][j][i]
-                        for j in range(len(self._baselines[account]))
+                        self._baselines[account][j][i] for j in range(len(self._baselines[account]))
                     )
                     for i in range(8)
                 ]
                 # Replace or add this account's mean to peer group
                 self._peer_baselines[role] = [
-                    f for f in self._peer_baselines[role]
-                    if f != mean_features  # Remove old entry
+                    f for f in self._peer_baselines[role] if f != mean_features  # Remove old entry
                 ]
                 self._peer_baselines[role].append(mean_features)
 
@@ -358,10 +356,9 @@ class MLAnomalyProfiler:
                     peer_forest.fit(self._peer_baselines[role])
                     self._peer_forests[role] = peer_forest
 
-    def evaluate_session(self, account: str,
-                          keystrokes: list,
-                          commands: list[str],
-                          session_duration: float = 0.0) -> dict:
+    def evaluate_session(
+        self, account: str, keystrokes: list, commands: list[str], session_duration: float = 0.0
+    ) -> dict:
         """
         Evaluate a live session using ML anomaly detection.
         Returns detection result with anomaly scores and signals.
@@ -388,8 +385,14 @@ class MLAnomalyProfiler:
 
         # Check 2: SPC out-of-control signals
         feature_names = [
-            "dwell_mean", "dwell_cv", "flight_mean", "wpm",
-            "entropy", "diversity", "duration", "error_rate"
+            "dwell_mean",
+            "dwell_cv",
+            "flight_mean",
+            "wpm",
+            "entropy",
+            "diversity",
+            "duration",
+            "error_rate",
         ]
         if spc_controllers:
             for i, (ctrl, name) in enumerate(zip(spc_controllers, feature_names, strict=True)):
@@ -404,9 +407,7 @@ class MLAnomalyProfiler:
         if peer_forest:
             peer_score = peer_forest.anomaly_score(features)
             if peer_score > self.ANOMALY_THRESHOLD:
-                signals.append(
-                    f"peer_group_isolation:score={peer_score:.3f}"
-                )
+                signals.append(f"peer_group_isolation:score={peer_score:.3f}")
 
         fired = len(signals)
         if fired >= 3:
@@ -422,8 +423,9 @@ class MLAnomalyProfiler:
             "technique": "T1078",
             "fix": "IDENTITY-6",
             "account": account,
-            "features": {name: round(val, 3)
-                        for name, val in zip(feature_names, features, strict=True)},
+            "features": {
+                name: round(val, 3) for name, val in zip(feature_names, features, strict=True)
+            },
             "isolation_score": round(iso_score, 3),
             "signals": signals,
             "confidence": confidence,
@@ -434,15 +436,17 @@ class MLAnomalyProfiler:
 
 # ── IDENTITY-7: LOTLAuthBypassDetector ───────────────────────────────────────
 
+
 @dataclass
 class AuthEvent:
     """Represents an authentication event from any source."""
+
     account: str
-    auth_type: str        # "kerberos", "ntlm", "oauth", "saml", "basic", "certificate"
+    auth_type: str  # "kerberos", "ntlm", "oauth", "saml", "basic", "certificate"
     src_ip: str
-    dst_service: str      # target service/host
+    dst_service: str  # target service/host
     timestamp: float
-    ticket_id: str = ""   # Kerberos ticket ID or token ID
+    ticket_id: str = ""  # Kerberos ticket ID or token ID
     success: bool = True
     metadata: dict = field(default_factory=dict)
 
@@ -467,26 +471,44 @@ class LOTLAuthBypassDetector:
 
     # Service accounts should never authenticate interactively
     SERVICE_ACCOUNT_PATTERNS = {
-        "svc_", "service_", "_svc", "_service", "sa_", "_sa",
-        "sql", "iis", "exchange", "sharepoint", "backup",
+        "svc_",
+        "service_",
+        "_svc",
+        "_service",
+        "sa_",
+        "_sa",
+        "sql",
+        "iis",
+        "exchange",
+        "sharepoint",
+        "backup",
     }
 
     # NTLM should not appear for accounts that normally use Kerberos
     LATERAL_MOVEMENT_SERVICES = {
-        "smb", "wmi", "winrm", "psexec", "dcom", "rdp",
-        "445", "135", "5985", "5986", "3389",
+        "smb",
+        "wmi",
+        "winrm",
+        "psexec",
+        "dcom",
+        "rdp",
+        "445",
+        "135",
+        "5985",
+        "5986",
+        "3389",
     }
 
     # Cloud metadata services — credential theft indicators
     METADATA_SERVICES = {
         "169.254.169.254",  # AWS/Azure/GCP metadata
         "metadata.google.internal",
-        "169.254.170.2",    # ECS metadata
-        "fd00:ec2::254",    # AWS IPv6 metadata
+        "169.254.170.2",  # ECS metadata
+        "fd00:ec2::254",  # AWS IPv6 metadata
     }
 
-    TICKET_REUSE_WINDOW = 3600   # 1 hour — same ticket from different IP
-    NTLM_BASELINE_WINDOW = 86400 # 24 hours — track NTLM vs Kerberos ratio
+    TICKET_REUSE_WINDOW = 3600  # 1 hour — same ticket from different IP
+    NTLM_BASELINE_WINDOW = 86400  # 24 hours — track NTLM vs Kerberos ratio
 
     def __init__(self):
         # account → list of AuthEvents
@@ -494,16 +516,19 @@ class LOTLAuthBypassDetector:
         # ticket_id → (account, src_ip, timestamp)
         self._ticket_registry: dict[str, tuple[str, str, float]] = {}
         # account → {auth_type: count} baseline
-        self._auth_type_baseline: dict[str, dict[str, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
+        self._auth_type_baseline: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
         # account → known services
         self._known_services: dict[str, set[str]] = defaultdict(set)
         self._lock = threading.Lock()
 
-    def record_baseline(self, account: str, auth_type: str,
-                         src_ip: str, dst_service: str,
-                         timestamp: float | None = None) -> None:
+    def record_baseline(
+        self,
+        account: str,
+        auth_type: str,
+        src_ip: str,
+        dst_service: str,
+        timestamp: float | None = None,
+    ) -> None:
         """Record normal authentication patterns to build baseline."""
         ts = timestamp or time.time()
         with self._lock:
@@ -528,8 +553,7 @@ class LOTLAuthBypassDetector:
         if event.auth_type == "kerberos" and event.ticket_id:
             if event.ticket_id in ticket_reg:
                 orig_account, orig_ip, orig_ts = ticket_reg[event.ticket_id]
-                if (orig_ip != event.src_ip and
-                        ts - orig_ts < self.TICKET_REUSE_WINDOW):
+                if orig_ip != event.src_ip and ts - orig_ts < self.TICKET_REUSE_WINDOW:
                     signals.append(
                         f"kerberos_ticket_reuse:"
                         f"ticket={event.ticket_id[:16]}... "
@@ -539,9 +563,7 @@ class LOTLAuthBypassDetector:
         # Register ticket
         if event.ticket_id:
             with self._lock:
-                self._ticket_registry[event.ticket_id] = (
-                    event.account, event.src_ip, ts
-                )
+                self._ticket_registry[event.ticket_id] = (event.account, event.src_ip, ts)
 
         # Signal 2: NTLM auth for account that normally uses Kerberos
         if event.auth_type == "ntlm":
@@ -553,34 +575,30 @@ class LOTLAuthBypassDetector:
                     f"(kerb_baseline={kerb_count})"
                 )
             # NTLM to lateral movement service
-            if any(svc in event.dst_service.lower()
-                   for svc in self.LATERAL_MOVEMENT_SERVICES):
-                signals.append(
-                    f"ntlm_lateral_movement:dst={event.dst_service}"
-                )
+            if any(svc in event.dst_service.lower() for svc in self.LATERAL_MOVEMENT_SERVICES):
+                signals.append(f"ntlm_lateral_movement:dst={event.dst_service}")
 
         # Signal 3: Cloud metadata service access (SSRF credential theft)
-        if any(ms in event.src_ip or ms in event.dst_service
-               for ms in self.METADATA_SERVICES):
+        if any(ms in event.src_ip or ms in event.dst_service for ms in self.METADATA_SERVICES):
             signals.append(
-                f"metadata_service_access:"
-                f"src={event.src_ip} dst={event.dst_service}"
+                f"metadata_service_access:" f"src={event.src_ip} dst={event.dst_service}"
             )
 
         # Signal 4: Service account interactive authentication
         account_lower = event.account.lower()
         if any(pat in account_lower for pat in self.SERVICE_ACCOUNT_PATTERNS):
-            if event.dst_service.lower() in {"interactive", "console",
-                                              "rdp", "ssh", "terminal"}:
+            if event.dst_service.lower() in {"interactive", "console", "rdp", "ssh", "terminal"}:
                 signals.append(
                     f"service_account_interactive:"
                     f"account={event.account} service={event.dst_service}"
                 )
 
         # Signal 5: Authentication to unknown service
-        if (known_services and
-                event.dst_service.lower() not in known_services and
-                len(known_services) >= 5):
+        if (
+            known_services
+            and event.dst_service.lower() not in known_services
+            and len(known_services) >= 5
+        ):
             signals.append(
                 f"unknown_service_auth:dst={event.dst_service} "
                 f"(known={len(known_services)} services)"
@@ -590,25 +608,26 @@ class LOTLAuthBypassDetector:
         # PtH: NTLM auth succeeds but no prior password/Kerberos auth
         # in the same session window
         if event.auth_type == "ntlm" and event.success:
-            recent = [e for e in history
-                      if ts - e.timestamp < 300
-                      and e.auth_type in {"password", "kerberos"}]
+            recent = [
+                e
+                for e in history
+                if ts - e.timestamp < 300 and e.auth_type in {"password", "kerberos"}
+            ]
             if not recent and not baseline.get("ntlm", 0):
                 signals.append(
-                    "pass_the_hash_indicator:"
-                    "ntlm_success_without_prior_password_auth"
+                    "pass_the_hash_indicator:" "ntlm_success_without_prior_password_auth"
                 )
 
         # Signal 7: OAuth token used from unexpected service
         if event.auth_type == "oauth":
-            token_services = {e.dst_service for e in history
-                             if e.auth_type == "oauth"}
-            if (token_services and
-                    event.dst_service not in token_services and
-                    len(token_services) >= 3):
+            token_services = {e.dst_service for e in history if e.auth_type == "oauth"}
+            if (
+                token_services
+                and event.dst_service not in token_services
+                and len(token_services) >= 3
+            ):
                 signals.append(
-                    f"oauth_service_anomaly:"
-                    f"token_used_for_new_service={event.dst_service}"
+                    f"oauth_service_anomaly:" f"token_used_for_new_service={event.dst_service}"
                 )
 
         # Record event
@@ -641,15 +660,17 @@ class LOTLAuthBypassDetector:
 
 # ── IDENTITY-8: TLSInspectionEngine ──────────────────────────────────────────
 
+
 @dataclass
 class TLSClientHello:
     """Parsed TLS ClientHello fields for JA3 fingerprinting."""
-    version: int                    # TLS version
-    cipher_suites: list[int]        # Cipher suite list
-    extensions: list[int]           # Extension type list
-    elliptic_curves: list[int]      # Supported groups
-    elliptic_curve_formats: list[int] # EC point formats
-    sni: str = ""                   # Server Name Indication
+
+    version: int  # TLS version
+    cipher_suites: list[int]  # Cipher suite list
+    extensions: list[int]  # Extension type list
+    elliptic_curves: list[int]  # Supported groups
+    elliptic_curve_formats: list[int]  # EC point formats
+    sni: str = ""  # Server Name Indication
     alpn: list[str] = field(default_factory=list)  # ALPN protocols
     timestamp: float = 0.0
 
@@ -657,6 +678,7 @@ class TLSClientHello:
 @dataclass
 class TLSServerHello:
     """Parsed TLS ServerHello fields for JA3S fingerprinting."""
+
     version: int
     cipher_suite: int
     extensions: list[int]
@@ -666,6 +688,7 @@ class TLSServerHello:
 @dataclass
 class TLSCertificate:
     """TLS certificate metadata for anomaly detection."""
+
     subject_cn: str
     issuer_cn: str
     not_before: float
@@ -719,8 +742,8 @@ class TLSInspectionEngine:
     LEGITIMATE_ALPN = {"h2", "http/1.1", "spdy/3.1", "h3"}
 
     # Certificate validity thresholds
-    MAX_CERT_LIFETIME_DAYS = 398   # CA/Browser Forum limit
-    MIN_CERT_LIFETIME_DAYS = 1     # Too short = suspicious
+    MAX_CERT_LIFETIME_DAYS = 398  # CA/Browser Forum limit
+    MIN_CERT_LIFETIME_DAYS = 1  # Too short = suspicious
     SUSPICIOUS_CERT_LIFETIME_DAYS = 30  # Very short = suspicious
 
     def __init__(self):
@@ -740,10 +763,10 @@ class TLSInspectionEngine:
         Compute JA3 fingerprint from TLS ClientHello.
         JA3 = MD5(SSLVersion,Ciphers,Extensions,EllipticCurves,EllipticCurveFormats)
         """
+
         # Filter GREASE values (0x?a?a pattern)
         def filter_grease(values: list[int]) -> list[int]:
-            return [v for v in values
-                    if not (v & 0x0f0f == 0x0a0a and v >> 8 == (v & 0xff))]
+            return [v for v in values if not (v & 0x0F0F == 0x0A0A and v >> 8 == (v & 0xFF))]
 
         ciphers = filter_grease(hello.cipher_suites)
         extensions = filter_grease(hello.extensions)
@@ -763,33 +786,28 @@ class TLSInspectionEngine:
     @staticmethod
     def compute_ja3s(hello: TLSServerHello) -> str:
         """Compute JA3S fingerprint from TLS ServerHello."""
+
         def filter_grease(values: list[int]) -> list[int]:
-            return [v for v in values
-                    if not (v & 0x0f0f == 0x0a0a and v >> 8 == (v & 0xff))]
+            return [v for v in values if not (v & 0x0F0F == 0x0A0A and v >> 8 == (v & 0xFF))]
 
         extensions = filter_grease(hello.extensions)
         ja3s_str = (
-            f"{hello.version},"
-            f"{hello.cipher_suite},"
-            f"{'-'.join(str(e) for e in extensions)}"
+            f"{hello.version}," f"{hello.cipher_suite}," f"{'-'.join(str(e) for e in extensions)}"
         )
         return hashlib.md5(ja3s_str.encode(), usedforsecurity=False).hexdigest()
 
-    def record_tls_record(self, dst_ip: str, record_size: int,
-                           timestamp: float | None = None) -> None:
+    def record_tls_record(
+        self, dst_ip: str, record_size: int, timestamp: float | None = None
+    ) -> None:
         """Record a TLS record for timing analysis."""
         with self._lock:
-            self._tls_records[dst_ip].append(
-                (timestamp or time.time(), record_size)
-            )
+            self._tls_records[dst_ip].append((timestamp or time.time(), record_size))
 
-    def record_client_hello(self, dst_ip: str,
-                             hello: TLSClientHello) -> None:
+    def record_client_hello(self, dst_ip: str, hello: TLSClientHello) -> None:
         with self._lock:
             self._client_hellos[dst_ip].append(hello)
 
-    def record_certificate(self, dst_ip: str,
-                            cert: TLSCertificate) -> None:
+    def record_certificate(self, dst_ip: str, cert: TLSCertificate) -> None:
         with self._lock:
             self._certificates[dst_ip] = cert
 
@@ -798,9 +816,12 @@ class TLSInspectionEngine:
         with self._lock:
             self._whitelist_ja3.add(ja3_hash)
 
-    def analyze(self, dst_ip: str,
-                 hello: TLSClientHello | None = None,
-                 server_hello: TLSServerHello | None = None) -> dict:
+    def analyze(
+        self,
+        dst_ip: str,
+        hello: TLSClientHello | None = None,
+        server_hello: TLSServerHello | None = None,
+    ) -> dict:
         """
         Comprehensive TLS analysis for a destination.
         Returns detection result with all signals.
@@ -820,16 +841,12 @@ class TLSInspectionEngine:
             # Check against malicious database
             if ja3_hash in self.MALICIOUS_JA3:
                 signals.append(
-                    f"malicious_ja3:{ja3_hash[:16]}... "
-                    f"({self.MALICIOUS_JA3[ja3_hash]})"
+                    f"malicious_ja3:{ja3_hash[:16]}... " f"({self.MALICIOUS_JA3[ja3_hash]})"
                 )
 
             # Check against whitelist
             if whitelist and ja3_hash not in whitelist:
-                signals.append(
-                    f"unknown_ja3:{ja3_hash[:16]}... "
-                    f"(not in environment whitelist)"
-                )
+                signals.append(f"unknown_ja3:{ja3_hash[:16]}... " f"(not in environment whitelist)")
 
             # SNI anomalies
             if not hello.sni:
@@ -848,15 +865,13 @@ class TLSInspectionEngine:
             # Very few cipher suites = fingerprint of specific tool
             if len(hello.cipher_suites) < 3:
                 signals.append(
-                    f"minimal_cipher_suites:{len(hello.cipher_suites)} "
-                    f"(typical browser: 15-20)"
+                    f"minimal_cipher_suites:{len(hello.cipher_suites)} " f"(typical browser: 15-20)"
                 )
 
             # No extensions = old/custom TLS stack
             if len(hello.extensions) < 5:
                 signals.append(
-                    f"minimal_extensions:{len(hello.extensions)} "
-                    f"(typical browser: 10-15)"
+                    f"minimal_extensions:{len(hello.extensions)} " f"(typical browser: 10-15)"
                 )
 
         # ── JA3S Analysis ─────────────────────────────────────
@@ -865,8 +880,7 @@ class TLSInspectionEngine:
             ja3s_hash = self.compute_ja3s(server_hello)
             if ja3s_hash in self.MALICIOUS_JA3S:
                 signals.append(
-                    f"malicious_ja3s:{ja3s_hash[:16]}... "
-                    f"({self.MALICIOUS_JA3S[ja3s_hash]})"
+                    f"malicious_ja3s:{ja3s_hash[:16]}... " f"({self.MALICIOUS_JA3S[ja3s_hash]})"
                 )
 
         # ── Certificate Analysis ──────────────────────────────
@@ -877,9 +891,7 @@ class TLSInspectionEngine:
 
             # Self-signed certificate
             if cert.is_self_signed:
-                signals.append(
-                    f"self_signed_cert:cn={cert.subject_cn}"
-                )
+                signals.append(f"self_signed_cert:cn={cert.subject_cn}")
 
             # Very short lifetime (< 30 days)
             if lifetime_days < self.SUSPICIOUS_CERT_LIFETIME_DAYS:
@@ -890,9 +902,7 @@ class TLSInspectionEngine:
 
             # Expired certificate
             if remaining_days < 0:
-                signals.append(
-                    f"expired_cert:{abs(remaining_days):.0f}d_ago"
-                )
+                signals.append(f"expired_cert:{abs(remaining_days):.0f}d_ago")
 
             # No SANs (Subject Alternative Names) — old/custom cert
             if cert.san_count == 0:
@@ -905,14 +915,12 @@ class TLSInspectionEngine:
         # ── TLS Record Timing Analysis ────────────────────────
         if len(records) >= 5:
             timestamps = [r[0] for r in records]
-            intervals = [timestamps[i+1] - timestamps[i]
-                        for i in range(len(timestamps)-1)]
+            intervals = [timestamps[i + 1] - timestamps[i] for i in range(len(timestamps) - 1)]
 
             if intervals:
                 mean_iv = statistics.mean(intervals)
                 if mean_iv > 0:
-                    cv = (statistics.stdev(intervals) / mean_iv
-                          if len(intervals) > 1 else 0)
+                    cv = statistics.stdev(intervals) / mean_iv if len(intervals) > 1 else 0
 
                     # Very regular TLS record timing = C2 beacon
                     if cv < 0.15 and len(records) >= 8:
@@ -923,8 +931,11 @@ class TLSInspectionEngine:
 
                     # Consistent record sizes = automated traffic
                     sizes = [r[1] for r in records]
-                    size_cv = (statistics.stdev(sizes) / statistics.mean(sizes)
-                               if statistics.mean(sizes) > 0 else 0)
+                    size_cv = (
+                        statistics.stdev(sizes) / statistics.mean(sizes)
+                        if statistics.mean(sizes) > 0
+                        else 0
+                    )
                     if size_cv < 0.05 and len(records) >= 8:
                         signals.append(
                             f"uniform_record_sizes:cv={size_cv:.3f} "
@@ -957,10 +968,7 @@ class TLSInspectionEngine:
     def get_environment_baseline(self) -> dict:
         """Return JA3 hashes seen in this environment for whitelist building."""
         with self._lock:
-            all_hellos = [
-                h for hellos in self._client_hellos.values()
-                for h in hellos
-            ]
+            all_hellos = [h for hellos in self._client_hellos.values() for h in hellos]
         ja3_counts: dict[str, int] = defaultdict(int)
         for hello in all_hellos:
             ja3 = self.compute_ja3(hello)
@@ -969,8 +977,7 @@ class TLSInspectionEngine:
         return {
             "total_connections": len(all_hellos),
             "unique_ja3": len(ja3_counts),
-            "top_ja3": sorted(ja3_counts.items(),
-                              key=lambda x: -x[1])[:10],
+            "top_ja3": sorted(ja3_counts.items(), key=lambda x: -x[1])[:10],
         }
 
 
@@ -979,14 +986,14 @@ class TLSInspectionEngine:
 ADVANCED_DETECTION_CONTROLS = {
     "IDENTITY-6": (
         "MLAnomalyProfiler",
-        "T1078 insider/context manipulation — Isolation Forest + SPC + peer-group ML"
+        "T1078 insider/context manipulation — Isolation Forest + SPC + peer-group ML",
     ),
     "IDENTITY-7": (
         "LOTLAuthBypassDetector",
-        "T1078 LOTL auth bypasses — Kerberos reuse, PtH, SSRF, OAuth anomaly"
+        "T1078 LOTL auth bypasses — Kerberos reuse, PtH, SSRF, OAuth anomaly",
     ),
     "IDENTITY-8": (
         "TLSInspectionEngine",
-        "T1071 encrypted C2 — JA3/JA3S/JARM + cert anomaly + timing analysis"
+        "T1071 encrypted C2 — JA3/JA3S/JARM + cert anomaly + timing analysis",
     ),
 }
