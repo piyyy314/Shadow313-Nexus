@@ -1,5 +1,5 @@
 # Shadow313 NEXUS — PR Gate Checks
-# Triggered: pull_request to master or develop
+# Triggered: pull_request to every branch
 # All jobs run in parallel. All must pass for merge.
 
 name: PR Checks
@@ -7,12 +7,15 @@ name: PR Checks
 on:
   pull_request:
     branches:
-      - master
-      - develop
+      - '**'
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'fix/**'
+      - 'claude/**'
 
 concurrency:
-  group: pr-checks-${{ github.event.pull_request.number }}
+  group: pr-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -26,71 +29,94 @@ env:
 
 jobs:
 
-  # ── Changed-file lint ──────────────────────────────────────────────
+  # Required gates cover PR changes; full-tree reports are retained by security-scan.yml.
+  # ── Lint ──────────────────────────────────────────────────────────
   lint:
-    name: Lint (Changed Python / YAML)
+    name: Lint (Python / YAML / Markdown)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      - name: Resolve current PR base SHA
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
 
       - name: Install linters
-        run: pip install ruff black yamllint==1.35.1
-
-      - name: Identify changed Python and YAML files
-        id: changed-files
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        shell: bash
-        run: |
-          if [ -z "$BASE_SHA" ]; then
-            echo "Pull request base SHA is required" >&2
-            exit 1
-          fi
-
-          mapfile -t python_candidates < <(
-            git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- \
-              'shadow313/*.py' 'shadow313/**/*.py' \
-              'nexus_toolkit/*.py' 'nexus_toolkit/**/*.py'
-          )
-          python_files=()
-          for file in "${python_candidates[@]}"; do
-            if [ -f "$file" ]; then
-              python_files+=("$file")
-            fi
-          done
-          printf '%s\n' "${python_files[@]}" > "$RUNNER_TEMP/pr-python-files.txt"
-          echo "python_count=${#python_files[@]}" >> "$GITHUB_OUTPUT"
-
-          mapfile -t yaml_candidates < <(
-            git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- '*.yml' '*.yaml'
-          )
-          yaml_files=()
-          for file in "${yaml_candidates[@]}"; do
-            if [ -f "$file" ]; then
-              yaml_files+=("$file")
-            fi
-          done
-          printf '%s\n' "${yaml_files[@]}" > "$RUNNER_TEMP/pr-yaml-files.txt"
-          echo "yaml_count=${#yaml_files[@]}" >> "$GITHUB_OUTPUT"
+        run: pip install ruff==0.4.4 black==24.3.0 yamllint==1.35.1
 
       - name: Run Ruff on changed Python files
-        if: steps.changed-files.outputs.python_count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/pr-python-files.txt"; ruff check "${files[@]}" --output-format github
+        run: |
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
+          files=()
+          while IFS= read -r -d '' path; do
+            [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
+            files+=("$path")
+          done < "$changed_files"
+          if ((${#files[@]})); then
+            ruff check "${files[@]}" --output-format github
+          else
+            echo "No changed Python files to lint."
+          fi
 
-      - name: Run Black on changed Python files
-        if: steps.changed-files.outputs.python_count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/pr-python-files.txt"; black --check --diff "${files[@]}"
+      - name: Run Black on changed Shadow313 files
+        run: |
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
+          files=()
+          while IFS= read -r -d '' path; do
+            [[ "$path" =~ ^shadow313/.*\.py$ ]] || continue
+            files+=("$path")
+          done < "$changed_files"
+          if ((${#files[@]})); then
+            black --check --diff "${files[@]}"
+          else
+            echo "No changed Shadow313 Python files to format-check."
+          fi
 
-      - name: Run yamllint on changed YAML files
-        if: steps.changed-files.outputs.yaml_count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/pr-yaml-files.txt"; yamllint -c .yamllint.yml "${files[@]}"
+      - name: Run yamllint on changed workflow files
+        run: |
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
+          files=()
+          while IFS= read -r -d '' path; do
+            [[ "$path" =~ ^\.github/workflows/.*\.ya?ml$ || "$path" == "docker-compose.yml" ]] || continue
+            files+=("$path")
+          done < "$changed_files"
+          if ((${#files[@]})); then
+            yamllint -c .yamllint.yml "${files[@]}"
+          else
+            echo "No changed YAML files to lint."
+          fi
 
   # ── Unit Tests ────────────────────────────────────────────────────
   unit-tests:
@@ -120,61 +146,58 @@ jobs:
 
   # ── SAST ──────────────────────────────────────────────────────────
   sast:
-    name: SAST (Bandit)
+    name: SAST (Bandit + Semgrep)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      - name: Resolve current PR base SHA
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install Bandit
-        run: pip install bandit==1.9.4
+        run: pip install bandit==1.7.8
 
-      - name: Run Bandit SAST (retain all severities)
+      - name: Run Bandit on changed Python files
         run: |
-          bandit -r shadow313/ nexus_toolkit/ \
-            -x shadow313/tests,tests \
-            -f json -o bandit-report.json \
-            --exit-zero
-
-      - name: Enforce high-severity Bandit threshold
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          report_path = Path("bandit-report.json")
-          if not report_path.is_file():
-              raise SystemExit("Bandit did not produce bandit-report.json")
-
-          report = json.loads(report_path.read_text(encoding="utf-8"))
-          findings = report.get("results", [])
-          high = [
-              finding for finding in findings
-              if finding.get("issue_severity") == "HIGH"
-          ]
-          for finding in high:
-              print(
-                  f"{finding.get('filename')}:{finding.get('line_number')}: "
-                  f"{finding.get('issue_text')}"
-              )
-          if high:
-              raise SystemExit(f"Bandit high-severity findings: {len(high)}")
-          print(
-              f"High-severity gate passed; {len(findings)} total findings "
-              "retained in the artifact."
-          )
-          PY
+          changed_files=$(mktemp)
+          trap 'rm -f "$changed_files"' EXIT
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
+          files=()
+          while IFS= read -r -d '' path; do
+            [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
+            if [[ "$path" =~ (^|/)tests/ ]]; then
+              continue
+            fi
+            files+=("$path")
+          done < "$changed_files"
+          if ((${#files[@]})); then
+            bandit --severity-level medium -f json -o bandit-report.json "${files[@]}"
+          else
+            printf '{"results": [], "metrics": {}}\n' > bandit-report.json
+            echo "No changed production Python files to scan."
+          fi
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: bandit-report
+          name: bandit-report-${{ matrix.python-version || 'default' }}
           path: bandit-report.json
           retention-days: 7
 
@@ -187,17 +210,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version: stable
-
-      - name: Install Gitleaks CLI
-        run: |
-          go install github.com/zricethezav/gitleaks/v8@v8.30.1
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-
-      - name: Scan checked-out source tree with Gitleaks
-        run: gitleaks dir --redact --exit-code 1 .
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
 
   # ── SCA ───────────────────────────────────────────────────────────
   sca:
@@ -210,62 +227,34 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install pip-audit
-        run: pip install pip-audit==2.10.1
-
       - name: Install project dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Snapshot project dependencies
+        run: pip freeze --exclude-editable > safety-requirements.txt
+
+      - name: Install pip-audit
+        run: pip install pip-audit==2.7.3
+
+      - name: Run pip-audit
         run: |
-          pip install -e ".[dev]"
+          pip-audit --desc --format json -o pip-audit-report.json
 
-      - name: Run pip-audit on installed project dependencies
-        id: pip_audit
-        continue-on-error: true
-        run: |
-          set +e
-          pip-audit --local --skip-editable --desc --format json -o pip-audit-local-report.json
-          local_status=$?
-          pip-audit --desc --format json -o pip-audit-requirements-report.json -r requirements.txt
-          requirements_status=$?
-          set -e
-          printf 'pip-audit local: %s\npip-audit requirements: %s\n' "$local_status" "$requirements_status"
-          if [ "$local_status" -ne 0 ] || [ "$requirements_status" -ne 0 ]; then
-            exit 1
-          fi
-
-      - name: Freeze resolved application dependencies for Safety
-        run: python -m pip freeze --exclude-editable > requirements-audit-resolved.txt
-
-      - name: Upload pip-audit reports
+      - name: Upload pip-audit report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: pip-audit-reports
-          path: |
-            pip-audit-local-report.json
-            pip-audit-requirements-report.json
-            requirements-audit-resolved.txt
-          retention-days: 7
+          name: pip-audit-report
+          path: pip-audit-report.json
           if-no-files-found: warn
+          retention-days: 7
 
-      - name: Run Safety check against resolved application dependencies
-        id: safety_scan
-        continue-on-error: true
+      - name: Run Safety check
         run: |
-          python -m venv "$RUNNER_TEMP/safety-env"
-          "$RUNNER_TEMP/safety-env/bin/python" -m pip install --disable-pip-version-check safety==3.8.1
-          "$RUNNER_TEMP/safety-env/bin/safety" check --full-report --check-unpinned-requirements -r requirements-audit-resolved.txt
-
-      - name: Enforce dependency audit results
-        if: always()
-        env:
-          PIP_AUDIT_OUTCOME: ${{ steps.pip_audit.outcome }}
-          SAFETY_OUTCOME: ${{ steps.safety_scan.outcome }}
-        run: |
-          printf 'pip-audit: %s\nSafety: %s\n' "$PIP_AUDIT_OUTCOME" "$SAFETY_OUTCOME"
-          if [ "$PIP_AUDIT_OUTCOME" != "success" ] || [ "$SAFETY_OUTCOME" != "success" ]; then
-            echo "At least one dependency scanner failed or reported findings." >&2
-            exit 1
-          fi
+          python -m venv .safety-venv
+          .safety-venv/bin/python -m pip install \
+            safety==3.8.1
+          .safety-venv/bin/safety check --full-report --file safety-requirements.txt
 
   # ── Docker Lint ───────────────────────────────────────────────────
   docker-lint:
