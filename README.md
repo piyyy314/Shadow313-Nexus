@@ -469,3 +469,23 @@ MIT — see [LICENSE](LICENSE)
 
 
 
+
+
+### Advanced NEXUS CLI commands
+
+The CLI exposes the advanced kernel services directly:
+
+| Command | Purpose |
+| --- | --- |
+| `shadow313 orchestrate --intent "review security posture"` | Run the AI agent orchestrator |
+| `shadow313 nexus-router --health` | Check NEXUS route health |
+| `shadow313 ledger --stats` | Inspect the append-only audit ledger |
+| `shadow313 workflow --list` | List registered workflows |
+| `shadow313 tools --list-tools` | Browse the advanced security tool catalog |
+| `shadow313 simulate --sim ndi` | Run NDI regression simulations |
+| `shadow313 collab --list` | List collaborative analyst sessions |
+| `shadow313 attack-map` | Map current session findings to MITRE ATT&CK |
+| `shadow313 pe-analyze --file <path>` | Analyze a PE file |
+| `shadow313 dns-intercept --target <domain>` | Inspect DNS exposure for an authorized OT/ICS target |
+
+Run `shadow313 commands --all` to inspect command-to-handler registration, including unavailable handlers.
