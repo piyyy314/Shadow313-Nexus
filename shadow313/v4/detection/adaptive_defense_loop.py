@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 Shadow313 v3 — Adaptive Defense Loop (ADL)
 ===========================================
@@ -21,24 +20,30 @@ Just the real closed loop between detection, response, and evolution.
 Author: Shadow313 Core Team
 """
 
+from __future__ import annotations
 
 import hashlib
 import json
-import random
-import secrets  # for cryptographic operations
-import time
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Optional
 import logging
+import random
+import tempfile
+import time
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
+from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
+def _fingerprint_id(prefix: str, value: str) -> str:
+    digest = hashlib.md5(value.encode(), usedforsecurity=False).hexdigest()[:8].upper()
+    return f"{prefix}-{digest}"
+
+
 # ── Shared paths ───────────────────────────────────────────────────────────────
-ADL_LOG_PATH    = Path("/tmp/shadow313_adl_log.jsonl")
-ADL_REPORT_PATH = Path("/tmp/shadow313_adl_report.json")
-EVOLVED_RULES   = Path("/tmp/shadow313_evolved_rules.json")
+ADL_LOG_PATH    = Path(tempfile.gettempdir()) / "shadow313_adl_log.jsonl"
+ADL_REPORT_PATH = Path(tempfile.gettempdir()) / "shadow313_adl_report.json"
+EVOLVED_RULES   = Path(tempfile.gettempdir()) / "shadow313_evolved_rules.json"
 
 
 # ── Data models ────────────────────────────────────────────────────────────────
@@ -51,7 +56,7 @@ class DetectionEvent:
     score:       float
     technique:   str
     host:        str
-    timestamp:   str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:   str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     evaded:      bool = False  # True if red team bypassed detection
 
 
@@ -65,7 +70,7 @@ class RedTeamResult:
     ttps_evaded:     list[str]
     detection_rate:  float
     evasion_gaps:    list[str]    # specific blind spots found
-    timestamp:       str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:       str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -77,7 +82,7 @@ class EvolvedRule:
     trigger:      str          # what gap triggered this rule
     rule_content: dict
     confidence:   float
-    generated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    generated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     deployed:     bool = False
 
 
@@ -94,7 +99,7 @@ class FusedIntelligence:
     evasion_gaps:       list[str]
     high_risk_gaps:     list[str]   # gaps with CVSS-equivalent risk ≥ 7.0
     recommended_rules:  list[str]
-    timestamp:          str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:          str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 # ── Blue Team: Detection Engine Interface ──────────────────────────────────────
@@ -272,7 +277,7 @@ class RedTeamEmulator:
         detection_rate = len(detected) / len(ttps) if ttps else 0.0
 
         result = RedTeamResult(
-            run_id=f"RED-{hashlib.md5(f'{persona_name}{time.time_ns()}'.encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
+            run_id=_fingerprint_id("RED", f"{persona_name}{time.time_ns()}"),
             persona=persona_name,
             ttps_attempted=ttps,
             ttps_detected=detected,
@@ -365,10 +370,19 @@ class IntelligenceFusion:
     def _recommend_rules(self, gap_techniques: list[str]) -> list[str]:
         """Map evasion gaps to specific rule recommendations."""
         rule_map = {
-            "T1055.012": "Add Sysmon Event 7 unsigned DLL load monitoring + Event 8 CreateRemoteThread",
+            "T1055.012": (
+                "Add Sysmon Event 7 unsigned DLL load monitoring + "
+                "Event 8 CreateRemoteThread"
+            ),
             "T1195.002": "Add certificate subject vs. vendor folder mismatch detection",
-            "T1021.002": "Add Event 4648 explicit credential use + WSMan PSRemoting correlation",
-            "T1071.004": "Remove rate threshold; add structural DNS label analysis (count + max length)",
+            "T1021.002": (
+                "Add Event 4648 explicit credential use + "
+                "WSMan PSRemoting correlation"
+            ),
+            "T1071.004": (
+                "Remove rate threshold; add structural DNS label analysis "
+                "(count + max length)"
+            ),
             "T1218":     "Add HKCU CLSID InprocServer32 registration monitoring",
             "T1056.001": "Requires EDR integration — out of SIEM scope",
             "T1113":     "Requires EDR integration — out of SIEM scope",
@@ -490,7 +504,7 @@ class RuleEvolutionEngine:
                 continue
 
             rule = EvolvedRule(
-                rule_id=f"RULE-{hashlib.md5(f'{technique}{time.time_ns()}'.encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
+                rule_id=_fingerprint_id("RULE", f"{technique}{time.time_ns()}"),
                 rule_type=template["rule_type"],
                 technique=technique,
                 trigger=gap,
@@ -562,14 +576,14 @@ class AdaptiveDefenseLoop:
 
     def _audit(self, entry_type: str, data: dict) -> str:
         entry_json = json.dumps({"type": entry_type, "data": data}, sort_keys=True)
-        chain_hash = hashlib.sha256((self._prev_hash + entry_json).encode(), usedforsecurity=False).hexdigest()
+        chain_hash = hashlib.sha256((self._prev_hash + entry_json).encode()).hexdigest()
         self._prev_hash = chain_hash
         self.audit_chain.append(chain_hash)
         with open(ADL_LOG_PATH, "a") as f:
             f.write(json.dumps({
                 "type": entry_type, "data": data,
                 "chain_hash": chain_hash,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }) + "\n")
         return chain_hash
 
@@ -593,21 +607,21 @@ class AdaptiveDefenseLoop:
     def run_cycle(self, cycle_num: int) -> dict:
         """Execute one full Blue→Red→Fuse→Evolve cycle."""
         print(f"\n{'━'*70}")
-        logger.debug("  ADAPTIVE DEFENSE LOOP — Cycle {cycle_num}/{self.max_cycles}")
+        logger.debug("  ADAPTIVE DEFENSE LOOP — Cycle %s/%s", cycle_num, self.max_cycles)
         print(f"{'━'*70}")
 
         cycle_start = time.perf_counter()
 
         # ── Stage 1: Blue Team — process telemetry ─────────────────────────────
-        print(f"\n[BLUE]  Processing telemetry batch (50 events)...")
+        print("\n[BLUE]  Processing telemetry batch (50 events)...")
         batch = self._generate_telemetry_batch(50)
-        detections = self.blue.process_telemetry_batch(batch)
+        self.blue.process_telemetry_batch(batch)
         blue_summary = self.blue.get_coverage_summary()
 
-        logger.debug("  Processed:      {blue_summary['total_processed']} events")
-        logger.debug("  Detected:       {blue_summary['detected']} alerts")
-        logger.debug("  Missed:         {blue_summary['missed']} (false negatives)")
-        logger.debug("  Detection rate: {blue_summary['detection_rate']:.1%}")
+        logger.debug("  Processed:      %s events", blue_summary["total_processed"])
+        logger.debug("  Detected:       %s alerts", blue_summary["detected"])
+        logger.debug("  Missed:         %s (false negatives)", blue_summary["missed"])
+        logger.debug("  Detection rate: %.1f%%", blue_summary["detection_rate"] * 100)
 
         self._audit("BLUE_CYCLE", {
             "cycle": cycle_num,
@@ -617,7 +631,7 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 2: Red Team — run all 4 APT personas ─────────────────────────
-        print(f"\n[RED]   Running APT persona simulations...")
+        print("\n[RED]   Running APT persona simulations...")
         red_results = []
         for persona in ["APT29", "APT41", "Lazarus", "FIN7"]:
             result = self.red.run_persona_simulation(persona)
@@ -634,15 +648,15 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 3: Intelligence Fusion — compute the delta ───────────────────
-        print(f"\n[FUSE]  Computing Blue/Red delta...")
+        print("\n[FUSE]  Computing Blue/Red delta...")
         intel = self.fusion.fuse(self.blue, self.red)
 
-        logger.debug("  Evasion gaps:   {len(intel.evasion_gaps)}")
-        logger.debug("  High-risk gaps: {len(intel.high_risk_gaps)}")
+        logger.debug("  Evasion gaps:   %s", len(intel.evasion_gaps))
+        logger.debug("  High-risk gaps: %s", len(intel.high_risk_gaps))
         if intel.high_risk_gaps:
             for gap in intel.high_risk_gaps[:3]:
                 risk = IntelligenceFusion.GAP_RISK_SCORES.get(gap, 0)
-                logger.debug("    ⚠ {gap}  risk={risk:.1f}/10")
+                logger.debug("    ⚠ %s  risk=%.1f/10", gap, risk)
 
         self._audit("INTELLIGENCE_FUSION", {
             "cycle":        cycle_num,
@@ -652,16 +666,20 @@ class AdaptiveDefenseLoop:
         })
 
         # ── Stage 4: Rule Evolution — generate new detection rules ─────────────
-        print(f"\n[EVOLVE] Synthesizing new detection rules...")
+        print("\n[EVOLVE] Synthesizing new detection rules...")
         new_rules = self.evolution.synthesize_rules(intel)
         deployed  = self.evolution.deploy_rules(new_rules)
         coverage_gain = self.evolution.estimate_coverage_improvement(new_rules)
 
-        logger.debug("  Rules generated: {len(new_rules)}")
-        logger.debug("  Rules deployed:  {deployed}")
-        logger.debug("  Est. coverage gain: +{coverage_gain:.1%}")
+        logger.debug("  Rules generated: %s", len(new_rules))
+        logger.debug("  Rules deployed:  %s", deployed)
+        logger.debug("  Est. coverage gain: +%.1f%%", coverage_gain * 100)
         for rule in new_rules:
-            logger.debug("    ✓ [{rule.rule_type}] {rule.rule_content.get('title', rule.rule_id)}")
+            logger.debug(
+                "    ✓ [%s] %s",
+                rule.rule_type,
+                rule.rule_content.get("title", rule.rule_id),
+            )
 
         self._audit("RULE_EVOLUTION", {
             "cycle":         cycle_num,
@@ -697,7 +715,11 @@ class AdaptiveDefenseLoop:
         """Run the full adaptive defense loop for max_cycles iterations."""
         print("\n" + "="*70)
         print("  SHADOW313 v3 — ADAPTIVE DEFENSE LOOP")
-        logger.debug("  Cycles: {self.max_cycles}  |  Mode: {'DRY-RUN' if self.dry_run else 'LIVE'}")
+        logger.debug(
+            "  Cycles: %s  |  Mode: %s",
+            self.max_cycles,
+            "DRY-RUN" if self.dry_run else "LIVE",
+        )
         print("="*70)
 
         t_start = time.perf_counter()
@@ -706,6 +728,7 @@ class AdaptiveDefenseLoop:
             self.run_cycle(cycle)
 
         total_ms = (time.perf_counter() - t_start) * 1000
+        logger.debug("Adaptive defense loop completed in %.2f ms", total_ms)
 
         # ── Final report ───────────────────────────────────────────────────────
         total_rules = len(self.evolution.generated_rules)
@@ -737,7 +760,7 @@ class AdaptiveDefenseLoop:
                   f"+{c['coverage_gain']:.1%}")
 
         report = {
-            "run_timestamp":       datetime.now(timezone.utc).isoformat(),
+            "run_timestamp":       datetime.now(UTC).isoformat(),
             "cycles":              self.max_cycles,
             "total_rules":         total_rules,
             "total_coverage_gain": round(total_coverage_gain, 4),
