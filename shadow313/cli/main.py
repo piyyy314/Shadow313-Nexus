@@ -13,7 +13,7 @@ import argparse
 import sys
 from pathlib import Path
 
-# fmt: off  # Preserve the established argparse layout while keeping route changes reviewable.
+# fmt: off
 
 
 def build_parser() -> argparse.ArgumentParser:
