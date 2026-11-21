@@ -52,7 +52,7 @@ def test_main_skill_command_bypasses_kernel(tmp_path: Path, capsys):
     skill = tmp_path / "skills" / "example-skill"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
-        "---\\nname: example-skill\\ndescription: test\\n---\\n# Example\\n",
+        "---\nname: example-skill\ndescription: test\n---\n# Example\n",
         encoding="utf-8",
     )
     assert main(["skill", "--root", str(tmp_path), "list"]) == 0
@@ -65,7 +65,7 @@ def test_main_skill_validate_all(tmp_path: Path, capsys):
     skill = tmp_path / "skills" / "example-skill"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
-        "---\\nname: example-skill\\ndescription: test\\n---\\n# Example\\n",
+        "---\nname: example-skill\ndescription: test\n---\n# Example\n",
         encoding="utf-8",
     )
     assert main(["skill", "--root", str(tmp_path), "validate"]) == 0
