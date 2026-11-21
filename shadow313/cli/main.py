@@ -449,6 +449,62 @@ Docs:
     p_acts.add_argument('--port',       type=int, default=0)
     p_acts.add_argument('--list',       action='store_true')
 
+    # ── Advanced NEXUS service commands ───────────────────────────────────────
+    p_orch = sub.add_parser("orchestrate", help="Run the AI agent orchestrator")
+    p_orch.add_argument("--intent", default="")
+    p_orch.add_argument("--workflow-type", default="research",
+                        choices=["research", "synthesis", "execution", "monitoring", "feedback"])
+    p_orch.add_argument("--tools", default="")
+    p_orch.add_argument("--metrics", action="store_true")
+    p_orch.add_argument("--session-id", default="")
+
+    p_router = sub.add_parser("nexus-router", help="Inspect and test NEXUS request routing")
+    p_router.add_argument("--path", default="/")
+    p_router.add_argument("--method", default="GET")
+    p_router.add_argument("--remote-addr", default="127.0.0.1")
+    p_router.add_argument("--stats", action="store_true")
+    p_router.add_argument("--health", action="store_true")
+    p_router.add_argument("--test-ndi", default="")
+
+    p_ledger = sub.add_parser("ledger", help="Inspect and manage the append-only audit ledger")
+    p_ledger.add_argument("--append", default="")
+    p_ledger.add_argument("--key", default="default")
+    p_ledger.add_argument("--query", default="")
+    p_ledger.add_argument("--diagnose", action="store_true")
+    p_ledger.add_argument("--stats", action="store_true")
+    p_ledger.add_argument("--health", action="store_true")
+    p_ledger.add_argument("--verify", default="")
+    p_ledger.add_argument("--freeze", type=int, default=0)
+    p_ledger.add_argument("--epoch-close", action="store_true")
+
+    p_workflow = sub.add_parser("workflow", help="Register, inspect, and execute workflows")
+    p_workflow.add_argument("--execute", default="")
+    p_workflow.add_argument("--list", action="store_true", dest="list_wf")
+    p_workflow.add_argument("--stats", action="store_true")
+    p_workflow.add_argument("--logs", default="")
+    p_workflow.add_argument("--dlq-depth", action="store_true")
+    p_workflow.add_argument("--register-yaml", default="")
+    p_workflow.add_argument("--sample", action="store_true")
+
+    p_tools = sub.add_parser("tools", help="Browse and run the advanced security tool suite")
+    p_tools.add_argument("--tool", default="")
+    p_tools.add_argument("--target", default="")
+    p_tools.add_argument("--query", default="")
+    p_tools.add_argument("--framework", default="")
+    p_tools.add_argument("--cvss", type=float, default=0.0)
+    p_tools.add_argument("--epss", type=float, default=0.0)
+    p_tools.add_argument("--is-kev", action="store_true")
+    p_tools.add_argument("--list-tools", action="store_true")
+
+    p_sim = sub.add_parser("simulate", help="Run NEXUS component and platform simulations")
+    p_sim.add_argument("--sim", default="all",
+                       choices=["all", "agent", "routing", "circuit_breaker", "memory",
+                                "safety", "temporal", "ndi", "stress", "ledger"])
+    p_sim.add_argument("--full", action="store_false", dest="quick",
+                       help="Run the extended simulation suite")
+    p_sim.add_argument("--n", type=int, default=100)
+    p_sim.add_argument("--save", default="")
+
     return parser
 
 
@@ -497,6 +553,9 @@ def _required_namespaces(args) -> list[str]:
         "threat-actor": ["threat_actor"], "benchmark": ["benchmark"],
         "health": ["health_check"], "doctor": ["health_check"],
         "cadl": ["aegis"], "acts": ["ghost_watch"],
+        "orchestrate": ["orchestrate"], "nexus-router": ["nexus_router"],
+        "ledger": ["ledger"], "workflow": ["workflow"], "tools": ["tools"],
+        "simulate": ["simulate"],
     }
     required = list(routes.get(command, []))
     if command == "network":
@@ -990,6 +1049,34 @@ def _dispatch(kernel, args, parser) -> int:
         else:
             kernel.dispatch('ghost_watch', deploy_decoy=args.deploy, port=args.port)
 
+    elif cmd == "orchestrate":
+        kernel.dispatch("orchestrate", intent=args.intent,
+                        workflow_type=args.workflow_type, tools=args.tools,
+                        metrics=args.metrics, session_id=args.session_id)
+
+    elif cmd == "nexus-router":
+        kernel.dispatch("nexus_router", path=args.path, method=args.method,
+                        remote_addr=args.remote_addr, stats=args.stats,
+                        health=args.health, test_ndi=args.test_ndi)
+
+    elif cmd == "ledger":
+        kernel.dispatch("ledger", append=args.append, key=args.key, query=args.query,
+                        diagnose=args.diagnose, stats=args.stats, health=args.health,
+                        verify=args.verify, freeze=args.freeze, epoch_close=args.epoch_close)
+
+    elif cmd == "workflow":
+        kernel.dispatch("workflow", execute=args.execute, list_wf=args.list_wf,
+                        stats=args.stats, logs=args.logs, dlq_depth=args.dlq_depth,
+                        register_yaml=args.register_yaml, sample=args.sample)
+
+    elif cmd == "tools":
+        kernel.dispatch("tools", tool=args.tool, target=args.target, query=args.query,
+                        framework=args.framework, cvss=args.cvss, epss=args.epss,
+                        is_kev=args.is_kev, list_tools=args.list_tools)
+
+    elif cmd == "simulate":
+        kernel.dispatch("simulate", sim=args.sim, quick=args.quick, n=args.n, save=args.save)
+
     elif cmd == "commands":
         route_map = {
             "recon": "recon", "vuln": "vuln", "exploit": "exploit",
@@ -1006,6 +1093,8 @@ def _dispatch(kernel, args, parser) -> int:
             "ad-audit": "ad_audit", "siem": "siem", "malware": "malware",
             "vanguard": "vanguard", "aegis": "aegis", "ghost-watch": "ghost_watch",
             "quantum-nexus": "quantum_nexus", "satellite": "satellite",
+            "orchestrate": "orchestrate", "nexus-router": "nexus_router",
+            "ledger": "ledger", "workflow": "workflow", "tools": "tools", "simulate": "simulate",
             "threat-actor": "threat_actor", "benchmark": "benchmark",
             "health": "health_check", "doctor": "health_check",
             "cadl": "aegis", "acts": "ghost_watch",
