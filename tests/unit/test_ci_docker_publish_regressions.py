@@ -34,6 +34,7 @@ def test_docker_base_images_match_supported_python_matrix() -> None:
 def test_buildx_uses_supported_no_cache_filters_input() -> None:
     workflow = (ROOT / ".github/workflows/shadow313-ci.yml").read_text(encoding="utf-8")
     assert "no-cache-filters:" in workflow
+    assert "production-base,production" in workflow
     assert "no-cache-filter:" not in workflow
 
 
