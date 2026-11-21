@@ -587,7 +587,7 @@ def _required_namespaces(args) -> list[str]:
         "ledger": ["ledger"], "workflow": ["workflow"], "tools": ["tools"],
         "simulate": ["simulate"], "collab": ["collab"],
         "attack-map": ["attack_map"], "pe-analyze": ["pe_analyze"],
-        "dns-intercept": ["dns_intercept_ot"],
+        "dns-intercept": ["dns_intercept"],
     }
     required = list(routes.get(command, []))
     if command == "network":
