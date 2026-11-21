@@ -16,9 +16,8 @@ Feature vector dimensions:
 from __future__ import annotations
 
 import re
-import tempfile
 from dataclasses import dataclass
-
+from pathlib import PurePosixPath
 
 # ── Log entry ─────────────────────────────────────────────────────────────────
 
@@ -139,15 +138,22 @@ class FeatureExtractor:
 
         # ── Dims 0-4: Event metadata ──────────────────────────────────────────
         v[0] = min(1.0, entry.event_id / 10000.0)
-        v[1] = {
+        severity_scores = {
             "critical": 1.0,
             "high": 0.75,
             "medium": 0.5,
             "low": 0.25,
             "info": 0.0,
-        }.get(entry.severity, 0.0)
-        v[2] = {"process_creation": 0.8, "network_connection": 0.6, "process_access": 0.9,
-                "directory_service_access": 0.7, "file_creation": 0.4}.get(entry.event_type, 0.2)
+        }
+        v[1] = severity_scores.get(entry.severity, 0.0)
+        event_type_scores = {
+            "process_creation": 0.8,
+            "network_connection": 0.6,
+            "process_access": 0.9,
+            "directory_service_access": 0.7,
+            "file_creation": 0.4,
+        }
+        v[2] = event_type_scores.get(entry.event_type, 0.2)
         v[3] = min(1.0, (hash(entry.host) % 1000) / 1000.0)
         v[4] = min(1.0, (hash(entry.user) % 1000) / 1000.0)
 
@@ -172,9 +178,8 @@ class FeatureExtractor:
 
         # ── Dims 15-19: File indicators ───────────────────────────────────────
         fp = entry.file_path
-        normalized_fp = fp.replace("\\", "/").lower()
-        temp_dir = tempfile.gettempdir().replace("\\", "/").lower()
-        v[15] = 1.0 if "/temp/" in normalized_fp or temp_dir in normalized_fp else 0.0
+        path_parts = PurePosixPath(fp.replace("\\", "/")).parts
+        v[15] = 1.0 if "temp" in path_parts or "tmp" in path_parts else 0.0
         v[16] = 1.0 if "\\system32\\" in fp or "\\windows\\" in fp else 0.0
         v[17] = 1.0 if fp.endswith((".ps1", ".vbs", ".js", ".bat", ".cmd", ".hta")) else 0.0
         v[18] = 1.0 if ("7z" in proc or "zip" in proc or "rar" in proc or "-p" in cmd) else 0.0
@@ -195,7 +200,7 @@ class FeatureExtractor:
         v[28] = 1.0 if ("winrm" in cmd or "invoke-command" in cmd) else 0.0
         v[29] = (
             1.0
-            if "psexec" in proc or (parent == "services.exe" and proc == "cmd.exe")
+            if "psexec" in proc or ("services.exe" == parent and "cmd.exe" == proc)
             else 0.0
         )
 
@@ -207,8 +212,7 @@ class FeatureExtractor:
         # dim32: process injection
         v[32] = (
             1.0
-            if entry.event_id == 10
-            and "lsass" in entry.raw.get("TargetImage", "").lower()
+            if entry.event_id == 10 and "lsass" in entry.raw.get("TargetImage", "").lower()
             else 0.0
         )
         # dim33: PE mismatch (process name doesn't match expected path)
@@ -216,14 +220,17 @@ class FeatureExtractor:
         # dim34: file deletion (shadow copies, logs)
         v[34] = (
             1.0
-            if "vssadmin" in proc
-            or ("del" in cmd and ("shadow" in cmd or "log" in cmd))
+            if "vssadmin" in proc or ("del" in cmd and ("shadow" in cmd or "log" in cmd))
             else 0.0
         )
         # dim35: DLL anomaly
         v[35] = 1.0 if ("rundll32" in proc and "appdata" in cmd) else 0.0
         # dim36: token misuse (UAC bypass, SeImpersonate)
-        v[36] = 1.0 if ("fodhelper" in proc or "seimpersonate" in cmd or "token" in cmd) else 0.0
+        v[36] = (
+            1.0
+            if "fodhelper" in proc or "seimpersonate" in cmd or "token" in cmd
+            else 0.0
+        )
 
         return v
 
