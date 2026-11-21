@@ -16,6 +16,8 @@ on:
       - "pyproject.toml"
       - "requirements*.txt"
       - "shadow313/**"
+      - "shadow313_sdk/**"
+      - "shadow313_platform/**"
       - "nexus_toolkit/**"
       - "scripts/**"
   push:
@@ -139,6 +141,9 @@ jobs:
               findings = report.get("results")
               if not isinstance(findings, list):
                   raise ValueError("Bandit JSON report has no results list")
+              errors = report.get("errors")
+              if not isinstance(errors, list) or errors:
+                  raise ValueError("Bandit JSON report contains errors or has no errors list")
           except Exception as exc:
               print(f"Bandit report unavailable or invalid: {exc}", file=sys.stderr)
               sys.exit(1)
@@ -198,7 +203,7 @@ jobs:
         continue-on-error: true
         run: |
           trivy image \
-            --scanners vuln \
+            --scanners vuln,secret \
             --severity CRITICAL,HIGH \
             --format json \
             --output trivy-container.json \
@@ -260,7 +265,7 @@ jobs:
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
-        if: always()
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         with:
           sarif_file: trivy-container.sarif
           category: trivy-container
