@@ -43,7 +43,11 @@ def test_nightly_security_scanners_do_not_mask_build_or_safety_failures() -> Non
     assert "nightly-safety.json || true" not in workflow
     assert "docker build --pull --target production -t shadow313-scan:nightly ." in workflow
     assert "checkov -f Dockerfile --framework dockerfile" in workflow
-    assert "checkov -f docker-compose.yml --framework yaml" in workflow
+    assert "Verify Compose hardening assertions" in workflow
+    assert "cap_drop_all" in workflow
+    assert "no_privileged" in workflow
+    assert "internal_network" in workflow
+    assert "localhost_binding" in workflow
 
 
 def test_pr_safety_scanner_does_not_pin_incompatible_cli_dependencies() -> None:
