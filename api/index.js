@@ -64,13 +64,23 @@ async function readRequestBody(req) {
 }
 
 async function readResponseBody(response) {
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length > MAX_RESPONSE_BYTES) {
-    const error = new Error('Backend response exceeds 2 MiB');
-    error.statusCode = 502;
-    throw error;
+  if (!response.body) return Buffer.alloc(0);
+  const reader = response.body.getReader();
+  const chunks = [];
+  let size = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_RESPONSE_BYTES) {
+      await reader.cancel();
+      const error = new Error('Backend response exceeds 2 MiB');
+      error.statusCode = 502;
+      throw error;
+    }
+    chunks.push(Buffer.from(value));
   }
-  return bytes;
+  return Buffer.concat(chunks, size);
 }
 
 function createHandler(options = {}) {
@@ -202,7 +212,10 @@ function createHandler(options = {}) {
       return json(res, req, statusCode, {
         status: 'unavailable',
         backend_connected: false,
-        error: statusCode === 504 ? 'backend_timeout' : statusCode === 413 ? 'request_too_large' : 'backend_unreachable',
+        error: statusCode === 504 ? 'backend_timeout'
+          : statusCode === 413 ? 'request_too_large'
+            : statusCode === 502 && error.message.includes('Backend response') ? 'backend_response_too_large'
+              : 'backend_unreachable',
         message: statusCode === 504
           ? 'The NEXUS backend did not respond before the gateway timeout.'
           : statusCode === 413
