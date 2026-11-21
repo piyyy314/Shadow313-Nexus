@@ -14,15 +14,17 @@ from shadow313.v4.detection import adaptive_defense_loop
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_gitleaks_workflows_use_the_canonical_go_module():
-    workflow_paths = (
-        ROOT / ".github" / "workflows" / "pr-checks.yml",
-        ROOT / ".github" / "workflows" / "security-scan.yml",
+def test_gitleaks_workflows_use_supported_official_installers():
+    pr_checks = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+        encoding="utf-8"
     )
-    for path in workflow_paths:
-        workflow = path.read_text(encoding="utf-8")
-        assert "go install github.com/zricethezav/gitleaks/v8@" in workflow
-        assert "github.com/gitleaks/gitleaks/v8" not in workflow
+    security_scan = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert "gitleaks/gitleaks-action@" in pr_checks
+    assert "go install github.com/zricethezav/gitleaks/v8@" in security_scan
+    assert "github.com/gitleaks/gitleaks/v8" not in pr_checks + security_scan
 
 
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
