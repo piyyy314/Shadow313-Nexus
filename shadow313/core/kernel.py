@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.core.kernel  — v4
 Central orchestration layer: module registry, command bus, lifecycle management.
@@ -12,15 +11,19 @@ BUG FIXES vs v1:
   - ai_status() called list_models() even when backend was 'disabled' — fixed.
   - Kernel had no __repr__ for debugging — added.
 """
-import importlib
-import time
-import traceback
-from typing import Any, Callable
 
-from .config    import Config
-from .session   import Session
-from .output    import OutputFormatter
+from __future__ import annotations
+
+import importlib
+import traceback
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
 from .ai_engine import AIEngine
+from .config import Config
+from .output import OutputFormatter
+from .session import Session
 
 
 class Kernel:
@@ -36,28 +39,29 @@ class Kernel:
         session_id: str | None = None,
         output_fmt: str | None = None,
         verbose: bool = False,
-        load_v2: bool = True,   # v2 compatibility flag
-        **kwargs,               # absorb future keyword arguments
+        load_v2: bool = True,  # v2 compatibility flag
+        **kwargs,  # absorb future keyword arguments
     ) -> None:
-        self.config  = Config(config_path)
+        self.config = Config(Path(config_path) if config_path is not None else None)
         self.session = Session(
-            sessions_dir = self.config.get("storage", "sessions_dir",
-                                           default="~/.shadow313/sessions"),
-            session_id   = session_id,
-            encrypt      = self.config.get("storage", "encrypt", default=False),
+            sessions_dir=self.config.get(
+                "storage", "sessions_dir", default="~/.shadow313/sessions"
+            ),
+            session_id=session_id,
+            encrypt=self.config.get("storage", "encrypt", default=False),
         )
         fmt = output_fmt or self.config.get("output", "format", default="rich")
         self.out = OutputFormatter(
-            fmt     = fmt,
-            color   = self.config.get("output", "color",   default=True),
-            verbose = verbose or self.config.get("output", "verbose", default=False),
+            fmt=fmt,
+            color=self.config.get("output", "color", default=True),
+            verbose=verbose or self.config.get("output", "verbose", default=False),
         )
         self.ai = AIEngine(self.config.get("ai", default={}))
 
         # Module registry: namespace → handler callable
         self._registry: dict[str, Callable] = {}
         self._load_errors: list[dict] = []  # populated during module loading
-        self._modules:  dict[str, Any]      = {}
+        self._modules: dict[str, Any] = {}
 
         # Auto-load all built-in modules
         self._autoload_modules()
@@ -73,7 +77,7 @@ class Kernel:
     @property
     def load_errors(self) -> list:
         """Return list of module load errors (v2 compatibility)."""
-        return list(getattr(self, '_load_errors', []))
+        return list(getattr(self, "_load_errors", []))
 
     def dispatch(self, namespace: str, **kwargs) -> Any:
         if namespace not in self._registry:
@@ -97,58 +101,58 @@ class Kernel:
     # ── Auto-loader ───────────────────────────────────────────────────────────
     _BUILTIN_MODULES = [
         # V1 modules
-        ("recon",   "shadow313.modules.recon.ReconModule"),
-        ("vuln",    "shadow313.modules.vuln.VulnModule"),
+        ("recon", "shadow313.modules.recon.ReconModule"),
+        ("vuln", "shadow313.modules.vuln.VulnModule"),
         ("exploit", "shadow313.modules.exploit.ExploitModule"),
         ("network", "shadow313.modules.network.NetworkModule"),
         ("defense", "shadow313.modules.defense.DefenseModule"),
         ("quantum", "shadow313.modules.quantum.QuantumModule"),
         ("plugins", "shadow313.modules.plugins.PluginManager"),
-        ("cicd",    "shadow313.modules.cicd.CICDModule"),
-        ("docs",    "shadow313.modules.docs.DocsModule"),
+        ("cicd", "shadow313.modules.cicd.CICDModule"),
+        ("docs", "shadow313.modules.docs.DocsModule"),
         # V2 modules
-        ("rag",          "shadow313.v2.rag.rag_engine.RAGModule"),
-        ("agent",        "shadow313.v2.agent.agent.AgentModule"),
-        ("epss",         "shadow313.v2.vuln_upgrades.epss_kev.EPSSModule"),
-        ("kev",          "shadow313.v2.vuln_upgrades.epss_kev.KEVModule"),
-        ("attack_map",   "shadow313.v2.vuln_upgrades.attack_mapping.ATTACKModule"),
-        ("ml_anomaly",   "shadow313.v2.network_upgrades.ml_anomaly.MLAnomalyModule"),
-        ("ja3",          "shadow313.v2.network_upgrades.ja3_fingerprint.JA3Module"),
-        ("dns_covert",   "shadow313.v2.network_upgrades.dns_covert.DNSCovertModule"),
-        ("campaign",     "shadow313.v2.campaign.campaign.CampaignModule"),
-        ("graph",        "shadow313.v2.graph.intel_graph.GraphModule"),
-        ("dashboard",    "shadow313.v2.dashboard.app.DashboardModule"),
-        ("report",       "shadow313.v2.reports.pdf_report.ReportModule"),
-        ("plugin_sign",  "shadow313.v2.plugin_signing.plugin_signer.PluginSignerModule"),
+        ("rag", "shadow313.v2.rag.rag_engine.RAGModule"),
+        ("agent", "shadow313.v2.agent.agent.AgentModule"),
+        ("epss", "shadow313.v2.vuln_upgrades.epss_kev.EPSSModule"),
+        ("kev", "shadow313.v2.vuln_upgrades.epss_kev.KEVModule"),
+        ("attack_map", "shadow313.v2.vuln_upgrades.attack_mapping.ATTACKModule"),
+        ("ml_anomaly", "shadow313.v2.network_upgrades.ml_anomaly.MLAnomalyModule"),
+        ("ja3", "shadow313.v2.network_upgrades.ja3_fingerprint.JA3Module"),
+        ("dns_covert", "shadow313.v2.network_upgrades.dns_covert.DNSCovertModule"),
+        ("campaign", "shadow313.v2.campaign.campaign.CampaignModule"),
+        ("graph", "shadow313.v2.graph.intel_graph.GraphModule"),
+        ("dashboard", "shadow313.v2.dashboard.app.DashboardModule"),
+        ("report", "shadow313.v2.reports.pdf_report.ReportModule"),
+        ("plugin_sign", "shadow313.v2.plugin_signing.plugin_signer.PluginSignerModule"),
         ("threat_intel", "shadow313.v2.threat_intel.threat_intel.ThreatIntelModule"),
-        ("sandbox",      "shadow313.v2.docker_sandbox.docker_sandbox.SandboxModule"),
-        ("cloud",        "shadow313.v2.cloud_hardening.cloud_hardening.CloudModule"),
-        ("crypto_agility","shadow313.v2.crypto_agility.crypto_agility.CryptoAgilityModule"),
+        ("sandbox", "shadow313.v2.docker_sandbox.docker_sandbox.SandboxModule"),
+        ("cloud", "shadow313.v2.cloud_hardening.cloud_hardening.CloudModule"),
+        ("crypto_agility", "shadow313.v2.crypto_agility.crypto_agility.CryptoAgilityModule"),
         # V3 modules
-        ("browser_recon","shadow313.v3.browser_recon.browser_recon.BrowserReconModule"),
-        ("container_scan","shadow313.v3.container_scan.container_scan.ContainerScanModule"),
-        ("ad_audit",     "shadow313.v3.ad_auditor.ad_auditor.ADAuditModule"),
-        ("siem",         "shadow313.v3.siem.siem.SIEMModule"),
-        ("collab",       "shadow313.v3.collab.collab.CollabModule"),
-        ("malware",      "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule"),
+        ("browser_recon", "shadow313.v3.browser_recon.browser_recon.BrowserReconModule"),
+        ("container_scan", "shadow313.v3.container_scan.container_scan.ContainerScanModule"),
+        ("ad_audit", "shadow313.v3.ad_auditor.ad_auditor.ADAuditModule"),
+        ("siem", "shadow313.v3.siem.siem.SIEMModule"),
+        ("collab", "shadow313.v3.collab.collab.CollabModule"),
+        ("malware", "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule"),
         # V4 NEXUS Complete modules
-        ("orchestrate",  "shadow313.v4.agent.orchestrator.OrchestratorModule"),
+        ("orchestrate", "shadow313.v4.agent.orchestrator.OrchestratorModule"),
         ("nexus_router", "shadow313.v4.nexus_router.nexus_router.NexusRouterModule"),
-        ("ledger",       "shadow313.v4.ledger.ledger_engine.LedgerModule"),
-        ("workflow",     "shadow313.v4.workflow.workflow_engine.WorkflowModule"),
-        ("tools",        "shadow313.v4.tools.advanced_tools.AdvancedToolsModule"),
-        ("simulate",     "shadow313.v4.simulation.simulation_harness.SimulationModule"),
-        ("benchmark",    "shadow313.v4.benchmarks.benchmark_suite.BenchmarkModule"),
+        ("ledger", "shadow313.v4.ledger.ledger_engine.LedgerModule"),
+        ("workflow", "shadow313.v4.workflow.workflow_engine.WorkflowModule"),
+        ("tools", "shadow313.v4.tools.advanced_tools.AdvancedToolsModule"),
+        ("simulate", "shadow313.v4.simulation.simulation_harness.SimulationModule"),
+        ("benchmark", "shadow313.v4.benchmarks.benchmark_suite.BenchmarkModule"),
         ("health_check", "shadow313.v4.health.health_check.HealthModule"),
-        ("update",       "shadow313.v4.update.updater.UpdateModule"),
-        ("vanguard",     "shadow313.v4.vanguard.vanguard.VanguardModule"),
-        ("aegis",        "shadow313.v4.aegis.aegis.AegisModule"),
-        ("ghost_watch",  "shadow313.v4.ghost_watch.ghost_watch.GhostWatchModule"),
-        ("quantum_nexus","shadow313.v4.quantum_nexus.quantum_nexus.QuantumNEXUSModule"),
-        ("satellite",    "shadow313.v4.satellite.satellite.SatelliteModule"),
+        ("update", "shadow313.v4.update.updater.UpdateModule"),
+        ("vanguard", "shadow313.v4.vanguard.vanguard.VanguardModule"),
+        ("aegis", "shadow313.v4.aegis.aegis.AegisModule"),
+        ("ghost_watch", "shadow313.v4.ghost_watch.ghost_watch.GhostWatchModule"),
+        ("quantum_nexus", "shadow313.v4.quantum_nexus.quantum_nexus.QuantumNEXUSModule"),
+        ("satellite", "shadow313.v4.satellite.satellite.SatelliteModule"),
         ("threat_actor", "shadow313.v4.threat_actor.threat_actor.ThreatActorModule"),
         # V4 Aegis sub-modules
-        ("pe_analyze",   "shadow313.v4.aegis.pe_analyzer.PEAnalyzerModule"),
+        ("pe_analyze", "shadow313.v4.aegis.pe_analyzer.PEAnalyzerModule"),
         ("dns_intercept_ot", "shadow313.v4.aegis.dns_intercept.DNSInterceptModule"),
     ]
 
@@ -156,8 +160,8 @@ class Kernel:
         for name, cls_path in self._BUILTIN_MODULES:
             try:
                 mod_path, cls_name = cls_path.rsplit(".", 1)
-                module   = importlib.import_module(mod_path)
-                cls      = getattr(module, cls_name)
+                module = importlib.import_module(mod_path)
+                cls = getattr(module, cls_name)
                 instance = cls(kernel=self)
                 self._modules[name] = instance
                 if hasattr(instance, "register"):
@@ -167,17 +171,13 @@ class Kernel:
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
                 )
                 # Optional dependency missing — expected, log at verbose level
-                self.out.verbose_msg(
-                    f"[kernel] Module '{name}' skipped (missing dep): {exc}"
-                )
+                self.out.verbose_msg(f"[kernel] Module '{name}' skipped (missing dep): {exc}")
             except ImportError as exc:
                 self._load_errors.append(
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
                 )
                 # FIX: distinguish import errors from syntax/runtime errors
-                self.out.verbose_msg(
-                    f"[kernel] Module '{name}' import error: {exc}"
-                )
+                self.out.verbose_msg(f"[kernel] Module '{name}' import error: {exc}")
             except Exception as exc:
                 self._load_errors.append(
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
@@ -198,11 +198,11 @@ class Kernel:
         if available and self.ai.backend == "ollama":
             models = self.ai.list_models()
         return {
-            "backend":   self.ai.backend,
-            "model":     self.ai.model,
-            "endpoint":  self.ai.endpoint,
+            "backend": self.ai.backend,
+            "model": self.ai.model,
+            "endpoint": self.ai.endpoint,
             "available": available,
-            "models":    models,
+            "models": models,
         }
 
     def __repr__(self) -> str:
