@@ -158,7 +158,7 @@ class Kernel:
         ("threat_actor", "shadow313.v4.threat_actor.threat_actor.ThreatActorModule"),
         # V4 Aegis sub-modules
         ("pe_analyze", "shadow313.v4.aegis.pe_analyzer.PEAnalyzerModule"),
-        ("dns_intercept_ot", "shadow313.v4.aegis.dns_intercept.DNSInterceptModule"),
+        ("dns_intercept", "shadow313.v4.aegis.dns_intercept.DNSInterceptModule"),
     ]
 
     def _autoload_modules(self) -> None:
