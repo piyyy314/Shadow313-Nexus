@@ -761,7 +761,7 @@ class TLSInspectionEngine:
             f"{'-'.join(str(f) for f in formats)}"
         )
 
-        return hashlib.md5(ja3_str.encode()).hexdigest()
+        return hashlib.md5(ja3_str.encode(), usedforsecurity=False).hexdigest()
 
     @staticmethod
     def compute_ja3s(hello: TLSServerHello) -> str:
@@ -776,7 +776,7 @@ class TLSInspectionEngine:
             f"{hello.cipher_suite},"
             f"{'-'.join(str(e) for e in extensions)}"
         )
-        return hashlib.md5(ja3s_str.encode()).hexdigest()
+        return hashlib.md5(ja3s_str.encode(), usedforsecurity=False).hexdigest()
 
     def record_tls_record(self, dst_ip: str, record_size: int,
                            timestamp: float | None = None) -> None:
