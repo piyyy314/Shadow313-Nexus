@@ -49,6 +49,20 @@ def test_startup_banner_is_boxed_and_has_no_location(capsys):
 
 
 
+
+def test_update_command_requires_only_the_selected_module_handlers():
+    cases = {
+        "cve": ["vuln"],
+        "exploitdb": [],
+        "kev": ["kev"],
+        "epss": ["epss"],
+        "all": ["vuln", "kev", "epss"],
+    }
+    for database, expected in cases.items():
+        args = build_parser().parse_args(["update", "--db", database])
+        assert _required_namespaces(args) == expected
+
+
 def test_advanced_nexus_cli_commands_have_registered_handlers():
     cases = {
         "orchestrate": ["orchestrate", "--intent", "summarize security posture"],
