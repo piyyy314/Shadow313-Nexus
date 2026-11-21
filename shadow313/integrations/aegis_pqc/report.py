@@ -16,8 +16,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .parser import PQCAuditResult, PQCComponent
 from ...core.binding_sdk.binder import BindReceipt
+
+from .parser import PQCAuditResult, PQCComponent
 
 
 HTML_TEMPLATE = """<!DOCTYPE html>
