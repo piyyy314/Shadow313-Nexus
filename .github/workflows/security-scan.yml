@@ -31,6 +31,8 @@ on:
       - "pyproject.toml"
       - "requirements*.txt"
       - "shadow313/**"
+      - "shadow313_sdk/**"
+      - "shadow313_platform/**"
       - "nexus_toolkit/**"
       - "scripts/**"
   workflow_dispatch:
