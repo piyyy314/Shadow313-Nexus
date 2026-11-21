@@ -1,8 +1,8 @@
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
 
-import datetime as dt
+import datetime
 import ipaddress
-from pathlib import Path
+import pathlib
 
 
 DASHBOARD_HTML = """<!DOCTYPE html>
@@ -380,7 +380,7 @@ class DashboardModule:
 
         @app.get("/api/stats")
         async def stats():
-            sessions_dir = Path(kernel.config.get("storage","sessions_dir",
+            sessions_dir = pathlib.Path(kernel.config.get("storage","sessions_dir",
                                                    default="~/.shadow313/sessions")).expanduser()
             session_count = len(list(sessions_dir.glob("*"))) if sessions_dir.exists() else 0
             findings = (kernel.session.read("findings.json") or {}).get("findings", [])
@@ -430,7 +430,7 @@ class DashboardModule:
                 max_heartbeats = 10000  # FIX: prevent infinite loop — ~14 hours at 5s interval
                 for _ in range(max_heartbeats):
                     await asyncio.sleep(5)
-                    yield f"data: Heartbeat — {dt.datetime.now(dt.UTC).isoformat()}\n\n"
+                    yield f"data: Heartbeat — {datetime.datetime.now(datetime.UTC).isoformat()}\n\n"
                 yield "data: Stream ended\n\n"
 
             return StreamingResponse(generate(), media_type="text/event-stream")

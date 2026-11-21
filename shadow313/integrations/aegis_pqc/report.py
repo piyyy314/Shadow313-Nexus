@@ -12,10 +12,10 @@ Every report includes:
 """
 
 import json
-from pathlib import Path
+import pathlib
 
-from shadow313.core.binding_sdk.binder import BindReceipt
-from shadow313.integrations.aegis_pqc.parser import PQCAuditResult, PQCComponent
+import shadow313.core.binding_sdk.binder as binder
+import shadow313.integrations.aegis_pqc.parser as parser
 
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -210,7 +210,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
-def _component_html(comp: PQCComponent) -> str:
+def _component_html(comp: parser.PQCComponent) -> str:
     risk_class = f"risk-{comp.risk_level}"
     fix_html = ""
     if comp.pqc_replacement:
@@ -246,8 +246,8 @@ def _component_html(comp: PQCComponent) -> str:
 
 
 def generate_bound_report(
-    audit: PQCAuditResult,
-    receipt: BindReceipt,
+    audit: parser.PQCAuditResult,
+    receipt: binder.BindReceipt,
     output_dir: str = "aegis_bound_reports",
 ) -> tuple[str, str]:
     """
@@ -256,7 +256,7 @@ def generate_bound_report(
     Returns:
         (html_path, json_path) tuple of generated file paths
     """
-    out = Path(output_dir)
+    out = pathlib.Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
 
     safe_bind_id = receipt.bind_id.replace("-", "_")
