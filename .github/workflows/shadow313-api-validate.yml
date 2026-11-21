@@ -2,9 +2,9 @@ name: Shadow313 NEXUS — API Endpoint Validation
 
 on:
   push:
-    branches: [master]
+    branches: ['**']
   pull_request:
-    branches: [master]
+    branches: ['**']
   workflow_dispatch:
 
 concurrency:

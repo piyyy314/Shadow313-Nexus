@@ -40,6 +40,18 @@ def test_ci_workflows_pin_the_same_black_formatter():
     assert expected in shadow313_ci
 
 
+def test_api_and_full_validation_workflows_cover_every_branch():
+    for name in (
+        "shadow313-api-validate.yml",
+        "shadow313-validate.yml",
+    ):
+        workflow = (ROOT / ".github" / "workflows" / name).read_text(
+            encoding="utf-8"
+        )
+        assert "  push:\n    branches: ['**']" in workflow
+        assert "  pull_request:\n    branches: ['**']" in workflow
+
+
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
     secret_file = tmp_path / "settings.py"
     secret_file.write_text('password = "sample-secret-value-123"\n', encoding="utf-8")
