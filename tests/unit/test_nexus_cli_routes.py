@@ -1,6 +1,6 @@
 """Regression tests for NEXUS CLI registration and startup branding."""
 
-from shadow313.cli.main import _required_namespaces, build_parser
+from shadow313.cli.main import _dispatch, _required_namespaces, build_parser
 from shadow313.core.kernel import Kernel
 from shadow313.core.output import OutputFormatter
 
@@ -80,6 +80,23 @@ def test_advanced_nexus_cli_commands_have_registered_handlers():
         args = build_parser().parse_args(argv)
         assert args.command == command
         assert _required_namespaces(args) == [command.replace("-", "_")]
+
+
+
+def test_dns_intercept_command_dispatches_to_canonical_handler():
+    class FakeKernel:
+        def __init__(self):
+            self.calls = []
+
+        def dispatch(self, namespace, **kwargs):
+            self.calls.append((namespace, kwargs))
+
+    kernel = FakeKernel()
+    parser = build_parser()
+    args = parser.parse_args(["dns-intercept", "--scan-ot"])
+
+    assert _dispatch(kernel, args, parser) == 0
+    assert kernel.calls[0][0] == "dns_intercept"
 
 
 def test_advanced_commands_are_in_command_directory():
