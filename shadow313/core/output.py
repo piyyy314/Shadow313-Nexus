@@ -87,7 +87,6 @@ class OutputFormatter:
         brand = f"  SHADOW313  NEXUS  |  v{__version__}"
         tagline = "  LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
         mission = "  DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE"
-        rows = (brand, tagline, mission)
 
         if self._has_rich:
             from rich.box import DOUBLE
@@ -99,9 +98,9 @@ class OutputFormatter:
             content.append("SHADOW313", style="bold bright_green")
             content.append("  NEXUS", style="bold bright_cyan")
             content.append(f"  v{__version__}", style="bold bright_blue")
-            content.append("\\n")
+            content.append("\n")
             content.append("   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE", style="bold bright_cyan")
-            content.append("\\n")
+            content.append("\n")
             content.append("   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE", style="bold bright_green")
             self._rich_console.print(
                 Panel(
