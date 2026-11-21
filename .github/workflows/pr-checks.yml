@@ -21,6 +21,10 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  PR_NUMBER: ${{ github.event.pull_request.number || '' }}
   security-events: write
   checks: write
 
