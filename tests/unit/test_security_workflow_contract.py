@@ -18,6 +18,10 @@ def test_nightly_security_scanners_fail_closed_and_preserve_diagnostics():
     assert "trivy-container.json" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
+    assert "--scanners vuln,secret" in workflow
+    assert 'result.get("Secrets", [])' in workflow
+    assert 'report.get("errors")' in workflow
+    assert "github.event.pull_request.head.repo.full_name == github.repository" in workflow
     assert "checkov -f docker-compose.yml" not in workflow
 
 
@@ -26,4 +30,5 @@ def test_docker_buildx_uses_supported_no_cache_filters_input():
         encoding="utf-8"
     )
     assert "no-cache-filters:" in workflow
+    assert "production-base,production" in workflow
     assert "no-cache-filter:" not in workflow
