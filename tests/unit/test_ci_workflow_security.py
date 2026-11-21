@@ -52,6 +52,19 @@ def test_api_and_full_validation_workflows_cover_every_branch():
         assert "  pull_request:\n    branches: ['**']" in workflow
 
 
+def test_dev_extra_includes_shiatoali_migration_dependencies():
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    dev_start = pyproject.index("\ndev = [")
+    dev_end = pyproject.index("\n]", dev_start)
+    dev_section = pyproject[dev_start:dev_end]
+    assert '"alembic>=1.13"' in dev_section
+    assert '"sqlalchemy>=2.0"' in dev_section
+    workflow = (ROOT / ".github" / "workflows" / "shadow313-validate.yml").read_text(
+        encoding="utf-8"
+    )
+    assert 'pip install -e ".[dev]"' in workflow
+
+
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
     secret_file = tmp_path / "settings.py"
     secret_file.write_text('password = "sample-secret-value-123"\n', encoding="utf-8")
