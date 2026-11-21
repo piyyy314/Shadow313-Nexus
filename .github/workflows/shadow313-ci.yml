@@ -15,7 +15,12 @@ on:
     - cron: "0 3 * * 1"       # Weekly Monday 03:00 UTC
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: read
+
 env:
+  GH_TOKEN: ${{ github.token }}
   PYTHON_VERSION: "3.11"
   SHADOW313_AI_BACKEND: disabled
   SHADOW313_VERBOSE: "false"
@@ -57,7 +62,298 @@ jobs:
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          PR_NUMBER="${{ github.event.pull_request.number || '' }}"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
+          fi
+          if [ -n "$PR_NUMBER" ]; then
+            mapfile -t candidates < <(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' | grep -E '^shadow313/.*\.py
+          changed_files=()
+          for file in "${candidates[@]}"; do
+            if [ -f "$file" ]; then
+              changed_files+=("$file")
+            fi
+          done
+          printf '%s\n' "${changed_files[@]}" > "$RUNNER_TEMP/shadow313-changed-python.txt"
+          echo "count=${#changed_files[@]}" >> "$GITHUB_OUTPUT"
+      - name: Ruff lint (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; ruff check "${files[@]}" --output-format github
+      - name: Black format check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
+      - name: MyPy type check (changed Python files)
+        if: steps.changed-python.outputs.count != '0'
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
+
+# ── Unit Tests ────────────────────────────────────────────────────────────────
+  test:
+    name: Tests (Python ${{ matrix.python-version }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install Shadow313 + test deps
+        run: |
+          pip install -e ".[dev]"
+          pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn pytest-timeout \
+            numpy scipy scapy dnspython python-whois cryptography \
+            requests aiohttp sqlalchemy pydantic
+      - name: Run tests
+        run: |
+          pytest tests/ -q --tb=short \
+            --ignore=tests/integration \
+            --timeout=120 \
+            -x
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v7
+        with:
+          flags: unittests
+        continue-on-error: true
+
+# ── Security Self-Scan ────────────────────────────────────────────────────────
+  shiatoali-postgres:
+    name: ShiatoAli PostgreSQL Integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: shiatoali_test
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d shiatoali_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      SHIAATOALI_DATABASE_URL: postgresql+psycopg://postgres@localhost:5432/shiatoali_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install PostgreSQL test dependencies
+        run: pip install -e ".[dev]"
+      - name: Apply ShiatoAli schema migration
+        run: alembic -c alembic-shiatoali.ini upgrade head
+      - name: Run real PostgreSQL integration tests
+        run: pytest tests/integration/test_shiatoali_postgres.py -q --tb=short
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install patched build tooling and audit dependencies
+        run: |
+          python -m pip install --upgrade "setuptools>=84.1.0"
+          python -m pip install -e "." pyyaml rich bandit pip-audit
+          python -m pip show setuptools
+      - name: Bandit SAST scan (retain all severities)
+        run: |
+          bandit -r shadow313/ -f json -o bandit-report.json \
+            --exit-zero --skip B101,B603,B607,B608,B311,B324
+      - name: Enforce high-severity Bandit threshold
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          report = json.loads(Path("bandit-report.json").read_text(encoding="utf-8"))
+          findings = report.get("results", [])
+          high = [item for item in findings if item.get("issue_severity", "").upper() == "HIGH"]
+          print(f"Bandit findings retained: {len(findings)} total; {len(high)} high severity.")
+          for item in high:
+              print(
+                  f"HIGH: {item.get('filename')}:{item.get('line_number')} "
+                  f"{item.get('test_id')} — {item.get('issue_text')}"
+              )
+          sys.exit(1 if high else 0)
+          PY
+      - name: Dependency vulnerability audit
+        run: pip-audit --local --format json --output pip-audit-report.json
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            pip-audit-report.json
+
+# ── Build Package ─────────────────────────────────────────────────────────────
+  build:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install build tools
+        run: pip install build twine
+      - name: Build wheel + sdist
+        run: python -m build
+      - name: Check distribution
+        run: twine check dist/*.whl dist/*.tar.gz
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-packages
+          path: dist/
+          retention-days: 7
+
+# ── Publish to TestPyPI ───────────────────────────────────────────────────────
+  publish-test:
+    name: Publish → TestPyPI
+    runs-on: ubuntu-latest
+    needs: build
+    # TestPyPI publishing is manual until the trusted publisher's project mapping is verified.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
+    environment: testpypi
+    permissions:
+      id-token: write   # OIDC trusted publishing
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v8
+        with:
+          name: dist-packages
+          path: dist/
+      - name: Stage only Python distributions
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(dist/*.whl dist/*.tar.gz)
+          if (( ${#packages[@]} == 0 )); then
+            echo "::error::No wheel or source distribution found in dist/."
+            exit 1
+          fi
+          mkdir -p dist/publish
+          cp -- "${packages[@]}" dist/publish/
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          packages-dir: dist/publish/
+
+# ── Publish to PyPI (releases only) ──────────────────────────────────────────
+  publish-pypi:
+    name: Publish → PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    # Only runs when you create a GitHub Release or push a v* tag
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+    environment: pypi
+    permissions:
+      id-token: write   # OIDC trusted publishing (no API token needed!)
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v8
+        with:
+          name: dist-packages
+          path: dist/
+      - name: Stage only Python distributions
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(dist/*.whl dist/*.tar.gz)
+          if (( ${#packages[@]} == 0 )); then
+            echo "::error::No wheel or source distribution found in dist/."
+            exit 1
+          fi
+          mkdir -p dist/publish
+          cp -- "${packages[@]}" dist/publish/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/publish/
+
+# ── Docker Build ──────────────────────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Docker Compose configuration
+        run: |
+          export WEBUI_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
+          export SHADOW313_API_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
+          export SHIAATOALI_POSTGRES_PASSWORD="$(openssl rand -hex 32)"
+          export SHIAATOALI_DATABASE_URL="postgresql+psycopg://shiatoali:${SHIAATOALI_POSTGRES_PASSWORD}@shiatoali-postgres:5432/shiatoali"
+          docker compose --env-file .env.example config --quiet
+          docker compose --env-file .env.example -f docker-compose.yml -f docker-compose.postgres.yml config --quiet
+      - name: Validate Nginx routing configuration
+        run: |
+          mkdir -p "$RUNNER_TEMP/shadow313-ssl"
+          openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -keyout "$RUNNER_TEMP/shadow313-ssl/shadow313.key" \
+            -out "$RUNNER_TEMP/shadow313-ssl/shadow313.crt" \
+            -subj "/CN=localhost"
+          docker run --rm \
+            --add-host open-webui:127.0.0.1 \
+            --add-host shadow313-api:127.0.0.1 \
+            --add-host ollama:127.0.0.1 \
+            -v "$PWD/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            -v "$RUNNER_TEMP/shadow313-ssl:/etc/nginx/ssl:ro" \
+            nginx:alpine nginx -t
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Build image (no push on PR)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          no-cache-filters: ${{ (github.event_name == 'schedule' || github.event_name == 'release') && 'production' || '' }}
+          tags: piyyy314/shadow313-nexus:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Login + push (release only)
+        if: github.event_name == 'release'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push release image
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          no-cache-filters: production
+          tags: |
+            piyyy314/shadow313-nexus:latest
+            piyyy314/shadow313-nexus:${{ github.event.release.tag_name }}
+ || true)
+          else
+            mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          fi
           changed_files=()
           for file in "${candidates[@]}"; do
             if [ -f "$file" ]; then
