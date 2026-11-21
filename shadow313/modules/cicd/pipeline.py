@@ -47,20 +47,26 @@ class CICDPipeline:
             "passed": len(findings) == 0
         }
 
-    def _scan_file(self, path: Path) -> list[Dict]:
+    def _scan_file(self, path: Path) -> list[dict[str, Any]]:
         findings = []
         try:
             content = path.read_text(errors="ignore")
             for ln, line in enumerate(content.splitlines(), 1):
                 for pattern, stype in SECRET_PATTERNS:
                     if re.search(pattern, line, re.IGNORECASE):
-                        findings.append({
-                            "file": str(path), "line": ln, "type": stype,
-                            "severity": "CRITICAL", "mitre_ttp": "T1552.001",
-                            "rule_id": (
-                                f"S313-{hashlib.md5(pattern.encode(), usedforsecurity=False).hexdigest()[:6].upper()}"
-                            )
-                        })
+                        rule_hash = hashlib.md5(
+                            pattern.encode(), usedforsecurity=False
+                        ).hexdigest()[:6].upper()
+                        findings.append(
+                            {
+                                "file": str(path),
+                                "line": ln,
+                                "type": stype,
+                                "severity": "CRITICAL",
+                                "mitre_ttp": "T1552.001",
+                                "rule_id": f"S313-{rule_hash}",
+                            }
+                        )
         except Exception as exc:
             logger.warning("Secret scan failed for %s: %s", path, exc)
         return findings
