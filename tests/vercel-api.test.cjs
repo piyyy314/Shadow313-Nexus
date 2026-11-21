@@ -193,3 +193,26 @@ test('health does not report a backend connected when the health payload is unhe
   assert.equal(response.status, 503);
   assert.equal(response.body.backend_connected, false);
 });
+
+test('PATCH case updates are allowlisted and receive the server credential', async () => {
+  let upstreamRequest;
+  const handler = handlerModule.createHandler({
+    env: {
+      SHADOW313_BACKEND_URL: 'https://api.example.test',
+      SHADOW313_BACKEND_API_KEY: 'server-only-test-key',
+    },
+    fetch: async (url, options) => {
+      upstreamRequest = { url, options };
+      return new Response('{"case_id":"case-1","status":"in_progress"}', {
+        status: 200, headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+  const response = await request(handler, '/api/shiatoali/cases/case-1', 'PATCH',
+    JSON.stringify({ status: 'in_progress', note: 'Investigating' }));
+  assert.equal(response.status, 200);
+  assert.equal(upstreamRequest.url, 'https://api.example.test/api/shiatoali/cases/case-1');
+  assert.equal(upstreamRequest.options.method, 'PATCH');
+  assert.equal(upstreamRequest.options.headers['X-API-Key'], 'server-only-test-key');
+  assert.equal(JSON.parse(upstreamRequest.options.body.toString()).status, 'in_progress');
+});
