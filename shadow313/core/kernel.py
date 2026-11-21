@@ -136,6 +136,9 @@ class Kernel:
         ("collab", "shadow313.v3.collab.collab.CollabModule"),
         ("malware", "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule"),
         # V4 NEXUS Complete modules
+        ("temporal", "shadow313.v4.temporal_binding.temporal_binding.TemporalBindingModule"),
+        ("nexus", "shadow313.v4.nexus.nexus.NEXUSModule"),
+        ("stix", "shadow313.v4.stix.stix_handler.STIXModule"),
         ("orchestrate", "shadow313.v4.agent.orchestrator.OrchestratorModule"),
         ("nexus_router", "shadow313.v4.nexus_router.nexus_router.NexusRouterModule"),
         ("ledger", "shadow313.v4.ledger.ledger_engine.LedgerModule"),
