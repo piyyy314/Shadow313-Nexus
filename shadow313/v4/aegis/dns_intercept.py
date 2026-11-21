@@ -1,31 +1,19 @@
+"""
+
 from __future__ import annotations
-"""
-shadow313.v4.aegis.dns_intercept  — NEXUS Complete
-DNS Intercept and OT/ICS/SCADA/Satellite monitoring module.
 
-Real output format verified against:
-  - dns_intercept_report_industrial_iot_bridge_int.txt
-
-Capabilities:
-  - DNS signal interception and resolution logging
-  - OT/ICS/SCADA system detection (OPC-UA, DNP3, Modbus, PROFINET)
-  - Satellite and deep space communication monitoring
-  - Shield integrity assessment
-  - Geo-location intelligence correlation
-  - Industrial IoT bridge security analysis
-  - Threat feed DNS monitoring
-"""
 import json
 import random
 import socket
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 
+
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _now_log() -> str:
