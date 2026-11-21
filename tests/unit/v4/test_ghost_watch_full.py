@@ -271,10 +271,10 @@ class TestHephaestus:
 class TestAether:
     def test_importable(self):
         try:
-            from shadow313.v4.ghost_watch.aether import Aether
-            assert Aether is not None
+            from shadow313.v4.ghost_watch.aether import AETHEREngine
+            assert AETHEREngine is not None
         except ImportError:
-            pytest.skip("Aether module not available")
+            pytest.skip("AETHEREngine module not available")
 
     def test_module_has_public_attrs(self):
         import shadow313.v4.ghost_watch.aether as mod
@@ -287,10 +287,10 @@ class TestAether:
 class TestTartarus:
     def test_importable(self):
         try:
-            from shadow313.v4.ghost_watch.tartarus import Tartarus
-            assert Tartarus is not None
+            from shadow313.v4.ghost_watch.tartarus import TARTARUSEngine
+            assert TARTARUSEngine is not None
         except ImportError:
-            pytest.skip("Tartarus module not available")
+            pytest.skip("TARTARUSEngine module not available")
 
     def test_module_has_public_attrs(self):
         import shadow313.v4.ghost_watch.tartarus as mod
@@ -303,10 +303,10 @@ class TestTartarus:
 class TestValkyrie:
     def test_importable(self):
         try:
-            from shadow313.v4.ghost_watch.valkyrie import Valkyrie
-            assert Valkyrie is not None
+            from shadow313.v4.ghost_watch.valkyrie import VALKYRIEEngine
+            assert VALKYRIEEngine is not None
         except ImportError:
-            pytest.skip("Valkyrie module not available")
+            pytest.skip("VALKYRIEEngine module not available")
 
     def test_module_has_public_attrs(self):
         import shadow313.v4.ghost_watch.valkyrie as mod
@@ -319,10 +319,10 @@ class TestValkyrie:
 class TestChronos:
     def test_importable(self):
         try:
-            from shadow313.v4.ghost_watch.chronos import Chronos
-            assert Chronos is not None
+            from shadow313.v4.ghost_watch.chronos import CHRONOSEngine
+            assert CHRONOSEngine is not None
         except ImportError:
-            pytest.skip("Chronos module not available")
+            pytest.skip("CHRONOSEngine module not available")
 
     def test_module_has_public_attrs(self):
         import shadow313.v4.ghost_watch.chronos as mod

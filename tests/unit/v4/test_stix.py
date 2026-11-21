@@ -4,8 +4,8 @@ import pytest
 class TestSTIXHandler:
     def test_module_importable(self):
         try:
-            from shadow313.v4.stix.stix_handler import STIXHandler
-            assert STIXHandler is not None
+            from shadow313.v4.stix.stix_handler import STIXModule
+            assert STIXModule is not None
         except ImportError:
             pytest.skip("stix_handler not available")
 
