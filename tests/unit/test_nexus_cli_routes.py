@@ -57,6 +57,10 @@ def test_advanced_nexus_cli_commands_have_registered_handlers():
         "workflow": ["workflow", "--list"],
         "tools": ["tools", "--list-tools"],
         "simulate": ["simulate", "--sim", "ndi"],
+        "collab": ["collab", "--list"],
+        "attack-map": ["attack-map", "--technique-summary"],
+        "pe-analyze": ["pe-analyze", "--entropy"],
+        "dns-intercept": ["dns-intercept", "--scan-ot"],
     }
     for command, argv in cases.items():
         args = build_parser().parse_args(argv)
