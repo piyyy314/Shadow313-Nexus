@@ -59,15 +59,16 @@ jobs:
 
       - name: Run Ruff on changed Python files
         run: |
+          set -o pipefail
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
               while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
           else
-            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
             if [[ -n "$PR_NUMBER" ]]; then
-              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
               git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
@@ -86,15 +87,16 @@ jobs:
 
       - name: Run Black on changed Shadow313 files
         run: |
+          set -o pipefail
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
               while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
           else
-            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
             if [[ -n "$PR_NUMBER" ]]; then
-              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
               git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
@@ -113,15 +115,16 @@ jobs:
 
       - name: Run yamllint on changed workflow files
         run: |
+          set -o pipefail
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
               while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
           else
-            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
             if [[ -n "$PR_NUMBER" ]]; then
-              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
               git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
@@ -190,15 +193,16 @@ jobs:
 
       - name: Run Bandit on changed Python files
         run: |
+          set -o pipefail
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
               while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
           else
-            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
+            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
             if [[ -n "$PR_NUMBER" ]]; then
-              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
               git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
