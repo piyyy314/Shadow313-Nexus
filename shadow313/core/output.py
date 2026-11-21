@@ -45,7 +45,7 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = (
+BANNER = "".join((
     "\n",
     "  ███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗██████╗     ███╗   ██╗███████╗██╗  ",
     "██╗██╗   ██╗███████╗",
@@ -65,10 +65,9 @@ BANNER = (
     "  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═════╝    ╚═╝  ╚═══╝╚══════╝╚═╝  ╚",
     "═╝ ╚═════╝ ╚══════╝",
     "\n",
-    f"  v{__version__}  |  SHADOW313 NEXUS  |  Verifiable Security Intelligence  |  Ottawa, ON",
-    ", Canada",
+    f"  v{__version__}  |  SHADOW313 NEXUS  |  Verifiable Security Intelligence",
     "\n",
-)
+))
 
 
 class OutputFormatter:
