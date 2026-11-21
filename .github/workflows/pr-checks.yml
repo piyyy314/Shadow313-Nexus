@@ -42,6 +42,8 @@ jobs:
       - name: Resolve current PR base SHA
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git fetch origin "$BASE_REF" --depth=1
           echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
@@ -57,7 +59,12 @@ jobs:
         run: |
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
-          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
           files=()
           while IFS= read -r -d '' path; do
             [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
@@ -73,7 +80,12 @@ jobs:
         run: |
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
-          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
           files=()
           while IFS= read -r -d '' path; do
             [[ "$path" =~ ^shadow313/.*\.py$ ]] || continue
@@ -89,7 +101,12 @@ jobs:
         run: |
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
-          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
           files=()
           while IFS= read -r -d '' path; do
             [[ "$path" =~ ^\.github/workflows/.*\.ya?ml$ || "$path" == "docker-compose.yml" ]] || continue
@@ -153,7 +170,12 @@ jobs:
         run: |
           changed_files=$(mktemp)
           trap 'rm -f "$changed_files"' EXIT
-          git diff --name-only -z --diff-filter=ACMR "$BASE_SHA...HEAD" > "$changed_files"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' |
+              while IFS= read -r path; do printf '%s\\0' "$path"; done > "$changed_files"
+          else
+            git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+          fi
           files=()
           while IFS= read -r -d '' path; do
             [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
