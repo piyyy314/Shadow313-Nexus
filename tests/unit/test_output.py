@@ -94,3 +94,16 @@ class TestOutputManager:
         """OutputManager should have a repr."""
         r = repr(self.out)
         assert isinstance(r, str)
+
+def test_banner_is_boxed_and_does_not_disclose_location(capsys):
+    """The launch banner is branded, boxed, and location-neutral."""
+    out = OutputManager(fmt="plain", color=False)
+    out.banner()
+    rendered = capsys.readouterr().out
+
+    assert "SHADOW313 NEXUS" in rendered
+    assert "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE" in rendered
+    assert "WELCOME TO SHADOW313 NEXUS" in rendered
+    assert "╔" in rendered and "╝" in rendered
+    assert "Ottawa" not in rendered
+    assert "Ontario" not in rendered
