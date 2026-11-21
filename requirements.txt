@@ -44,3 +44,4 @@ pyyaml>=6.0.3
 toml>=0.10.2
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
 pygments>=2.20.0 # not directly required, pinned by Snyk to avoid a vulnerability
+filelock>=4.2.1 # transitive dependency security fix: CVE-2026-112940
