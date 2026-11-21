@@ -190,7 +190,9 @@ Docs:
 
     # ── update ────────────────────────────────────────────────────────────────
     p_upd = sub.add_parser("update", help="Update local databases (CVE, ExploitDB, KEV, EPSS)")
-    p_upd.add_argument("--db",      metavar="DB", choices=["cve","exploitdb","kev","epss","all"], required=True)
+    p_upd.add_argument(
+        "--db", metavar="DB", choices=["cve", "exploitdb", "kev", "epss", "all"], required=True
+    )
     p_upd.add_argument("--api-key", metavar="KEY", dest="api_key", default="")
 
     # ── status ────────────────────────────────────────────────────────────────
@@ -198,7 +200,11 @@ Docs:
 
     # ── V2 commands ───────────────────────────────────────────────────────────
     p_agent = sub.add_parser("agent", help="Agentic auto-chain module execution")
-    p_agent.add_argument("--plan",         default="quick_vuln", choices=["full_pentest","quick_vuln","defense_audit","crypto_audit"])
+    p_agent.add_argument(
+        "--plan",
+        default="quick_vuln",
+        choices=["full_pentest", "quick_vuln", "defense_audit", "crypto_audit"],
+    )
     p_agent.add_argument("--target",       metavar="HOST", default="")
     p_agent.add_argument("--approval",     choices=["auto","gate_high","full_human"], default="")
     p_agent.add_argument("--suggest-plan", action="store_true", dest="suggest_plan")
