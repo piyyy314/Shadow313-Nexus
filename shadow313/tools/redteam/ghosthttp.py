@@ -275,7 +275,7 @@ Provide:
             result["status_code"] = r.status_code
             result["headers"] = dict(r.headers)
             result["server"] = r.headers.get("server", "")
-            result["body_hash"] = hashlib.md5(r.content).hexdigest()
+            result["body_hash"] = hashlib.md5(r.content, usedforsecurity=False).hexdigest()
 
             # Extract title
             title_match = re.search(r"<title[^>]*>([^<]+)</title>", r.text, re.I)
