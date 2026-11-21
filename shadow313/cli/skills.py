@@ -38,16 +38,14 @@ def find_skills_root(explicit_root: str | None = None) -> Path:
 
 
 def discover_skills(root: Path) -> list[tuple[str, Path]]:
-    """Return validly named skill folders containing a SKILL.md entrypoint."""
+    """Return every validly named skill folder, including broken entrypoints."""
     if not root.is_dir():
         return []
-    found = []
-    for entry in sorted(root.iterdir(), key=lambda path: path.name.casefold()):
-        if entry.is_dir() and _SKILL_ID.fullmatch(entry.name):
-            entrypoint = entry / "SKILL.md"
-            if entrypoint.is_file():
-                found.append((entry.name, entrypoint))
-    return found
+    return [
+        (entry.name, entry / "SKILL.md")
+        for entry in sorted(root.iterdir(), key=lambda path: path.name.casefold())
+        if entry.is_dir() and _SKILL_ID.fullmatch(entry.name)
+    ]
 
 
 def _markdown_destination(target: str) -> str:
