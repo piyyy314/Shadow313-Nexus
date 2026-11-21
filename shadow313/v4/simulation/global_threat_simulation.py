@@ -32,7 +32,6 @@ from datetime import UTC, datetime
 logger = logging.getLogger(__name__)
 
 
-
 def _now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
