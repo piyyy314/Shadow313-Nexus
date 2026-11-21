@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.intelligence.global_threat_sim_v2
 Global Threat Simulation v2 — Q2-Q3 2026 Worldwide Threat Landscape
@@ -19,11 +18,11 @@ Threat actors: 12 groups
 CVEs: 8 critical (EPSS > 0.85)
 """
 
+from __future__ import annotations
+
 import random
-import secrets  # for cryptographic operations
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 
 # ── Q2-Q3 2026 Worldwide Threat Catalog ──────────────────────────────────────
@@ -71,7 +70,10 @@ GLOBAL_THREATS_2026: list[dict] = [
         "actors":      ["Nation-state", "eCrime"],
         "technique":   "T1542.001",
         "tactic":      "persistence",
-        "description": "Unauthenticated firmware push via TR-069 ACS — backdoor survives factory reset",
+        "description": (
+            "Unauthenticated firmware push via TR-069 ACS — "
+            "backdoor survives factory reset"
+        ),
         "detection":   "NEXUS VSAT module: CWMP hardening + firmware signature check",
         "mttd_nexus":  126,
         "mttd_industry": 22680,
@@ -418,8 +420,8 @@ class ThreatSimResult:
     score:        float
     techniques:   list[str]
     detection_method: str
-    mttd_seconds: Optional[float]
-    timestamp:    str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    mttd_seconds: float | None
+    timestamp:    str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -448,7 +450,7 @@ class GlobalSimulationResult:
     avg_mttd:         float = 0.0
     techniques_seen:  list[str] = field(default_factory=list)
     live_iocs_blocked: list[str] = field(default_factory=list)
-    timestamp:        str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:        str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -531,7 +533,7 @@ class GlobalThreatSimulatorV2:
         "T1218":     (0.88, "NEXUS LOLBinDetector T1218"),
     }
 
-    def __init__(self, seed: Optional[int] = 313) -> None:
+    def __init__(self, seed: int | None = 313) -> None:
         if seed is not None:
             random.seed(seed)
 
@@ -619,8 +621,12 @@ class GlobalThreatSimulatorV2:
                 if ip not in live_iocs and ip != "localhost":
                     live_iocs.append(ip)
 
-        result.detection_rate  = result.detected / result.total_threats if result.total_threats else 0
-        result.block_rate      = result.blocked  / result.total_threats if result.total_threats else 0
+        result.detection_rate = (
+            result.detected / result.total_threats if result.total_threats else 0
+        )
+        result.block_rate = (
+            result.blocked / result.total_threats if result.total_threats else 0
+        )
         result.avg_mttd        = sum(mttd_values) / len(mttd_values) if mttd_values else 0
         result.techniques_seen = list(set(all_techniques))
         result.live_iocs_blocked = live_iocs
