@@ -332,7 +332,7 @@ class GeoTracedIntelDeck:
 # ── DNS Intercept Module ──────────────────────────────────────────────────────
 
 class DNSInterceptModule:
-    """shadow313.v4.aegis.dns_intercept — DNS Intercept. Registered: dns_intercept_ot"""
+    """shadow313.v4.aegis.dns_intercept — DNS Intercept command handler."""
 
     def __init__(self, kernel) -> None:
         self.kernel      = kernel
