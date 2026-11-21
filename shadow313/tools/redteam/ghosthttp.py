@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 Shadow313 — GhostHTTP
 HTTP fingerprinting engine. Extracts server secrets from timing
@@ -7,16 +6,20 @@ analysis. Identifies hidden technologies, WAF presence, and
 information disclosure vulnerabilities.
 """
 
+from __future__ import annotations
 
 import asyncio
 import hashlib
 import json
+import logging
 import re
 import time
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 try:
     from shadow313.core.kernel import KernelContext, register_command
@@ -69,7 +72,11 @@ TECH_PROBES: list[dict[str, Any]] = [
     {"path": "/.git/config",            "tech": "Git Config",     "indicator": "[core]"},
     {"path": "/.svn/entries",           "tech": "SVN Repo",       "indicator": None},
     {"path": "/server-status",          "tech": "Apache Status",  "indicator": "Apache"},
-    {"path": "/nginx_status",           "tech": "Nginx Status",   "indicator": "Active connections"},
+    {
+        "path": "/nginx_status",
+        "tech": "Nginx Status",
+        "indicator": "Active connections",
+    },
 ]
 
 # ── WAF fingerprints ───────────────────────────────────────────────────────
@@ -189,7 +196,9 @@ class GhostHTTP(BaseTool):
 
             # ── Information disclosure ─────────────────────────────────────
             self.output.info("Scanning for information disclosure...")
-            disclosure_findings = await self._scan_info_disclosure(client, base_url, discovered_paths)
+            disclosure_findings = await self._scan_info_disclosure(
+                client, base_url, discovered_paths
+            )
             result.findings.extend(disclosure_findings)
 
             # ── Timing analysis ────────────────────────────────────────────
@@ -227,12 +236,19 @@ Analyze these GhostHTTP fingerprinting results for {result.data.get('base_url')}
 
 Server: {result.data.get('baseline', {}).get('server', 'unknown')}
 Technologies: {result.data.get('baseline', {}).get('technologies', [])}
-WAF Detected: {result.data.get('waf', {}).get('detected', False)} — {result.data.get('waf', {}).get('waf_name', 'none')}
+WAF Detected: {result.data.get('waf', {}).get('detected', False)}
+WAF Name: {result.data.get('waf', {}).get('waf_name', 'none')}
 Discovered Paths: {result.data.get('discovered_paths', [])}
 Timing Anomalies: {result.data.get('timing', {}).get('anomalies', [])}
 
 Findings ({len(result.findings)} total):
-{json.dumps([{'title': f['title'], 'severity': f['severity']} for f in result.findings[:10]], indent=2)}
+{json.dumps(
+    [
+        {"title": f["title"], "severity": f["severity"]}
+        for f in result.findings[:10]
+    ],
+    indent=2,
+)}
 
 Provide:
 1. **Technology Stack Assessment** — what's running and what vulnerabilities are likely
@@ -294,7 +310,10 @@ Provide:
             findings.append(self._finding(
                 title=f"Server Version Disclosure: {server}",
                 severity="LOW",
-                description=f"Server header reveals version: '{server}'. This aids attacker reconnaissance.",
+                description=(
+                    f"Server header reveals version: '{server}'. "
+                    "This aids attacker reconnaissance."
+                ),
                 data={"header": "Server", "value": server},
                 remediation="Configure server to return generic 'Server: webserver' header",
                 mitre_technique="T1592.002",
@@ -314,7 +333,12 @@ Provide:
 
         # Internal IP disclosure
         for header_name, header_val in headers_lower.items():
-            ip_match = re.search(r"\b(10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)\b", header_val)
+            private_ip_pattern = (
+                r"\b(10\.\d+\.\d+\.\d+|"
+                r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|"
+                r"192\.168\.\d+\.\d+)\b"
+            )
+            ip_match = re.search(private_ip_pattern, header_val)
             if ip_match:
                 findings.append(self._finding(
                     title=f"Internal IP Disclosure in Header: {header_name}",
@@ -437,13 +461,20 @@ Provide:
                             findings.append(self._finding(
                                 title=f"Discovered: {probe['tech']} ({probe['path']})",
                                 severity=sev,
-                                description=f"{probe['tech']} found at {url} (HTTP {r.status_code})",
-                                data={"path": probe["path"], "status": r.status_code, "tech": probe["tech"]},
+                                description=(
+                                    f"{probe['tech']} found at {url} "
+                                    f"(HTTP {r.status_code})"
+                                ),
+                                data={
+                                    "path": probe["path"],
+                                    "status": r.status_code,
+                                    "tech": probe["tech"],
+                                },
                                 remediation=f"Restrict access to {probe['path']} if not required",
                                 mitre_technique="T1083",
                             ))
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         # Run probes concurrently in batches
         batch_size = 10
@@ -494,7 +525,7 @@ Provide:
                             mitre_technique="T1552",
                         ))
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         return findings
 
@@ -517,7 +548,7 @@ Provide:
                 elapsed = round((time.monotonic() - t0) * 1000, 1)
                 timings.append({"path": path, "ms": elapsed, "status": r.status_code})
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         # Detect timing anomalies
         if timings:
@@ -530,11 +561,16 @@ Provide:
                         "avg_ms": round(avg_time, 1),
                         "description": (
                             f"Path {t['path']} responds in {t['ms']}ms vs avg {avg_time:.0f}ms. "
-                            "Timing difference may indicate backend processing (auth check, DB query)."
+                            "Timing difference may indicate backend processing "
+                            "(auth check, DB query)."
                         ),
                     })
 
-        return {"timings": timings, "anomalies": anomalies, "avg_ms": round(avg_time if timings else 0, 1)}
+        return {
+            "timings": timings,
+            "anomalies": anomalies,
+            "avg_ms": round(avg_time if timings else 0, 1),
+        }
 
     # ── Error Page Analysis ────────────────────────────────────────────────
 
@@ -562,12 +598,15 @@ Provide:
                             severity=severity,
                             description=f"Error page at {url} reveals: {title}",
                             data={"trigger": path, "status": r.status_code},
-                            remediation="Configure custom error pages that don't reveal stack traces or server info",
+                            remediation=(
+                                "Configure custom error pages that don't reveal "
+                                "stack traces or server info"
+                            ),
                             mitre_technique="T1592",
                         ))
                         break
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         return findings
 
@@ -582,7 +621,10 @@ Provide:
             "strict-transport-security": {
                 "title": "Missing HSTS Header",
                 "severity": "MEDIUM",
-                "remediation": "Add: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
+                "remediation": (
+                    "Add: Strict-Transport-Security: max-age=31536000; "
+                    "includeSubDomains; preload"
+                ),
             },
             "content-security-policy": {
                 "title": "Missing Content-Security-Policy Header",
@@ -629,8 +671,16 @@ Provide:
             "Target": data.get("base_url", ""),
             "Status": str(data.get("baseline", {}).get("status_code", "")),
             "Server": data.get("baseline", {}).get("server", "unknown"),
-            "Technologies": ", ".join(data.get("baseline", {}).get("technologies", [])) or "none detected",
-            "WAF": f"{waf.get('waf_name', 'None')} (confidence: {waf.get('confidence', 0):.0%})" if waf.get("detected") else "Not detected",
+            "Technologies": (
+                ", ".join(data.get("baseline", {}).get("technologies", []))
+                or "none detected"
+            ),
+            "WAF": (
+                f"{waf.get('waf_name', 'None')} "
+                f"(confidence: {waf.get('confidence', 0):.0%})"
+                if waf.get("detected")
+                else "Not detected"
+            ),
             "Paths Discovered": str(len(data.get("discovered_paths", []))),
             "Timing Anomalies": str(len(data.get("timing", {}).get("anomalies", []))),
             "Total Findings": str(data.get("total_findings", 0)),
@@ -638,7 +688,15 @@ Provide:
 
         if result.findings:
             self.output.findings_table(
-                sorted(result.findings, key=lambda f: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}.get(f["severity"], 4))[:12],
+                sorted(
+                    result.findings,
+                    key=lambda finding: {
+                        "CRITICAL": 0,
+                        "HIGH": 1,
+                        "MEDIUM": 2,
+                        "LOW": 3,
+                    }.get(finding["severity"], 4),
+                )[:12],
                 title="HTTP Findings"
             )
 
