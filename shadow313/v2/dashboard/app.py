@@ -1,14 +1,8 @@
-from __future__ import annotations
-"""
-shadow313.v2.dashboard.app  — v4
-FastAPI + HTMX security operations dashboard.
-Dark terminal aesthetic, SSE live feed, RAG-enhanced AI chat.
-Port: 7313
-"""
-import json
-from datetime import datetime, timezone
+"""Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
+
+import ipaddress
+from datetime import datetime, UTC
 from pathlib import Path
-from typing import Any
 
 
 DASHBOARD_HTML = """<!DOCTYPE html>
@@ -51,6 +45,30 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   .event-line { padding: 4px 0; border-bottom: 1px solid var(--border); }
   .event-line .ts { color: #6e7681; margin-right: 8px; }
   .section-title { font-size: 1.1em; color: var(--accent); margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  @media (max-width: 760px) {
+    header { padding: 12px 16px; flex-wrap: wrap; }
+    header h1 { font-size: 1em; }
+    nav {
+      position: static;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    nav a { padding: 10px 12px; flex: 0 0 auto; }
+    main { margin-left: 0; padding: 16px; }
+    .grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .card { padding: 14px; min-width: 0; }
+    .card .value { font-size: 1.5em; }
+    .chat-box { height: min(50vh, 400px); }
+    .chat-input { align-items: stretch; }
+    .chat-input button { padding: 10px 14px; }
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
 </style>
 </head>
 <body>
@@ -88,18 +106,18 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="chat">
     <div class="section-title">AI Security Assistant (RAG-Enhanced)</div>
     <div class="chat-box" id="chat-messages">
-      <div class="event-line"><span class="ts">NEXUS</span> Shadow313 AI ready. Ask me anything about your security posture.</div>
+      <div class="event-line"><span class="ts">NEXUS</span> AI assistant uses the configured backend; provider availability is checked per request.</div>
     </div>
     <div class="chat-input">
-      <input type="text" id="chat-input" placeholder="Ask a security question…" onkeydown="if(event.key==='Enter')sendChat()">  {# nosec S03 - HTML event handler, not credential comparison #}
-      <button onclick="sendChat()">Send</button>
+      <input type="text" id="chat-input" maxlength="20000" aria-label="Ask a security question" placeholder="Ask a security question…">
+      <button type="button" id="send-chat">Send</button>
     </div>
   </div>
 
   <div id="live">
-    <div class="section-title">Live Event Feed</div>
+    <div class="section-title">Connection Status</div>
     <div class="live-feed" id="live-feed">
-      <div class="event-line"><span class="ts">NEXUS</span> Connecting to event stream…</div>
+      <div class="event-line"><span class="ts">NEXUS</span> Connecting to dashboard heartbeat…</div>
     </div>
   </div>
 </main>
@@ -110,15 +128,31 @@ setInterval(() => {
   document.getElementById('clock').textContent = new Date().toUTCString();
 }, 1000);
 
+// Render all untrusted chat and stream content as text, never HTML.
+function appendLine(container, label, message, color) {
+  const row = document.createElement('div');
+  row.className = 'event-line';
+  const tag = document.createElement('span');
+  tag.className = 'ts';
+  if (color) tag.style.color = `var(${color})`;
+  tag.textContent = label;
+  row.appendChild(tag);
+  row.appendChild(document.createTextNode(` ${String(message ?? '')}`));
+  container.appendChild(row);
+  while (container.children.length > 200) {
+    container.removeChild(container.firstChild);
+  }
+  container.scrollTop = container.scrollHeight;
+}
+
 // Chat
 async function sendChat() {
   const input = document.getElementById('chat-input');
-  const msg   = input.value.trim();
+  const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
   const box = document.getElementById('chat-messages');
-  box.innerHTML += `<div class="event-line"><span class="ts">You</span> ${msg}</div>`;
-  box.scrollTop = box.scrollHeight;
+  appendLine(box, 'You', msg);
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
@@ -126,28 +160,52 @@ async function sendChat() {
       body: JSON.stringify({question: msg})
     });
     const data = await resp.json();
-    box.innerHTML += `<div class="event-line"><span class="ts" style="color:var(--accent)">AI</span> ${data.answer || data.error || 'No response'}</div>`;
-    box.scrollTop = box.scrollHeight;
-  } catch(e) {
-    box.innerHTML += `<div class="event-line"><span class="ts" style="color:var(--danger)">Error</span> ${e.message}</div>`;
+    appendLine(box, 'AI', data.answer || data.error || 'No response', '--accent');
+  } catch (error) {
+    appendLine(box, 'Error', error.message, '--danger');
   }
 }
 
-// SSE Live Feed
+document.getElementById('chat-input').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') sendChat();
+});
+document.getElementById('send-chat').addEventListener('click', sendChat);
+
+// SSE heartbeat stream. Security alerts are served by the ShiatoAli SOC API.
 const evtSource = new EventSource('/api/events');
-evtSource.onmessage = (e) => {
+let eventStreamErrorShown = false;
+evtSource.onopen = () => { eventStreamErrorShown = false; };
+evtSource.onmessage = (event) => {
   const feed = document.getElementById('live-feed');
-  const ts   = new Date().toISOString().slice(11,19);
-  feed.innerHTML += `<div class="event-line"><span class="ts">${ts}</span> ${e.data}</div>`;
-  feed.scrollTop = feed.scrollHeight;
+  const ts = new Date().toISOString().slice(11,19);
+  appendLine(feed, ts, event.data);
+};
+evtSource.onerror = () => {
+  if (!eventStreamErrorShown) {
+    appendLine(document.getElementById('live-feed'), 'WARN', 'Heartbeat stream disconnected; retrying', '--danger');
+    eventStreamErrorShown = true;
+  }
 };
 </script>
 </body>
 </html>"""
 
 
+def _is_loopback_host(host: str) -> bool:
+    """Return true only for loopback IPs and the localhost hostname."""
+    if not isinstance(host, str):
+        return False
+    normalized = host.strip().lower()
+    if normalized == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(normalized).is_loopback
+    except ValueError:
+        return False
+
+
 class DashboardModule:
-    """shadow313.v2.dashboard — Web dashboard. Registered: dashboard"""
+    """Local-only shadow313.v2 dashboard. Use the authenticated API remotely."""
 
     def __init__(self, kernel) -> None:
         self.kernel = kernel
@@ -169,6 +227,11 @@ class DashboardModule:
         self.out.section("WEB DASHBOARD")
         port = port or self._port
         host = host or self._host
+        if not _is_loopback_host(host):
+            raise RuntimeError(
+                "The legacy dashboard is local-only. Use the authenticated Python API "
+                "for remote access."
+            )
 
         try:
             self._start_fastapi(host, port, no_browser)
@@ -182,9 +245,9 @@ class DashboardModule:
         return {"host": host, "port": port}
 
     def _start_fastapi(self, host: str, port: int, no_browser: bool) -> None:
+        import uvicorn
         from fastapi import FastAPI
         from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
-        import uvicorn
 
         app    = FastAPI(title="Shadow313 NEXUS Dashboard")
         kernel = self.kernel
@@ -222,8 +285,17 @@ class DashboardModule:
         @app.post("/api/chat")
         async def chat(body: dict):
             question = body.get("question", "")
-            if not question:
-                return {"error": "No question provided"}
+            if not isinstance(question, str) or not question.strip():
+                return JSONResponse(
+                    {"error": "A non-empty question is required"},
+                    status_code=400,
+                )
+            question = question.strip()
+            if len(question) > 20000:
+                return JSONResponse(
+                    {"error": "Question exceeds the 20000-character limit"},
+                    status_code=413,
+                )
             rag = kernel.get_module("rag")
             if rag:
                 answer = rag.engine.ask(question)
@@ -240,7 +312,7 @@ class DashboardModule:
                 max_heartbeats = 10000  # FIX: prevent infinite loop — ~14 hours at 5s interval
                 for _ in range(max_heartbeats):
                     await asyncio.sleep(5)
-                    yield f"data: Heartbeat — {datetime.now(timezone.utc).isoformat()}\n\n"
+                    yield f"data: Heartbeat — {datetime.now(UTC).isoformat()}\n\n"
                 yield "data: Stream ended\n\n"
 
             return StreamingResponse(generate(), media_type="text/event-stream")
@@ -255,10 +327,6 @@ class DashboardModule:
     def _serve_static(self, host: str, port: int) -> None:
         """Fallback: serve static HTML with Python's built-in HTTP server."""
         import http.server
-        import threading
-
-        html_path = Path("/tmp/shadow313_dashboard.html")
-        html_path.write_text(DASHBOARD_HTML)
 
         class Handler(http.server.SimpleHTTPRequestHandler):
             def do_GET(self):
