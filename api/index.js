@@ -172,7 +172,7 @@ function createHandler(options = {}) {
     }
 
     try {
-      const upstreamPath = health ? '/api/health' : status ? '/api/status' : rawTarget;
+      const upstreamPath = health ? '/health' : status ? '/api/status' : rawTarget;
       const body = route && method !== 'GET' ? await readRequestBody(req) : undefined;
       const upstream = await requestBackend(base, upstreamPath, method, body, Boolean(route));
       if (health) {
