@@ -18,7 +18,7 @@ The service command is:
 uvicorn shadow313.api.server:app --host 0.0.0.0 --port $PORT
 ```
 
-The platform health-check path is `/api/health`. The Python API exposes both `/api/health` (platform-compatible) and `/health` (local/Docker compatibility).
+The platform health-check path is `/health`, which is the public health route already exposed by the Python API.
 
 Set these variables in the backend host's service environment:
 
@@ -39,7 +39,7 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 
 After deployment, verify the provider's service URL directly:
 
-- `GET https://YOUR-BACKEND-HOST/api/health` should return `200`.
+- `GET https://YOUR-BACKEND-HOST/health` should return `200`.
 - `GET https://YOUR-BACKEND-HOST/api/status` should return `200` and `status: operational`.
 
 ## 2. Connect Vercel to the Python service
