@@ -505,6 +505,36 @@ Docs:
     p_sim.add_argument("--n", type=int, default=100)
     p_sim.add_argument("--save", default="")
 
+    p_collab = sub.add_parser("collab", help="Manage collaborative analyst sessions")
+    p_collab.add_argument("--create", action="store_true")
+    p_collab.add_argument("--join", default="")
+    p_collab.add_argument("--add-member", default="")
+    p_collab.add_argument("--share-session", default="")
+    p_collab.add_argument("--note", default="")
+    p_collab.add_argument("--username", default="analyst")
+    p_collab.add_argument("--list", action="store_true", dest="list_sessions")
+    p_collab.add_argument("--timeline", default="")
+
+    p_attack = sub.add_parser("attack-map", help="Map session findings to MITRE ATT&CK")
+    p_attack.add_argument("--from-session", default="")
+    p_attack.add_argument("--output-navigator", default="")
+    p_attack.add_argument("--technique-summary", action="store_true")
+
+    p_pe = sub.add_parser("pe-analyze", help="Analyze PE files and generate forensic reports")
+    p_pe.add_argument("--file", default="")
+    p_pe.add_argument("--entropy", action="store_true")
+    p_pe.add_argument("--forensics", action="store_true")
+    p_pe.add_argument("--save", default="")
+    p_pe.add_argument("--threat-posture", default="LOW",
+                      choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"])
+
+    p_dns = sub.add_parser("dns-intercept", help="Inspect DNS exposure in OT/ICS environments")
+    p_dns.add_argument("--target", default="")
+    p_dns.add_argument("--scan-ot", action="store_true")
+    p_dns.add_argument("--geo-deck", action="store_true")
+    p_dns.add_argument("--save", default="")
+    p_dns.add_argument("--report-txt", default="")
+
     return parser
 
 
@@ -555,7 +585,9 @@ def _required_namespaces(args) -> list[str]:
         "cadl": ["aegis"], "acts": ["ghost_watch"],
         "orchestrate": ["orchestrate"], "nexus-router": ["nexus_router"],
         "ledger": ["ledger"], "workflow": ["workflow"], "tools": ["tools"],
-        "simulate": ["simulate"],
+        "simulate": ["simulate"], "collab": ["collab"],
+        "attack-map": ["attack_map"], "pe-analyze": ["pe_analyze"],
+        "dns-intercept": ["dns_intercept_ot"],
     }
     required = list(routes.get(command, []))
     if command == "network":
@@ -1077,6 +1109,26 @@ def _dispatch(kernel, args, parser) -> int:
     elif cmd == "simulate":
         kernel.dispatch("simulate", sim=args.sim, quick=args.quick, n=args.n, save=args.save)
 
+    elif cmd == "collab":
+        kernel.dispatch("collab", create=args.create, join=args.join,
+                        add_member=args.add_member, share_session=args.share_session,
+                        note=args.note, username=args.username,
+                        list_sessions=args.list_sessions, timeline=args.timeline)
+
+    elif cmd == "attack-map":
+        kernel.dispatch("attack_map", from_session=args.from_session,
+                        output_navigator=args.output_navigator,
+                        technique_summary=args.technique_summary)
+
+    elif cmd == "pe-analyze":
+        kernel.dispatch("pe_analyze", file=args.file, entropy=args.entropy,
+                        forensics=args.forensics, save=args.save,
+                        threat_posture=args.threat_posture)
+
+    elif cmd == "dns-intercept":
+        kernel.dispatch("dns_intercept_ot", target=args.target, scan_ot=args.scan_ot,
+                        geo_deck=args.geo_deck, save=args.save, report_txt=args.report_txt)
+
     elif cmd == "commands":
         route_map = {
             "recon": "recon", "vuln": "vuln", "exploit": "exploit",
@@ -1095,6 +1147,8 @@ def _dispatch(kernel, args, parser) -> int:
             "quantum-nexus": "quantum_nexus", "satellite": "satellite",
             "orchestrate": "orchestrate", "nexus-router": "nexus_router",
             "ledger": "ledger", "workflow": "workflow", "tools": "tools", "simulate": "simulate",
+            "collab": "collab", "attack-map": "attack_map",
+            "pe-analyze": "pe_analyze", "dns-intercept": "dns_intercept_ot",
             "threat-actor": "threat_actor", "benchmark": "benchmark",
             "health": "health_check", "doctor": "health_check",
             "cadl": "aegis", "acts": "ghost_watch",
