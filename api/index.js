@@ -86,7 +86,7 @@ async function readResponseBody(response) {
 function createHandler(options = {}) {
   const env = options.env || process.env;
   const fetchImpl = options.fetch || globalThis.fetch;
-  const timeoutMs = options.timeoutMs || 8000;
+  const timeoutMs = options.timeoutMs || 15000;
 
   async function requestBackend(base, path, method, body, includeKey = true) {
     const headers = { Accept: 'application/json' };
@@ -176,10 +176,17 @@ function createHandler(options = {}) {
       const body = route && method !== 'GET' ? await readRequestBody(req) : undefined;
       const upstream = await requestBackend(base, upstreamPath, method, body, Boolean(route));
       if (health) {
-        return json(res, req, upstream.status, {
-          status: upstream.status >= 200 && upstream.status < 300 ? 'ok' : 'unhealthy',
+        let healthy = false;
+        try {
+          const healthPayload = JSON.parse(upstream.body.toString('utf8'));
+          healthy = upstream.status >= 200 && upstream.status < 300 && healthPayload.status === 'ok';
+        } catch {
+          healthy = false;
+        }
+        return json(res, req, healthy ? 200 : 503, {
+          status: healthy ? 'ok' : 'unhealthy',
           service: 'shadow313-nexus-api',
-          backend_connected: upstream.status >= 200 && upstream.status < 300,
+          backend_connected: healthy,
         });
       }
       if (status) {
