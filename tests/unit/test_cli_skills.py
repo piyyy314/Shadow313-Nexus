@@ -45,3 +45,28 @@ def test_skill_list_command_outputs_discovered_skill(tmp_path: Path, capsys):
     args = argparse.Namespace(root=str(tmp_path), action="list")
     assert run_skill_command(args) == 0
     assert "example-skill" in capsys.readouterr().out
+
+def test_main_skill_command_bypasses_kernel(tmp_path: Path, capsys):
+    from shadow313.cli.main import main
+
+    skill = tmp_path / "skills" / "example-skill"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text(
+        "---\\nname: example-skill\\ndescription: test\\n---\\n# Example\\n",
+        encoding="utf-8",
+    )
+    assert main(["skill", "--root", str(tmp_path), "list"]) == 0
+    assert "example-skill" in capsys.readouterr().out
+
+
+def test_main_skill_validate_all(tmp_path: Path, capsys):
+    from shadow313.cli.main import main
+
+    skill = tmp_path / "skills" / "example-skill"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text(
+        "---\\nname: example-skill\\ndescription: test\\n---\\n# Example\\n",
+        encoding="utf-8",
+    )
+    assert main(["skill", "--root", str(tmp_path), "validate"]) == 0
+    assert "PASS example-skill" in capsys.readouterr().out
