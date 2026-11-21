@@ -16,8 +16,7 @@ import random
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 
 # ── Complete technique catalog ────────────────────────────────────────────────
@@ -121,57 +120,344 @@ ALL_TECHNIQUES: list[dict] = [
     {"id":"T1018",    "name":"Remote System Discovery",            "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.68, "actor":"APT29,Lazarus"},
     {"id":"T1083",    "name":"File and Directory Discovery",       "tactic":"Discovery",            "sev":"LOW",      "epss":0.50, "actor":"APT41"},
     {"id":"T1016",    "name":"System Network Configuration",       "tactic":"Discovery",            "sev":"LOW",      "epss":0.48, "actor":"APT28"},
-    {"id":"T1033",    "name":"System Owner/User Discovery",        "tactic":"Discovery",            "sev":"LOW",      "epss":0.45, "actor":"FIN7"},
+    {
+        "id":"T1033",
+        "name":"System Owner/User Discovery",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.45,
+        "actor":"FIN7"
+    },
 
     # ══ LATERAL MOVEMENT (TA0008) ═════════════════════════════════════════════
-    {"id":"T1021.001","name":"Remote Desktop Protocol",            "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.86, "actor":"APT28,LockBit"},
-    {"id":"T1021.002","name":"SMB/Windows Admin Shares",           "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.84, "actor":"APT29,Lazarus"},
-    {"id":"T1021.006","name":"Windows Remote Management",          "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1550.002","name":"Pass-the-Hash",                      "tactic":"Lateral Movement",     "sev":"CRITICAL", "epss":0.94, "actor":"APT28,APT29,FIN7"},
-    {"id":"T1550.003","name":"Pass-the-Ticket",                    "tactic":"Lateral Movement",     "sev":"CRITICAL", "epss":0.92, "actor":"APT29,Lazarus"},
-    {"id":"T1534",    "name":"Internal Spearphishing",             "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.78, "actor":"APT28"},
-    {"id":"T1570",    "name":"Lateral Tool Transfer",              "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.80, "actor":"APT41,LockBit"},
-    {"id":"T1563.002","name":"RDP Hijacking",                      "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.79, "actor":"APT29"},
+    {
+        "id":"T1021.001",
+        "name":"Remote Desktop Protocol",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.86,
+        "actor":"APT28,LockBit"
+    },
+    {
+        "id":"T1021.002",
+        "name":"SMB/Windows Admin Shares",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1021.006",
+        "name":"Windows Remote Management",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1550.002",
+        "name":"Pass-the-Hash",
+        "tactic":"Lateral Movement",
+        "sev":"CRITICAL",
+        "epss":0.94,
+        "actor":"APT28,APT29,FIN7"
+    },
+    {
+        "id":"T1550.003",
+        "name":"Pass-the-Ticket",
+        "tactic":"Lateral Movement",
+        "sev":"CRITICAL",
+        "epss":0.92,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1534",
+        "name":"Internal Spearphishing",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1570",
+        "name":"Lateral Tool Transfer",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT41,LockBit"
+    },
+    {
+        "id":"T1563.002",
+        "name":"RDP Hijacking",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.79,
+        "actor":"APT29"
+    },
 
     # ══ COLLECTION (TA0009) ═══════════════════════════════════════════════════
-    {"id":"T1560.001","name":"Archive via Utility",                "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.68, "actor":"APT41,LockBit"},
-    {"id":"T1005",    "name":"Data from Local System",             "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.65, "actor":"APT28,FIN7"},
-    {"id":"T1039",    "name":"Data from Network Shared Drive",     "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.62, "actor":"APT29"},
-    {"id":"T1113",    "name":"Screen Capture",                     "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.60, "actor":"APT41,Lazarus"},
-    {"id":"T1056.001","name":"Keylogging",                         "tactic":"Collection",           "sev":"HIGH",     "epss":0.78, "actor":"APT28,FIN7"},
-    {"id":"T1114.001","name":"Local Email Collection",             "tactic":"Collection",           "sev":"HIGH",     "epss":0.75, "actor":"APT29"},
-    {"id":"T1557",    "name":"Adversary-in-the-Middle",            "tactic":"Collection",           "sev":"HIGH",     "epss":0.84, "actor":"Lazarus"},
+    {
+        "id":"T1560.001",
+        "name":"Archive via Utility",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.68,
+        "actor":"APT41,LockBit"
+    },
+    {
+        "id":"T1005",
+        "name":"Data from Local System",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1039",
+        "name":"Data from Network Shared Drive",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.62,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1113",
+        "name":"Screen Capture",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.60,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1056.001",
+        "name":"Keylogging",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1114.001",
+        "name":"Local Email Collection",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.75,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1557",
+        "name":"Adversary-in-the-Middle",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"Lazarus"
+    },
 
     # ══ COMMAND AND CONTROL (TA0011) ══════════════════════════════════════════
-    {"id":"T1071.001","name":"Web Protocols (HTTP/S C2)",          "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.87, "actor":"APT28,Cobalt Strike"},
-    {"id":"T1071.004","name":"DNS C2",                             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"Lazarus,BLINDINGCAN"},
-    {"id":"T1572",    "name":"Protocol Tunneling (DNS)",           "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"Lazarus,iodine"},
-    {"id":"T1090.003","name":"Multi-hop Proxy",                    "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.80, "actor":"APT29,Lazarus"},
-    {"id":"T1573.001","name":"Symmetric Cryptography",             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.82, "actor":"APT41,Cobalt Strike"},
-    {"id":"T1573.002","name":"Asymmetric Cryptography",            "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.83, "actor":"APT29"},
-    {"id":"T1105",    "name":"Ingress Tool Transfer",              "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.90, "actor":"Mirai,APT41"},
-    {"id":"T1095",    "name":"Non-Application Layer Protocol",     "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"VSAT attackers"},
-    {"id":"T1102",    "name":"Web Service C2",                     "tactic":"Command and Control",  "sev":"MEDIUM",   "epss":0.72, "actor":"APT29"},
-    {"id":"T1001.003","name":"Protocol Impersonation",             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.78, "actor":"APT41"},
+    {
+        "id":"T1071.001",
+        "name":"Web Protocols (HTTP/S C2)",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.87,
+        "actor":"APT28,Cobalt Strike"
+    },
+    {
+        "id":"T1071.004",
+        "name":"DNS C2",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"Lazarus,BLINDINGCAN"
+    },
+    {
+        "id":"T1572",
+        "name":"Protocol Tunneling (DNS)",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"Lazarus,iodine"
+    },
+    {
+        "id":"T1090.003",
+        "name":"Multi-hop Proxy",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1573.001",
+        "name":"Symmetric Cryptography",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41,Cobalt Strike"
+    },
+    {
+        "id":"T1573.002",
+        "name":"Asymmetric Cryptography",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.83,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1105",
+        "name":"Ingress Tool Transfer",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.90,
+        "actor":"Mirai,APT41"
+    },
+    {
+        "id":"T1095",
+        "name":"Non-Application Layer Protocol",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"VSAT attackers"
+    },
+    {
+        "id":"T1102",
+        "name":"Web Service C2",
+        "tactic":"Command and Control",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1001.003",
+        "name":"Protocol Impersonation",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT41"
+    },
 
     # ══ EXFILTRATION (TA0010) ═════════════════════════════════════════════════
-    {"id":"T1041",    "name":"Exfiltration Over C2 Channel",       "tactic":"Exfiltration",         "sev":"HIGH",     "epss":0.86, "actor":"APT28,APT41"},
-    {"id":"T1048.003","name":"Exfiltration Over Unencrypted Protocol","tactic":"Exfiltration",      "sev":"HIGH",     "epss":0.82, "actor":"APT29"},
-    {"id":"T1567.002","name":"Exfiltration to Cloud Storage",      "tactic":"Exfiltration",         "sev":"HIGH",     "epss":0.80, "actor":"APT41,BlackCat"},
-    {"id":"T1030",    "name":"Data Transfer Size Limits",          "tactic":"Exfiltration",         "sev":"MEDIUM",   "epss":0.65, "actor":"APT29"},
-    {"id":"T1048",    "name":"Exfiltration Over Alternative Protocol","tactic":"Exfiltration",      "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1052.001","name":"Exfiltration over USB",              "tactic":"Exfiltration",         "sev":"MEDIUM",   "epss":0.55, "actor":"APT28"},
+    {
+        "id":"T1041",
+        "name":"Exfiltration Over C2 Channel",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.86,
+        "actor":"APT28,APT41"
+    },
+    {
+        "id":"T1048.003",
+        "name":"Exfiltration Over Unencrypted Protocol",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1567.002",
+        "name":"Exfiltration to Cloud Storage",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT41,BlackCat"
+    },
+    {
+        "id":"T1030",
+        "name":"Data Transfer Size Limits",
+        "tactic":"Exfiltration",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1048",
+        "name":"Exfiltration Over Alternative Protocol",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1052.001",
+        "name":"Exfiltration over USB",
+        "tactic":"Exfiltration",
+        "sev":"MEDIUM",
+        "epss":0.55,
+        "actor":"APT28"
+    },
 
     # ══ IMPACT (TA0040) ═══════════════════════════════════════════════════════
-    {"id":"T1486",    "name":"Data Encrypted for Impact (Ransomware)","tactic":"Impact",            "sev":"CRITICAL", "epss":0.97, "actor":"LockBit,BlackCat,Conti"},
-    {"id":"T1490",    "name":"Inhibit System Recovery (VSS)",      "tactic":"Impact",               "sev":"CRITICAL", "epss":0.97, "actor":"LockBit,BlackCat,Conti"},
-    {"id":"T1489",    "name":"Service Stop",                       "tactic":"Impact",               "sev":"HIGH",     "epss":0.84, "actor":"LockBit,Conti"},
-    {"id":"T1498",    "name":"Network Denial of Service (Mirai)",  "tactic":"Impact",               "sev":"HIGH",     "epss":0.90, "actor":"Mirai,eCrime"},
-    {"id":"T1485",    "name":"Data Destruction",                   "tactic":"Impact",               "sev":"CRITICAL", "epss":0.93, "actor":"Lazarus,APT38"},
-    {"id":"T1491.001","name":"Internal Defacement",                "tactic":"Impact",               "sev":"MEDIUM",   "epss":0.65, "actor":"Hacktivist"},
-    {"id":"T1496",    "name":"Resource Hijacking (Cryptomining)",  "tactic":"Impact",               "sev":"MEDIUM",   "epss":0.72, "actor":"eCrime"},
-    {"id":"T1529",    "name":"System Shutdown/Reboot",             "tactic":"Impact",               "sev":"HIGH",     "epss":0.80, "actor":"Lazarus,APT38"},
-    {"id":"T1565.001","name":"Data Manipulation: Stored (SATCOM)", "tactic":"Impact",               "sev":"CRITICAL", "epss":0.93, "actor":"Nation-state,VSAT"},
+    {
+        "id":"T1486",
+        "name":"Data Encrypted for Impact (Ransomware)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"LockBit,BlackCat,Conti"
+    },
+    {
+        "id":"T1490",
+        "name":"Inhibit System Recovery (VSS)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"LockBit,BlackCat,Conti"
+    },
+    {
+        "id":"T1489",
+        "name":"Service Stop",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"LockBit,Conti"
+    },
+    {
+        "id":"T1498",
+        "name":"Network Denial of Service (Mirai)",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.90,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1485",
+        "name":"Data Destruction",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"Lazarus,APT38"
+    },
+    {
+        "id":"T1491.001",
+        "name":"Internal Defacement",
+        "tactic":"Impact",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"Hacktivist"
+    },
+    {
+        "id":"T1496",
+        "name":"Resource Hijacking (Cryptomining)",
+        "tactic":"Impact",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"eCrime"
+    },
+    {
+        "id":"T1529",
+        "name":"System Shutdown/Reboot",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"Lazarus,APT38"
+    },
+    {
+        "id":"T1565.001",
+        "name":"Data Manipulation: Stored (SATCOM)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"Nation-state,VSAT"
+    },
 ]
 
 print(f"Total techniques in catalog: {len(ALL_TECHNIQUES)}")
@@ -316,8 +602,8 @@ class TechniqueSimResult:
     blocked:          bool
     detection_prob:   float
     detection_method: str
-    mttd_seconds:     Optional[float]
-    timestamp:        str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    mttd_seconds:     float | None
+    timestamp:        str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -348,7 +634,7 @@ class FullSimulationReport:
     by_severity:      dict = field(default_factory=dict)
     missed_techniques: list[dict] = field(default_factory=list)
     results:          list[TechniqueSimResult] = field(default_factory=list)
-    timestamp:        str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:        str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -465,11 +751,11 @@ class FullTechniqueSimulator:
         report.avg_mttd       = sum(mttd_values) / len(mttd_values) if mttd_values else 0
 
         # Compute per-tactic detection rates
-        for tactic, stats in tactic_stats.items():
+        for _, stats in tactic_stats.items():
             stats["detection_rate"] = round(stats["detected"] / stats["total"], 3)
         report.by_tactic = tactic_stats
 
-        for sev, stats in sev_stats.items():
+        for _, stats in sev_stats.items():
             stats["detection_rate"] = round(stats["detected"] / stats["total"], 3)
         report.by_severity = sev_stats
 
