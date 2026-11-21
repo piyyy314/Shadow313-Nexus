@@ -12,6 +12,8 @@ def test_nexus_temporal_and_stix_handlers_are_autoloaded():
         "shadow313.v4.temporal_binding.temporal_binding.TemporalBindingModule"
     )
     assert builtins["stix"] == "shadow313.v4.stix.stix_handler.STIXModule"
+    assert builtins["finetune"] == "shadow313.v4.finetune_ui.finetune_ui.FineTuneModule"
+    assert builtins["mobile_api"] == "shadow313.v4.mobile_api.mobile_api.MobileAPIModule"
 
 
 def test_nexus_command_requires_registered_nexus_handler():
