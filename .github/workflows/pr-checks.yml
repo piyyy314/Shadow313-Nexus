@@ -78,11 +78,35 @@ jobs:
             [[ "$path" =~ ^(shadow313|nexus_toolkit)/.*\.py$ ]] || continue
             files+=("$path")
           done < "$changed_files"
-          if ((${#files[@]})); then
-            ruff check "${files[@]}" --output-format github
+          if (("${#files[@]}" > 0)); then
+            bandit -f json -o bandit-report.json --exit-zero "${files[@]}"
           else
-            echo "No changed Python files to lint."
+            printf '{"results": [], "metrics": {}}\n' > bandit-report.json
+            echo "No changed production Python files to scan."
           fi
+          python - <<'PY'
+          import json
+          import sys
+
+          with open("bandit-report.json", encoding="utf-8") as report_file:
+              report = json.load(report_file)
+          high = [
+              finding
+              for finding in report.get("results", [])
+              if finding.get("issue_severity") == "HIGH"
+          ]
+          if high:
+              for finding in high:
+                  print(
+                      f"HIGH: {finding.get('filename')}:{finding.get('line_number')} "
+                      f"{finding.get('test_id')} {finding.get('issue_text')}"
+                  )
+              sys.exit(1)
+          print(
+              "Bandit high-severity gate passed; medium/low findings "
+              f"retained: {len(report.get('results', []))}"
+          )
+          PY
 
       - name: Run Black on changed Shadow313 files
         run: |
