@@ -1,7 +1,7 @@
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
 
+import datetime as dt
 import ipaddress
-from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -430,7 +430,7 @@ class DashboardModule:
                 max_heartbeats = 10000  # FIX: prevent infinite loop — ~14 hours at 5s interval
                 for _ in range(max_heartbeats):
                     await asyncio.sleep(5)
-                    yield f"data: Heartbeat — {datetime.now(UTC).isoformat()}\n\n"
+                    yield f"data: Heartbeat — {dt.datetime.now(dt.UTC).isoformat()}\n\n"
                 yield "data: Stream ended\n\n"
 
             return StreamingResponse(generate(), media_type="text/event-stream")

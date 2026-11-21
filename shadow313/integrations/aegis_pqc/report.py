@@ -11,13 +11,11 @@ Every report includes:
   - Verification instructions
 """
 
-from __future__ import annotations
-
 import json
 from pathlib import Path
 
-from ...core.binding_sdk.binder import BindReceipt
-from .parser import PQCAuditResult, PQCComponent
+from shadow313.core.binding_sdk.binder import BindReceipt
+from shadow313.integrations.aegis_pqc.parser import PQCAuditResult, PQCComponent
 
 
 HTML_TEMPLATE = """<!DOCTYPE html>
