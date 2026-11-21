@@ -133,7 +133,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install PostgreSQL test dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev]" alembic
       - name: Apply ShiatoAli schema migration
         run: alembic -c alembic-shiatoali.ini upgrade head
       - name: Run real PostgreSQL integration tests
