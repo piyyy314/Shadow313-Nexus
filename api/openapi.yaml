@@ -300,6 +300,240 @@ paths:
         "200": {description: Event data status; unavailable when no event backend is connected}
         "401": {description: Unauthorized}
 
+
+  /api/chat:
+    post:
+      summary: Run a response through the configured AI backend
+      operationId: chat
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt:
+                  type: string
+                  minLength: 1
+                  maxLength: 20000
+                system_prompt:
+                  type: string
+                  nullable: true
+                  maxLength: 4000
+                context:
+                  type: object
+                  nullable: true
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Generated response from the configured AI backend
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid request
+        "502":
+          description: AI provider request failed
+        "503":
+          description: AI backend is disabled or unavailable
+
+  /api/shiatoali/health:
+    get:
+      summary: ShiatoAli SOC service health
+      operationId: shiatoAliHealth
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: SOC service health and storage status
+        "401":
+          description: Unauthorized
+
+  /api/shiatoali/events:
+    get:
+      summary: List ingested SOC events
+      operationId: listShiatoAliEvents
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
+        - name: offset
+          in: query
+          required: false
+          schema: {type: integer, minimum: 0, default: 0}
+      responses:
+        "200":
+          description: Paginated SOC event records
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid pagination parameters
+    post:
+      summary: Ingest a SOC event
+      operationId: ingestShiatoAliEvent
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [source, host, event_type, message]
+              properties:
+                source: {type: string, minLength: 1, maxLength: 100}
+                host: {type: string, minLength: 1, maxLength: 255}
+                event_type: {type: string, minLength: 1, maxLength: 100}
+                message: {type: string, minLength: 1, maxLength: 20000}
+                severity: {type: string, default: low}
+                username: {type: string, nullable: true, maxLength: 255}
+                src_ip: {type: string, nullable: true, maxLength: 64}
+                timestamp: {type: string, nullable: true}
+                event_id: {type: string, nullable: true, maxLength: 100}
+                raw:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "202":
+          description: Event accepted and processed
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid event payload
+
+  /api/shiatoali/alerts:
+    get:
+      summary: List generated SOC alerts
+      operationId: listShiatoAliAlerts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
+        - name: offset
+          in: query
+          required: false
+          schema: {type: integer, minimum: 0, default: 0}
+        - name: since
+          in: query
+          required: false
+          schema: {type: string, format: date-time, nullable: true}
+        - name: order
+          in: query
+          required: false
+          schema: {type: string, enum: [asc, desc], default: desc}
+      responses:
+        "200":
+          description: Paginated SOC alert records
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid alert query parameters
+
+  /api/shiatoali/cases:
+    get:
+      summary: List SOC cases
+      operationId: listShiatoAliCases
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
+        - name: offset
+          in: query
+          required: false
+          schema: {type: integer, minimum: 0, default: 0}
+      responses:
+        "200":
+          description: Paginated SOC cases
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid pagination parameters
+    post:
+      summary: Create a SOC case
+      operationId: createShiatoAliCase
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              additionalProperties: false
+              properties:
+                title: {type: string, minLength: 1, maxLength: 255}
+                description: {type: string, maxLength: 10000, default: ""}
+                priority: {type: string, default: medium}
+                alert_id: {type: string, nullable: true}
+      responses:
+        "201":
+          description: SOC case created; actor is assigned by the authenticated API dependency
+        "401":
+          description: Unauthorized
+        "422":
+          description: Invalid case payload
+
+  /api/shiatoali/cases/{case_id}:
+    get:
+      summary: Retrieve a SOC case
+      operationId: getShiatoAliCase
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: SOC case details and activity
+        "401":
+          description: Unauthorized
+        "404":
+          description: Case not found
+    patch:
+      summary: Update a SOC case
+      operationId: updateShiatoAliCase
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                status: {type: string, nullable: true}
+                assignee: {type: string, nullable: true, maxLength: 255}
+                note: {type: string, nullable: true, maxLength: 5000}
+      responses:
+        "200":
+          description: Updated SOC case and activity record
+        "401":
+          description: Unauthorized
+        "404":
+          description: Case not found
+        "422":
+          description: Invalid case update
+
 components:
   securitySchemes:
     ApiKeyAuth:
