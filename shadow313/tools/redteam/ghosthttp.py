@@ -364,7 +364,10 @@ Provide:
                     self._finding(
                         title=f"Internal IP Disclosure in Header: {header_name}",
                         severity="MEDIUM",
-                        description=f"Header '{header_name}' reveals internal IP: {ip_match.group(0)}",
+                        description=(
+                            f"Header '{header_name}' reveals internal IP: "
+                            f"{ip_match.group(0)}"
+                        ),
                         data={"header": header_name, "ip": ip_match.group(0)},
                         remediation=f"Remove or sanitize the {header_name} header",
                         mitre_technique="T1590.005",
@@ -473,7 +476,8 @@ Provide:
                                     description=(
                                         f"{probe['tech']} accessible at {url} "
                                         f"(HTTP {r.status_code}). "
-                                        f"This may expose source code, credentials, or configuration."
+                                        "This may expose source code, credentials, "
+                                        "or configuration."
                                     ),
                                     data={
                                         "path": probe["path"],
@@ -498,7 +502,10 @@ Provide:
                                         "status": r.status_code,
                                         "tech": probe["tech"],
                                     },
-                                    remediation=f"Restrict access to {probe['path']} if not required",
+                                    remediation=(
+                                        f"Restrict access to {probe['path']} "
+                                        "if not required"
+                                    ),
                                     mitre_technique="T1083",
                                 )
                             )
@@ -594,7 +601,8 @@ Provide:
                             "ms": t["ms"],
                             "avg_ms": round(avg_time, 1),
                             "description": (
-                                f"Path {t['path']} responds in {t['ms']}ms vs avg {avg_time:.0f}ms. "
+                                f"Path {t['path']} responds in {t['ms']}ms "
+                                f"vs avg {avg_time:.0f}ms. "
                                 "Timing difference may indicate backend processing "
                                 "(auth check, DB query)."
                             ),
