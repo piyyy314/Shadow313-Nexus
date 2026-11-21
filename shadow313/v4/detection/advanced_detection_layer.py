@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.detection.advanced_detection_layer
 ─────────────────────────────────────────────────
@@ -25,16 +24,16 @@ Three advanced detection capabilities that close the remaining 36% bypass gap:
     Does NOT decrypt traffic — uses metadata only (privacy-preserving).
 """
 
+from __future__ import annotations
+
 import hashlib
 import math
 import random
 import statistics
-import struct
 import threading
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 # ── IDENTITY-6: MLAnomalyProfiler ────────────────────────────────────────────
@@ -48,10 +47,10 @@ class IsolationTree:
 
     def __init__(self, max_depth: int = 8):
         self.max_depth = max_depth
-        self.split_feature: Optional[int] = None
-        self.split_value: Optional[float] = None
-        self.left: Optional["IsolationTree"] = None
-        self.right: Optional["IsolationTree"] = None
+        self.split_feature: int | None = None
+        self.split_value: float | None = None
+        self.left: "IsolationTree" | None = None
+        self.right: "IsolationTree" | None = None
         self.size: int = 0
         self._rng = random.Random()
 
@@ -204,7 +203,7 @@ class StatisticalProcessControl:
             last3_z = [(x - mean) / std for x in data[-3:]]
             beyond_2sigma = sum(1 for z2 in last3_z if abs(z2) > 2.0)
             if beyond_2sigma >= 2:
-                signals.append(f"spc_rule4:2_of_3_beyond_2sigma")
+                signals.append("spc_rule4:2_of_3_beyond_2sigma")
 
         return {
             "signals": signals,
@@ -396,7 +395,7 @@ class MLAnomalyProfiler:
             "entropy", "diversity", "duration", "error_rate"
         ]
         if spc_controllers:
-            for i, (ctrl, name) in enumerate(zip(spc_controllers, feature_names)):
+            for i, (ctrl, name) in enumerate(zip(spc_controllers, feature_names, strict=True)):
                 result = ctrl.evaluate(features[i])
                 if result["out_of_control"]:
                     signals.append(
@@ -427,7 +426,7 @@ class MLAnomalyProfiler:
             "fix": "IDENTITY-6",
             "account": account,
             "features": {name: round(val, 3)
-                        for name, val in zip(feature_names, features)},
+                        for name, val in zip(feature_names, features, strict=True)},
             "isolation_score": round(iso_score, 3),
             "signals": signals,
             "confidence": confidence,
