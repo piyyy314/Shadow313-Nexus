@@ -103,6 +103,7 @@ CMD ["--help"]
 
 # ── Stage 3: Slim production runtime ──────────────────────────────
 FROM production-base AS production
+# Trivy scans this production target; build tooling is removed before runtime.
 
 USER root
 RUN python -m pip check \
