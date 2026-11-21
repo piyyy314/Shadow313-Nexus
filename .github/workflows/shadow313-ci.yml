@@ -69,7 +69,7 @@ jobs:
         run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
       - name: MyPy type check (changed Python files)
         if: steps.changed-python.outputs.count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports --follow-imports=silent
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
@@ -133,7 +133,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install PostgreSQL test dependencies
-        run: pip install -e ".[dev]" alembic
+        run: pip install -e ".[dev]" alembic "psycopg[binary]>=3.1"
       - name: Apply ShiatoAli schema migration
         run: alembic -c alembic-shiatoali.ini upgrade head
       - name: Run real PostgreSQL integration tests
