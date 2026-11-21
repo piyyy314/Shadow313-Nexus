@@ -143,6 +143,9 @@ jobs:
               findings = report.get("results")
               if not isinstance(findings, list):
                   raise ValueError("Bandit JSON report has no results list")
+              errors = report.get("errors")
+              if not isinstance(errors, list) or errors:
+                  raise ValueError("Bandit JSON report contains errors or has no errors list")
           except Exception as exc:
               print(f"Bandit report unavailable or invalid: {exc}", file=sys.stderr)
               sys.exit(1)
