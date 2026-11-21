@@ -9,6 +9,7 @@ const backendRoutes = [
   ['POST', /^\/api\/(detect|webshell\/scan|bind\/create|mobile\/scan|scan\/recon|scan\/vuln|chat)$/],
   ['GET', /^\/api\/shiatoali(?:\/.*)?$/],
   ['POST', /^\/api\/shiatoali(?:\/.*)?$/],
+  ['PATCH', /^\/api\/shiatoali\/cases\/[^/]+$/],
 ];
 
 const MAX_REQUEST_BYTES = 1_048_576;
