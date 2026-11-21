@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 try:
     import chromadb
     from chromadb.config import Settings
+
     _HAS_CHROMA = True
 except ImportError:
     _HAS_CHROMA = False
@@ -29,8 +30,10 @@ except ImportError:
 # Lightweight fallback embedding (TF-IDF like cosine) when no sentence-transformers
 # ---------------------------------------------------------------------------
 
+
 def _tokenize(text: str) -> list[str]:
     import re
+
     return re.findall(r"[a-z0-9]{2,}", text.lower())
 
 
@@ -51,8 +54,8 @@ def _tfidf_vector(text: str, vocab: dict[str, int], idf: dict[str, float]) -> li
 
 def _cosine(a: list[float], b: list[float]) -> float:
     dot = sum(x * y for x, y in zip(a, b, strict=True))
-    na  = sum(x * x for x in a) ** 0.5
-    nb  = sum(x * x for x in b) ** 0.5
+    na = sum(x * x for x in a) ** 0.5
+    nb = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
 
 
@@ -60,12 +63,13 @@ class _FallbackVectorStore:
     """Pure-Python BM25-style store when ChromaDB is unavailable."""
 
     def __init__(self) -> None:
-        self._docs: list[dict] = []   # {id, text, metadata, vector}
+        self._docs: list[dict] = []  # {id, text, metadata, vector}
         self._vocab: dict[str, int] = {}
         self._idf: dict[str, float] = {}
 
     def _rebuild_idf(self) -> None:
         from math import log
+
         df: dict[str, int] = {}
         n = len(self._docs) or 1
         for doc in self._docs:
@@ -79,8 +83,7 @@ class _FallbackVectorStore:
             doc["vector"] = _tfidf_vector(doc["text"], self._vocab, self._idf)
 
     def add(self, doc_id: str, text: str, metadata: dict) -> None:
-        self._docs.append({"id": doc_id, "text": text,
-                           "metadata": metadata, "vector": []})
+        self._docs.append({"id": doc_id, "text": text, "metadata": metadata, "vector": []})
         self._rebuild_idf()
 
     def query(self, text: str, top_k: int = 5) -> list[dict]:
@@ -93,9 +96,10 @@ class _FallbackVectorStore:
                 score = _cosine(qvec, doc["vector"])
                 scored.append((score, doc))
         scored.sort(key=lambda x: x[0], reverse=True)
-        return [{"id": d["id"], "text": d["text"],
-                 "metadata": d["metadata"], "score": s}
-                for s, d in scored[:top_k]]
+        return [
+            {"id": d["id"], "text": d["text"], "metadata": d["metadata"], "score": s}
+            for s, d in scored[:top_k]
+        ]
 
     def count(self) -> int:
         return len(self._docs)
@@ -105,6 +109,7 @@ class _FallbackVectorStore:
 # VectorStore — thin abstraction over ChromaDB or fallback
 # ---------------------------------------------------------------------------
 
+
 class VectorStore:
     """
     Persistent vector store.
@@ -112,9 +117,10 @@ class VectorStore:
     Data stored under ~/.shadow313/vectordb/
     """
 
-    def __init__(self, namespace: str = "default",
-                 persist_dir: str = "~/.shadow313/vectordb") -> None:
-        self.namespace   = namespace
+    def __init__(
+        self, namespace: str = "default", persist_dir: str = "~/.shadow313/vectordb"
+    ) -> None:
+        self.namespace = namespace
         self.persist_dir = Path(persist_dir).expanduser()
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
@@ -130,7 +136,7 @@ class VectorStore:
             self._backend = "chromadb"
         else:
             self._fallback = _FallbackVectorStore()
-            self._backend  = "fallback"
+            self._backend = "fallback"
 
     # ------------------------------------------------------------------
     def upsert(
@@ -151,8 +157,7 @@ class VectorStore:
         else:
             self._fallback.add(doc_id, text, meta)
 
-    def query(self, text: str, top_k: int = 5,
-              where: dict | None = None) -> list[dict]:
+    def query(self, text: str, top_k: int = 5, where: dict | None = None) -> list[dict]:
         if self._backend == "chromadb":
             kwargs: dict[str, Any] = {
                 "query_texts": [text],
@@ -165,12 +170,14 @@ class VectorStore:
                 res = self._col.query(**kwargs)
                 out = []
                 for i, doc in enumerate(res["documents"][0]):
-                    out.append({
-                        "id":       res["ids"][0][i],
-                        "text":     doc,
-                        "metadata": res["metadatas"][0][i] or {},
-                        "score":    1 - res["distances"][0][i],  # convert distance→similarity
-                    })
+                    out.append(
+                        {
+                            "id": res["ids"][0][i],
+                            "text": doc,
+                            "metadata": res["metadatas"][0][i] or {},
+                            "score": 1 - res["distances"][0][i],  # convert distance→similarity
+                        }
+                    )
                 return out
             except Exception as exc:
                 logger.debug("ChromaDB query failed; returning no results: %s", exc)
@@ -199,6 +206,7 @@ class VectorStore:
 # SecurityKnowledgeBase — domain-specific ingesters
 # ---------------------------------------------------------------------------
 
+
 class SecurityKnowledgeBase:
     """
     Ingests security knowledge into namespaced vector stores.
@@ -213,8 +221,7 @@ class SecurityKnowledgeBase:
         if chroma_path is not None:
             persist_dir = chroma_path
         self._stores: dict[str, VectorStore] = {
-            ns: VectorStore(namespace=ns, persist_dir=persist_dir)
-            for ns in self.NAMESPACES
+            ns: VectorStore(namespace=ns, persist_dir=persist_dir) for ns in self.NAMESPACES
         }
 
     def store(self, ns: str) -> VectorStore:
@@ -226,16 +233,16 @@ class SecurityKnowledgeBase:
         store = self._stores["cve"]
         count = 0
         for cve in cves:
-            cid   = cve.get("id", cve.get("cve", ""))
+            cid = cve.get("id", cve.get("cve", ""))
             if not cid:
                 continue
-            desc  = cve.get("description", "")
-            text  = f"{cid}: {desc}"
-            meta  = {
-                "cve_id":   cid,
-                "cvss":     str(cve.get("cvss_v3", 0.0)),
+            desc = cve.get("description", "")
+            text = f"{cid}: {desc}"
+            meta = {
+                "cve_id": cid,
+                "cvss": str(cve.get("cvss_v3", 0.0)),
                 "severity": cve.get("severity", "UNKNOWN"),
-                "source":   "nvd",
+                "source": "nvd",
             }
             store.upsert(_stable_id(text), text, meta)
             count += 1
@@ -246,15 +253,15 @@ class SecurityKnowledgeBase:
         store = self._stores["mitre"]
         count = 0
         for tech in techniques:
-            tid  = tech.get("id", "")
+            tid = tech.get("id", "")
             name = tech.get("name", "")
             desc = tech.get("description", "")
             text = f"{tid} {name}: {desc[:500]}"
             meta = {
                 "technique_id": tid,
-                "name":         name,
-                "tactic":       tech.get("tactic", ""),
-                "source":       "mitre_attack",
+                "name": name,
+                "tactic": tech.get("tactic", ""),
+                "source": "mitre_attack",
             }
             store.upsert(_stable_id(text), text, meta)
             count += 1
@@ -274,8 +281,7 @@ class SecurityKnowledgeBase:
             count += 1
         return count
 
-    def ingest_session_findings(self, session_id: str,
-                                findings: list[dict]) -> int:
+    def ingest_session_findings(self, session_id: str, findings: list[dict]) -> int:
         """Ingest findings from a Shadow313 session."""
         store = self._stores["session"]
         count = 0
@@ -286,12 +292,9 @@ class SecurityKnowledgeBase:
             count += 1
         return count
 
-    def ingest_text(self, text: str, ns: str = "general",
-                    metadata: dict | None = None) -> None:
+    def ingest_text(self, text: str, ns: str = "general", metadata: dict | None = None) -> None:
         """Ingest arbitrary text into a namespace."""
-        self._stores.get(ns, self._stores["general"]).upsert(
-            _stable_id(text), text, metadata or {}
-        )
+        self._stores.get(ns, self._stores["general"]).upsert(_stable_id(text), text, metadata or {})
 
     # ── Query ──────────────────────────────────────────────────────────────
     # NOTE: the single-namespace query() that used to live here was dead code,
@@ -304,23 +307,23 @@ class SecurityKnowledgeBase:
                 r["namespace"] = ns
                 results.append(r)
         results.sort(key=lambda x: x.get("score", 0), reverse=True)
-        return results[:top_k * 2]
+        return results[: top_k * 2]
 
-    def upsert(self, doc_id: str, text: str, metadata: dict = None,
-               namespace: str = "general") -> None:
+    def upsert(
+        self, doc_id: str, text: str, metadata: dict = None, namespace: str = "general"
+    ) -> None:
         """Upsert a document into the given namespace store."""
         store = self._stores.get(namespace, self._stores.get("general"))
-        if store and hasattr(store, 'upsert'):
+        if store and hasattr(store, "upsert"):
             store.upsert(doc_id, text, metadata or {})
 
-    def query(self, query_text: str, top_k: int = 5,
-              namespace: str = None) -> list:
+    def query(self, query_text: str, top_k: int = 5, namespace: str = None) -> list:
         """Query across all or specific namespace."""
         results = []
         namespaces = [namespace] if namespace else self.NAMESPACES
         for ns in namespaces:
             store = self._stores.get(ns)
-            if store and hasattr(store, 'query'):
+            if store and hasattr(store, "query"):
                 results.extend(store.query(query_text, top_k=top_k))
         results.sort(key=lambda x: -x.get("score", 0))
         return results[:top_k]
@@ -340,6 +343,7 @@ def _stable_id(text: str) -> str:
 # RAGEngine — high-level interface (Feature #2)
 # ---------------------------------------------------------------------------
 
+
 class RAGEngine:
     """
     RAG (Retrieval-Augmented Generation) engine for Shadow313.
@@ -351,17 +355,15 @@ class RAGEngine:
                                         namespace="cve")
     """
 
-    def __init__(self, ai_engine: Any,
-                 persist_dir: str = "~/.shadow313/vectordb") -> None:
-        self.ai    = ai_engine
-        self.kb    = SecurityKnowledgeBase(persist_dir=persist_dir)
+    def __init__(self, ai_engine: Any, persist_dir: str = "~/.shadow313/vectordb") -> None:
+        self.ai = ai_engine
+        self.kb = SecurityKnowledgeBase(persist_dir=persist_dir)
         self._hist: list[dict] = []
 
     # ── Core API ───────────────────────────────────────────────────────────
-    def chat_with_context(self, query: str,
-                          namespace: str = "cve",
-                          top_k: int = 5,
-                          max_history: int = 6) -> str:
+    def chat_with_context(
+        self, query: str, namespace: str = "cve", top_k: int = 5, max_history: int = 6
+    ) -> str:
         """Retrieve relevant context, then answer with AI."""
         # 1. Retrieve
         results = self.kb.query(query, namespace=namespace, top_k=top_k)
@@ -370,11 +372,9 @@ class RAGEngine:
 
         context_blocks = []
         for r in results:
-            ns    = r.get("namespace", namespace)
+            ns = r.get("namespace", namespace)
             score = r.get("score", 0)
-            context_blocks.append(
-                f"[{ns.upper()} | score={score:.2f}]\n{r['text']}"
-            )
+            context_blocks.append(f"[{ns.upper()} | score={score:.2f}]\n{r['text']}")
         context_str = "\n\n---\n\n".join(context_blocks)
 
         # 2. Build conversation with history
@@ -382,8 +382,7 @@ class RAGEngine:
         if self._hist:
             recent = self._hist[-max_history:]
             history_str = "\n".join(
-                f"{'User' if m['role']=='user' else 'Assistant'}: {m['content']}"
-                for m in recent
+                f"{'User' if m['role']=='user' else 'Assistant'}: {m['content']}" for m in recent
             )
 
         system_prompt = (
@@ -399,9 +398,7 @@ class RAGEngine:
             history_section = f"CONVERSATION HISTORY:\n{history_str}\n\n"
 
         user_prompt = (
-            f"RETRIEVED CONTEXT:\n{context_str}\n\n"
-            f"{history_section}"
-            f"QUESTION: {query}"
+            f"RETRIEVED CONTEXT:\n{context_str}\n\n" f"{history_section}" f"QUESTION: {query}"
         )
 
         # 3. Generate
@@ -419,8 +416,7 @@ class RAGEngine:
     def ingest_mitre(self, techniques: list[dict]) -> int:
         return self.kb.ingest_mitre_attack(techniques)
 
-    def ingest_text(self, text: str, ns: str = "general",
-                    meta: dict | None = None) -> None:
+    def ingest_text(self, text: str, ns: str = "general", meta: dict | None = None) -> None:
         self.kb.ingest_text(text, ns=ns, metadata=meta)
 
     def ingest_session(self, session_id: str, findings: list[dict]) -> int:
@@ -428,7 +424,7 @@ class RAGEngine:
 
     def stats(self) -> dict:
         return {
-            "backend":    self.kb.store("cve").backend,
+            "backend": self.kb.store("cve").backend,
             "namespaces": self.kb.stats(),
         }
 
@@ -525,8 +521,10 @@ export:
 """
 
 
-def generate_finetune_config(base_model: str = "unsloth/mistral-7b-v0.3-bnb-4bit",
-                              output_path: str = "~/.shadow313/finetune_config.yaml") -> str:
+def generate_finetune_config(
+    base_model: str = "unsloth/mistral-7b-v0.3-bnb-4bit",
+    output_path: str = "~/.shadow313/finetune_config.yaml",
+) -> str:
     """Generate a LoRA fine-tune config and write it to disk."""
     config = LORA_CONFIG_TEMPLATE.replace("{base_model}", base_model)
     path = Path(output_path).expanduser()
@@ -664,9 +662,9 @@ if __name__ == "__main__":
 '''
 
 
-
 # ── TFIDFVectorStore ──────────────────────────────────────────────────────────
 # Full implementation with namespace support, count(), query() with TF-IDF scoring
+
 
 class TFIDFVectorStore:
     """
@@ -680,18 +678,18 @@ class TFIDFVectorStore:
         self._store: dict = _defaultdict(dict)
         self._idf_cache: dict = {}
 
-    def upsert(self, doc_id: str, text: str, metadata: dict = None,
-               namespace: str = "default") -> None:
+    def upsert(
+        self, doc_id: str, text: str, metadata: dict = None, namespace: str = "default"
+    ) -> None:
         """Insert or replace a document in the given namespace."""
         self._store[namespace][doc_id] = {
-            "text":     text,
+            "text": text,
             "metadata": metadata or {},
-            "tokens":   self._tokenize(text),
+            "tokens": self._tokenize(text),
         }
         self._idf_cache.clear()  # invalidate IDF cache
 
-    def query(self, query_text: str, top_k: int = 5,
-              namespace: str = None) -> list[dict]:
+    def query(self, query_text: str, top_k: int = 5, namespace: str = None) -> list[dict]:
         """Query documents by TF-IDF similarity."""
         query_tokens = self._tokenize(query_text)
         if not query_tokens:
@@ -705,13 +703,15 @@ class TFIDFVectorStore:
             for doc_id, doc in docs.items():
                 score = self._tfidf_score(query_tokens, doc["tokens"], ns)
                 if score > 0:
-                    results.append({
-                        "id":       doc_id,
-                        "score":    score,
-                        "text":     doc["text"],
-                        "metadata": doc["metadata"],
-                        "namespace": ns,
-                    })
+                    results.append(
+                        {
+                            "id": doc_id,
+                            "score": score,
+                            "text": doc["text"],
+                            "metadata": doc["metadata"],
+                            "namespace": ns,
+                        }
+                    )
 
         results.sort(key=lambda x: -x["score"])
         # Deduplicate by id
@@ -739,10 +739,7 @@ class TFIDFVectorStore:
 
     def stats(self) -> dict:
         """Return store statistics."""
-        return {
-            ns: len(docs)
-            for ns, docs in self._store.items()
-        }
+        return {ns: len(docs) for ns, docs in self._store.items()}
 
     @staticmethod
     def _tokenize(text: str) -> list[str]:
@@ -758,10 +755,9 @@ class TFIDFVectorStore:
         for ch in text:
             freq[ch] += 1
         n = len(text)
-        return -sum((c/n) * _math.log2(c/n) for c in freq.values() if c > 0)
+        return -sum((c / n) * _math.log2(c / n) for c in freq.values() if c > 0)
 
-    def _tfidf_score(self, query_tokens: list, doc_tokens: list,
-                     namespace: str) -> float:
+    def _tfidf_score(self, query_tokens: list, doc_tokens: list, namespace: str) -> float:
         """Compute TF-IDF cosine similarity between query and document."""
         if not doc_tokens:
             return 0.0
