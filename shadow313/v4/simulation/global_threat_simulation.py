@@ -902,7 +902,7 @@ def run_global_simulation(
             del d[key]["rates"]
 
     avg_detection = statistics.mean(r.detection_rate for r in results)
-    cadl_dist = {}
+    cadl_dist: dict[int, int] = {}
     for r in results:
         cadl_dist[r.cadl_level] = cadl_dist.get(r.cadl_level, 0) + 1
 

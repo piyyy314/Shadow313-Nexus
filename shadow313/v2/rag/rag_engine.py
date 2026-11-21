@@ -683,7 +683,11 @@ class TFIDFVectorStore:
         self._idf_cache: dict = {}
 
     def upsert(
-        self, doc_id: str, text: str, metadata: dict = None, namespace: str = "default"
+        self,
+        doc_id: str,
+        text: str,
+        metadata: dict | None = None,
+        namespace: str = "default",
     ) -> None:
         """Insert or replace a document in the given namespace."""
         self._store[namespace][doc_id] = {
@@ -693,7 +697,7 @@ class TFIDFVectorStore:
         }
         self._idf_cache.clear()  # invalidate IDF cache
 
-    def query(self, query_text: str, top_k: int = 5, namespace: str = None) -> list[dict]:
+    def query(self, query_text: str, top_k: int = 5, namespace: str | None = None) -> list[dict]:
         """Query documents by TF-IDF similarity."""
         query_tokens = self._tokenize(query_text)
         if not query_tokens:
@@ -727,7 +731,7 @@ class TFIDFVectorStore:
                 deduped.append(r)
         return deduped[:top_k]
 
-    def count(self, namespace: str = None) -> int:
+    def count(self, namespace: str | None = None) -> int:
         """Count documents in namespace (or all if None)."""
         if namespace is None:
             return sum(len(docs) for docs in self._store.values())
