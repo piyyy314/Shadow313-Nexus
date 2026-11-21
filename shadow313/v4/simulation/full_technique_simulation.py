@@ -16,7 +16,6 @@ import random
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-
 # ── Complete technique catalog ────────────────────────────────────────────────
 
 ALL_TECHNIQUES: list[dict] = [
