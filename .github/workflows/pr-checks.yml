@@ -155,7 +155,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e ".[dev]"
+          pip install -e ".[dev]" alembic "psycopg[binary]>=3.1"
           pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn
 
       - name: Run tests
@@ -166,7 +166,7 @@ jobs:
 
   # ── SAST ──────────────────────────────────────────────────────────
   sast:
-    name: SAST (Bandit + Semgrep)
+    name: SAST (Bandit)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -277,7 +277,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install project dependencies
-        run: pip install -e ".[dev]" alembic alembic
+        run: pip install -e ".[dev]" alembic
 
       - name: Snapshot project dependencies
         run: pip freeze --exclude-editable > safety-requirements.txt
