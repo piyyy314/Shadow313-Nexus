@@ -9,9 +9,13 @@ on:
     branches:
       - '**'
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'fix/**'
+      - 'claude/**'
 
 concurrency:
-  group: pr-checks-${{ github.event.pull_request.number }}
+  group: pr-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -30,13 +34,17 @@ jobs:
   lint:
     name: Lint (Python / YAML / Markdown)
     runs-on: ubuntu-24.04
-    env:
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      - name: Resolve current PR base SHA
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -123,13 +131,17 @@ jobs:
   sast:
     name: SAST (Bandit + Semgrep)
     runs-on: ubuntu-24.04
-    env:
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      - name: Resolve current PR base SHA
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -217,7 +229,7 @@ jobs:
         run: |
           python -m venv .safety-venv
           .safety-venv/bin/python -m pip install \
-            "setuptools<81" "marshmallow<4" "typer<0.13" "click<8.2" safety==3.1.0
+            safety==3.8.1
           .safety-venv/bin/safety check --full-report --file safety-requirements.txt
 
   # ── Docker Lint ───────────────────────────────────────────────────
