@@ -99,9 +99,9 @@ class OutputFormatter:
             content.append("  NEXUS", style="bold bright_cyan")
             content.append(f"  v{__version__}", style="bold bright_blue")
             content.append("\n")
-            content.append("   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE", style="bold bright_cyan")
+            content.append(\n                "   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE",\n                style="bold bright_cyan",\n            )
             content.append("\n")
-            content.append("   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE", style="bold bright_green")
+            content.append(\n                "   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE",\n                style="bold bright_green",\n            )
             self._rich_console.print(
                 Panel(
                     content,
