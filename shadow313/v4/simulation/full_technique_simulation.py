@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.simulation.full_technique_simulation
 Full ATT&CK Technique Simulation — Every Known Technique
@@ -11,167 +10,1011 @@ Simulates ALL 47+ tracked techniques across:
 Total: 140+ technique simulations across all 14 ATT&CK tactics
 """
 
-import math
-import random
-import secrets
-import time
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
+from __future__ import annotations
 
+import random
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
 # ── Complete technique catalog ────────────────────────────────────────────────
 
 ALL_TECHNIQUES: list[dict] = [
 
     # ══ RECONNAISSANCE (TA0043) ══════════════════════════════════════════════
-    {"id":"T1595",    "name":"Active Scanning",                    "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.35, "actor":"APT28,Lazarus"},
-    {"id":"T1595.001","name":"Scanning IP Blocks",                 "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.30, "actor":"APT41"},
-    {"id":"T1595.002","name":"Vulnerability Scanning",             "tactic":"Reconnaissance",       "sev":"MEDIUM",   "epss":0.55, "actor":"APT41,FIN7"},
-    {"id":"T1592",    "name":"Gather Victim Host Info",            "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.25, "actor":"APT29"},
-    {"id":"T1589",    "name":"Gather Victim Identity Info",        "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.28, "actor":"APT28"},
-    {"id":"T1590",    "name":"Gather Victim Network Info",         "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.32, "actor":"Lazarus"},
-    {"id":"T1596",    "name":"Search Open Technical Databases",    "tactic":"Reconnaissance",       "sev":"LOW",      "epss":0.35, "actor":"APT41"},
-    {"id":"T1598",    "name":"Phishing for Information",           "tactic":"Reconnaissance",       "sev":"MEDIUM",   "epss":0.70, "actor":"APT29,APT28"},
+    {
+        "id":"T1595",
+        "name":"Active Scanning",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.35,
+        "actor":"APT28,Lazarus"
+    },
+    {
+        "id":"T1595.001",
+        "name":"Scanning IP Blocks",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.30,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1595.002",
+        "name":"Vulnerability Scanning",
+        "tactic":"Reconnaissance",
+        "sev":"MEDIUM",
+        "epss":0.55,
+        "actor":"APT41,FIN7"
+    },
+    {
+        "id":"T1592",
+        "name":"Gather Victim Host Info",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.25,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1589",
+        "name":"Gather Victim Identity Info",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.28,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1590",
+        "name":"Gather Victim Network Info",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.32,
+        "actor":"Lazarus"
+    },
+    {
+        "id":"T1596",
+        "name":"Search Open Technical Databases",
+        "tactic":"Reconnaissance",
+        "sev":"LOW",
+        "epss":0.35,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1598",
+        "name":"Phishing for Information",
+        "tactic":"Reconnaissance",
+        "sev":"MEDIUM",
+        "epss":0.70,
+        "actor":"APT29,APT28"
+    },
 
     # ══ RESOURCE DEVELOPMENT (TA0042) ════════════════════════════════════════
-    {"id":"T1583",    "name":"Acquire Infrastructure",             "tactic":"Resource Development", "sev":"MEDIUM",   "epss":0.45, "actor":"APT28,Lazarus"},
-    {"id":"T1584",    "name":"Compromise Infrastructure",          "tactic":"Resource Development", "sev":"HIGH",     "epss":0.72, "actor":"APT29"},
-    {"id":"T1588",    "name":"Obtain Capabilities",                "tactic":"Resource Development", "sev":"MEDIUM",   "epss":0.50, "actor":"FIN7"},
-    {"id":"T1587",    "name":"Develop Capabilities",               "tactic":"Resource Development", "sev":"HIGH",     "epss":0.65, "actor":"APT41,Lazarus"},
+    {
+        "id":"T1583",
+        "name":"Acquire Infrastructure",
+        "tactic":"Resource Development",
+        "sev":"MEDIUM",
+        "epss":0.45,
+        "actor":"APT28,Lazarus"
+    },
+    {
+        "id":"T1584",
+        "name":"Compromise Infrastructure",
+        "tactic":"Resource Development",
+        "sev":"HIGH",
+        "epss":0.72,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1588",
+        "name":"Obtain Capabilities",
+        "tactic":"Resource Development",
+        "sev":"MEDIUM",
+        "epss":0.50,
+        "actor":"FIN7"
+    },
+    {
+        "id":"T1587",
+        "name":"Develop Capabilities",
+        "tactic":"Resource Development",
+        "sev":"HIGH",
+        "epss":0.65,
+        "actor":"APT41,Lazarus"
+    },
 
     # ══ INITIAL ACCESS (TA0001) ═══════════════════════════════════════════════
-    {"id":"T1190",    "name":"Exploit Public-Facing Application",  "tactic":"Initial Access",       "sev":"CRITICAL", "epss":0.97, "actor":"APT41,FIN7"},
-    {"id":"T1133",    "name":"External Remote Services",           "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.82, "actor":"APT29,Lazarus"},
-    {"id":"T1566.001","name":"Spearphishing Attachment",           "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.88, "actor":"APT28,APT29"},
-    {"id":"T1566.002","name":"Spearphishing Link",                 "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.85, "actor":"APT28,FIN7"},
-    {"id":"T1195.001","name":"Supply Chain: Software Dependencies", "tactic":"Initial Access",      "sev":"CRITICAL", "epss":0.91, "actor":"APT29"},
-    {"id":"T1195.002","name":"Supply Chain: Software Supply Chain","tactic":"Initial Access",       "sev":"CRITICAL", "epss":0.93, "actor":"APT41,APT29"},
-    {"id":"T1078",    "name":"Valid Accounts",                     "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.87, "actor":"APT28,FIN7"},
-    {"id":"T1078.001","name":"Default Accounts",                   "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.90, "actor":"Mirai,eCrime"},
-    {"id":"T1091",    "name":"Replication Through Removable Media","tactic":"Initial Access",       "sev":"MEDIUM",   "epss":0.55, "actor":"APT28"},
-    {"id":"T1552.001","name":"Credentials In Files (.env probe)",  "tactic":"Initial Access",       "sev":"HIGH",     "epss":0.88, "actor":"eCrime,CensysInspect"},
+    {
+        "id":"T1190",
+        "name":"Exploit Public-Facing Application",
+        "tactic":"Initial Access",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"APT41,FIN7"
+    },
+    {
+        "id":"T1133",
+        "name":"External Remote Services",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1566.001",
+        "name":"Spearphishing Attachment",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.88,
+        "actor":"APT28,APT29"
+    },
+    {
+        "id":"T1566.002",
+        "name":"Spearphishing Link",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1195.001",
+        "name":"Supply Chain: Software Dependencies",
+        "tactic":"Initial Access",
+        "sev":"CRITICAL",
+        "epss":0.91,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1195.002",
+        "name":"Supply Chain: Software Supply Chain",
+        "tactic":"Initial Access",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"APT41,APT29"
+    },
+    {
+        "id":"T1078",
+        "name":"Valid Accounts",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.87,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1078.001",
+        "name":"Default Accounts",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.90,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1091",
+        "name":"Replication Through Removable Media",
+        "tactic":"Initial Access",
+        "sev":"MEDIUM",
+        "epss":0.55,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1552.001",
+        "name":"Credentials In Files (.env probe)",
+        "tactic":"Initial Access",
+        "sev":"HIGH",
+        "epss":0.88,
+        "actor":"eCrime,CensysInspect"
+    },
 
     # ══ EXECUTION (TA0002) ════════════════════════════════════════════════════
-    {"id":"T1059.001","name":"PowerShell",                         "tactic":"Execution",            "sev":"HIGH",     "epss":0.87, "actor":"APT28,FIN7,Emotet"},
-    {"id":"T1059.003","name":"Windows Command Shell",              "tactic":"Execution",            "sev":"HIGH",     "epss":0.84, "actor":"APT41,Lazarus"},
-    {"id":"T1059.004","name":"Unix Shell",                         "tactic":"Execution",            "sev":"HIGH",     "epss":0.86, "actor":"Mirai,eCrime"},
-    {"id":"T1059.005","name":"Visual Basic",                       "tactic":"Execution",            "sev":"HIGH",     "epss":0.80, "actor":"APT28,FIN7"},
-    {"id":"T1059.006","name":"Python",                             "tactic":"Execution",            "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1047",    "name":"Windows Management Instrumentation", "tactic":"Execution",            "sev":"HIGH",     "epss":0.85, "actor":"APT29,FIN7"},
-    {"id":"T1053.005","name":"Scheduled Task",                     "tactic":"Execution",            "sev":"MEDIUM",   "epss":0.74, "actor":"APT28,Lazarus"},
-    {"id":"T1204.001","name":"Malicious Link",                     "tactic":"Execution",            "sev":"HIGH",     "epss":0.83, "actor":"APT28,FIN7"},
-    {"id":"T1204.002","name":"Malicious File",                     "tactic":"Execution",            "sev":"HIGH",     "epss":0.85, "actor":"APT41,Emotet"},
-    {"id":"T1072",    "name":"Software Deployment Tools",          "tactic":"Execution",            "sev":"HIGH",     "epss":0.78, "actor":"APT29"},
+    {
+        "id":"T1059.001",
+        "name":"PowerShell",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.87,
+        "actor":"APT28,FIN7,Emotet"
+    },
+    {
+        "id":"T1059.003",
+        "name":"Windows Command Shell",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1059.004",
+        "name":"Unix Shell",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.86,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1059.005",
+        "name":"Visual Basic",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1059.006",
+        "name":"Python",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1047",
+        "name":"Windows Management Instrumentation",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"APT29,FIN7"
+    },
+    {
+        "id":"T1053.005",
+        "name":"Scheduled Task",
+        "tactic":"Execution",
+        "sev":"MEDIUM",
+        "epss":0.74,
+        "actor":"APT28,Lazarus"
+    },
+    {
+        "id":"T1204.001",
+        "name":"Malicious Link",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.83,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1204.002",
+        "name":"Malicious File",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"APT41,Emotet"
+    },
+    {
+        "id":"T1072",
+        "name":"Software Deployment Tools",
+        "tactic":"Execution",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT29"
+    },
 
     # ══ PERSISTENCE (TA0003) ══════════════════════════════════════════════════
-    {"id":"T1547.001","name":"Registry Run Keys",                  "tactic":"Persistence",          "sev":"MEDIUM",   "epss":0.73, "actor":"APT28,FIN7"},
-    {"id":"T1543.003","name":"Windows Service",                    "tactic":"Persistence",          "sev":"HIGH",     "epss":0.80, "actor":"APT29,Lazarus"},
-    {"id":"T1136.001","name":"Create Local Account",               "tactic":"Persistence",          "sev":"HIGH",     "epss":0.78, "actor":"APT41"},
-    {"id":"T1505.003","name":"Web Shell",                          "tactic":"Persistence",          "sev":"CRITICAL", "epss":0.99, "actor":"APT41,Hafnium"},
-    {"id":"T1542.001","name":"System Firmware",                    "tactic":"Persistence",          "sev":"CRITICAL", "epss":0.96, "actor":"Nation-state"},
-    {"id":"T1546.003","name":"WMI Event Subscription",             "tactic":"Persistence",          "sev":"HIGH",     "epss":0.77, "actor":"APT29,FIN7"},
-    {"id":"T1574.002","name":"DLL Side-Loading",                   "tactic":"Persistence",          "sev":"HIGH",     "epss":0.82, "actor":"APT41,Lazarus"},
-    {"id":"T1098",    "name":"Account Manipulation",               "tactic":"Persistence",          "sev":"HIGH",     "epss":0.79, "actor":"APT29"},
+    {
+        "id":"T1547.001",
+        "name":"Registry Run Keys",
+        "tactic":"Persistence",
+        "sev":"MEDIUM",
+        "epss":0.73,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1543.003",
+        "name":"Windows Service",
+        "tactic":"Persistence",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1136.001",
+        "name":"Create Local Account",
+        "tactic":"Persistence",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1505.003",
+        "name":"Web Shell",
+        "tactic":"Persistence",
+        "sev":"CRITICAL",
+        "epss":0.99,
+        "actor":"APT41,Hafnium"
+    },
+    {
+        "id":"T1542.001",
+        "name":"System Firmware",
+        "tactic":"Persistence",
+        "sev":"CRITICAL",
+        "epss":0.96,
+        "actor":"Nation-state"
+    },
+    {
+        "id":"T1546.003",
+        "name":"WMI Event Subscription",
+        "tactic":"Persistence",
+        "sev":"HIGH",
+        "epss":0.77,
+        "actor":"APT29,FIN7"
+    },
+    {
+        "id":"T1574.002",
+        "name":"DLL Side-Loading",
+        "tactic":"Persistence",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1098",
+        "name":"Account Manipulation",
+        "tactic":"Persistence",
+        "sev":"HIGH",
+        "epss":0.79,
+        "actor":"APT29"
+    },
 
     # ══ PRIVILEGE ESCALATION (TA0004) ════════════════════════════════════════
-    {"id":"T1068",    "name":"Exploitation for Privilege Escalation","tactic":"Privilege Escalation","sev":"CRITICAL","epss":0.97, "actor":"APT41,FIN7"},
-    {"id":"T1548.001","name":"Setuid and Setgid",                  "tactic":"Privilege Escalation", "sev":"HIGH",     "epss":0.91, "actor":"Mirai,eCrime"},
-    {"id":"T1548.002","name":"UAC Bypass fodhelper",               "tactic":"Privilege Escalation", "sev":"HIGH",     "epss":0.88, "actor":"APT28,LockBit"},
-    {"id":"T1055.001","name":"DLL Injection",                      "tactic":"Privilege Escalation", "sev":"CRITICAL", "epss":0.95, "actor":"APT29,Cobalt Strike"},
-    {"id":"T1055.012","name":"Process Hollowing",                  "tactic":"Privilege Escalation", "sev":"CRITICAL", "epss":0.93, "actor":"APT41,Lazarus"},
-    {"id":"T1134.001","name":"Token Impersonation",                "tactic":"Privilege Escalation", "sev":"HIGH",     "epss":0.85, "actor":"APT29,FIN7"},
-    {"id":"T1078.003","name":"Local Accounts",                     "tactic":"Privilege Escalation", "sev":"HIGH",     "epss":0.82, "actor":"APT28"},
+    {
+        "id":"T1068",
+        "name":"Exploitation for Privilege Escalation",
+        "tactic":"Privilege Escalation",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"APT41,FIN7"
+    },
+    {
+        "id":"T1548.001",
+        "name":"Setuid and Setgid",
+        "tactic":"Privilege Escalation",
+        "sev":"HIGH",
+        "epss":0.91,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1548.002",
+        "name":"UAC Bypass fodhelper",
+        "tactic":"Privilege Escalation",
+        "sev":"HIGH",
+        "epss":0.88,
+        "actor":"APT28,LockBit"
+    },
+    {
+        "id":"T1055.001",
+        "name":"DLL Injection",
+        "tactic":"Privilege Escalation",
+        "sev":"CRITICAL",
+        "epss":0.95,
+        "actor":"APT29,Cobalt Strike"
+    },
+    {
+        "id":"T1055.012",
+        "name":"Process Hollowing",
+        "tactic":"Privilege Escalation",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1134.001",
+        "name":"Token Impersonation",
+        "tactic":"Privilege Escalation",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"APT29,FIN7"
+    },
+    {
+        "id":"T1078.003",
+        "name":"Local Accounts",
+        "tactic":"Privilege Escalation",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT28"
+    },
 
     # ══ DEFENSE EVASION (TA0005) ══════════════════════════════════════════════
-    {"id":"T1027",    "name":"Obfuscated Files/Information",       "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.83, "actor":"APT28,FIN7,Emotet"},
-    {"id":"T1027.001","name":"Binary Padding",                     "tactic":"Defense Evasion",      "sev":"MEDIUM",   "epss":0.68, "actor":"APT41"},
-    {"id":"T1070.001","name":"Clear Windows Event Logs",           "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.84, "actor":"APT29,Lazarus"},
-    {"id":"T1070.004","name":"File Deletion",                      "tactic":"Defense Evasion",      "sev":"MEDIUM",   "epss":0.72, "actor":"APT28"},
-    {"id":"T1070.006","name":"Timestomping",                       "tactic":"Defense Evasion",      "sev":"MEDIUM",   "epss":0.75, "actor":"APT29,APT41"},
-    {"id":"T1036.005","name":"Match Legitimate Name or Location",  "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.80, "actor":"APT28,FIN7"},
-    {"id":"T1218",    "name":"LOLBAS Execution",                   "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.85, "actor":"APT28,Volt Typhoon"},
-    {"id":"T1218.005","name":"Mshta",                              "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.83, "actor":"APT28,FIN7"},
-    {"id":"T1218.010","name":"Regsvr32",                           "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1218.011","name":"Rundll32",                           "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.81, "actor":"APT29,Lazarus"},
-    {"id":"T1562.001","name":"Disable Security Tools",             "tactic":"Defense Evasion",      "sev":"HIGH",     "epss":0.84, "actor":"FIN7,LockBit"},
-    {"id":"T1600.001","name":"PQC Downgrade Attack",               "tactic":"Defense Evasion",      "sev":"CRITICAL", "epss":0.94, "actor":"Lazarus"},
-    {"id":"T1497",    "name":"Virtualization/Sandbox Evasion",     "tactic":"Defense Evasion",      "sev":"MEDIUM",   "epss":0.70, "actor":"APT41,FIN7"},
-    {"id":"T1140",    "name":"Deobfuscate/Decode Files",           "tactic":"Defense Evasion",      "sev":"MEDIUM",   "epss":0.72, "actor":"APT28"},
+    {
+        "id":"T1027",
+        "name":"Obfuscated Files/Information",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.83,
+        "actor":"APT28,FIN7,Emotet"
+    },
+    {
+        "id":"T1027.001",
+        "name":"Binary Padding",
+        "tactic":"Defense Evasion",
+        "sev":"MEDIUM",
+        "epss":0.68,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1070.001",
+        "name":"Clear Windows Event Logs",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1070.004",
+        "name":"File Deletion",
+        "tactic":"Defense Evasion",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1070.006",
+        "name":"Timestomping",
+        "tactic":"Defense Evasion",
+        "sev":"MEDIUM",
+        "epss":0.75,
+        "actor":"APT29,APT41"
+    },
+    {
+        "id":"T1036.005",
+        "name":"Match Legitimate Name or Location",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1218",
+        "name":"LOLBAS Execution",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"APT28,Volt Typhoon"
+    },
+    {
+        "id":"T1218.005",
+        "name":"Mshta",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.83,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1218.010",
+        "name":"Regsvr32",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1218.011",
+        "name":"Rundll32",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.81,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1562.001",
+        "name":"Disable Security Tools",
+        "tactic":"Defense Evasion",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"FIN7,LockBit"
+    },
+    {
+        "id":"T1600.001",
+        "name":"PQC Downgrade Attack",
+        "tactic":"Defense Evasion",
+        "sev":"CRITICAL",
+        "epss":0.94,
+        "actor":"Lazarus"
+    },
+    {
+        "id":"T1497",
+        "name":"Virtualization/Sandbox Evasion",
+        "tactic":"Defense Evasion",
+        "sev":"MEDIUM",
+        "epss":0.70,
+        "actor":"APT41,FIN7"
+    },
+    {
+        "id":"T1140",
+        "name":"Deobfuscate/Decode Files",
+        "tactic":"Defense Evasion",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"APT28"
+    },
 
     # ══ CREDENTIAL ACCESS (TA0006) ════════════════════════════════════════════
-    {"id":"T1003.001","name":"LSASS Memory",                       "tactic":"Credential Access",    "sev":"CRITICAL", "epss":0.97, "actor":"APT28,APT29,FIN7"},
-    {"id":"T1003.006","name":"DCSync",                             "tactic":"Credential Access",    "sev":"CRITICAL", "epss":0.98, "actor":"APT29,Lazarus"},
-    {"id":"T1003.008","name":"/etc/passwd and /etc/shadow",        "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.76, "actor":"Mirai,eCrime"},
-    {"id":"T1110.001","name":"Brute Force: Password Guessing",     "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.92, "actor":"Mirai,eCrime"},
-    {"id":"T1110.003","name":"Password Spraying",                  "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.91, "actor":"APT28,BlackCat"},
-    {"id":"T1558.003","name":"Kerberoasting",                      "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.89, "actor":"APT29,FIN7"},
-    {"id":"T1552.004","name":"Private Keys",                       "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.82, "actor":"APT41,Lazarus"},
-    {"id":"T1555.003","name":"Credentials from Web Browsers",      "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.80, "actor":"FIN7,eCrime"},
-    {"id":"T1539",    "name":"Steal Web Session Cookie",           "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.78, "actor":"APT29,eCrime"},
-    {"id":"T1557",    "name":"Adversary-in-the-Middle",            "tactic":"Credential Access",    "sev":"HIGH",     "epss":0.84, "actor":"Lazarus"},
+    {
+        "id":"T1003.001",
+        "name":"LSASS Memory",
+        "tactic":"Credential Access",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"APT28,APT29,FIN7"
+    },
+    {
+        "id":"T1003.006",
+        "name":"DCSync",
+        "tactic":"Credential Access",
+        "sev":"CRITICAL",
+        "epss":0.98,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1003.008",
+        "name":"/etc/passwd and /etc/shadow",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.76,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1110.001",
+        "name":"Brute Force: Password Guessing",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.92,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1110.003",
+        "name":"Password Spraying",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.91,
+        "actor":"APT28,BlackCat"
+    },
+    {
+        "id":"T1558.003",
+        "name":"Kerberoasting",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.89,
+        "actor":"APT29,FIN7"
+    },
+    {
+        "id":"T1552.004",
+        "name":"Private Keys",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1555.003",
+        "name":"Credentials from Web Browsers",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"FIN7,eCrime"
+    },
+    {
+        "id":"T1539",
+        "name":"Steal Web Session Cookie",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT29,eCrime"
+    },
+    {
+        "id":"T1557",
+        "name":"Adversary-in-the-Middle",
+        "tactic":"Credential Access",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"Lazarus"
+    },
 
     # ══ DISCOVERY (TA0007) ════════════════════════════════════════════════════
-    {"id":"T1046",    "name":"Network Service Discovery",          "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.72, "actor":"APT28,Mirai"},
-    {"id":"T1082",    "name":"System Information Discovery",       "tactic":"Discovery",            "sev":"LOW",      "epss":0.55, "actor":"APT41,FIN7"},
-    {"id":"T1087.001","name":"Local Account Discovery",            "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.68, "actor":"APT29"},
-    {"id":"T1087.002","name":"Domain Account Discovery",           "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.70, "actor":"APT28,APT29"},
-    {"id":"T1135",    "name":"Network Share Discovery",            "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.65, "actor":"APT41,LockBit"},
-    {"id":"T1057",    "name":"Process Discovery",                  "tactic":"Discovery",            "sev":"LOW",      "epss":0.52, "actor":"APT28"},
-    {"id":"T1018",    "name":"Remote System Discovery",            "tactic":"Discovery",            "sev":"MEDIUM",   "epss":0.68, "actor":"APT29,Lazarus"},
-    {"id":"T1083",    "name":"File and Directory Discovery",       "tactic":"Discovery",            "sev":"LOW",      "epss":0.50, "actor":"APT41"},
-    {"id":"T1016",    "name":"System Network Configuration",       "tactic":"Discovery",            "sev":"LOW",      "epss":0.48, "actor":"APT28"},
-    {"id":"T1033",    "name":"System Owner/User Discovery",        "tactic":"Discovery",            "sev":"LOW",      "epss":0.45, "actor":"FIN7"},
+    {
+        "id":"T1046",
+        "name":"Network Service Discovery",
+        "tactic":"Discovery",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"APT28,Mirai"
+    },
+    {
+        "id":"T1082",
+        "name":"System Information Discovery",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.55,
+        "actor":"APT41,FIN7"
+    },
+    {
+        "id":"T1087.001",
+        "name":"Local Account Discovery",
+        "tactic":"Discovery",
+        "sev":"MEDIUM",
+        "epss":0.68,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1087.002",
+        "name":"Domain Account Discovery",
+        "tactic":"Discovery",
+        "sev":"MEDIUM",
+        "epss":0.70,
+        "actor":"APT28,APT29"
+    },
+    {
+        "id":"T1135",
+        "name":"Network Share Discovery",
+        "tactic":"Discovery",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"APT41,LockBit"
+    },
+    {
+        "id":"T1057",
+        "name":"Process Discovery",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.52,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1018",
+        "name":"Remote System Discovery",
+        "tactic":"Discovery",
+        "sev":"MEDIUM",
+        "epss":0.68,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1083",
+        "name":"File and Directory Discovery",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.50,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1016",
+        "name":"System Network Configuration",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.48,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1033",
+        "name":"System Owner/User Discovery",
+        "tactic":"Discovery",
+        "sev":"LOW",
+        "epss":0.45,
+        "actor":"FIN7"
+    },
 
     # ══ LATERAL MOVEMENT (TA0008) ═════════════════════════════════════════════
-    {"id":"T1021.001","name":"Remote Desktop Protocol",            "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.86, "actor":"APT28,LockBit"},
-    {"id":"T1021.002","name":"SMB/Windows Admin Shares",           "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.84, "actor":"APT29,Lazarus"},
-    {"id":"T1021.006","name":"Windows Remote Management",          "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1550.002","name":"Pass-the-Hash",                      "tactic":"Lateral Movement",     "sev":"CRITICAL", "epss":0.94, "actor":"APT28,APT29,FIN7"},
-    {"id":"T1550.003","name":"Pass-the-Ticket",                    "tactic":"Lateral Movement",     "sev":"CRITICAL", "epss":0.92, "actor":"APT29,Lazarus"},
-    {"id":"T1534",    "name":"Internal Spearphishing",             "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.78, "actor":"APT28"},
-    {"id":"T1570",    "name":"Lateral Tool Transfer",              "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.80, "actor":"APT41,LockBit"},
-    {"id":"T1563.002","name":"RDP Hijacking",                      "tactic":"Lateral Movement",     "sev":"HIGH",     "epss":0.79, "actor":"APT29"},
+    {
+        "id":"T1021.001",
+        "name":"Remote Desktop Protocol",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.86,
+        "actor":"APT28,LockBit"
+    },
+    {
+        "id":"T1021.002",
+        "name":"SMB/Windows Admin Shares",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1021.006",
+        "name":"Windows Remote Management",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1550.002",
+        "name":"Pass-the-Hash",
+        "tactic":"Lateral Movement",
+        "sev":"CRITICAL",
+        "epss":0.94,
+        "actor":"APT28,APT29,FIN7"
+    },
+    {
+        "id":"T1550.003",
+        "name":"Pass-the-Ticket",
+        "tactic":"Lateral Movement",
+        "sev":"CRITICAL",
+        "epss":0.92,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1534",
+        "name":"Internal Spearphishing",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT28"
+    },
+    {
+        "id":"T1570",
+        "name":"Lateral Tool Transfer",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT41,LockBit"
+    },
+    {
+        "id":"T1563.002",
+        "name":"RDP Hijacking",
+        "tactic":"Lateral Movement",
+        "sev":"HIGH",
+        "epss":0.79,
+        "actor":"APT29"
+    },
 
     # ══ COLLECTION (TA0009) ═══════════════════════════════════════════════════
-    {"id":"T1560.001","name":"Archive via Utility",                "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.68, "actor":"APT41,LockBit"},
-    {"id":"T1005",    "name":"Data from Local System",             "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.65, "actor":"APT28,FIN7"},
-    {"id":"T1039",    "name":"Data from Network Shared Drive",     "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.62, "actor":"APT29"},
-    {"id":"T1113",    "name":"Screen Capture",                     "tactic":"Collection",           "sev":"MEDIUM",   "epss":0.60, "actor":"APT41,Lazarus"},
-    {"id":"T1056.001","name":"Keylogging",                         "tactic":"Collection",           "sev":"HIGH",     "epss":0.78, "actor":"APT28,FIN7"},
-    {"id":"T1114.001","name":"Local Email Collection",             "tactic":"Collection",           "sev":"HIGH",     "epss":0.75, "actor":"APT29"},
-    {"id":"T1557",    "name":"Adversary-in-the-Middle",            "tactic":"Collection",           "sev":"HIGH",     "epss":0.84, "actor":"Lazarus"},
+    {
+        "id":"T1560.001",
+        "name":"Archive via Utility",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.68,
+        "actor":"APT41,LockBit"
+    },
+    {
+        "id":"T1005",
+        "name":"Data from Local System",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1039",
+        "name":"Data from Network Shared Drive",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.62,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1113",
+        "name":"Screen Capture",
+        "tactic":"Collection",
+        "sev":"MEDIUM",
+        "epss":0.60,
+        "actor":"APT41,Lazarus"
+    },
+    {
+        "id":"T1056.001",
+        "name":"Keylogging",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT28,FIN7"
+    },
+    {
+        "id":"T1114.001",
+        "name":"Local Email Collection",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.75,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1557",
+        "name":"Adversary-in-the-Middle",
+        "tactic":"Collection",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"Lazarus"
+    },
 
     # ══ COMMAND AND CONTROL (TA0011) ══════════════════════════════════════════
-    {"id":"T1071.001","name":"Web Protocols (HTTP/S C2)",          "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.87, "actor":"APT28,Cobalt Strike"},
-    {"id":"T1071.004","name":"DNS C2",                             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"Lazarus,BLINDINGCAN"},
-    {"id":"T1572",    "name":"Protocol Tunneling (DNS)",           "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"Lazarus,iodine"},
-    {"id":"T1090.003","name":"Multi-hop Proxy",                    "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.80, "actor":"APT29,Lazarus"},
-    {"id":"T1573.001","name":"Symmetric Cryptography",             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.82, "actor":"APT41,Cobalt Strike"},
-    {"id":"T1573.002","name":"Asymmetric Cryptography",            "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.83, "actor":"APT29"},
-    {"id":"T1105",    "name":"Ingress Tool Transfer",              "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.90, "actor":"Mirai,APT41"},
-    {"id":"T1095",    "name":"Non-Application Layer Protocol",     "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.85, "actor":"VSAT attackers"},
-    {"id":"T1102",    "name":"Web Service C2",                     "tactic":"Command and Control",  "sev":"MEDIUM",   "epss":0.72, "actor":"APT29"},
-    {"id":"T1001.003","name":"Protocol Impersonation",             "tactic":"Command and Control",  "sev":"HIGH",     "epss":0.78, "actor":"APT41"},
+    {
+        "id":"T1071.001",
+        "name":"Web Protocols (HTTP/S C2)",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.87,
+        "actor":"APT28,Cobalt Strike"
+    },
+    {
+        "id":"T1071.004",
+        "name":"DNS C2",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"Lazarus,BLINDINGCAN"
+    },
+    {
+        "id":"T1572",
+        "name":"Protocol Tunneling (DNS)",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"Lazarus,iodine"
+    },
+    {
+        "id":"T1090.003",
+        "name":"Multi-hop Proxy",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT29,Lazarus"
+    },
+    {
+        "id":"T1573.001",
+        "name":"Symmetric Cryptography",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41,Cobalt Strike"
+    },
+    {
+        "id":"T1573.002",
+        "name":"Asymmetric Cryptography",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.83,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1105",
+        "name":"Ingress Tool Transfer",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.90,
+        "actor":"Mirai,APT41"
+    },
+    {
+        "id":"T1095",
+        "name":"Non-Application Layer Protocol",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.85,
+        "actor":"VSAT attackers"
+    },
+    {
+        "id":"T1102",
+        "name":"Web Service C2",
+        "tactic":"Command and Control",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1001.003",
+        "name":"Protocol Impersonation",
+        "tactic":"Command and Control",
+        "sev":"HIGH",
+        "epss":0.78,
+        "actor":"APT41"
+    },
 
     # ══ EXFILTRATION (TA0010) ═════════════════════════════════════════════════
-    {"id":"T1041",    "name":"Exfiltration Over C2 Channel",       "tactic":"Exfiltration",         "sev":"HIGH",     "epss":0.86, "actor":"APT28,APT41"},
-    {"id":"T1048.003","name":"Exfiltration Over Unencrypted Protocol","tactic":"Exfiltration",      "sev":"HIGH",     "epss":0.82, "actor":"APT29"},
-    {"id":"T1567.002","name":"Exfiltration to Cloud Storage",      "tactic":"Exfiltration",         "sev":"HIGH",     "epss":0.80, "actor":"APT41,BlackCat"},
-    {"id":"T1030",    "name":"Data Transfer Size Limits",          "tactic":"Exfiltration",         "sev":"MEDIUM",   "epss":0.65, "actor":"APT29"},
-    {"id":"T1048",    "name":"Exfiltration Over Alternative Protocol","tactic":"Exfiltration",      "sev":"HIGH",     "epss":0.82, "actor":"APT41"},
-    {"id":"T1052.001","name":"Exfiltration over USB",              "tactic":"Exfiltration",         "sev":"MEDIUM",   "epss":0.55, "actor":"APT28"},
+    {
+        "id":"T1041",
+        "name":"Exfiltration Over C2 Channel",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.86,
+        "actor":"APT28,APT41"
+    },
+    {
+        "id":"T1048.003",
+        "name":"Exfiltration Over Unencrypted Protocol",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1567.002",
+        "name":"Exfiltration to Cloud Storage",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"APT41,BlackCat"
+    },
+    {
+        "id":"T1030",
+        "name":"Data Transfer Size Limits",
+        "tactic":"Exfiltration",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"APT29"
+    },
+    {
+        "id":"T1048",
+        "name":"Exfiltration Over Alternative Protocol",
+        "tactic":"Exfiltration",
+        "sev":"HIGH",
+        "epss":0.82,
+        "actor":"APT41"
+    },
+    {
+        "id":"T1052.001",
+        "name":"Exfiltration over USB",
+        "tactic":"Exfiltration",
+        "sev":"MEDIUM",
+        "epss":0.55,
+        "actor":"APT28"
+    },
 
     # ══ IMPACT (TA0040) ═══════════════════════════════════════════════════════
-    {"id":"T1486",    "name":"Data Encrypted for Impact (Ransomware)","tactic":"Impact",            "sev":"CRITICAL", "epss":0.97, "actor":"LockBit,BlackCat,Conti"},
-    {"id":"T1490",    "name":"Inhibit System Recovery (VSS)",      "tactic":"Impact",               "sev":"CRITICAL", "epss":0.97, "actor":"LockBit,BlackCat,Conti"},
-    {"id":"T1489",    "name":"Service Stop",                       "tactic":"Impact",               "sev":"HIGH",     "epss":0.84, "actor":"LockBit,Conti"},
-    {"id":"T1498",    "name":"Network Denial of Service (Mirai)",  "tactic":"Impact",               "sev":"HIGH",     "epss":0.90, "actor":"Mirai,eCrime"},
-    {"id":"T1485",    "name":"Data Destruction",                   "tactic":"Impact",               "sev":"CRITICAL", "epss":0.93, "actor":"Lazarus,APT38"},
-    {"id":"T1491.001","name":"Internal Defacement",                "tactic":"Impact",               "sev":"MEDIUM",   "epss":0.65, "actor":"Hacktivist"},
-    {"id":"T1496",    "name":"Resource Hijacking (Cryptomining)",  "tactic":"Impact",               "sev":"MEDIUM",   "epss":0.72, "actor":"eCrime"},
-    {"id":"T1529",    "name":"System Shutdown/Reboot",             "tactic":"Impact",               "sev":"HIGH",     "epss":0.80, "actor":"Lazarus,APT38"},
-    {"id":"T1565.001","name":"Data Manipulation: Stored (SATCOM)", "tactic":"Impact",               "sev":"CRITICAL", "epss":0.93, "actor":"Nation-state,VSAT"},
+    {
+        "id":"T1486",
+        "name":"Data Encrypted for Impact (Ransomware)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"LockBit,BlackCat,Conti"
+    },
+    {
+        "id":"T1490",
+        "name":"Inhibit System Recovery (VSS)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.97,
+        "actor":"LockBit,BlackCat,Conti"
+    },
+    {
+        "id":"T1489",
+        "name":"Service Stop",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.84,
+        "actor":"LockBit,Conti"
+    },
+    {
+        "id":"T1498",
+        "name":"Network Denial of Service (Mirai)",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.90,
+        "actor":"Mirai,eCrime"
+    },
+    {
+        "id":"T1485",
+        "name":"Data Destruction",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"Lazarus,APT38"
+    },
+    {
+        "id":"T1491.001",
+        "name":"Internal Defacement",
+        "tactic":"Impact",
+        "sev":"MEDIUM",
+        "epss":0.65,
+        "actor":"Hacktivist"
+    },
+    {
+        "id":"T1496",
+        "name":"Resource Hijacking (Cryptomining)",
+        "tactic":"Impact",
+        "sev":"MEDIUM",
+        "epss":0.72,
+        "actor":"eCrime"
+    },
+    {
+        "id":"T1529",
+        "name":"System Shutdown/Reboot",
+        "tactic":"Impact",
+        "sev":"HIGH",
+        "epss":0.80,
+        "actor":"Lazarus,APT38"
+    },
+    {
+        "id":"T1565.001",
+        "name":"Data Manipulation: Stored (SATCOM)",
+        "tactic":"Impact",
+        "sev":"CRITICAL",
+        "epss":0.93,
+        "actor":"Nation-state,VSAT"
+    },
 ]
 
 print(f"Total techniques in catalog: {len(ALL_TECHNIQUES)}")
@@ -214,7 +1057,6 @@ NEXUS_DETECTION_MAP: dict[str, tuple[float, str]] = {
     "T1600.001": (0.92, "NEXUS quantum module PQC downgrade"),
     "T1105":     (0.93, "NEXUS eBPF execve + wget interception"),
     "T1110.001": (0.92, "NEXUS honeypot SSH trap + fail2ban"),
-    "T1552.004": (0.82, "NEXUS secrets_manager pattern detection"),
     # Additional coverage
     "T1595":     (0.75, "NEXUS recon module + honeypot scanner UA"),
     "T1595.002": (0.80, "NEXUS vuln module vulnerability scanning"),
@@ -317,8 +1159,8 @@ class TechniqueSimResult:
     blocked:          bool
     detection_prob:   float
     detection_method: str
-    mttd_seconds:     Optional[float]
-    timestamp:        str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    mttd_seconds:     float | None
+    timestamp:        str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -349,7 +1191,7 @@ class FullSimulationReport:
     by_severity:      dict = field(default_factory=dict)
     missed_techniques: list[dict] = field(default_factory=list)
     results:          list[TechniqueSimResult] = field(default_factory=list)
-    timestamp:        str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:        str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict:
         return {
@@ -466,11 +1308,11 @@ class FullTechniqueSimulator:
         report.avg_mttd       = sum(mttd_values) / len(mttd_values) if mttd_values else 0
 
         # Compute per-tactic detection rates
-        for tactic, stats in tactic_stats.items():
+        for _, stats in tactic_stats.items():
             stats["detection_rate"] = round(stats["detected"] / stats["total"], 3)
         report.by_tactic = tactic_stats
 
-        for sev, stats in sev_stats.items():
+        for _, stats in sev_stats.items():
             stats["detection_rate"] = round(stats["detected"] / stats["total"], 3)
         report.by_severity = sev_stats
 

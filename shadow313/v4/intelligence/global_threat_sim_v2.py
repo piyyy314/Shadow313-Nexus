@@ -522,7 +522,6 @@ class GlobalThreatSimulatorV2:
         "T1003.008": (0.94, "NEXUS eBPF openat /etc/shadow interception"),
         "T1059.004": (0.93, "NEXUS eBPF execve + AST static analysis"),
         "T1046":     (0.88, "NEXUS honeypot scanner detection"),
-        "T1598":     (0.95, "NEXUS WE-FORGE DNS beacon"),
         "T1572":     (0.87, "NEXUS-SIG-011 DNS tunneling entropy"),
         "T1557":     (0.84, "NEXUS SessionHijackDetector"),
         "T1041":     (0.86, "NEXUS exfil C2 channel detection"),

@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.simulation.global_threat_simulation
 ──────────────────────────────────────────────────
@@ -21,21 +20,20 @@ Categories (H1 2026 breakdown):
 Date: 2026-08-31 | Classification: Threat Intelligence
 """
 
-import hashlib
+from __future__ import annotations
+
 import json
+import logging
 import random
 import statistics
-import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
-import logging
+from datetime import UTC, datetime
+
 logger = logging.getLogger(__name__)
 
 
-
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 # ── Threat actor database ─────────────────────────────────────────────────────
@@ -53,7 +51,7 @@ class ThreatActor:
     target_regions: list[str]
     active_since:   str
     last_seen:      str
-    financial_impact_usd: Optional[int] = None
+    financial_impact_usd: int | None = None
     notable_campaigns: list[str] = field(default_factory=list)
     iocs: list[str] = field(default_factory=list)
 
@@ -71,7 +69,12 @@ THREAT_ACTORS: list[ThreatActor] = [
         ["Global","US","South Korea","Japan","Europe"],
         "2009", "2026-08",
         financial_impact_usd=6_500_000_000,
-        notable_campaigns=["WannaCry","Sony Pictures","Bybit $1.5B heist","Calendly social engineering"],
+        notable_campaigns=[
+            "WannaCry",
+            "Sony Pictures",
+            "Bybit $1.5B heist",
+            "Calendly social engineering",
+        ],
         iocs=["185.220.101.47","45.138.16.89","lazarus-c2.evil.com"]),
 
     ThreatActor("Volt Typhoon", ["Bronze Silhouette","VANGUARD PANDA"],
@@ -197,7 +200,11 @@ THREAT_ACTORS: list[ThreatActor] = [
         ["Global"],
         "2014", "2026-08",
         financial_impact_usd=2_020_000_000,
-        notable_campaigns=["Calendly social engineering","Crypto investor impersonation","Bybit heist"],
+        notable_campaigns=[
+            "Calendly social engineering",
+            "Crypto investor impersonation",
+            "Bybit heist",
+        ],
         iocs=["bluenoroff-c2.net"]),
 
     # ── TIER 2: RANSOMWARE GROUPS ─────────────────────────────────────────────
@@ -497,7 +504,6 @@ class SimulationResult:
 # Shadow313 detection capabilities mapped to ATT&CK techniques
 SHADOW313_DETECTION_MAP = {
     # Fully detected (NEXUS Engine + enforcement)
-    "T1190": ("DETECTED", 0.92, 5),   # Exploit public-facing — CVE-2026-3392 detected
     "T1059.001": ("DETECTED", 0.88, 4), # PowerShell — encoded cmd detection
     "T1059.004": ("DETECTED", 0.85, 4), # Bash — eBPF syscall tracing
     "T1055": ("BLOCKED", 0.95, 5),    # Process injection — eBPF + EPT blocked
@@ -637,7 +643,7 @@ def simulate_actor(actor: ThreatActor, rng: random.Random) -> SimulationResult:
 
 
 def run_global_simulation(
-    actors: Optional[list[ThreatActor]] = None,
+    actors: list[ThreatActor] | None = None,
     seed: int = 313,
     verbose: bool = True,
 ) -> dict:
@@ -709,8 +715,11 @@ def run_global_simulation(
         print()
         logger.debug("  BY CATEGORY:")
         for cat, stats in sorted(by_category.items()):
-            print(f"  {cat:<15} {stats['detected']:>3}D {stats['partial']:>3}P {stats['evaded']:>3}E "
-                  f"| mean_det={stats['mean_detection_rate']:.1%}")
+            print(
+                f"  {cat:<15} {stats['detected']:>3}D "
+                f"{stats['partial']:>3}P {stats['evaded']:>3}E "
+                f"| mean_det={stats['mean_detection_rate']:.1%}"
+            )
         print()
         logger.debug("  TOP 10 MOST DANGEROUS (lowest detection rate):")
         for r in top_evaders:
@@ -720,7 +729,7 @@ def run_global_simulation(
         logger.debug("  CADL ESCALATION DISTRIBUTION:")
         for level in sorted(cadl_dist.keys()):
             count = cadl_dist[level]
-            logger.debug("  L{level}: {count:>4} actors ({count/total*100:.1f}%)")
+            logger.debug("  L%s: %4d actors (%.1f%%)", level, count, count / total * 100)
 
     return {
         "timestamp":          _now_iso(),
@@ -747,4 +756,4 @@ if __name__ == "__main__":
     import json
     with open("/workspace/global_threat_simulation_report.json", "w") as f:
         json.dump(report, f, indent=2, default=str)
-    print(f"\n  Report saved: /workspace/global_threat_simulation_report.json")
+    print("\n  Report saved: /workspace/global_threat_simulation_report.json")
