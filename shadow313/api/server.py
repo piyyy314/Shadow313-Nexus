@@ -147,9 +147,15 @@ def create_app(api_key: str | None = None) -> FastAPI:
             },
         }
 
+    @app.get("/api/health")
     @app.get("/health")
     async def health():
-        return {"status": "ok"}
+        return {
+            "status": "ok",
+            "service": "shadow313-nexus-api",
+            "version": __version__,
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
 
     @app.get("/api/modules")
     async def list_modules(_: str = Depends(verify_api_key)):
