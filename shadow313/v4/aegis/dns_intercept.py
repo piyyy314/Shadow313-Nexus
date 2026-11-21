@@ -159,10 +159,11 @@ class DNSInterceptReport:
                     f"[{entry.timestamp}] [{'SUCCESS' if entry.shield_pct >= 90 else 'WARN'}] "
                     f"SHIELD_STATUS: Integrity Level: {entry.shield_pct}% "
                     f"{entry.shield_status}",
-                    f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: {entry.location}",
+                    f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: " f"{entry.location}",
                     f"[{entry.timestamp}] [SUCCESS] SUCCESS: Resolved IP -> {entry.resolved_ip} "
                     "(Internal Link Secured)",
-                    f"[{entry.timestamp}] [INFO] INIT: Intercepting DNS signal for [{entry.target}]",
+                    f"[{entry.timestamp}] [INFO] INIT: Intercepting DNS signal for "
+                    f"[{entry.target}]",
                 ]
             )
         return "\n".join(lines)
