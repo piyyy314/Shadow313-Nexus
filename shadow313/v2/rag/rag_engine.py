@@ -215,7 +215,11 @@ class SecurityKnowledgeBase:
 
     NAMESPACES = ["cve", "mitre", "owasp", "session", "general"]
 
-    def __init__(self, persist_dir: str = "~/.shadow313/vectordb", chroma_path: str | None = None) -> None:
+    def __init__(
+        self,
+        persist_dir: str = "~/.shadow313/vectordb",
+        chroma_path: str | None = None,
+    ) -> None:
         # Honor the existing constructor alias instead of accidentally writing
         # tests/callers using chroma_path into the default home directory.
         if chroma_path is not None:
