@@ -1,12 +1,17 @@
-from __future__ import annotations
 """
 Shadow313 NEXUS — CI/CD Security Pipeline
 Secret scanning, SARIF export, dependency checking.
 """
-import json, hashlib, re, uuid
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple
+
+from __future__ import annotations
+import hashlib
+import logging
+import re
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 SECRET_PATTERNS = [
     (r"ghp_[a-zA-Z0-9]{36}", "GitHub Token"),
@@ -20,9 +25,9 @@ SECRET_PATTERNS = [
 class CICDPipeline:
     def __init__(self, repo_path: str = "."):
         self.repo_path = Path(repo_path)
-        self._findings: List[Dict] = []
+        self._findings: list[Dict] = []
 
-    def scan_secrets(self, paths: List[str] = None) -> Dict:
+    def scan_secrets(self, paths: list[str] | None = None) -> Dict:
         findings = []
         scan_paths = [Path(p) for p in (paths or [str(self.repo_path)])]
         for sp in scan_paths:
@@ -36,13 +41,13 @@ class CICDPipeline:
         self._findings.extend(findings)
         return {
             "scan_type": "secret_detection",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "secrets_found": len(findings),
             "findings": findings,
             "passed": len(findings) == 0
         }
 
-    def _scan_file(self, path: Path) -> List[Dict]:
+    def _scan_file(self, path: Path) -> list[Dict]:
         findings = []
         try:
             content = path.read_text(errors="ignore")
@@ -52,14 +57,17 @@ class CICDPipeline:
                         findings.append({
                             "file": str(path), "line": ln, "type": stype,
                             "severity": "CRITICAL", "mitre_ttp": "T1552.001",
-                            "rule_id": f"S313-{hashlib.md5(pattern.encode()).hexdigest()[:6].upper()}"
+                            "rule_id": (
+                                f"S313-{hashlib.md5(pattern.encode(), usedforsecurity=False).hexdigest()[:6].upper()}"
+                            )
                         })
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("Secret scan failed for %s: %s", path, exc)
         return findings
 
     def generate_sarif(self) -> Dict:
-        rules = []; results = []
+        rules = []
+        results = []
         for f in self._findings:
             rid = f.get("rule_id", "S313-UNKNOWN")
             if not any(r["id"] == rid for r in rules):
@@ -82,7 +90,7 @@ class CICDPipeline:
                       "results": results}]
         }
 
-    def gate_check(self) -> Tuple[bool, List[str]]:
+    def gate_check(self) -> tuple[bool, list[str]]:
         failures = []
         critical = [f for f in self._findings if f.get("severity") == "CRITICAL"]
         if critical:
