@@ -3,6 +3,7 @@
 This module intentionally uses only the Python standard library so the skill
 commands work without booting the full NEXUS kernel or optional AI services.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -173,9 +174,7 @@ def run_skill_command(args: argparse.Namespace) -> int:
             return 1
         return 0
 
-    targets = [args.skill_id] if args.skill_id else [
-        item[0] for item in discover_skills(root)
-    ]
+    targets = [args.skill_id] if args.skill_id else [item[0] for item in discover_skills(root)]
     if not targets:
         print(f"No skills found under {root}")
         return 1
