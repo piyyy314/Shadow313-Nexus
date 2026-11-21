@@ -52,7 +52,7 @@ class CICDPipeline:
                         findings.append({
                             "file": str(path), "line": ln, "type": stype,
                             "severity": "CRITICAL", "mitre_ttp": "T1552.001",
-                            "rule_id": f"S313-{hashlib.md5(pattern.encode()).hexdigest()[:6].upper()}"
+                            "rule_id": f"S313-{hashlib.md5(pattern.encode(), usedforsecurity=False).hexdigest()[:6].upper()}"
                         })
         except Exception:
             pass
