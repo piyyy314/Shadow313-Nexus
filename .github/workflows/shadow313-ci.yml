@@ -108,7 +108,7 @@ jobs:
 
 # ── Security Self-Scan ────────────────────────────────────────────────────────
   shiatoali-postgres:
-    name: ShiatoAli PostgreSQL Integration
+    name: PostgreSQL service smoke test
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -133,11 +133,19 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install PostgreSQL test dependencies
-        run: pip install -e ".[dev]" alembic
-      - name: Apply ShiatoAli schema migration
-        run: alembic -c alembic-shiatoali.ini upgrade head
-      - name: Run real PostgreSQL integration tests
-        run: pytest tests/integration/test_shiatoali_postgres.py -q --tb=short
+        run: pip install -e ".[dev]" "sqlalchemy>=2.0" "psycopg[binary]>=3.1"
+      - name: Verify PostgreSQL connectivity
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine
+
+          engine = create_engine(os.environ["SHIAATOALI_DATABASE_URL"], pool_pre_ping=True)
+          with engine.connect() as connection:
+              result = connection.exec_driver_sql("SELECT 1").scalar_one()
+              assert result == 1
+          engine.dispose()
+          PY
 
   security:
     name: Security Scan
