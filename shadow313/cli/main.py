@@ -602,7 +602,9 @@ def _required_namespaces(args) -> list[str]:
             or getattr(args, "verify_all", False)
         ) else "plugins")
     elif command == "update":
-        required = ["vuln"]
+        required = []
+        if args.db in ("cve", "all"):
+            required.append("vuln")
         if args.db in ("kev", "all"):
             required.append("kev")
         if args.db in ("epss", "all"):
@@ -1148,7 +1150,7 @@ def _dispatch(kernel, args, parser) -> int:
             "orchestrate": "orchestrate", "nexus-router": "nexus_router",
             "ledger": "ledger", "workflow": "workflow", "tools": "tools", "simulate": "simulate",
             "collab": "collab", "attack-map": "attack_map",
-            "pe-analyze": "pe_analyze", "dns-intercept": "dns_intercept_ot",
+            "pe-analyze": "pe_analyze", "dns-intercept": "dns_intercept",
             "threat-actor": "threat_actor", "benchmark": "benchmark",
             "health": "health_check", "doctor": "health_check",
             "cadl": "aegis", "acts": "ghost_watch",
@@ -1157,9 +1159,12 @@ def _dispatch(kernel, args, parser) -> int:
         rows = []
         for name, handler in sorted(route_map.items()):
             required = [part.strip() for part in handler.split("/")]
-            available = handler == "built-in" or all(part in registered for part in required)
-            if available or args.all:
-                rows.append([name, handler, "READY" if available else "UNAVAILABLE"])
+            available_count = sum(part in registered for part in required)
+            available = handler == "built-in" or available_count == len(required)
+            partial = 0 < available_count < len(required)
+            if available or partial or args.all:
+                status = "READY" if available else "PARTIAL" if partial else "UNAVAILABLE"
+                rows.append([name, handler, status])
         kernel.out.table(["CLI COMMAND", "HANDLER", "STATUS"], rows, "SHADOW313 COMMAND DIRECTORY")
 
     else:
