@@ -1,18 +1,21 @@
-from __future__ import annotations
-from __future__ import annotations
 """
 shadow313.v2.rag.rag_engine
 Feature #2 — RAG Vector Knowledge Base
 ChromaDB-backed local vector store ingesting NVD CVEs, MITRE ATT&CK,
 OWASP Top 10, and session history. Fully offline, no cloud dependency.
 """
-import json
+
+from __future__ import annotations
 import hashlib
-import os
-import time
-from datetime import datetime, timezone
+import json
+import logging
+import math as _math
+import re as _re
+from collections import defaultdict as _defaultdict
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 try:
     import chromadb
@@ -20,12 +23,6 @@ try:
     _HAS_CHROMA = True
 except ImportError:
     _HAS_CHROMA = False
-
-try:
-    import numpy as np
-    _HAS_NUMPY = True
-except ImportError:
-    _HAS_NUMPY = False
 
 # ---------------------------------------------------------------------------
 # Lightweight fallback embedding (TF-IDF like cosine) when no sentence-transformers
@@ -52,7 +49,7 @@ def _tfidf_vector(text: str, vocab: dict[str, int], idf: dict[str, float]) -> li
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na  = sum(x * x for x in a) ** 0.5
     nb  = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
@@ -69,11 +66,11 @@ class _FallbackVectorStore:
     def _rebuild_idf(self) -> None:
         from math import log
         df: dict[str, int] = {}
-        N = len(self._docs) or 1
+        n = len(self._docs) or 1
         for doc in self._docs:
             for t in set(_tokenize(doc["text"])):
                 df[t] = df.get(t, 0) + 1
-        self._idf = {t: log((N + 1) / (d + 1)) + 1 for t, d in df.items()}
+        self._idf = {t: log((n + 1) / (d + 1)) + 1 for t, d in df.items()}
         all_tokens = set(self._idf.keys())
         self._vocab = {t: i for i, t in enumerate(sorted(all_tokens))}
         # Recompute all vectors
@@ -135,7 +132,13 @@ class VectorStore:
             self._backend  = "fallback"
 
     # ------------------------------------------------------------------
-    def upsert(self, doc_id: str, text: str, metadata: dict = None, namespace: str = 'default') -> None:
+    def upsert(
+        self,
+        doc_id: str,
+        text: str,
+        metadata: dict | None = None,
+        namespace: str = "default",
+    ) -> None:
         meta = metadata or {}
         if self._backend == "chromadb":
             # Chroma rejects empty metadata dictionaries. Omit the optional
@@ -168,7 +171,8 @@ class VectorStore:
                         "score":    1 - res["distances"][0][i],  # convert distance→similarity
                     })
                 return out
-            except Exception:
+            except Exception as exc:
+                logger.debug("ChromaDB query failed; returning no results: %s", exc)
                 return []
         else:
             return self._fallback.query(text, top_k)
@@ -182,8 +186,8 @@ class VectorStore:
         if self._backend == "chromadb":
             try:
                 self._col.delete(ids=[doc_id])
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("ChromaDB delete failed for %s: %s", doc_id, exc)
 
     @property
     def backend(self) -> str:
@@ -260,7 +264,10 @@ class SecurityKnowledgeBase:
         store = self._stores["owasp"]
         count = 0
         for entry in entries:
-            text = f"{entry.get('id','')} {entry.get('name','')}: {entry.get('description','')[:600]}"
+            text = (
+                f"{entry.get('id', '')} {entry.get('name', '')}: "
+                f"{entry.get('description', '')[:600]}"
+            )
             meta = {"source": "owasp", "id": entry.get("id", "")}
             store.upsert(_stable_id(text), text, meta)
             count += 1
@@ -535,8 +542,10 @@ Requires: pip install unsloth torch transformers datasets trl peft bitsandbytes
 
 Run: python finetune.py --config ~/.shadow313/finetune_config.yaml
 """
-import argparse, json, sys
+import argparse, json, logging, sys
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 def load_config(path: str) -> dict:
     try:
@@ -553,8 +562,8 @@ def main() -> None:
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    logger.info("[+] Config loaded: {args.config}")
-    logger.info("[+] Base model: {cfg.get('model_name')}")
+    logger.info("[+] Config loaded: %s", args.config)
+    logger.info("[+] Base model: %s", cfg.get("model_name"))
 
     if args.dry_run:
         print("[+] Dry-run complete — config valid.")
@@ -571,7 +580,7 @@ def main() -> None:
     train_cfg  = cfg.get("training", {})
     max_seq    = train_cfg.get("max_seq_length", 2048)
 
-    logger.info("[+] Loading {model_name} with 4-bit quantization...")
+    logger.info("[+] Loading %s with 4-bit quantization...", model_name)
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=model_name,
         max_seq_length=max_seq,
@@ -601,7 +610,7 @@ def main() -> None:
         if fpath.exists():
             ds = load_dataset("json", data_files=str(fpath), split="train")
             splits.append(ds)
-            logger.info("[+] Loaded {len(ds)} examples from {fname}")
+            logger.info("[+] Loaded %s examples from %s", len(ds), fname)
     if not splits:
         print("[WARN] No dataset files found — create JSONL files first.")
         return
@@ -644,7 +653,7 @@ def main() -> None:
     out_dir = Path(cfg.get("output_dir","./output")).expanduser()
     model.save_pretrained_gguf(str(out_dir), tokenizer,
         quantization_method=cfg.get("export",{}).get("quantization","q4_k_m"))
-    logger.info("[+] GGUF saved to {out_dir}")
+    logger.info("[+] GGUF saved to %s", out_dir)
 
     ollama_name = cfg.get("export",{}).get("ollama_model_name","shadow313-sec:latest")
     logger.info("[+] Import into Ollama: ollama create {ollama_name} -f {out_dir}/Modelfile")
@@ -657,14 +666,6 @@ if __name__ == "__main__":
 
 # ── TFIDFVectorStore ──────────────────────────────────────────────────────────
 # Full implementation with namespace support, count(), query() with TF-IDF scoring
-
-import math as _math
-import re as _re
-from collections import defaultdict as _defaultdict
-import logging
-logger = logging.getLogger(__name__)
-
-
 
 class TFIDFVectorStore:
     """
