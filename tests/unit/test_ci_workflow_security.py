@@ -208,6 +208,9 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     nexus_install_index = nexus_stage.index("RUN pip install --no-cache-dir")
     nexus_cleanup_index = nexus_stage.index("python -m pip uninstall -y pip setuptools")
     assert nexus_install_index < nexus_cleanup_index
+    nexus_dependencies = nexus_stage[nexus_install_index:nexus_cleanup_index]
+    for dependency in ('"sqlalchemy>=2.0"', '"psycopg[binary]>=3.1"', '"alembic>=1.13"'):
+        assert dependency in nexus_dependencies
 
 
 def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
