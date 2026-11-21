@@ -9,9 +9,13 @@ on:
     branches:
       - '**'
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'fix/**'
+      - 'claude/**'
 
 concurrency:
-  group: pr-checks-${{ github.event.pull_request.number }}
+  group: pr-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -37,7 +41,7 @@ jobs:
 
       - name: Resolve current PR base SHA
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
         run: |
           git fetch origin "$BASE_REF" --depth=1
           echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
