@@ -48,6 +48,10 @@ def test_nightly_security_scanners_do_not_mask_build_or_safety_failures() -> Non
     assert "no_privileged" in workflow
     assert "internal_network" in workflow
     assert "localhost_binding" in workflow
+    assert "--scanners vuln,secret" in workflow
+    assert 'result.get("Secrets", [])' in workflow
+    assert 'report.get("errors")' in workflow
+    assert "github.event.pull_request.head.repo.full_name == github.repository" in workflow
 
 
 def test_pr_safety_scanner_does_not_pin_incompatible_cli_dependencies() -> None:
