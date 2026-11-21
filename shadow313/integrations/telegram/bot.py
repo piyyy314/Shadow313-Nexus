@@ -434,7 +434,7 @@ async def run_bot() -> None:
                 if delivered and alert_id:
                     PROCESSED_ALERT_IDS.add(alert_id)
                     event_ts = event.get("timestamp_unix")
-                    if isinstance(event_ts, (int, float)):
+                    if isinstance(event_ts, int | float):
                         PROCESSED_ALERT_TIMESTAMPS[alert_id] = float(event_ts)
                 elif not delivered:
                     batch_failed = True

@@ -1,7 +1,7 @@
 """Local-only FastAPI security dashboard with AI chat and connection heartbeat."""
 
 import ipaddress
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -12,39 +12,140 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <title>Shadow313 NEXUS Dashboard</title>
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 <style>
-  :root { --bg: #0d1117; --surface: #161b22; --border: #30363d; --accent: #58a6ff; --danger: #f85149; --warn: #d29922; --success: #3fb950; --text: #c9d1d9; }
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --danger: #f85149;
+    --warn: #d29922;
+    --success: #3fb950;
+    --text: #c9d1d9;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Cascadia Code', 'Fira Code', monospace; }
-  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
   header h1 { color: var(--accent); font-size: 1.2em; }
-  .badge { background: var(--accent); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; font-weight: bold; }
-  nav { background: var(--surface); border-right: 1px solid var(--border); width: 200px; min-height: calc(100vh - 50px); padding: 16px 0; position: fixed; top: 50px; }
-  nav a { display: block; padding: 10px 20px; color: var(--text); text-decoration: none; font-size: 0.9em; }
+  .badge {
+    background: var(--accent);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+  nav {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    width: 200px;
+    min-height: calc(100vh - 50px);
+    padding: 16px 0;
+    position: fixed;
+    top: 50px;
+  }
+  nav a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.9em;
+  }
   nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
   main { margin-left: 200px; padding: 24px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
-  .card h3 { color: var(--accent); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .card h3 {
+    color: var(--accent);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
   .card .value { font-size: 2em; font-weight: bold; }
   .card .value.danger { color: var(--danger); }
   .card .value.warn { color: var(--warn); }
   .card .value.success { color: var(--success); }
   table { width: 100%; border-collapse: collapse; }
-  th { background: var(--border); padding: 10px; text-align: left; font-size: 0.85em; color: var(--accent); }
+  th {
+    background: var(--border);
+    padding: 10px;
+    text-align: left;
+    font-size: 0.85em;
+    color: var(--accent);
+  }
   td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.85em; }
   tr:hover { background: var(--surface); }
   .sev-CRITICAL { color: var(--danger); font-weight: bold; }
   .sev-HIGH { color: #ff7b72; }
   .sev-MEDIUM { color: var(--warn); }
   .sev-LOW { color: var(--success); }
-  .chat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; height: 400px; overflow-y: auto; margin-bottom: 12px; }
+  .chat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    height: 400px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
   .chat-input { display: flex; gap: 8px; }
-  .chat-input input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-family: inherit; }
-  .chat-input button { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-  .live-feed { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; height: 300px; overflow-y: auto; font-size: 0.8em; }
+  .chat-input input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 6px;
+    font-family: inherit;
+  }
+  .chat-input button {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .live-feed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    height: 300px;
+    overflow-y: auto;
+    font-size: 0.8em;
+  }
   .event-line { padding: 4px 0; border-bottom: 1px solid var(--border); }
   .event-line .ts { color: #6e7681; margin-right: 8px; }
-  .section-title { font-size: 1.1em; color: var(--accent); margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .section-title {
+    font-size: 1.1em;
+    color: var(--accent);
+    margin: 24px 0 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
   @media (max-width: 760px) {
     header { padding: 12px 16px; flex-wrap: wrap; }
     header h1 { font-size: 1em; }
@@ -90,7 +191,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="section-title">Overview</div>
     <div class="grid" hx-get="/api/stats" hx-trigger="load, every 30s" hx-swap="innerHTML">
       <div class="card"><h3>Sessions</h3><div class="value" id="stat-sessions">—</div></div>
-      <div class="card"><h3>Total Findings</h3><div class="value warn" id="stat-findings">—</div></div>
+      <div class="card">
+        <h3>Total Findings</h3>
+        <div class="value warn" id="stat-findings">—</div>
+      </div>
       <div class="card"><h3>Critical</h3><div class="value danger" id="stat-critical">—</div></div>
       <div class="card"><h3>Receipts</h3><div class="value success" id="stat-receipts">—</div></div>
     </div>
@@ -106,10 +210,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="chat">
     <div class="section-title">AI Security Assistant (RAG-Enhanced)</div>
     <div class="chat-box" id="chat-messages">
-      <div class="event-line"><span class="ts">NEXUS</span> AI assistant uses the configured backend; provider availability is checked per request.</div>
+      <div class="event-line">
+        <span class="ts">NEXUS</span>
+        AI assistant uses the configured backend; provider availability is checked per request.
+      </div>
     </div>
     <div class="chat-input">
-      <input type="text" id="chat-input" maxlength="20000" aria-label="Ask a security question" placeholder="Ask a security question…">
+      <input
+        type="text"
+        id="chat-input"
+        maxlength="20000"
+        aria-label="Ask a security question"
+        placeholder="Ask a security question…"
+      >
       <button type="button" id="send-chat">Send</button>
     </div>
   </div>
@@ -182,7 +295,12 @@ evtSource.onmessage = (event) => {
 };
 evtSource.onerror = () => {
   if (!eventStreamErrorShown) {
-    appendLine(document.getElementById('live-feed'), 'WARN', 'Heartbeat stream disconnected; retrying', '--danger');
+    appendLine(
+      document.getElementById('live-feed'),
+      'WARN',
+      'Heartbeat stream disconnected; retrying',
+      '--danger'
+    );
     eventStreamErrorShown = true;
   }
 };
@@ -329,7 +447,7 @@ class DashboardModule:
         import http.server
 
         class Handler(http.server.SimpleHTTPRequestHandler):
-            def do_GET(self):
+            def do_GET(self):  # noqa: N802
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html")
                 self.end_headers()
