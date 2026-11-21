@@ -414,6 +414,10 @@ Docs:
     p_cadl.add_argument('--incident',   default='')
     p_cadl.add_argument('--simulate',   action='store_true')
 
+    # ── Command discovery ─────────────────────────────────────────────────────
+    p_commands = sub.add_parser("commands", help="List CLI commands and their registered handlers")
+    p_commands.add_argument("--all", action="store_true", help="Include commands with unavailable handlers")
+
     # ── Quantum NEXUS ACTS ────────────────────────────────────────────────────
     p_acts = sub.add_parser('acts', help='ACTS deception stack (via Ghost-Watch)')
     p_acts.add_argument('--deploy',     metavar='TYPE', default='api_server')
@@ -436,7 +440,58 @@ def main(argv: list[str] | None = None) -> int:
     if kernel is None:
         return 1
 
+    missing = [name for name in _required_namespaces(args)
+               if name not in kernel.registered_commands()]
+    if missing:
+        kernel.out.error(
+            f"'{args.command}' cannot run because required handler(s) are unavailable: "
+            + ", ".join(missing)
+        )
+        kernel.out.info("Run 'shadow313 health --full' for module diagnostics.")
+        return 2
+
     return _dispatch(kernel, args, parser)
+
+
+def _required_namespaces(args) -> list[str]:
+    """Return the command-bus handlers required by the selected CLI command."""
+    command = args.command
+    routes = {
+        "recon": ["recon"], "vuln": ["vuln"], "exploit": ["exploit"],
+        "network": ["network"], "defense": ["defense"], "quantum": ["quantum"],
+        "cicd": ["cicd"], "docs": ["docs"], "ask": ["ask"], "learn": ["learn"],
+        "agent": ["agent"], "campaign": ["campaign"], "graph": ["graph"],
+        "serve": ["dashboard"], "report": ["report"], "threat-intel": ["threat_intel"],
+        "sandbox": ["sandbox"], "cloud": ["cloud"], "crypto-agility": ["crypto_agility"],
+        "rag": ["rag"], "temporal": ["temporal"], "nexus": ["nexus"], "stix": ["stix"],
+        "finetune": ["finetune"], "mobile-api": ["mobile_api"],
+        "browser-recon": ["browser_recon"], "container-scan": ["container_scan"],
+        "ad-audit": ["ad_audit"], "siem": ["siem"], "malware": ["malware"],
+        "vanguard": ["vanguard"], "aegis": ["aegis"], "ghost-watch": ["ghost_watch"],
+        "quantum-nexus": ["quantum_nexus"], "satellite": ["satellite"],
+        "threat-actor": ["threat_actor"], "benchmark": ["benchmark"],
+        "health": ["health_check"], "doctor": ["health_check"],
+        "cadl": ["aegis"], "acts": ["ghost_watch"],
+    }
+    required = list(routes.get(command, []))
+    if command == "network":
+        required.extend(
+            name for flag, name in (
+                ("ml_anomaly", "ml_anomaly"), ("ja3", "ja3"), ("dns_covert", "dns_covert")
+            ) if getattr(args, flag, False)
+        )
+    elif command == "plugin":
+        required.append("plugin_sign" if (
+            getattr(args, "sign", None) or getattr(args, "verify", None)
+            or getattr(args, "verify_all", False)
+        ) else "plugins")
+    elif command == "update":
+        required = ["vuln"]
+        if args.db in ("kev", "all"):
+            required.append("kev")
+        if args.db in ("epss", "all"):
+            required.append("epss")
+    return required
 
 
 def _boot(args):
@@ -909,6 +964,35 @@ def _dispatch(kernel, args, parser) -> int:
             kernel.dispatch('ghost_watch', list_hubs=True)
         else:
             kernel.dispatch('ghost_watch', deploy_decoy=args.deploy, port=args.port)
+
+    elif cmd == "commands":
+        route_map = {
+            "recon": "recon", "vuln": "vuln", "exploit": "exploit",
+            "network": "network", "defense": "defense", "quantum": "quantum",
+            "plugin": "plugins / plugin_sign", "cicd": "cicd", "docs": "docs",
+            "ask": "ask", "learn": "learn", "session": "built-in",
+            "update": "vuln / kev / epss", "status": "built-in",
+            "agent": "agent", "campaign": "campaign", "graph": "graph",
+            "serve": "dashboard", "report": "report", "threat-intel": "threat_intel",
+            "sandbox": "sandbox", "cloud": "cloud", "crypto-agility": "crypto_agility",
+            "rag": "rag", "temporal": "temporal", "nexus": "nexus", "stix": "stix",
+            "finetune": "finetune", "mobile-api": "mobile_api",
+            "browser-recon": "browser_recon", "container-scan": "container_scan",
+            "ad-audit": "ad_audit", "siem": "siem", "malware": "malware",
+            "vanguard": "vanguard", "aegis": "aegis", "ghost-watch": "ghost_watch",
+            "quantum-nexus": "quantum_nexus", "satellite": "satellite",
+            "threat-actor": "threat_actor", "benchmark": "benchmark",
+            "health": "health_check", "doctor": "health_check",
+            "cadl": "aegis", "acts": "ghost_watch",
+        }
+        registered = set(kernel.registered_commands())
+        rows = []
+        for name, handler in sorted(route_map.items()):
+            required = [part.strip() for part in handler.split("/")]
+            available = handler == "built-in" or all(part in registered for part in required)
+            if available or args.all:
+                rows.append([name, handler, "READY" if available else "UNAVAILABLE"])
+        kernel.out.table(["CLI COMMAND", "HANDLER", "STATUS"], rows, "SHADOW313 COMMAND DIRECTORY")
 
     else:
         parser.print_help()
