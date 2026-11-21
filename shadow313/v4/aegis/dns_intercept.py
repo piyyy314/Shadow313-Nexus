@@ -342,6 +342,8 @@ class DNSInterceptModule:
         self.geo_deck    = GeoTracedIntelDeck()
 
     def register(self, kernel) -> None:
+        # Canonical namespace for the current CLI; retain the legacy alias.
+        kernel.register("dns_intercept", self.run)
         kernel.register("dns_intercept_ot", self.run)
 
     def run(
