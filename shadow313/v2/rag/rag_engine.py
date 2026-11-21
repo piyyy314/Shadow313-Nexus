@@ -215,7 +215,7 @@ class SecurityKnowledgeBase:
 
     NAMESPACES = ["cve", "mitre", "owasp", "session", "general"]
 
-    def __init__(self, persist_dir: str = "~/.shadow313/vectordb", chroma_path: str = None) -> None:
+    def __init__(self, persist_dir: str = "~/.shadow313/vectordb", chroma_path: str | None = None) -> None:
         # Honor the existing constructor alias instead of accidentally writing
         # tests/callers using chroma_path into the default home directory.
         if chroma_path is not None:
@@ -310,14 +310,14 @@ class SecurityKnowledgeBase:
         return results[: top_k * 2]
 
     def upsert(
-        self, doc_id: str, text: str, metadata: dict = None, namespace: str = "general"
+        self, doc_id: str, text: str, metadata: dict | None = None, namespace: str = "general"
     ) -> None:
         """Upsert a document into the given namespace store."""
         store = self._stores.get(namespace, self._stores.get("general"))
         if store and hasattr(store, "upsert"):
             store.upsert(doc_id, text, metadata or {})
 
-    def query(self, query_text: str, top_k: int = 5, namespace: str = None) -> list:
+    def query(self, query_text: str, top_k: int = 5, namespace: str | None = None) -> list:
         """Query across all or specific namespace."""
         results = []
         namespaces = [namespace] if namespace else self.NAMESPACES
@@ -329,7 +329,7 @@ class SecurityKnowledgeBase:
         return results[:top_k]
 
     def stats(self) -> dict:
-        result = {ns: s.count() for ns, s in self._stores.items()}
+        result: dict[str, Any] = {ns: s.count() for ns, s in self._stores.items()}
         result["backend"] = "tfidf"
         result["namespaces"] = self.NAMESPACES
         return result
@@ -751,7 +751,7 @@ class TFIDFVectorStore:
         """Compute Shannon entropy of text."""
         if not text:
             return 0.0
-        freq = _defaultdict(int)
+        freq: dict[str, int] = _defaultdict(int)
         for ch in text:
             freq[ch] += 1
         n = len(text)
@@ -762,7 +762,7 @@ class TFIDFVectorStore:
         if not doc_tokens:
             return 0.0
         # TF for document
-        doc_tf = _defaultdict(int)
+        doc_tf: dict[str, int] = _defaultdict(int)
         for t in doc_tokens:
             doc_tf[t] += 1
         doc_len = len(doc_tokens)
@@ -784,7 +784,7 @@ class TFIDFVectorStore:
         n = len(docs)
         if n == 0:
             return {}
-        df = _defaultdict(int)
+        df: dict[str, int] = _defaultdict(int)
         for doc in docs.values():
             for token in set(doc["tokens"]):
                 df[token] += 1
