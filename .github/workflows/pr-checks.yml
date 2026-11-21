@@ -277,7 +277,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install project dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev]" alembic
 
       - name: Snapshot project dependencies
         run: pip freeze --exclude-editable > safety-requirements.txt
