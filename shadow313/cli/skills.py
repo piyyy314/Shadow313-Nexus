@@ -86,14 +86,20 @@ def validate_skill(skill_id: str, root: Path) -> list[str]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="shadow313 skill", description="Discover and validate local OmniSkills.")
-    parser.add_argument("--root", help="Repository root or skills/ directory (auto-detected by default).")
+    parser = argparse.ArgumentParser(
+        prog="shadow313 skill", description="Discover and validate local OmniSkills."
+    )
+    parser.add_argument(
+        "--root", help="Repository root or skills/ directory (auto-detected by default)."
+    )
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("list", help="List installed repository skills.")
     show = sub.add_parser("show", help="Display a skill's entrypoint.")
     show.add_argument("skill_id")
     validate = sub.add_parser("validate", help="Validate skill metadata and local references.")
-    validate.add_argument("skill_id", nargs="?", help="Skill ID; omit to validate every discovered skill.")
+    validate.add_argument(
+        "skill_id", nargs="?", help="Skill ID; omit to validate every discovered skill."
+    )
     return parser
 
 
