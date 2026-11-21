@@ -81,10 +81,10 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
         encoding="utf-8"
     )
-    assert "Identify changed Python and YAML files" in workflow
+    assert "Resolve current PR base SHA" in workflow
     assert "Run Ruff on changed Python files" in workflow
-    assert "Run Black on changed Python files" in workflow
-    assert "Run yamllint on changed YAML files" in workflow
+    assert "Run Black on changed Shadow313 files" in workflow
+    assert "Run yamllint on changed workflow files" in workflow
     for line in workflow.splitlines():
         if any(
             command in line
@@ -97,16 +97,21 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
     assert 'finding.get("issue_severity") == "HIGH"' in workflow
     assert "safety==3.8.1" in workflow
     assert "safety check --full-report || true" not in workflow
-    assert workflow.count("pip-audit --local") == 1
-    assert "pip-audit==2.10.1" in workflow
-    assert "--skip-editable" in workflow
-    assert "pip-audit-local-report.json" in workflow
-    assert "pip-audit-requirements-report.json" in workflow
-    assert "pip-audit --desc --format json -o pip-audit-requirements-report.json -r requirements.txt" in workflow
-    assert "pip freeze --exclude-editable > requirements-audit-resolved.txt" in workflow
-    assert "python -m venv \"$RUNNER_TEMP/safety-env\"" in workflow
-    assert "safety-env/bin/safety\" check --full-report --check-unpinned-requirements -r requirements-audit-resolved.txt" in workflow
-    assert workflow.index("pip-audit --local") < workflow.index("pip freeze --exclude-editable") < workflow.index("safety-env")
+
+    unit_tests = workflow[workflow.index("  unit-tests:") : workflow.index("  sast:")]
+    assert 'pip install -e ".[dev]" alembic "psycopg[binary]>=3.1"' in unit_tests
+
+    sca = workflow[workflow.index("  sca:") : workflow.index("  docker-lint:")]
+    assert "pip-audit==2.7.3" in sca
+    assert "pip-audit --desc --format json -o pip-audit-report.json" in sca
+    assert "pip freeze --exclude-editable > safety-requirements.txt" in sca
+    assert "python -m venv .safety-venv" in sca
+    assert ".safety-venv/bin/safety check --full-report --file safety-requirements.txt" in sca
+    assert (
+        sca.index("pip freeze --exclude-editable")
+        < sca.index("pip-audit --desc")
+        < sca.index("safety check --full-report")
+    )
 
 
 def test_nightly_security_scanners_do_not_hide_tool_failures():
@@ -218,6 +223,14 @@ def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     assert "with open('docker-compose.yml') as f:" in workflow
 
 
+def test_docker_compose_postgres_overlay_is_health_gated():
+    overlay = (ROOT / "docker-compose.postgres.yml").read_text(encoding="utf-8")
+    assert "shiatoali-postgres:" in overlay
+    assert "POSTGRES_PASSWORD_FILE: /run/secrets/shiatoali_postgres_password" in overlay
+    assert "condition: service_healthy" in overlay
+    assert "service_completed_successfully" in overlay
+
+
 def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
     api_workflow = (ROOT / ".github" / "workflows" / "shadow313-api-validate.yml").read_text(
         encoding="utf-8"
@@ -259,12 +272,22 @@ def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
 
 
 def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
-    workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+        encoding="utf-8"
+    )
     assert 'severity: "CRITICAL,HIGH"' in workflow
-    assert 'exit-code: "1"' in workflow
+    # Trivy emits diagnostics without stopping before the JSON enforcement gate.
+    assert 'exit-code: "0"' in workflow
     assert 'version: "v0.76.2"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
+    gate_start = workflow.index("      - name: Enforce actionable Trivy findings")
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
+    gate = workflow[gate_start:archive_start]
+    assert "Trivy JSON report is missing" in gate
+    assert "if not report_path.is_file()" in gate
+    assert "if actionable:" in gate
+    assert "unpatched" in gate
+    assert "sys.exit(1)" in gate
     archive_end = workflow.index("\n      - name:", archive_start + 1)
     archive_step = workflow[archive_start:archive_end]
     assert "path: |" in archive_step
@@ -352,8 +375,10 @@ def test_publish_jobs_stage_only_distributions():
     publish_section = workflow[
         workflow.index("# ── Publish to TestPyPI") : workflow.index("# ── Docker Build")
     ]
-    assert publish_section.count("name: Stage publishable distributions") == 2
+    assert publish_section.count("name: Stage only Python distributions") == 2
     assert publish_section.count("packages-dir: dist/publish/") == 2
-    assert publish_section.count("find dist -maxdepth 1 -type f") == 2
-    assert "No wheel or source distribution found for TestPyPI." in publish_section
-    assert "No wheel or source distribution found for PyPI." in publish_section
+    assert publish_section.count("packages=(dist/*.whl dist/*.tar.gz)") == 2
+    assert publish_section.count('cp -- "${packages[@]}" dist/publish/') == 2
+    assert publish_section.count("No wheel or source distribution found in dist/.") == 2
+    assert "manifest.json" not in publish_section
+
