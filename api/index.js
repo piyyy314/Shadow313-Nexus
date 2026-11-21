@@ -52,14 +52,19 @@ function resolveBackend(env) {
 async function readRequestBody(req) {
   const chunks = [];
   let size = 0;
+  let tooLarge = false;
   for await (const chunk of req) {
     size += chunk.length;
     if (size > MAX_REQUEST_BYTES) {
-      const error = new Error('Request body exceeds 1 MiB');
-      error.statusCode = 413;
-      throw error;
+      tooLarge = true;
+      continue; // Drain the request so the gateway can return a clean 413 response.
     }
-    chunks.push(chunk);
+    if (!tooLarge) chunks.push(chunk);
+  }
+  if (tooLarge) {
+    const error = new Error('Request body exceeds 1 MiB');
+    error.statusCode = 413;
+    throw error;
   }
   return Buffer.concat(chunks);
 }
