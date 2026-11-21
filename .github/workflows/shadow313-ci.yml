@@ -31,19 +31,14 @@ jobs:
           fetch-depth: 0
       - name: Resolve current comparison base
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
-          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_REF_NAME" != "master" ]; then
-            git fetch origin "$BASE_REF" --depth=1
-            BASE_SHA="$(git rev-parse FETCH_HEAD)"
-          else
-            BASE_SHA="$BEFORE_SHA"
-            if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-              BASE_SHA="$(git rev-parse HEAD^)"
-            fi
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
           fi
           echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          echo "HEAD_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -57,7 +52,7 @@ jobs:
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
           changed_files=()
           for file in "${candidates[@]}"; do
             if [ -f "$file" ]; then
