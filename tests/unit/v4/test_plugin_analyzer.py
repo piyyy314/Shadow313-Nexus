@@ -14,6 +14,7 @@ Covers:
 from __future__ import annotations
 import pytest
 import sys, os
+from pathlib import Path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from shadow313.plugins.custom_ai_threat_analyzer.analyzer import (
@@ -459,7 +460,6 @@ class TestPluginSigning:
 
     @staticmethod
     def _plugin_dir() -> "Path":
-        from pathlib import Path
         # Always resolve relative to the workspace root, not cwd
         return Path(__file__).parent.parent.parent.parent / "shadow313" / "plugins" / "custom_ai_threat_analyzer"
 

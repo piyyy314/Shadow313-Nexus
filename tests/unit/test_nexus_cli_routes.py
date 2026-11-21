@@ -43,9 +43,9 @@ def test_startup_banner_is_boxed_and_has_no_location(capsys):
     output = capsys.readouterr().out
     assert "SHADOW313" in output
     assert "NEXUS" in output
-    assert "LOCAL-FIRST SECURITY OPERATIONS" in output
+    assert "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE" in output
     assert "Ottawa" not in output
-    assert "╭" in output and "╰" in output
+    assert "╔" in output and "╚" in output
 
 
 

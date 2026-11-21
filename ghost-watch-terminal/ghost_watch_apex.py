@@ -14,7 +14,7 @@ from ghost_watch_terminal.src.core.engine import GhostWatchEngine, _now_iso
 
 # Import all 12 modules
 try:
-    from shadow313.v4.ghost_watch.ghost_watch import GhostWatch
+    from shadow313.v4.ghost_watch.ghost_watch import GhostWatchModule as GhostWatch
     from shadow313.v4.ghost_watch.tartarus import TARTARUSEngine
     from shadow313.v4.ghost_watch.valkyrie import VALKYRIEEngine
     from shadow313.v4.aegis.aegis import AegisModule

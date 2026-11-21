@@ -4,8 +4,8 @@ import pytest
 class TestVanguard:
     def test_module_importable(self):
         try:
-            from shadow313.v4.vanguard.vanguard import Vanguard
-            assert Vanguard is not None
+            from shadow313.v4.vanguard.vanguard import VanguardModule
+            assert VanguardModule is not None
         except ImportError:
             pytest.skip("vanguard not available")
 

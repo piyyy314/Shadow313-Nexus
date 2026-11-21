@@ -9,7 +9,7 @@ import hashlib, hmac, os
 from .engine import PQCLayer
 
 # Re-export for convenience
-__all__ = ["PQCLayer", "pqc_sign", "pqc_verify", "pqc_encrypt", "pqc_decrypt"]
+__all__ = ["PQCLayer", "pqc_sign", "pqc_encrypt"]
 
 _default_layer = None
 
