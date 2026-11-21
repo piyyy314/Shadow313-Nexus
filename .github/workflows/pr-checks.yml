@@ -59,7 +59,7 @@ jobs:
 
       - name: Diagnose Ruff import ordering
         continue-on-error: true
-        run: ruff check --select I --diff shadow313/integrations/aegis_pqc/report.py shadow313/v2/dashboard/app.py
+        run: ruff check --select I --fix --diff shadow313/integrations/aegis_pqc/report.py shadow313/v2/dashboard/app.py
 
       - name: Run Ruff on changed Python files
         run: |

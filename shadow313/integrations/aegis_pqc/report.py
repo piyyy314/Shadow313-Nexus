@@ -310,7 +310,7 @@ def generate_bound_report(
     html_path = str(out / f"aegis_bound_{safe_bind_id}.html")
     json_path = str(out / f"aegis_bound_{safe_bind_id}.json")
 
-    Path(html_path).write_text(html, encoding="utf-8")
+    pathlib.Path(html_path).write_text(html, encoding="utf-8")
 
     # JSON report
     json_report = {
@@ -318,7 +318,7 @@ def generate_bound_report(
         "audit":   audit.to_bind_payload(),
         "summary": audit.to_summary(),
     }
-    Path(json_path).write_text(
+    pathlib.Path(json_path).write_text(
         json.dumps(json_report, indent=2, default=str),
         encoding="utf-8",
     )
