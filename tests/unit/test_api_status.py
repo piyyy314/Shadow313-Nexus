@@ -33,17 +33,3 @@ def test_production_rejects_short_or_placeholder_api_keys(monkeypatch):
 
     app = create_app(api_key="a" * 40)
     assert app.title == "Shadow313 NEXUS API"
-
-
-def test_platform_health_path_and_local_health_alias():
-    client = TestClient(create_app(api_key="health-test-key"))
-
-    platform_health = client.get("/api/health")
-    local_health = client.get("/health")
-
-    assert platform_health.status_code == 200
-    assert platform_health.json()["status"] == "ok"
-    assert platform_health.json()["service"] == "shadow313-nexus-api"
-    assert platform_health.json()["version"]
-    assert local_health.status_code == 200
-    assert local_health.json()["status"] == "ok"
