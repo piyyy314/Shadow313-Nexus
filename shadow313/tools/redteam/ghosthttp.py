@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 Shadow313 — GhostHTTP
 HTTP fingerprinting engine. Extracts server secrets from timing
@@ -7,16 +6,21 @@ analysis. Identifies hidden technologies, WAF presence, and
 information disclosure vulnerabilities.
 """
 
+from __future__ import annotations
+
 
 import asyncio
 import hashlib
 import json
+import logging
 import re
 import time
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 try:
     from shadow313.core.kernel import KernelContext, register_command
@@ -443,7 +447,7 @@ Provide:
                                 mitre_technique="T1083",
                             ))
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         # Run probes concurrently in batches
         batch_size = 10
@@ -494,7 +498,7 @@ Provide:
                             mitre_technique="T1552",
                         ))
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         return findings
 
@@ -517,7 +521,7 @@ Provide:
                 elapsed = round((time.monotonic() - t0) * 1000, 1)
                 timings.append({"path": path, "ms": elapsed, "status": r.status_code})
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         # Detect timing anomalies
         if timings:
@@ -567,7 +571,7 @@ Provide:
                         ))
                         break
             except Exception as _e:  # nosec
-                pass  # intentional — probe failure is non-critical
+                logger.debug("GhostHTTP probe failed for %s: %s", url, _e)
 
         return findings
 
