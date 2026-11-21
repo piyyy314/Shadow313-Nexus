@@ -23,6 +23,7 @@ SECRET_PATTERNS = [
     (r"api_key\s*=\s*['\"]{1}\S{8,}", "API Key"),
 ]
 
+
 class CICDPipeline:
     def __init__(self, repo_path: str = "."):
         self.repo_path = Path(repo_path)
@@ -36,7 +37,7 @@ class CICDPipeline:
                 findings.extend(self._scan_file(sp))
             elif sp.is_dir():
                 for f in sp.rglob("*"):
-                    if f.is_file() and f.suffix in [".py",".js",".yml",".env",".json",".sh"]:
+                    if f.is_file() and f.suffix in [".py", ".js", ".yml", ".env", ".json", ".sh"]:
                         if ".git" not in str(f) and "node_modules" not in str(f):
                             findings.extend(self._scan_file(f))
         self._findings.extend(findings)
@@ -45,7 +46,7 @@ class CICDPipeline:
             "timestamp": datetime.now(UTC).isoformat(),
             "secrets_found": len(findings),
             "findings": findings,
-            "passed": len(findings) == 0
+            "passed": len(findings) == 0,
         }
 
     def _scan_file(self, path: Path) -> list[dict[str, Any]]:
@@ -55,9 +56,11 @@ class CICDPipeline:
             for ln, line in enumerate(content.splitlines(), 1):
                 for pattern, stype in SECRET_PATTERNS:
                     if re.search(pattern, line, re.IGNORECASE):
-                        rule_hash = hashlib.md5(
-                            pattern.encode(), usedforsecurity=False
-                        ).hexdigest()[:6].upper()
+                        rule_hash = (
+                            hashlib.md5(pattern.encode(), usedforsecurity=False)
+                            .hexdigest()[:6]
+                            .upper()
+                        )
                         findings.append(
                             {
                                 "file": str(path),
@@ -78,23 +81,40 @@ class CICDPipeline:
         for f in self._findings:
             rid = f.get("rule_id", "S313-UNKNOWN")
             if not any(r["id"] == rid for r in rules):
-                rules.append({"id": rid, "name": f["type"].replace(" ", ""),
-                               "shortDescription": {"text": f["type"]},
-                               "defaultConfiguration": {"level": "error"}})
-            results.append({
-                "ruleId": rid, "level": "error",
-                "message": {"text": f"{f['type']} detected"},
-                "locations": [{"physicalLocation": {
-                    "artifactLocation": {"uri": f["file"]},
-                    "region": {"startLine": f["line"]}
-                }}]
-            })
+                rules.append(
+                    {
+                        "id": rid,
+                        "name": f["type"].replace(" ", ""),
+                        "shortDescription": {"text": f["type"]},
+                        "defaultConfiguration": {"level": "error"},
+                    }
+                )
+            results.append(
+                {
+                    "ruleId": rid,
+                    "level": "error",
+                    "message": {"text": f"{f['type']} detected"},
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {"uri": f["file"]},
+                                "region": {"startLine": f["line"]},
+                            }
+                        }
+                    ],
+                }
+            )
         return {
             "version": "2.1.0",
             "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
-            "runs": [{"tool": {"driver": {"name": "Shadow313 NEXUS",
-                                          "version": "4.0.0", "rules": rules}},
-                      "results": results}]
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {"name": "Shadow313 NEXUS", "version": "4.0.0", "rules": rules}
+                    },
+                    "results": results,
+                }
+            ],
         }
 
     def gate_check(self) -> tuple[bool, list[str]]:
