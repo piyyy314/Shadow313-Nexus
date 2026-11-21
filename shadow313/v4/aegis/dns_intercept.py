@@ -221,7 +221,7 @@ class DNSInterceptor:
             shield_status= profile["shield_status"],
             shield_pct   = profile["shield_pct"],
             location     = profile["location"],
-            status       = "SUCCESS" if resolved_ip else "FAILED",
+            status       = "SUCCESS" if resolved_ip and resolved_ip != "UNRESOLVED" else "FAILED",
             risk         = profile["risk"],
         )
         self._intercepts.append(entry)
