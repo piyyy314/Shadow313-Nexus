@@ -93,7 +93,8 @@ def test_pr_checks_lint_and_security_gates_fail_closed():
             assert "|| true" not in line
     assert "name: SAST (Bandit)" in workflow
     assert "Bandit + Semgrep" not in workflow
-    assert "Enforce high-severity Bandit threshold" in workflow
+    assert "Run Bandit on changed Python files" in workflow
+    assert "Bandit high-severity gate passed" in workflow
     assert 'finding.get("issue_severity") == "HIGH"' in workflow
     assert "safety==3.8.1" in workflow
     assert "safety check --full-report || true" not in workflow
