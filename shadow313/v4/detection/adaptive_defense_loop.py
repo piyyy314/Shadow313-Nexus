@@ -159,7 +159,7 @@ class BlueTeamMonitor:
                          "c2_head": 0.60, "exfiltration_head": 0.65}.get(head, 0.65)
 
             evt = DetectionEvent(
-                event_id=f"EVT-{hashlib.md5(str(time.time_ns()).encode()).hexdigest()[:8].upper()}",
+                event_id=f"EVT-{hashlib.md5(str(time.time_ns()).encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
                 head=head,
                 score=score,
                 technique=technique,
@@ -359,7 +359,7 @@ class IntelligenceFusion:
         recommendations = self._recommend_rules(gap_techniques)
 
         return FusedIntelligence(
-            fusion_id=f"FUSE-{hashlib.md5(str(time.time_ns()).encode()).hexdigest()[:8].upper()}",
+            fusion_id=f"FUSE-{hashlib.md5(str(time.time_ns()).encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
             blue_detections=blue_summary["detected"],
             red_attempts=sum(len(r.ttps_attempted) for r in red.results),
             detection_rate=blue_summary["detection_rate"],
