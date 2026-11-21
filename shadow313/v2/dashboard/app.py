@@ -4,7 +4,6 @@ import datetime
 import ipaddress
 import pathlib
 
-
 DASHBOARD_HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>

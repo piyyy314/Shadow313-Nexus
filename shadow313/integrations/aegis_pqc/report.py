@@ -17,7 +17,6 @@ import pathlib
 import shadow313.core.binding_sdk.binder as binder
 import shadow313.integrations.aegis_pqc.parser as parser
 
-
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
