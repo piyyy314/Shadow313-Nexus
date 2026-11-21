@@ -27,6 +27,24 @@ def test_discovers_shadow313_engineering_skill(tmp_path: Path):
     ]
 
 
+def test_validate_all_fails_when_any_discovered_skill_lacks_entrypoint(
+    tmp_path: Path, capsys
+):
+    skills_root = tmp_path / "skills"
+    valid = skills_root / "valid-skill"
+    _write_skill(
+        valid / "SKILL.md",
+        "---\nname: valid-skill\ndescription: test\n---\n# Valid\n",
+    )
+    (skills_root / "broken-skill").mkdir(parents=True)
+
+    args = argparse.Namespace(root=str(tmp_path), action="validate", skill_id=None)
+    assert run_skill_command(args) == 1
+    output = capsys.readouterr().out
+    assert "PASS valid-skill" in output
+    assert "FAIL broken-skill" in output
+    assert "Missing entrypoint" in output
+
 def test_validation_rejects_path_traversal(tmp_path: Path):
     assert validate_skill("../outside", tmp_path / "skills")
 
