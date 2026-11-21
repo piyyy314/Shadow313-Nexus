@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
       - name: Resolve current comparison base
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+          BASE_REF: master
           BEFORE_SHA: ${{ github.event.before }}
         run: |
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_REF_NAME" != "master" ]; then
