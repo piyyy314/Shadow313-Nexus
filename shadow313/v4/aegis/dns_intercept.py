@@ -157,7 +157,8 @@ class DNSInterceptReport:
                 [
                     f"[{entry.timestamp}] [INFO] OT_METRICS: {entry.ot_metrics}",
                     f"[{entry.timestamp}] [{'SUCCESS' if entry.shield_pct >= 90 else 'WARN'}] "
-                    f"SHIELD_STATUS: Integrity Level: {entry.shield_pct}% {entry.shield_status}",
+                    f"SHIELD_STATUS: Integrity Level: {entry.shield_pct}% "
+                    f"{entry.shield_status}",
                     f"[{entry.timestamp}] [INFO] LOC_INTEL: Location: {entry.location}",
                     f"[{entry.timestamp}] [SUCCESS] SUCCESS: Resolved IP -> {entry.resolved_ip} "
                     "(Internal Link Secured)",
