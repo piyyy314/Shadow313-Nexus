@@ -10,6 +10,8 @@ def test_nightly_security_scanners_fail_closed_and_preserve_diagnostics():
         encoding="utf-8"
     )
     assert "safety==3.8.1" in workflow
+    assert workflow.count('"shadow313_sdk/**"') == 2
+    assert workflow.count('"shadow313_platform/**"') == 2
     assert "Safety report unavailable or invalid" in workflow
     assert "Enforce dependency and SAST results" in workflow
     assert "SAFETY_OUTCOME" in workflow
