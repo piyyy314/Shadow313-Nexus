@@ -5,6 +5,11 @@ from shadow313.core.kernel import Kernel
 from shadow313.core.output import OutputFormatter
 
 
+def test_builtin_module_names_are_unique():
+    names = [name for name, _ in Kernel._BUILTIN_MODULES]
+    assert len(names) == len(set(names))
+
+
 def test_nexus_temporal_and_stix_handlers_are_autoloaded():
     builtins = dict(Kernel._BUILTIN_MODULES)
     assert builtins["nexus"] == "shadow313.v4.nexus.nexus.NEXUSModule"
