@@ -1,20 +1,13 @@
-"""Shadow313 NEXUS CLI — Local-first AI-powered security intelligence platform."""
-from __future__ import annotations
-import os
-"""
-shadow313.cli.main  — v4 NEXUS
-Primary CLI entry point — argparse-based command router.
-All commands dispatch through the Core Kernel's command bus.
+"""Shadow313 NEXUS CLI — local-first AI-powered security intelligence platform.
 
-BUG FIXES vs v1:
-  - _dispatch() had no handler for 'status' command — added.
-  - 'ask' command fallback used sys.argv[2:] which broke when --no-stream
-    was passed — fixed to use args.question only.
-  - 'session --purge' used hardcoded Config() without passing config_path —
-    fixed to use kernel.config.
-  - Missing commands: agent, campaign, graph, serve, report, threat-intel,
-    sandbox, cloud, crypto-agility, rag, temporal, nexus, stix — all added.
+Primary CLI entry point — argparse-based command router. All commands dispatch
+through the Core Kernel's command bus.
+
+The command router includes explicit handlers for the core, advanced, and NEXUS
+command groups. See `shadow313 commands` for handler availability.
 """
+
+from __future__ import annotations
 
 import argparse
 import sys
@@ -49,7 +42,10 @@ Docs:
     parser.add_argument("--version",   action="version",  version="shadow313 v4.0.0-NEXUS")
     parser.add_argument("--config",    metavar="PATH",    help="Config file path")
     parser.add_argument("--session",   metavar="UUID",    help="Resume session by ID")
-    parser.add_argument("--output",    choices=["rich","json","markdown","plain"], help="Output format override")
+    parser.add_argument(
+        "--output", choices=["rich", "json", "markdown", "plain"],
+        help="Output format override",
+    )
     parser.add_argument("--verbose",   action="store_true", help="Verbose output")
     parser.add_argument("--no-color",  action="store_true", help="Disable color output")
     parser.add_argument("--no-banner", action="store_true", help="Skip ASCII banner")
@@ -96,7 +92,9 @@ Docs:
     p_exp.add_argument("--ops",           metavar="OPS")
 
     # ── network ───────────────────────────────────────────────────────────────
-    p_net = sub.add_parser("network", help="Network intelligence — capture, PCAP, anomaly, topology")
+    p_net = sub.add_parser(
+        "network", help="Network intelligence — capture, PCAP, anomaly, topology"
+    )
     p_net.add_argument("--capture",    metavar="IFACE")
     p_net.add_argument("--duration",   type=int, default=30)
     p_net.add_argument("--analyze",    metavar="PCAP")
@@ -109,11 +107,16 @@ Docs:
     p_net.add_argument("--dns-covert", action="store_true", dest="dns_covert")
 
     # ── defense ───────────────────────────────────────────────────────────────
-    p_def = sub.add_parser("defense", help="Defensive hardening — CIS audit, firewall, AI remediation")
+    p_def = sub.add_parser(
+        "defense", help="Defensive hardening — CIS audit, firewall, AI remediation"
+    )
     p_def.add_argument("--audit",      action="store_true")
     p_def.add_argument("--profile",    default="cis-level1", choices=["cis-level1","cis-level2"])
     p_def.add_argument("--firewall",   action="store_true")
-    p_def.add_argument("--fw-tool",   default="auto", choices=["auto","ufw","iptables","nftables"], dest="fw_tool")
+    p_def.add_argument(
+        "--fw-tool", default="auto", choices=["auto", "ufw", "iptables", "nftables"],
+        dest="fw_tool",
+    )
     p_def.add_argument("--remediate",  action="store_true")
     p_def.add_argument("--output",    choices=["bash","ansible"], default="bash", dest="output_fmt")
     p_def.add_argument("--apply",     action="store_true", dest="apply_fixes")
@@ -123,7 +126,10 @@ Docs:
     p_q.add_argument("--scan-host",   metavar="HOST:PORT", dest="scan_host")
     p_q.add_argument("--audit-certs", metavar="PATH", dest="audit_certs")
     p_q.add_argument("--scan-code",   metavar="PATH", dest="scan_code")
-    p_q.add_argument("--lang",        metavar="LANG", choices=["python","javascript","java","go","c","rust"])
+    p_q.add_argument(
+        "--lang", metavar="LANG",
+        choices=["python", "javascript", "java", "go", "c", "rust"],
+    )
     p_q.add_argument("--report",      action="store_true")
 
     # ── plugin ────────────────────────────────────────────────────────────────
@@ -147,7 +153,10 @@ Docs:
     p_ci.add_argument("--output",     choices=["rich","json","sarif","junit"], default="rich")
     p_ci.add_argument("--secrets",    action="store_true")
     p_ci.add_argument("--diff",       metavar="FILE/-")
-    p_ci.add_argument("--generate",   metavar="TEMPLATE", choices=["github-actions","gitlab-ci","pre-commit"])
+    p_ci.add_argument(
+        "--generate", metavar="TEMPLATE",
+        choices=["github-actions", "gitlab-ci", "pre-commit"],
+    )
     p_ci.add_argument("--pr-summary", action="store_true", dest="pr_summary")
     p_ci.add_argument("--from",       metavar="FILE", dest="from_file")
     p_ci.add_argument("--quiet",      action="store_true")
@@ -180,7 +189,10 @@ Docs:
 
     # ── update ────────────────────────────────────────────────────────────────
     p_upd = sub.add_parser("update", help="Update local databases (CVE, ExploitDB, KEV, EPSS)")
-    p_upd.add_argument("--db",      metavar="DB", choices=["cve","exploitdb","kev","epss","all"], required=True)
+    p_upd.add_argument(
+        "--db", metavar="DB", choices=["cve", "exploitdb", "kev", "epss", "all"],
+        required=True,
+    )
     p_upd.add_argument("--api-key", metavar="KEY", dest="api_key", default="")
 
     # ── status ────────────────────────────────────────────────────────────────
@@ -188,7 +200,10 @@ Docs:
 
     # ── V2 commands ───────────────────────────────────────────────────────────
     p_agent = sub.add_parser("agent", help="Agentic auto-chain module execution")
-    p_agent.add_argument("--plan",         default="quick_vuln", choices=["full_pentest","quick_vuln","defense_audit","crypto_audit"])
+    p_agent.add_argument(
+        "--plan", default="quick_vuln",
+        choices=["full_pentest", "quick_vuln", "defense_audit", "crypto_audit"],
+    )
     p_agent.add_argument("--target",       metavar="HOST", default="")
     p_agent.add_argument("--approval",     choices=["auto","gate_high","full_human"], default="")
     p_agent.add_argument("--suggest-plan", action="store_true", dest="suggest_plan")
@@ -279,8 +294,12 @@ Docs:
 
     p_finetune = sub.add_parser("finetune", help="LoRA fine-tuning config generator")
     p_finetune.add_argument("--generate-config",  action="store_true", dest="generate_config")
-    p_finetune.add_argument("--dataset-path",     default="shadow313_training_data.jsonl", dest="dataset_path")
-    p_finetune.add_argument("--output-dir",       default="./shadow313-7b-output", dest="output_dir")
+    p_finetune.add_argument(
+        "--dataset-path", default="shadow313_training_data.jsonl", dest="dataset_path"
+    )
+    p_finetune.add_argument(
+        "--output-dir", default="./shadow313-7b-output", dest="output_dir"
+    )
     p_finetune.add_argument("--generate-dataset", action="store_true", dest="generate_dataset")
     p_finetune.add_argument("--dataset-size",     type=int, default=100, dest="dataset_size")
 
@@ -354,7 +373,9 @@ Docs:
     p_gw.add_argument('--stats',         action='store_true')
 
     # ── Quantum NEXUS ─────────────────────────────────────────────────────────
-    p_qn = sub.add_parser('quantum-nexus', help='Advanced quantum security (HNDL, QKD, sensor fusion)')
+    p_qn = sub.add_parser(
+        'quantum-nexus', help='Advanced quantum security (HNDL, QKD, sensor fusion)'
+    )
     p_qn.add_argument('--hndl-analyze',    action='store_true', dest='hndl_analyze')
     p_qn.add_argument('--algorithm',       default='RSA-2048')
     p_qn.add_argument('--sensitivity',     default='CONFIDENTIAL')
@@ -406,7 +427,7 @@ Docs:
     p_health.add_argument('--json',        action='store_true', dest='json_output')
 
     # ── Doctor (alias for health --full) ──────────────────────────────────────
-    p_doctor = sub.add_parser('doctor', help='Full system diagnostic (alias for health --full)')
+    sub.add_parser('doctor', help='Full system diagnostic (alias for health --full)')
 
     # ── Ghost-Watch CADL ──────────────────────────────────────────────────────
     p_cadl = sub.add_parser('cadl', help='CADL escalation control (via Aegis)')
@@ -416,7 +437,9 @@ Docs:
 
     # ── Command discovery ─────────────────────────────────────────────────────
     p_commands = sub.add_parser("commands", help="List CLI commands and their registered handlers")
-    p_commands.add_argument("--all", action="store_true", help="Include commands with unavailable handlers")
+    p_commands.add_argument(
+        "--all", action="store_true", help="Include commands with unavailable handlers"
+    )
 
     # ── Quantum NEXUS ACTS ────────────────────────────────────────────────────
     p_acts = sub.add_parser('acts', help='ACTS deception stack (via Ghost-Watch)')
