@@ -15,12 +15,7 @@ on:
     - cron: "0 3 * * 1"       # Weekly Monday 03:00 UTC
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: read
-
 env:
-  GH_TOKEN: ${{ github.token }}
   PYTHON_VERSION: "3.11"
   SHADOW313_AI_BACKEND: disabled
   SHADOW313_VERBOSE: "false"
@@ -62,12 +57,7 @@ jobs:
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          PR_NUMBER="${{ github.event.pull_request.number || '' }}"
-          if [ -z "$PR_NUMBER" ]; then
-            PR_NUMBER="$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&head=$GITHUB_REPOSITORY:$GITHUB_REF_NAME" --jq '.[0].number // empty')"
-          fi
-          if [ -n "$PR_NUMBER" ]; then
-            mapfile -t candidates < <(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename' | grep -E '^shadow313/.*\.py
+          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
           changed_files=()
           for file in "${candidates[@]}"; do
             if [ -f "$file" ]; then
