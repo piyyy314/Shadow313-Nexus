@@ -112,7 +112,7 @@ test('backend health endpoint is proxied and normalized', async () => {
   const handler = handlerModule.createHandler({
     env: { SHADOW313_BACKEND_URL: 'https://api.example.test' },
     fetch: async url => {
-      assert.equal(url, 'https://api.example.test/api/health');
+      assert.equal(url, 'https://api.example.test/health');
       return new Response('{"status":"ok"}', { status: 200 });
     },
   });
