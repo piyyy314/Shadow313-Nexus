@@ -2,10 +2,10 @@
   "manifest_version": "1.0",
   "schema": "shadow313-delivery-manifest",
   "platform_version": "4.0.0",
-  "git_sha": "70ffcfb",
+  "git_sha": "c18208b",
   "git_branch": "master",
-  "generated_at": "2026-11-20T20:26:40.300751+00:00",
-  "timestamp_313": 1795206400300760313,
+  "generated_at": "2026-11-21T14:49:11.274723+00:00",
+  "timestamp_313": 1795272551274733313,
   "total_files": 147,
   "total_size_kb": 2383.4,
   "files": [
@@ -15,7 +15,7 @@
       "size": 50574,
       "size_kb": 49.4,
       "sha3_256": "b335bc4e2e244c7cb0e4a5e8f00392f7092acec5bc379e8efe9c6239a4a6aa9c",
-      "modified": "2026-11-20T20:26:35.259828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": true,
       "type": "html"
     },
@@ -25,7 +25,7 @@
       "size": 67822,
       "size_kb": 66.2,
       "sha3_256": "09be90a540c68f458cf2cbf6ff5e3bba15773c205611c251af9b383f293003d9",
-      "modified": "2026-11-20T20:26:35.259828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": true,
       "type": "html"
     },
@@ -35,7 +35,7 @@
       "size": 46277,
       "size_kb": 45.2,
       "sha3_256": "a42dd04bc3c77b28e1bdc01de20386a9e3b89337fffb060e640259c00cdbd57c",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": true,
       "type": "html"
     },
@@ -45,7 +45,7 @@
       "size": 32319,
       "size_kb": 31.6,
       "sha3_256": "e23b7bf584f4593f2fde7e9d6b3b5f2423424cc678560bb0129df9b92848ee28",
-      "modified": "2026-11-20T20:26:35.249760+00:00",
+      "modified": "2026-11-21T14:49:04.667712+00:00",
       "priority": false,
       "type": "html"
     },
@@ -55,7 +55,7 @@
       "size": 466,
       "size_kb": 0.5,
       "sha3_256": "50029d2e7c33d6220473e72de51ee92895220236b0b65753b2d96fbac01c04e2",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -65,7 +65,7 @@
       "size": 2863,
       "size_kb": 2.8,
       "sha3_256": "17f3b04af09e5362585a2d42dfa1cae76be8126ec90d7b741510cd5f9bbe9c03",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "html"
     },
@@ -75,7 +75,7 @@
       "size": 559,
       "size_kb": 0.5,
       "sha3_256": "678dae9cdb68dea15048407729cc2e7bfeaeedda6eccfb48325a8feed930311a",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -85,7 +85,7 @@
       "size": 6741,
       "size_kb": 6.6,
       "sha3_256": "b8061078eb7d4269a23392624aa16b6fe027e678f270a95c28e850eddccf5c32",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -95,7 +95,7 @@
       "size": 17719,
       "size_kb": 17.3,
       "sha3_256": "989e590f0a0c32a43fd71cd000ed1badedcf0578bffe61bc953a7798fcc653e4",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -105,7 +105,7 @@
       "size": 31080,
       "size_kb": 30.4,
       "sha3_256": "18122885885424078df45448b4a7cf2e8811da83b88f79dee71bfd832ab3b47d",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -115,7 +115,7 @@
       "size": 7065,
       "size_kb": 6.9,
       "sha3_256": "027025144fa701cc2423eb70b2570421b7cbcc408910744ff5fb534b0d63a2c6",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -125,7 +125,7 @@
       "size": 5703,
       "size_kb": 5.6,
       "sha3_256": "ef7e88fbf032054ac1d1b163d67c5408bdddd3647fd5734f09de40e3ed2dc505",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -135,7 +135,7 @@
       "size": 11420,
       "size_kb": 11.2,
       "sha3_256": "0edaec43a16ee2776cfe739ff6cfcf2e22112ca008bb66c87919fd6a2c6c71a8",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -145,7 +145,7 @@
       "size": 41285,
       "size_kb": 40.3,
       "sha3_256": "b3acc2387ddc35cb809a98c9b880d66168325dcacb896629add9373bac9dd423",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -155,7 +155,7 @@
       "size": 42368,
       "size_kb": 41.4,
       "sha3_256": "bb65dbedfff867726eeb1fac434c8ed09428bb48567a994fedd5f3a34cdd5214",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "html"
     },
@@ -165,7 +165,7 @@
       "size": 18101,
       "size_kb": 17.7,
       "sha3_256": "9b56ca152eef42f8444366b8b57d2a5ddf3e3d04db71108926026ea7fc7d34c2",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -175,7 +175,7 @@
       "size": 11138,
       "size_kb": 10.9,
       "sha3_256": "15107adbc46f68d27e4233ca1312093e2b108b45f33b94b7cc43a9e7949991e2",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -185,7 +185,7 @@
       "size": 11641,
       "size_kb": 11.4,
       "sha3_256": "abd50391be2670d5005b08e536eb8f04d900a0b81e0cfb6b41e9fbac358ed042",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -195,7 +195,7 @@
       "size": 45618,
       "size_kb": 44.5,
       "sha3_256": "408da3f7da4b799493664b45a94f5d61d0ef3fafd79e8ecfbf11b157dc1339d3",
-      "modified": "2026-11-20T20:26:35.250126+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "html"
     },
@@ -205,7 +205,7 @@
       "size": 35751,
       "size_kb": 34.9,
       "sha3_256": "7d473b9597580ab6ec1e0542f29c8e2a06504cbd476ad63dd90d3241e3de8055",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -215,7 +215,7 @@
       "size": 3105,
       "size_kb": 3.0,
       "sha3_256": "395f6a2de9b3f340fb6e901f9da956e2aa21bcb6e5ccbfd8caf0b721fc222845",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -225,7 +225,7 @@
       "size": 1276,
       "size_kb": 1.2,
       "sha3_256": "62d9377a3d35f9ec9e31b2248b1185ff343c009902ff15dabf366dd487489882",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "md"
     },
@@ -235,7 +235,7 @@
       "size": 3454,
       "size_kb": 3.4,
       "sha3_256": "56744ead3b42b67a1856aa954d2be22b17b6682cd10ddb0a68f992c7b8ad055d",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.667912+00:00",
       "priority": false,
       "type": "html"
     },
@@ -245,7 +245,7 @@
       "size": 10534,
       "size_kb": 10.3,
       "sha3_256": "f86ecf6515562a68ff3dcef995179ed754609affeea1d7ad7c984a9968f2ab7e",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -255,7 +255,7 @@
       "size": 36657,
       "size_kb": 35.8,
       "sha3_256": "dc61f8a9e164348b55a8b2db3d042c6416d52167ae1d6cf0f0fa15e47e409411",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -265,7 +265,7 @@
       "size": 24178,
       "size_kb": 23.6,
       "sha3_256": "7840d19d4b7e93181a2283168b4834e5113688d88c20e0e14d302404c1e0c63a",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -275,7 +275,7 @@
       "size": 13278,
       "size_kb": 13.0,
       "sha3_256": "265ee933288ce9bd1ed8bbfad5fd2c71fdcf72be586d511ce96c88a8f5dc0651",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -285,7 +285,7 @@
       "size": 8158,
       "size_kb": 8.0,
       "sha3_256": "c407236b665611111cbcb92156c660753629982760248440535d4a6461f93a17",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -295,7 +295,7 @@
       "size": 10089,
       "size_kb": 9.9,
       "sha3_256": "1bace29a3afe6352366a9b32797cc6c1750de40f2644f2b7296d5735d0e26e8d",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -305,7 +305,7 @@
       "size": 3464,
       "size_kb": 3.4,
       "sha3_256": "e2dae684e53f221bf8672e98fba9405c4a1c1487f24dd9dea6af16c0d3746164",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -315,7 +315,7 @@
       "size": 3462,
       "size_kb": 3.4,
       "sha3_256": "c126b57ef82a73afd376763389ab725b87eac1336c91234c8405382f3ba6a44a",
-      "modified": "2026-11-20T20:26:35.250828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -325,7 +325,7 @@
       "size": 8124,
       "size_kb": 7.9,
       "sha3_256": "e1927668d05dde490063cbbbe0c9bde7be72b3c5ef3b46b6377ed3f5652fe984",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -335,7 +335,7 @@
       "size": 29027,
       "size_kb": 28.3,
       "sha3_256": "c993f1b374da118e4a31afd975e0282c065923818781e6d03c73075468c385f3",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -345,7 +345,7 @@
       "size": 7392,
       "size_kb": 7.2,
       "sha3_256": "8e85d9f7ce7f5c9e62be2ef2e9f8aa114562dab1bf291baad09c15d3301913c1",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -355,7 +355,7 @@
       "size": 21027,
       "size_kb": 20.5,
       "sha3_256": "3bf640817bfb7b72969e7331acf990ab14a805f7af696a75070bac790c9f99f7",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "json"
     },
@@ -365,7 +365,7 @@
       "size": 14742,
       "size_kb": 14.4,
       "sha3_256": "ba61b466a53e7f92ce9f5436ffcfcadbcb734c6d164d87ff91477f074fba5f82",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -375,7 +375,7 @@
       "size": 12899,
       "size_kb": 12.6,
       "sha3_256": "e7044333e82120dfc09ab2186af9beff5ade8d3f778d98900ab9c5b4ef179947",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -385,7 +385,7 @@
       "size": 8156,
       "size_kb": 8.0,
       "sha3_256": "a85266b71153b02436c667f0bf56a603533b7761f55af5b68dcd98e1aba42a95",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -395,7 +395,7 @@
       "size": 8552,
       "size_kb": 8.4,
       "sha3_256": "3cf72209055c7c8f5283f9bf02faf0f468251ef918adbd0796541d4bf65e6c3a",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -405,7 +405,7 @@
       "size": 8132,
       "size_kb": 7.9,
       "sha3_256": "78fb5bfb0d787ce8a27e79f0d04ce3e76d11611a5236b0841711df3b7390c0c3",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -415,7 +415,7 @@
       "size": 3448,
       "size_kb": 3.4,
       "sha3_256": "0d041a06b92a4c16b6080f6b4b39aa7716d85e16fabaddde1e408289d3d3b195",
-      "modified": "2026-11-20T20:26:35.251828+00:00",
+      "modified": "2026-11-21T14:49:04.668785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -425,7 +425,7 @@
       "size": 11791,
       "size_kb": 11.5,
       "sha3_256": "a860e7a9603e9fa109ab30da9844491fad1db35246fb127ff538d18868aca564",
-      "modified": "2026-11-20T20:26:35.252828+00:00",
+      "modified": "2026-11-21T14:49:04.669785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -435,7 +435,7 @@
       "size": 12386,
       "size_kb": 12.1,
       "sha3_256": "d3725f13427f9f066ee1e8fe0b07e4a08219d1123ee2ef9f4738c0692db242b8",
-      "modified": "2026-11-20T20:26:35.252828+00:00",
+      "modified": "2026-11-21T14:49:04.669785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -445,7 +445,7 @@
       "size": 12651,
       "size_kb": 12.4,
       "sha3_256": "c84c2f92b26f6302f21ce66f2ae96a9cb7f0e496649a177afd1a7b1b24ca0b9f",
-      "modified": "2026-11-20T20:26:35.252828+00:00",
+      "modified": "2026-11-21T14:49:04.669785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -455,7 +455,7 @@
       "size": 26019,
       "size_kb": 25.4,
       "sha3_256": "cdcfc302fd4e1f8952639c88243d03d518c38fcc97b4910f49ab0548c6216817",
-      "modified": "2026-11-20T20:26:35.252828+00:00",
+      "modified": "2026-11-21T14:49:04.669785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -465,7 +465,7 @@
       "size": 8709,
       "size_kb": 8.5,
       "sha3_256": "a72f3306354b27e8ea9ba487dc68cb253520a7131b806550af0245d9e931edbc",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "html"
     },
@@ -475,7 +475,7 @@
       "size": 9030,
       "size_kb": 8.8,
       "sha3_256": "4012d551101c423575cd5fbb0d7525908dc370264827bd66772963ee78c223c7",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "html"
     },
@@ -485,7 +485,7 @@
       "size": 13283,
       "size_kb": 13.0,
       "sha3_256": "ba27c279e602d2a8903c4e9ddc71e5b475a9637a4b37ab9add6cf1f00f1c5c05",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "html"
     },
@@ -495,7 +495,7 @@
       "size": 14691,
       "size_kb": 14.3,
       "sha3_256": "01c1b43accf877d627874d9a89d2d91cde77320e217b3065643e0855a43dbddc",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "html"
     },
@@ -505,7 +505,7 @@
       "size": 4541,
       "size_kb": 4.4,
       "sha3_256": "2d7fd1112cf597776087daf182578001d776a9b5038c1b522546d92f387d3ae6",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "md"
     },
@@ -515,7 +515,7 @@
       "size": 23380,
       "size_kb": 22.8,
       "sha3_256": "be5ea24dcd0d219959f7abc92dc8c8a056251efdb30d177bf1a2d310ec45c808",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670778+00:00",
       "priority": false,
       "type": "md"
     },
@@ -525,7 +525,7 @@
       "size": 21705,
       "size_kb": 21.2,
       "sha3_256": "cc9054d81a240d29ec4d863ae14b4b37b6eac51eb60c3ad617eb67c1e0ccf86f",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -535,7 +535,7 @@
       "size": 8674,
       "size_kb": 8.5,
       "sha3_256": "619bc2751c35567491463d89e64fd9daedcc710fb3306d859400feef6e82ac03",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -545,7 +545,7 @@
       "size": 8118,
       "size_kb": 7.9,
       "sha3_256": "4038bd419be2868ece6c65fe46a64bbd1a41b58f8644e3faafe0cd5d79aa8bb7",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -555,7 +555,7 @@
       "size": 8152,
       "size_kb": 8.0,
       "sha3_256": "72f993851726d5bd7aaf89f5a61468ecd052facebc20dfb5fd020527d8ede6da",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -565,7 +565,7 @@
       "size": 32650,
       "size_kb": 31.9,
       "sha3_256": "1543702a46ac788cbfe76eedaf9f17a7312a410ec9746f88f3fe9d5e5571e7d0",
-      "modified": "2026-11-20T20:26:35.254237+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -575,7 +575,7 @@
       "size": 42310,
       "size_kb": 41.3,
       "sha3_256": "2f36a600d3dcd8e1ca16fb5a9fa6488f2202a2c4b540cd0bda909cd01326f713",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -585,7 +585,7 @@
       "size": 8124,
       "size_kb": 7.9,
       "sha3_256": "5ada70386b28a21520c8c689da93b481e7273f41806528451ebac1535f97ab74",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -595,7 +595,7 @@
       "size": 8114,
       "size_kb": 7.9,
       "sha3_256": "6b0f89980d81d2506ea54d51bcbf61a7d3a3619433fdd9a3b47171f84b45b911",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -605,7 +605,7 @@
       "size": 8191,
       "size_kb": 8.0,
       "sha3_256": "ef0c6b99998bf5c0f88e6d38dd1fbcc7cfd55c7a3c0a53c945c807dbdb8577d4",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -615,7 +615,7 @@
       "size": 3462,
       "size_kb": 3.4,
       "sha3_256": "2dd523b01369846baee59247bc26cde6f4656e9e6188d9c69f4b9f0e3204ef25",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -625,7 +625,7 @@
       "size": 10657,
       "size_kb": 10.4,
       "sha3_256": "61941967fed87c48042e209f29b0928be7f7fa218fa7c0355c0db979ff072f2b",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -635,7 +635,7 @@
       "size": 3474,
       "size_kb": 3.4,
       "sha3_256": "513e0b7ea67615f8b8a8b2c0dbed392dfe7eb6f2f1905a85054d90ebdeba3a24",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -645,7 +645,7 @@
       "size": 10240,
       "size_kb": 10.0,
       "sha3_256": "287b25bb5847c5845af93ea75ec45d60b7ac995bac28e16c26aa8b1285c01384",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -655,7 +655,7 @@
       "size": 4462,
       "size_kb": 4.4,
       "sha3_256": "5cc475011a1e48dda0b40ad8c8ae1ea8e74bf5ce1e562af214107edc5ff97f9d",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -665,7 +665,7 @@
       "size": 44417,
       "size_kb": 43.4,
       "sha3_256": "fb6efa253f07742c290487f65647c20ab706c7f581113b85033a62648b4de18a",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -675,7 +675,7 @@
       "size": 7906,
       "size_kb": 7.7,
       "sha3_256": "bdc8c6a76e0fb4cc143954484cddf561a88eba11f96e763562a7a337514680e4",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -685,7 +685,7 @@
       "size": 27181,
       "size_kb": 26.5,
       "sha3_256": "92b0705fbbf7166750339e1b13f23988ea8731329f7ef01e7e226d8b167902d1",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -695,7 +695,7 @@
       "size": 3456,
       "size_kb": 3.4,
       "sha3_256": "a10bfb2c3577e4cd5901cc890a2cc04812d24d654e8fdbf6ddb281bd1cbff0dc",
-      "modified": "2026-11-20T20:26:35.254828+00:00",
+      "modified": "2026-11-21T14:49:04.670785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -705,7 +705,7 @@
       "size": 35735,
       "size_kb": 34.9,
       "sha3_256": "acf86770181e3a34bb9e5a8924922828669aa393f2d12076a4c2d4c01a44726c",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -715,7 +715,7 @@
       "size": 8136,
       "size_kb": 7.9,
       "sha3_256": "783cec271d6ddc6dcc953840a2e513a461c93b4d14f6719e30c02df6a4791d6c",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -725,7 +725,7 @@
       "size": 10189,
       "size_kb": 10.0,
       "sha3_256": "e0d74fa4370387af49cc87b9b9093226d9b9fdc1688d2608aab30831c5981a3d",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -735,7 +735,7 @@
       "size": 4025,
       "size_kb": 3.9,
       "sha3_256": "b7cd9ec6f349f35a137a8af51f8951875955ad5a2fe7f89e1e93574a29c688d5",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -745,7 +745,7 @@
       "size": 8122,
       "size_kb": 7.9,
       "sha3_256": "b175340f7077088294fbdc97b0ab96fb65be29b9142d27e6f87c8e2ae4a8278a",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -755,7 +755,7 @@
       "size": 8110,
       "size_kb": 7.9,
       "sha3_256": "a66d3d2a4692e9534c91ce8ad06234cb9a6cd9bbda5ee535f92b5238029d0baa",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -765,7 +765,7 @@
       "size": 8465,
       "size_kb": 8.3,
       "sha3_256": "eebf1d0014b499a8bfc7ec483333c85d34333f264276ad34a56a77a22779166f",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -775,7 +775,7 @@
       "size": 3341,
       "size_kb": 3.3,
       "sha3_256": "4737fb0b3de0e6d3349237a6296b828e3e2a00b3f33fd5130f18ae385dfde31d",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -785,7 +785,7 @@
       "size": 9073,
       "size_kb": 8.9,
       "sha3_256": "c1d85baa0cab9db5e8186d866d92dec8c650ab47de768d7149e2ef5010db0f9a",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -795,7 +795,7 @@
       "size": 8136,
       "size_kb": 7.9,
       "sha3_256": "d2dcead132d8e84391afd71a19a56c05198559a29c2cc5fdac57a5d6b047421b",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -805,7 +805,7 @@
       "size": 3464,
       "size_kb": 3.4,
       "sha3_256": "a40a3862fd845081f098b66344e9bbdea30ff54122bd3d7811848422fb64a2bd",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -815,7 +815,7 @@
       "size": 7528,
       "size_kb": 7.4,
       "sha3_256": "0dd183870c6dba9b39c179bc3a53dd8ca077e1d5376920fe9c18a2adc99cbb8f",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -825,7 +825,7 @@
       "size": 8170,
       "size_kb": 8.0,
       "sha3_256": "d3d712dd611f6bbc1cbd8449109d24390ee4530d57e66a48f5ccd03163c1dacf",
-      "modified": "2026-11-20T20:26:35.255828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -835,7 +835,7 @@
       "size": 40966,
       "size_kb": 40.0,
       "sha3_256": "5910e5d29436e60ea3c2b41c57ee19583badfccb68a584405d38924d71e78dbb",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -845,7 +845,7 @@
       "size": 8215,
       "size_kb": 8.0,
       "sha3_256": "6d371dd0e56862b8a43a9f54c41f1e5540009a89b92eb33f4736ddb7c54912c5",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -855,7 +855,7 @@
       "size": 3458,
       "size_kb": 3.4,
       "sha3_256": "6621000fbadce21ad84544f8e8b83e94833426308c33fcf4f3e72afe3c9a271d",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -865,7 +865,7 @@
       "size": 9047,
       "size_kb": 8.8,
       "sha3_256": "b2792127ddd2e0a69618480517caeabd13dc3d4ccc69dac4bfd19b563f2fc7be",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -875,7 +875,7 @@
       "size": 8086,
       "size_kb": 7.9,
       "sha3_256": "21535636563bdb8f71f4581bf8e563ed1ec5359f7f3753bd58fc500e294e4815",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -885,7 +885,7 @@
       "size": 14157,
       "size_kb": 13.8,
       "sha3_256": "edfdc1701a3039bd986269afe04fdfaeeda3f8a838db3e6e6c8fe5f7193d925d",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -895,7 +895,7 @@
       "size": 8124,
       "size_kb": 7.9,
       "sha3_256": "0fb613c768e3ecc643a795024f14f44905d86d674fc6c78082dc24e0f132d1f8",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -905,7 +905,7 @@
       "size": 3440,
       "size_kb": 3.4,
       "sha3_256": "d3980d1a6d6b78ac6ccb4dd80a9dd6ee8f633956a0c0ae7c43d3dbf4bec7655b",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -915,7 +915,7 @@
       "size": 3440,
       "size_kb": 3.4,
       "sha3_256": "54b0e302f3b4b43f78934d8e3ce8bfb6ddff8f0347d0fbb1f82e865a97683610",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -925,7 +925,7 @@
       "size": 3452,
       "size_kb": 3.4,
       "sha3_256": "787c8937c30740df8f70ce5d72d676f1df6c0c33e9b2dc82e53035071bceb60b",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -935,7 +935,7 @@
       "size": 3452,
       "size_kb": 3.4,
       "sha3_256": "bec01b939c624a8788814a8742bf0b4212ab211cb2856b9cd0268752728ce228",
-      "modified": "2026-11-20T20:26:35.256828+00:00",
+      "modified": "2026-11-21T14:49:04.671785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -945,7 +945,7 @@
       "size": 30980,
       "size_kb": 30.3,
       "sha3_256": "c049d7d26de7ca3bc8bfadcc34ed853cd3d1c65211d706fdd726fab46c45b525",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -955,7 +955,7 @@
       "size": 3442,
       "size_kb": 3.4,
       "sha3_256": "96ee0fb556abe2262dfebfcdf01fae26b86ad04824568b34691b4da4051f3e2d",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -965,7 +965,7 @@
       "size": 3448,
       "size_kb": 3.4,
       "sha3_256": "6263e79127b188c84fb83eb783cb555c3085ae455fbe5b10f51ec93ee2147f1e",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -975,7 +975,7 @@
       "size": 7176,
       "size_kb": 7.0,
       "sha3_256": "834a002d3a3e45ee087ad2e5ef283b68af7b38cd219cf000415b1f483957165f",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -985,7 +985,7 @@
       "size": 10465,
       "size_kb": 10.2,
       "sha3_256": "abad0a76911f2ae05660eca17156018c4135e5190840d3dd05c1df1ee1f9dea5",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -995,7 +995,7 @@
       "size": 39513,
       "size_kb": 38.6,
       "sha3_256": "0edf0425800599c451a2559749d484ab81c26383b9463cfa262bda0df7582181",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1005,7 +1005,7 @@
       "size": 13802,
       "size_kb": 13.5,
       "sha3_256": "cfe66ccf5ceb254e83ac0cf47e33e77e9127d17da2d6773d62d93980e32fe289",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -1015,7 +1015,7 @@
       "size": 9194,
       "size_kb": 9.0,
       "sha3_256": "6967c1300a71c20a30e6d9dccbff87a3c787e42bdc94f888883ee74abb91923e",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1025,7 +1025,7 @@
       "size": 3456,
       "size_kb": 3.4,
       "sha3_256": "17ee0387a5d3333261b5475f55c74c16239a84633f1d5ecdd0a0be2ff7e6a66e",
-      "modified": "2026-11-20T20:26:35.257828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1035,7 +1035,7 @@
       "size": 49964,
       "size_kb": 48.8,
       "sha3_256": "35a13124461ac8a5271b0d977f28e2a1a4d388886fa80d6a654775266caf75ba",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -1045,7 +1045,7 @@
       "size": 9473,
       "size_kb": 9.3,
       "sha3_256": "3ce928915f1ec5c198b0b83f368d49f4cc4a3558d15ced74bd90a65884930a6b",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1055,7 +1055,7 @@
       "size": 10148,
       "size_kb": 9.9,
       "sha3_256": "1b31bb5d6fd0eda683696898ab2d46d9ad2b589225bc5e38d501b6749211199c",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1065,7 +1065,7 @@
       "size": 2403,
       "size_kb": 2.3,
       "sha3_256": "cda8daae0a27cf4c0ded2a5e2d241cb9f987701f9929647e71aa1bee9825533d",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1075,7 +1075,7 @@
       "size": 10229,
       "size_kb": 10.0,
       "sha3_256": "2815a6e606bd610a97d3396e7b0eeacabf022415a85e850a169c56b555e0189d",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.672785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1085,7 +1085,7 @@
       "size": 59054,
       "size_kb": 57.7,
       "sha3_256": "4d157a921509118e698206b83262fabf7db354277ffc5d7e2344cedfeb80a04c",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1095,7 +1095,7 @@
       "size": 8044,
       "size_kb": 7.9,
       "sha3_256": "899b1f911278caa83a55d211dc545c64729410a6ee903d367c52b6a430de670f",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1105,7 +1105,7 @@
       "size": 8405,
       "size_kb": 8.2,
       "sha3_256": "83af315f38d16b5aab0a2a1e5ab4d7cd4138e70e14ddc2788bbefd3971b6d819",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1115,7 +1115,7 @@
       "size": 9594,
       "size_kb": 9.4,
       "sha3_256": "1d3763bc01bef345c3921bb02e84395f9a0d3f566e073472199b25a40084c5ab",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1125,7 +1125,7 @@
       "size": 8174,
       "size_kb": 8.0,
       "sha3_256": "2cf3d6f52a18de7a7794304b6c8bd72daeab796a822b2f2ece853b09e54ff4e7",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1135,7 +1135,7 @@
       "size": 14961,
       "size_kb": 14.6,
       "sha3_256": "24f7447f8a00bfb0bf21c0c8f7dbd31538d4434e23f0e35bc62165fe5e3cbaf4",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1145,7 +1145,7 @@
       "size": 3434,
       "size_kb": 3.4,
       "sha3_256": "19f6c661a598c87329e397eb990666ac9639976ea53c8601052d9eede8dd07f2",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1155,7 +1155,7 @@
       "size": 7621,
       "size_kb": 7.4,
       "sha3_256": "3f8ffdd2c4ca5ce32dec161d8ff8825dd41e25d6790acb532e8eda626040609e",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -1165,7 +1165,7 @@
       "size": 9793,
       "size_kb": 9.6,
       "sha3_256": "c9aeb7c9b679aa5348388b43ccf48bd2aa727f49b429249c78340561790e0ab5",
-      "modified": "2026-11-20T20:26:35.258828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1175,7 +1175,7 @@
       "size": 32132,
       "size_kb": 31.4,
       "sha3_256": "f8d75cfda82bff4f3ff87d8a329a1f3c6ecfa864e2a2503c35f0976c9fa15c1c",
-      "modified": "2026-11-20T20:26:35.259828+00:00",
+      "modified": "2026-11-21T14:49:04.673785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1185,7 +1185,7 @@
       "size": 86637,
       "size_kb": 84.6,
       "sha3_256": "d323eec50ce92282c509cab9b49b1cb8cf10d30fbefd900bf292af287fe316c3",
-      "modified": "2026-11-20T20:26:35.259828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1195,7 +1195,7 @@
       "size": 8126,
       "size_kb": 7.9,
       "sha3_256": "6dc861e4c644ea9fe42e1ad7a4b1c29816e14e33e64a2aecc86a0431d38b17ba",
-      "modified": "2026-11-20T20:26:35.259828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1205,7 +1205,7 @@
       "size": 9078,
       "size_kb": 8.9,
       "sha3_256": "7222eff94b61a1d79e9b22f0a6e4de4d59875154f1b341a7c2d848c92f183e92",
-      "modified": "2026-11-20T20:26:35.260828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1215,7 +1215,7 @@
       "size": 31499,
       "size_kb": 30.8,
       "sha3_256": "b63f0c4433e20a1d58c16620c25037ba32ade6abd25fc87b24999c24b2c4d9b6",
-      "modified": "2026-11-20T20:26:35.260828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1225,7 +1225,7 @@
       "size": 37855,
       "size_kb": 37.0,
       "sha3_256": "5a7a54975587fe65ef82d28d1ebd3d64794fc67ad6e64aa2508cc59081ba3646",
-      "modified": "2026-11-20T20:26:35.260828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1235,7 +1235,7 @@
       "size": 130149,
       "size_kb": 127.1,
       "sha3_256": "1db50bf3abd4d083ead9616c68852d82b276d666bcb3270329ce58a1dfd4fd5a",
-      "modified": "2026-11-20T20:26:35.260828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1245,7 +1245,7 @@
       "size": 161625,
       "size_kb": 157.8,
       "sha3_256": "90983aa6b31dbb3d18e326706c009a39738b381c81ef92b21c7da847ebeffe69",
-      "modified": "2026-11-20T20:26:35.260828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1255,7 +1255,7 @@
       "size": 42667,
       "size_kb": 41.7,
       "sha3_256": "6ad7a7f07de408fc236956e95a55813d17860e54023def271652143919aaa3a2",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.674785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1265,7 +1265,7 @@
       "size": 17325,
       "size_kb": 16.9,
       "sha3_256": "0a50077c8316cd48118b6254958f570e306c54c3a073c6e8fe751a9ea37a2a54",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1275,7 +1275,7 @@
       "size": 4925,
       "size_kb": 4.8,
       "sha3_256": "212fc2493601e953b4c4d6efa7f2c87300dd3d1660f98841d0f6754434b3388a",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "md"
     },
@@ -1285,7 +1285,7 @@
       "size": 9640,
       "size_kb": 9.4,
       "sha3_256": "48b659973ee3ec699200a8906df0be649f848a2f9f201362a2eddded11293988",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1295,7 +1295,7 @@
       "size": 3529,
       "size_kb": 3.4,
       "sha3_256": "c973ec6378b9bd60637655c0a2672a063f7d5a80f972164dacb410f745fec8b3",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1305,7 +1305,7 @@
       "size": 3530,
       "size_kb": 3.4,
       "sha3_256": "2e44e5525432b55264e24aa2c5db39d262c0184b3d273ebf9927d0c586f60609",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1315,7 +1315,7 @@
       "size": 3522,
       "size_kb": 3.4,
       "sha3_256": "bca9cf5aa90fbbefc7c3d2cb9abf862b3f818f299f349756ff2ba7b06295fea6",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1325,7 +1325,7 @@
       "size": 15049,
       "size_kb": 14.7,
       "sha3_256": "336e749edfadc044af9ed7586c928e0c23e0f5cda45cd9a0e417a7c5fc7e1068",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1335,7 +1335,7 @@
       "size": 10075,
       "size_kb": 9.8,
       "sha3_256": "43417ee273d00612cb92d6c1a04b2763fcf753a26f2e077bb0eac2060cdb1524",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1345,7 +1345,7 @@
       "size": 8464,
       "size_kb": 8.3,
       "sha3_256": "b817e5cbdbab8041ec69bf52f8ff3f3c5b17e774631edbed49af99335ac8905d",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1355,7 +1355,7 @@
       "size": 3448,
       "size_kb": 3.4,
       "sha3_256": "c229b1463243686c75cbf029cdd7458ee090ba34f2c462a209275018d8537f6b",
-      "modified": "2026-11-20T20:26:35.261828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1365,7 +1365,7 @@
       "size": 10337,
       "size_kb": 10.1,
       "sha3_256": "e862632a43a07d4edb3ebb2d45efd429a950e24b9cbc9b6b1280941c85c751bd",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1375,7 +1375,7 @@
       "size": 9355,
       "size_kb": 9.1,
       "sha3_256": "f66bac87871075041e73bf71509146820efe03b99b6502d342f3c16e1e0196a4",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1385,7 +1385,7 @@
       "size": 9076,
       "size_kb": 8.9,
       "sha3_256": "9f1c11713eda00dde779b65fed375a7befdf1fcb0e9b75bf3114e88fae62615d",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1395,7 +1395,7 @@
       "size": 6389,
       "size_kb": 6.2,
       "sha3_256": "5052b28d3135eb042af468a6ad779288841159528d4739d442a4f56bb6b1f560",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1405,7 +1405,7 @@
       "size": 8134,
       "size_kb": 7.9,
       "sha3_256": "96e2fbc12023691667d4386a56f1838abd0933a0bb323be6c1d082be57e1e024",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1415,7 +1415,7 @@
       "size": 8110,
       "size_kb": 7.9,
       "sha3_256": "d76e98d80844f32a38206014f50cea5e2107e053fa37e73aa9f52fbc9d78a3ce",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1425,7 +1425,7 @@
       "size": 8527,
       "size_kb": 8.3,
       "sha3_256": "d55a9744587a97690dbb7a0489142626fb33448ecda9a4713ecb3111a0055488",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1435,7 +1435,7 @@
       "size": 8674,
       "size_kb": 8.5,
       "sha3_256": "49cb5d5ffe5c68cd6be974cfe0695cc4e2bec63663ee77633de9526a7cf379f4",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1445,7 +1445,7 @@
       "size": 30633,
       "size_kb": 29.9,
       "sha3_256": "b35dd50a48149771affa5578096e930ef10207505c27fae1e8e10fe42d117fdd",
-      "modified": "2026-11-20T20:26:35.262828+00:00",
+      "modified": "2026-11-21T14:49:04.675785+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1455,7 +1455,7 @@
       "size": 25987,
       "size_kb": 25.4,
       "sha3_256": "4a8f1bc6e972c87b82c82bbb88ca2c118d610f3d44007594a79b8f3204c759be",
-      "modified": "2026-11-20T20:26:35.264310+00:00",
+      "modified": "2026-11-21T14:49:04.677129+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1465,7 +1465,7 @@
       "size": 8124,
       "size_kb": 7.9,
       "sha3_256": "03bbb09fa8cbacdb945b77ea734788dd0d0efcc53a2d580afb022baaaf1646fb",
-      "modified": "2026-11-20T20:26:35.265008+00:00",
+      "modified": "2026-11-21T14:49:04.677610+00:00",
       "priority": false,
       "type": "html"
     },
@@ -1475,12 +1475,12 @@
       "size": 3462,
       "size_kb": 3.4,
       "sha3_256": "f0ee016d5bed49cf4b969e52a1e7668faa3c3d312bfc262269506a2a32bec4a6",
-      "modified": "2026-11-20T20:26:35.265008+00:00",
+      "modified": "2026-11-21T14:49:04.677610+00:00",
       "priority": false,
       "type": "html"
     }
   ],
   "provenance_class": "REAL_OBSERVATION",
-  "delivery_id": "DEL-CCAFB5F4",
-  "manifest_hash": "sha3_256:df76558b7abcf02ec7d9a202397236ede7b6ef6a0235bfd3e7de6421afc0a828"
+  "delivery_id": "DEL-980E7287",
+  "manifest_hash": "sha3_256:fcb0e9523cd89fa8bf11eced91864a4309f74ab7b0a92a7a8adaf0b536942cc2"
 }

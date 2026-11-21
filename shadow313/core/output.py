@@ -48,7 +48,7 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = f"SHADOW313 NEXUS v{__version__} | VERIFIABLE SECURITY INTELLIGENCE"
+BANNER = f"Shadow313 NEXUS v{__version__} | LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
 
 
 class OutputFormatter:
@@ -81,56 +81,57 @@ class OutputFormatter:
 
     # ── Banner ────────────────────────────────────────────────────────────────
     def banner(self) -> None:
-        """Render the boxed NEXUS identity in the gold/lime/blue terminal palette."""
+        """Print the boxed Shadow313 NEXUS identity header."""
         if self.fmt in ("json", "sarif", "junit"):
             return
 
+        top = "╔" + "═" * 76 + "╗"
+        bottom = "╚" + "═" * 76 + "╝"
+        brand = f"  SHADOW313  NEXUS  |  v{__version__}"
+        tagline = "  LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
+        mission = "  DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE"
+
         if self._has_rich:
+            from rich.box import DOUBLE
             from rich.panel import Panel
             from rich.text import Text
 
-            body = Text()
-            body.append("SHADOW", style="bold #E8C547")
-            body.append("313", style="bold #A6CE39")
-            body.append("\n")
-            body.append("NEXUS", style="bold #4EA5E8")
-            body.append("  •  VERIFIABLE SECURITY INTELLIGENCE", style="bold #A6CE39")
-            body.append(f"\nv{__version__}  •  LOCAL-FIRST SECURITY OPERATIONS", style="#E8C547")
+            content = Text()
+            content.append("◈  ", style="bold bright_yellow")
+            content.append("SHADOW313", style="bold bright_green")
+            content.append("  NEXUS", style="bold bright_cyan")
+            content.append(f"  v{__version__}", style="bold bright_blue")
+            content.append("\n")
+            content.append(
+                "   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE",
+                style="bold bright_cyan",
+            )
+            content.append("\n")
+            content.append(
+                "   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE",
+                style="bold bright_green",
+            )
             self._rich_console.print(
-                Panel(body, border_style="#A6CE39", padding=(0, 2), expand=False)
+                Panel(
+                    content,
+                    box=DOUBLE,
+                    border_style="bright_green",
+                    padding=(0, 2),
+                    expand=False,
+                )
             )
             return
 
-        top = "╭" + "─" * 62 + "╮"
-        bottom = "╰" + "─" * 62 + "╯"
-        brand = "SHADOW313"
-        identity = "NEXUS  •  VERIFIABLE SECURITY INTELLIGENCE"
-        version = f"v{__version__}  •  LOCAL-FIRST SECURITY OPERATIONS"
-        print(self._c(_C.LIME, top))
+        print(self._c(_C.YELLOW, top))
         print(
-            self._c(_C.LIME, "│")
-            + "  "
-            + self._c(_C.GOLD, "SHADOW")
-            + self._c(_C.LIME, "313")
-            + " " * (62 - len(brand) - 2)
-            + self._c(_C.LIME, "│")
+            self._c(_C.GREEN, "║")
+            + self._c(_C.YELLOW, " ◈ ")
+            + self._c(_C.GREEN, brand.ljust(74))
+            + self._c(_C.GREEN, "║")
         )
-        print(
-            self._c(_C.LIME, "│")
-            + "  "
-            + self._c(_C.ELECTRIC_BLUE, "NEXUS")
-            + self._c(_C.LIME, "  •  VERIFIABLE SECURITY INTELLIGENCE")
-            + " " * max(0, 62 - len(identity) - 2)
-            + self._c(_C.LIME, "│")
-        )
-        print(
-            self._c(_C.LIME, "│")
-            + "  "
-            + self._c(_C.GOLD, version)
-            + " " * max(0, 62 - len(version) - 2)
-            + self._c(_C.LIME, "│")
-        )
-        print(self._c(_C.LIME, bottom))
+        print(self._c(_C.GREEN, "║") + self._c(_C.CYAN, tagline.ljust(76)) + self._c(_C.GREEN, "║"))
+        print(self._c(_C.GREEN, "║") + self._c(_C.BLUE, mission.ljust(76)) + self._c(_C.GREEN, "║"))
+        print(self._c(_C.YELLOW, bottom))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
     def info(self, msg: str, prefix: str = "•") -> None:
