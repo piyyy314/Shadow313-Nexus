@@ -1126,7 +1126,7 @@ def _dispatch(kernel, args, parser) -> int:
                         threat_posture=args.threat_posture)
 
     elif cmd == "dns-intercept":
-        kernel.dispatch("dns_intercept_ot", target=args.target, scan_ot=args.scan_ot,
+        kernel.dispatch("dns_intercept", target=args.target, scan_ot=args.scan_ot,
                         geo_deck=args.geo_deck, save=args.save, report_txt=args.report_txt)
 
     elif cmd == "commands":
