@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.core.output  — v4
 Unified output formatter: rich/color terminal · JSON · Markdown · plain.
@@ -11,12 +10,15 @@ BUG FIXES vs v1:
   - _print_list() called _print_dict() recursively without title guard,
     causing duplicate section headers — fixed
 """
+
+from __future__ import annotations
 import json
+import logging
 import sys
 from typing import Any
 
 from shadow313 import __version__
-import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -142,7 +144,7 @@ class OutputFormatter:
 
     def table(self, headers: list[str], rows: list[list], title: str = "") -> None:
         if self.fmt == "json":
-            records = [dict(zip(headers, r)) for r in rows]
+            records = [dict(zip(headers, r, strict=True)) for r in rows]
             print(json.dumps(records, indent=2, default=str))
             return
         # FIX: guard against empty rows causing ZeroDivisionError
@@ -169,9 +171,10 @@ class OutputFormatter:
                 max(len(str(headers[i])), max(len(str(r[i])) for r in rows))
                 for i in range(len(headers))
             ]
-            fmt_row = lambda cols: "  " + "  ".join(
-                str(c).ljust(w) for c, w in zip(cols, widths)
-            )
+            def fmt_row(cols: list) -> str:
+                return "  " + "  ".join(
+                    str(c).ljust(w) for c, w in zip(cols, widths, strict=True)
+                )
             print(self._c(_C.CYAN, fmt_row(headers)))
             print(self._c(_C.DIM, "  " + "  ".join("─" * w for w in widths)))
             for row in rows:
@@ -219,9 +222,9 @@ class OutputFormatter:
         else:
             label = f"[{sev.upper()}]".ljust(12)
             print(f"\n{self._c(col, label)} {self._c(_C.BOLD, title)}")
-            logger.debug("  {detail}")
+            logger.debug("  %s", detail)
             if cve:
-                logger.debug("  CVE: {cve}  CVSS: {score}")
+                logger.debug("  CVE: %s  CVSS: %s", cve, score)
 
     def ai_response(self, text: str, title: str = "AI Analysis") -> None:
         if self.fmt == "json":
@@ -229,7 +232,7 @@ class OutputFormatter:
             return
         if self._has_rich:
             from rich.markdown import Markdown
-            from rich.panel    import Panel
+            from rich.panel import Panel
             self._rich_console.print(
                 Panel(
                     Markdown(text),
@@ -272,7 +275,7 @@ class OutputFormatter:
                 self._print_dict(item, "")
                 print()
             else:
-                logger.debug("  {self._c(_C.DIM, '•')} {item}")
+                logger.debug("  %s", item)
 
     def _print_markdown(self, data: Any, title: str) -> None:
         if title:
