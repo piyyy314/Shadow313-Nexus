@@ -46,6 +46,7 @@ RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
 
 # ── Stage 2: Production (slim) ────────────────────────────────────
 FROM python:3.12-slim-trixie AS production
+# Trivy scans this production target; build tooling is removed before runtime.
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
