@@ -34,3 +34,9 @@ python-dotenv>=1.2.4
 pyyaml>=6.0.3
 toml>=0.10.2
 filelock>=4.2.1  # CVE-2026-112940 fix
+# Transitive security floors for the production image
+jaraco.context>=6.1.0
+msgpack>=1.2.3
+setuptools>=84.1.0
+urllib3>=2.8.0
+wheel>=0.46.2
