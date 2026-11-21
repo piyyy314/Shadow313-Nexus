@@ -37,6 +37,7 @@ from dataclasses import dataclass, field
 
 # ── IDENTITY-6: MLAnomalyProfiler ────────────────────────────────────────────
 
+
 class IsolationTree:
     """
     Single isolation tree for Isolation Forest implementation.
@@ -69,17 +70,14 @@ class IsolationTree:
 
         self.split_value = self._rng.uniform(min_val, max_val)
 
-        left_data  = [row for row in data if row[self.split_feature] < self.split_value]
+        left_data = [row for row in data if row[self.split_feature] < self.split_value]
         right_data = [row for row in data if row[self.split_feature] >= self.split_value]
 
-        self.left  = IsolationTree(self.max_depth)
+        self.left = IsolationTree(self.max_depth)
         self.right = IsolationTree(self.max_depth)
-        self.left.fit(left_data,  depth + 1)
+        self.left.fit(left_data, depth + 1)
         self.right.fit(right_data, depth + 1)
 
-    def path_length(self, point: list[float], depth: int = 0) -> float:
-        if self.split_feature is None or self.split_value is None:
-            return depth + self._c(self.size)
 
         if point[self.split_feature] < self.split_value:
             return self.left.path_length(point, depth + 1) if self.left else depth
