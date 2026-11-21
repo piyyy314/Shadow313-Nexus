@@ -19,7 +19,6 @@ from pathlib import Path
 from ...core.binding_sdk.binder import BindReceipt
 from .parser import PQCAuditResult, PQCComponent
 
-
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
