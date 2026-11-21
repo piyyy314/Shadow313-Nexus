@@ -6,6 +6,7 @@ OWASP Top 10, and session history. Fully offline, no cloud dependency.
 """
 
 from __future__ import annotations
+
 import hashlib
 import json
 import logging
