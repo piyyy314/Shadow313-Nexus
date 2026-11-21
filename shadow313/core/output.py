@@ -25,23 +25,24 @@ logger = logging.getLogger(__name__)
 
 # ANSI color codes (fallback when rich is not installed)
 class _C:
-    RESET  = "\033[0m"
-    BOLD   = "\033[1m"
-    RED    = "\033[91m"
-    GREEN  = "\033[92m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
     YELLOW = "\033[93m"
-    BLUE   = "\033[94m"
-    CYAN   = "\033[96m"
-    WHITE  = "\033[97m"
-    DIM    = "\033[2m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    WHITE = "\033[97m"
+    DIM = "\033[2m"
     PURPLE = "\033[95m"
+
 
 SEVERITY_COLORS = {
     "critical": _C.RED,
-    "high":     _C.RED,
-    "medium":   _C.YELLOW,
-    "low":      _C.GREEN,
-    "info":     _C.CYAN,
+    "high": _C.RED,
+    "medium": _C.YELLOW,
+    "low": _C.GREEN,
+    "info": _C.CYAN,
 }
 
 BANNER = (
@@ -82,8 +83,8 @@ class OutputFormatter:
         color: bool = True,
         verbose: bool = False,
     ) -> None:
-        self.fmt     = fmt
-        self.color   = color and sys.stdout.isatty()
+        self.fmt = fmt
+        self.color = color and sys.stdout.isatty()
         self.verbose = verbose
         self._has_rich = False
         self._rich_console = None
@@ -92,6 +93,7 @@ class OutputFormatter:
     def _try_rich(self) -> None:
         try:
             from rich.console import Console
+
             self._rich_console = Console(highlight=self.color)
             self._has_rich = True
         except ImportError:
@@ -103,6 +105,7 @@ class OutputFormatter:
             return
         if self._has_rich:
             from rich.text import Text
+
             t = Text(BANNER, style="bold cyan")
             self._rich_console.print(t)
         else:
@@ -136,6 +139,7 @@ class OutputFormatter:
             return
         if self._has_rich:
             from rich.rule import Rule
+
             self._rich_console.print(Rule(f"[bold cyan]{title}[/bold cyan]"))
         else:
             line = "─" * 60
@@ -171,9 +175,12 @@ class OutputFormatter:
             return
         if self._has_rich:
             from rich.table import Table
+
             tbl = Table(
-                title=title, show_header=True,
-                header_style="bold cyan", border_style="dim blue",
+                title=title,
+                show_header=True,
+                header_style="bold cyan",
+                border_style="dim blue",
             )
             for h in headers:
                 tbl.add_column(h)
@@ -187,10 +194,10 @@ class OutputFormatter:
                 max(len(str(headers[i])), max(len(str(r[i])) for r in rows))
                 for i in range(len(headers))
             ]
+
             def fmt_row(cols: list) -> str:
-                return "  " + "  ".join(
-                    str(c).ljust(w) for c, w in zip(cols, widths, strict=True)
-                )
+                return "  " + "  ".join(str(c).ljust(w) for c, w in zip(cols, widths, strict=True))
+
             print(self._c(_C.CYAN, fmt_row(headers)))
             print(self._c(_C.DIM, "  " + "  ".join("─" * w for w in widths)))
             for row in rows:
@@ -207,13 +214,21 @@ class OutputFormatter:
         sev = severity.lower()
         col = SEVERITY_COLORS.get(sev, _C.WHITE)
         if self.fmt == "json":
-            print(json.dumps({
-                "title": title, "severity": sev,
-                "detail": detail, "cve": cve, "score": score,
-            }))
+            print(
+                json.dumps(
+                    {
+                        "title": title,
+                        "severity": sev,
+                        "detail": detail,
+                        "cve": cve,
+                        "score": score,
+                    }
+                )
+            )
             return
         if self._has_rich:
             from rich.panel import Panel
+
             body = detail
             if cve:
                 body += f"\n[dim]CVE:[/dim] {cve}"
@@ -222,10 +237,10 @@ class OutputFormatter:
             # FIX: map severity to rich color names correctly
             color_map = {
                 "critical": "bright_red",
-                "high":     "red",
-                "medium":   "yellow",
-                "low":      "green",
-                "info":     "cyan",
+                "high": "red",
+                "medium": "yellow",
+                "low": "green",
+                "info": "cyan",
             }
             style = color_map.get(sev, "white")
             self._rich_console.print(
@@ -249,6 +264,7 @@ class OutputFormatter:
         if self._has_rich:
             from rich.markdown import Markdown
             from rich.panel import Panel
+
             self._rich_console.print(
                 Panel(
                     Markdown(text),
