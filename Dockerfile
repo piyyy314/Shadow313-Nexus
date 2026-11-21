@@ -40,7 +40,7 @@ COPY shadow313_platform/ ./shadow313_platform/
 COPY nexus_toolkit/ ./nexus_toolkit/
 COPY MANIFEST.in LICENSE CHANGELOG.md SECURITY.md requirements.txt ./
 
-RUN pip install --no-cache-dir --upgrade pip==26.2.2 wheel==0.48.0 \
+RUN pip install --no-cache-dir --upgrade pip==26.3 wheel==0.48.0 \
     && pip install --no-cache-dir --prefix=/install .
 
 
@@ -76,6 +76,9 @@ ENV http_proxy="" https_proxy=""
 
 COPY --from=builder /install /usr/local
 
+# Remove build tooling from the production runtime after dependency installation.
+RUN python -m pip check && python -m pip uninstall -y pip setuptools wheel
+
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
     && for directory in sessions plugins wordlists logs data reports receipts campaigns agent_runs; do \
@@ -107,6 +110,10 @@ ARG HTTPS_PROXY
 ENV http_proxy=${HTTP_PROXY} https_proxy=${HTTPS_PROXY}
 
 USER root
+
+# Restore a current installer only in the full NEXUS stage for optional packages.
+RUN python -m ensurepip --upgrade \
+    && python -m pip install --no-cache-dir --upgrade pip==26.3 setuptools==80.9.0 wheel==0.48.0
 
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
