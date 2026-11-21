@@ -121,17 +121,13 @@ class OutputFormatter:
 
         print(self._c(_C.YELLOW, top))
         print(
-            self._c(_C.GREEN, "║") + self._c(_C.YELLOW, " ◈ ") +
-            self._c(_C.GREEN, brand.ljust(74)) + self._c(_C.GREEN, "║")
-        )
-        print(
-            self._c(_C.GREEN, "║") + self._c(_C.CYAN, tagline.ljust(76)) +
             self._c(_C.GREEN, "║")
+            + self._c(_C.YELLOW, " ◈ ")
+            + self._c(_C.GREEN, brand.ljust(74))
+            + self._c(_C.GREEN, "║")
         )
-        print(
-            self._c(_C.GREEN, "║") + self._c(_C.BLUE, mission.ljust(76)) +
-            self._c(_C.GREEN, "║")
-        )
+        print(self._c(_C.GREEN, "║") + self._c(_C.CYAN, tagline.ljust(76)) + self._c(_C.GREEN, "║"))
+        print(self._c(_C.GREEN, "║") + self._c(_C.BLUE, mission.ljust(76)) + self._c(_C.GREEN, "║"))
         print(self._c(_C.YELLOW, bottom))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
