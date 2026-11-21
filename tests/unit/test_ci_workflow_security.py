@@ -156,6 +156,8 @@ def test_nightly_security_scan_runs_for_security_relevant_pull_requests():
         "pyproject.toml",
         "requirements*.txt",
         "shadow313/**",
+        "shadow313_sdk/**",
+        "shadow313_platform/**",
         "nexus_toolkit/**",
         "scripts/**",
     ):
@@ -291,7 +293,10 @@ def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     gate = workflow[gate_start:archive_start]
     assert "Trivy JSON report is missing" in gate
     assert "if not report_path.is_file()" in gate
-    assert "if actionable:" in gate
+    assert "if actionable or actionable_secrets:" in gate
+    assert "actionable_secrets" in gate
+    assert 'result.get("Secrets", [])' in gate
+    assert "github.event.pull_request.head.repo.full_name == github.repository" in workflow
     assert "unpatched" in gate
     assert "sys.exit(1)" in gate
     archive_end = workflow.index("\n      - name:", archive_start + 1)
