@@ -134,9 +134,9 @@ RUN pip install --no-cache-dir \
     "jinja2>=3.1" \
     "networkx>=3.2" \
     "scikit-learn>=1.3" \
-    "joblib>=1.3",
-    "sqlalchemy>=2.0",
-    "psycopg[binary]>=3.1",
+    "joblib>=1.3" \
+    "sqlalchemy>=2.0" \
+    "psycopg[binary]>=3.1" \
     "alembic>=1.13"
 
 RUN python -m pip check \
