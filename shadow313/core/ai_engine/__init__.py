@@ -237,13 +237,13 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "stream": True,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
@@ -282,12 +282,12 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             (
                 f"{self.endpoint}/chat/completions"
                 if self.endpoint.endswith("/v1")
