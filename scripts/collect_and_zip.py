@@ -65,7 +65,7 @@ COLLECTION_RULES = {
         "description": "Configuration files",
         "patterns": [
             "*.toml", "*.yaml", "*.yml", "*.json",
-            ".github/**/*.yml", "netlify.toml",
+            ".github/**/*.yml",
         ],
         "exclude_dirs": {"node_modules", "uploaded_files"},
         "exclude_files": {"package-lock.json"},
@@ -104,9 +104,10 @@ COLLECTION_RULES = {
 ALWAYS_INCLUDE = [
     "README.md",
     "pyproject.toml",
+    "vercel.json",
+    ".env.example",
     "setup.py",
     "requirements.txt",
-    "netlify.toml",
     ".github/workflows/deploy.yml",
     "todo.md",
 ]

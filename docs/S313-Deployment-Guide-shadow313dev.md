@@ -1,188 +1,116 @@
-# Shadow313 NEXUS — Deployment Guide
-## From Zero to Live on shadow313.dev
+# Shadow313 NEXUS — Deployment and Hosting Guide
 
----
+This guide reflects the current hosting decisions. It replaces earlier setup
+instructions that proposed Netlify, duplicate hosting, or buying domains that
+are already owned and connected.
 
-## Step 1: Register Domains (Day 1)
+## 1. Approved architecture
 
-**Go to:** https://dash.cloudflare.com → Domain Registration
+| Component | Platform | Responsibility | Current state |
+|---|---|---|---|
+| Source and CI | GitHub | Code, pull requests, tests, security checks | In use |
+| Public website | Vercel | Static-site build, previews, production hosting | In use |
+| `shadow313.com` DNS | Cloudflare | DNS zone and records | In use |
+| `shadow313.dev` DNS | Vercel DNS | Existing DNS configuration | In use |
+| Backend | Hetzner | Planned API and service host | Pending purchase and provisioning |
 
-Buy these domains simultaneously:
-```
-shadow313.dev     ~$12/yr  ← PRIMARY (buy this first)
-shadow313.com     ~$12/yr  ← DEFENSIVE redirect
-```
+Render, Netlify, and Railway are intentionally excluded. Do not create
+additional hosting projects for these providers.
 
-**Why Cloudflare Registrar:**
-- At-cost pricing (no markup)
-- Best DNS management UI
-- Free DDoS protection
-- Automatic HTTPS
+## 2. Domains and DNS
 
----
+The two apex domains are attached to the existing Vercel website project:
 
-## Step 2: Set Up Business Email (Day 1)
+- `https://shadow313.com`
+- `https://shadow313.dev`
 
-**Option A — Zoho Mail (Free to start):**
-1. Go to https://zoho.com/mail → Free plan
-2. Add domain: shadow313.dev
-3. Create: ops@shadow313.dev, enterprise@shadow313.dev, security@shadow313.dev
-4. Add Zoho MX records to Cloudflare DNS
+The `www.shadow313.com` and `www.shadow313.dev` hostnames are configured as
+permanent redirects to their matching apex hostnames.
 
-**Option B — Google Workspace ($6/mo, upgrade when ready):**
-1. Go to https://workspace.google.com
-2. Add domain: shadow313.dev
-3. Add Google MX records to Cloudflare DNS
+DNS ownership is split by domain:
 
----
+- Manage `shadow313.com` records in the Cloudflare zone.
+- Manage `shadow313.dev` records in the existing Vercel DNS configuration.
+- Keep Vercel website records DNS-only in Cloudflare unless a deliberate,
+  tested proxy configuration is introduced.
+- Use the exact target records shown by Vercel domain configuration; do not
+  copy old IP addresses or DNS targets from archived instructions.
+- Do not change MX, SPF, DKIM, DMARC, or other mail records as part of website
+  deployment.
 
-## Step 3: Deploy to Netlify (Day 1)
+## 3. Vercel website deployment
 
-### Option A — Drag & Drop (fastest)
-1. Go to https://app.netlify.com
-2. Drag the `shadow313-landing/` folder onto the deploy zone
-3. Site goes live instantly at a random `.netlify.app` URL
+The Vercel project builds the static website with:
 
-### Option B — GitHub + Auto-Deploy (recommended)
-1. Create GitHub repo: `github.com/shadow313-nexus/shadow313-landing`
-2. Push the `shadow313-landing/` folder
-3. Connect repo to Netlify → auto-deploys on every push
-
-### Connect Custom Domain
-1. In Netlify: Site Settings → Domain Management → Add custom domain
-2. Add: `shadow313.dev`
-3. Add: `shadow313.com` (set as redirect to shadow313.dev)
-4. Netlify provides SSL automatically via Let's Encrypt
-
----
-
-## Step 4: Configure Cloudflare DNS
-
-After Netlify gives you the IP/CNAME, add these records:
-
-```dns
-# shadow313.dev — PRIMARY
-Type    Name    Value                           TTL
-A       @       [Netlify IP from dashboard]     Auto
-CNAME   www     shadow313.dev                   Auto
-MX      @       [Zoho or Google MX records]     Auto
-TXT     @       v=spf1 include:_spf.zoho.com ~all  Auto
-TXT     @       [DKIM record from Zoho/Google]  Auto
-
-# shadow313.com — REDIRECT TO .dev
-A       @       [Netlify IP]                    Auto
-CNAME   www     shadow313.com                   Auto
+```bash
+node scripts/build-public-site.cjs
 ```
 
-**In Netlify:** Add redirect rule (already in netlify.toml):
-```
-shadow313.com/* → https://shadow313.dev/:splat (301)
-```
+The configured output directory is `public-site/`. The build script publishes
+the explicit allowlist in `site/public-files.json`; the repository itself is
+not served as a web root.
 
----
+For a change:
 
-## Step 5: Google Search Console
+1. Create a focused GitHub branch and pull request.
+2. Wait for required CI, security, and validation checks.
+3. Inspect the Vercel preview and verify affected routes.
+4. Merge only when required checks and reviews are satisfied.
+5. Confirm the production deployment reaches `READY`.
+6. Test the apex and `www` hostnames over HTTPS.
 
-1. Go to https://search.google.com/search-console
-2. Add property: shadow313.dev
-3. Verify via DNS TXT record (add to Cloudflare)
-4. Submit sitemap: https://shadow313.dev/sitemap.xml
+A successful quality-check job with a skipped deployment job is not a
+production deployment.
 
----
+## 4. Backend deployment — Hetzner (planned)
 
-## Step 6: Create sitemap.xml
+The backend has not yet been deployed as a hosted service. The Hetzner server
+will be purchased and configured separately from the Vercel static frontend.
 
-Create `shadow313-landing/sitemap.xml`:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://shadow313.dev/</loc><priority>1.0</priority></url>
-  <url><loc>https://shadow313.dev/tools/</loc><priority>0.9</priority></url>
-  <url><loc>https://shadow313.dev/marketplace/</loc><priority>0.9</priority></url>
-  <url><loc>https://shadow313.dev/docs/</loc><priority>0.8</priority></url>
-  <url><loc>https://shadow313.dev/about/</loc><priority>0.7</priority></url>
-  <url><loc>https://shadow313.dev/tools/aegis-nexus</loc><priority>0.8</priority></url>
-  <url><loc>https://shadow313.dev/tools/sovereign-shield</loc><priority>0.8</priority></url>
-  <url><loc>https://shadow313.dev/marketplace/analytics</loc><priority>0.7</priority></url>
-  <url><loc>https://shadow313.dev/marketplace/analytics/live</loc><priority>0.7</priority></url>
-</urlset>
-```
+Before creating a public API DNS record:
 
----
+1. Choose server resources based on measured API, database, worker, and storage
+   requirements rather than relying on an old example size or price.
+2. Add an SSH public key and restrict administrative access.
+3. Apply OS updates, firewall policy, SSH hardening, and automatic security
+   updates.
+4. Decide whether PostgreSQL and application services run in Docker or as
+   managed host services; define persistent volumes and backup retention.
+5. Configure secrets outside Git and restrict service-to-service access.
+6. Deploy the API and workers, then verify health, logs, TLS, and restart behavior.
+7. Test database backup restoration and server recovery.
+8. Configure the Vercel frontend to use the verified backend URL and API key.
+9. Add the API hostname to Cloudflare only after the backend is hardened and
+   listening on the intended interface.
 
-## Step 7: robots.txt
+See [Hetzner infrastructure notes](../infra/hetzner/README.md). The existing
+scripts are provisioning aids, not proof of a finished production deployment.
+Review them before running.
 
-Create `shadow313-landing/robots.txt`:
-```
-User-agent: *
-Allow: /
-Sitemap: https://shadow313.dev/sitemap.xml
-```
+## 5. Release verification
 
----
+For each production release, record:
 
-## Step 8: First Marketing Steps
+- Git commit SHA and merged pull request.
+- Required GitHub Actions conclusions.
+- Vercel deployment URL and `READY` state.
+- HTTPS checks for both apex domains and both `www` redirects.
+- Static route and 404 behavior.
+- Backend health only after a real backend is provisioned.
+- Known external CI provider blocks.
 
-### GitHub
-1. Create org: github.com/shadow313-nexus
-2. Create repo: shadow313 (the CLI tool)
-3. Add README with install instructions
-4. Add topics: security, quantum, post-quantum, cli, cybersecurity
+Useful links:
 
-### Product Hunt
-- Prepare launch for when you have 10+ waitlist signups
-- Schedule for a Tuesday/Wednesday (highest traffic)
+- [GitHub repository](https://github.com/piyyy314/Shadow313-Nexus)
+- [GitHub Actions](https://github.com/piyyy314/Shadow313-Nexus/actions)
+- [Vercel](https://vercel.com/)
+- [Cloudflare dashboard](https://dash.cloudflare.com/)
+- [Hetzner Cloud Console](https://console.hetzner.cloud/)
 
-### Hacker News
-- Post in "Show HN" when CLI is installable via pip
-- Title: "Show HN: Shadow313 – Local-first quantum-ready security CLI with 313 temporal binding"
+## 6. Explicit non-goals
 
-### Dev.to / Medium
-- Write: "Why I built a post-quantum security CLI that runs entirely locally"
-- Write: "313 Temporal Binding: cryptographic provenance for every computation"
-
----
-
-## Deployment Checklist
-
-- [ ] Domains registered (shadow313.dev + shadow313.com)
-- [ ] Business email set up (ops@shadow313.dev)
-- [ ] Site deployed to Netlify
-- [ ] Custom domain connected + SSL active
-- [ ] shadow313.com → shadow313.dev redirect working
-- [ ] Google Search Console verified
-- [ ] sitemap.xml submitted
-- [ ] robots.txt in place
-- [ ] GitHub repo created
-- [ ] Waitlist form connected (Netlify Forms or Formspree)
-- [ ] Analytics added (Plausible or Fathom — privacy-first)
-
----
-
-## Cost Summary (Year 1)
-
-| Item | Cost |
-|------|------|
-| shadow313.dev domain | ~$12/yr |
-| shadow313.com domain | ~$12/yr |
-| Netlify (Starter) | Free |
-| Zoho Mail (Free tier) | Free |
-| Cloudflare (Free tier) | Free |
-| **Total** | **~$24/yr** |
-
-Upgrade triggers:
-- Netlify Pro ($19/mo): when you need form submissions > 100/mo or bandwidth > 100GB
-- Google Workspace ($6/mo): when you need calendar, Meet, or Drive for team
-- Plausible Analytics ($9/mo): when you want privacy-first analytics
-
----
-
-## Domain Evolution Roadmap
-
-| Phase | Domain | Trigger |
-|-------|--------|---------|
-| Phase 1 (Now) | shadow313.dev | Launch |
-| Phase 2 | shadow313.dev + .com acquired | 100+ signups |
-| Phase 3 | shadow313.com (primary) | $10K MRR |
-
-See `SHADOW313 NEXUS — Domain Evolution Roadmap.md` for full details.
+- No Netlify mirror or backup deployment.
+- No Render service.
+- No Railway backend.
+- No second static hosting platform.
+- No claim that the Hetzner API is online before provisioning and verification.

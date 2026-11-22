@@ -1,491 +1,280 @@
-> **Distribution rename:** the intended PyPI install name is `shadow313-nexus`.
-> The CLI command remains `shadow313`, and Python imports remain `shadow313`.
-> This repository change does not publish or reserve a PyPI name. Do not install
-> an unrelated package named `shadow313` expecting this project's code.
-> See [release instructions](docs/distribution-rename.md).
+# Shadow313 NEXUS
 
-> **Runtime/release status:** The public website is static documentation and browser
-> demonstrations, not a running Python scanner, quantum computer, or automatic
-> connection to your local Ollama. Older feature tables, test counters, receipts,
-> and certification-like badges below are historical claims, not current proof.
-> Read [the repair handoff](docs/audit-repair-handoff.md) before remote exposure or
-> publishing a release. Local CLI integrations can make network requests.
+**A local-first security engineering toolkit with a Python CLI, modular analysis capabilities, and a static web presence.**
 
-# Shadow313 NEXUS v4.0.0
+[![CI](https://img.shields.io/github/actions/workflow/status/piyyy314/Shadow313-Nexus/shadow313-ci.yml?branch=master&label=CI)](https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Local-First AI-Powered Security Intelligence CLI — NEXUS Edition**
+Shadow313 NEXUS is a modular toolkit for authorized security assessment,
+defensive engineering, security research, and controlled lab work. This
+repository contains the Python package, command-line interface, optional API
+and local AI integrations, tests, deployment configuration, and public static
+website.
 
-```
-  ███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗██████╗
-  ██╔════╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║╚════██╗
-  ███████╗███████║███████║██║  ██║██║   ██║██║  ▄███╔╝
-  ╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║ ▄██╔╝
-  ███████║██║  ██║██║  ██║██████╔╝╚██████╔╝██║ ██████╗
-  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝╚═════╝
-  v4.0.0-NEXUS  |  Post-Quantum Security Intelligence
-```
+> **Operational status:** The public website is hosted by Vercel. Cloudflare
+> manages DNS for `shadow313.com`; `shadow313.dev` uses its existing Vercel
+> DNS configuration. The Python backend is **not yet deployed as a hosted
+> service**. Hetzner is the planned backend host and remains pending purchase,
+> provisioning, hardening, and deployment validation. Website availability
+> does not mean backend-dependent features are online.
 
-<div align="center">
+## Contents
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/piyyy314/Shadow313-Nexus/shadow313-ci.yml?branch=master&style=for-the-badge&logo=github-actions&label=CI%20Build)](https://github.com/piyyy314/Shadow313-Nexus/actions)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
-**PyPI publication pending — install from the reviewed source checkout.**
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+- [Project overview](#project-overview)
+- [Hosting architecture](#hosting-architecture)
+- [Quick start](#quick-start)
+- [CLI usage](#cli-usage)
+- [Optional local services](#optional-local-services)
+- [Repository structure](#repository-structure)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Security and responsible use](#security-and-responsible-use)
+- [Deployment status](#deployment-status)
+- [Contributing](#contributing)
+- [License](#license)
 
-</div>
+## Project overview
 
-Shadow313 NEXUS is a Python security-intelligence toolkit with a CLI, API,
-optional local Ollama integration, and static documentation site. Some modules
-require optional dependencies or external services; network activity is not
-guaranteed to remain local. Use only on systems you own or are authorized to
-assess. The CI badge above links to the current workflow result; this README
-does not publish a fixed test count or claim a passing result.
+The codebase includes capability areas for reconnaissance, vulnerability
+analysis, defensive hardening, network analysis, post-quantum cryptography,
+threat intelligence, automation, reporting, and selected integrations.
 
-## Repository map
+Availability varies by module and optional dependency. The CLI help and
+command registry are the source of truth for commands and registered handlers.
+A feature description or website page is not proof that an external integration
+is configured or a hosted service is running.
 
-| Path | Contents |
-|---|---|
-| `shadow313/` | Main Python package, API, CLI, modules, and versioned components |
-| `shadow313_sdk/`, `shadow313_platform/`, `nexus_toolkit/` | SDK, platform, and toolkit packages |
-| `tests/` | Unit, integration, and simulation tests |
-| `docs/`, `assets/`, `index.html` | Static website and documentation |
-| `docs/PLATFORM_INTEGRATION_STATUS.md` | Canonical cross-repository integration map, current SOC review status, and release gates |
-| `api/` | Static-site API adapter and OpenAPI contract; backend-dependent website routes return `200` with an explicit unavailable status |
-| `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
-| `scripts/` | Repository checks, site generation, and maintenance utilities |
+## Hosting architecture
 
-## Development and tests
+| Layer | Platform | Responsibility | State |
+|---|---|---|---|
+| Source control and CI | GitHub | Repository, pull requests, automated checks | In use |
+| Public website | Vercel | Static build, previews, production hosting | In use |
+| DNS for `shadow313.com` | Cloudflare | DNS zone and record management | In use |
+| DNS for `shadow313.dev` | Vercel DNS | Existing domain DNS configuration | In use |
+| Backend infrastructure | Hetzner | Planned API and service host | Pending purchase and setup |
 
-Use Python 3.11 or newer. From a fresh virtual environment:
+The `www` hostnames are configured to redirect to their respective apex
+hostnames. Both domains are connected to the Vercel website project; this is
+not a cross-domain redirect from `.com` to `.dev`.
+
+**Render, Netlify, and Railway are not part of the intended hosting
+architecture.** Do not add a second frontend host or temporary backend provider
+without an explicit architecture decision.
+
+### Static website build
+
+The Vercel project runs:
 
 ```bash
+node scripts/build-public-site.cjs
+```
+
+The build publishes the files allowlisted by `site/public-files.json` into
+`public-site/`. The repository is not served as a raw web root. Do not expose
+Python source, private configuration, credentials, or internal assets by
+loosening the publishing allowlist without review.
+
+### Backend boundary
+
+The repository includes Python API code and local Docker Compose services.
+The static Vercel website is not the Python backend. Backend-dependent routes
+must report an explicit unavailable state until a real backend has been
+deployed, configured, authenticated, and health-checked.
+
+## Quick start
+
+### Requirements
+
+- Python 3.11 or newer
+- Git
+- A Python virtual environment (recommended)
+- Optional: Docker Engine and Docker Compose plugin for local services
+
+### Install from source
+
+```bash
+git clone https://github.com/piyyy314/Shadow313-Nexus.git
+cd Shadow313-Nexus
+
+python -m venv .venv
+# Linux / macOS
+source .venv/bin/activate
+# Windows PowerShell:
+# .venv\Scripts\Activate.ps1
+
+python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
+```
+
+For the broader optional dependency set:
+
+```bash
+python -m pip install -e ".[full]"
+```
+
+The package metadata defines two console entry points: `shadow313` and
+`s313-cli`. PyPI publication is not implied by the repository name. Until an
+official release is published, install from a reviewed source checkout.
+
+## CLI usage
+
+Start with the built-in help and command registry:
+
+```bash
+shadow313 --help
+shadow313 commands
+shadow313 commands --all
+```
+
+Explore available module options with the CLI help:
+
+```bash
+shadow313 recon --help
+shadow313 vuln --help
+shadow313 defense --help
+shadow313 quantum --help
+shadow313 nexus --help
+```
+
+Optional modules may require additional extras, system packages, permissions,
+or external credentials. Use only targets and environments for which you have
+explicit authorization. Prefer passive or lab modes when evaluating unfamiliar
+capabilities.
+
+## Optional local services
+
+### Docker Compose
+
+The Compose configuration supports local development and integration testing.
+Review `.env.example` and the Compose files before starting services:
+
+```bash
+cp .env.example .env
+# Replace example values with local, non-production values.
+docker compose config
+docker compose up -d
+docker compose ps
+```
+
+Do not commit a populated `.env` file. Keep API keys, tokens, signing material,
+and database credentials in an appropriate secret store.
+
+### Local AI
+
+Ollama can be used as an optional local model provider. Configure the backend,
+model, and endpoint with the supported `SHADOW313_AI_*` environment variables.
+Cloud AI providers may transmit prompts or analysis data outside the local
+machine; review provider terms and data handling before enabling them.
+
+## Repository structure
+
+| Path | Purpose |
+|---|---|
+| `shadow313/` | Primary Python package, CLI, API, core services, and modules |
+| `shadow313_sdk/` | Python SDK |
+| `shadow313_platform/` | Platform-level Python components |
+| `nexus_toolkit/` | NEXUS toolkit components |
+| `tests/` | Unit, integration, and regression tests |
+| `api/` | Static-site API adapters and API contract assets |
+| `site/` | Public-site allowlist and metadata |
+| `index.html`, `assets/`, `about/`, `blog/`, `marketplace/`, `platform/`, `pricing/`, `tools/` | Public website source pages and assets |
+| `docs/` | Technical documentation, runbooks, reports, and dashboards |
+| `infra/hetzner/` | Planned Hetzner host preparation and server scripts |
+| `docker/`, `Dockerfile`, `docker-compose*.yml`, `nginx.conf` | Container and local service configuration |
+| `.github/workflows/` | CI, validation, security, release, and deployment workflows |
+| `scripts/` | Build, validation, maintenance, and repository automation |
+| `migrations/` | Database migration assets |
+| `skills/` | Project engineering skills and workflow definitions |
+| `cyber_lab/` | Lab materials and learning resources |
+
+See [Repository Structure and Ownership](docs/REPOSITORY_STRUCTURE.md) for
+the expanded map and organization rules.
+
+## Configuration
+
+Start with `.env.example` and the relevant service documentation. Common
+configuration groups include:
+
+- `SHADOW313_AI_*` — optional AI backend, model, and endpoint.
+- `OPENAI_API_KEY` or `AI_GATEWAY_API_KEY` — provider credentials when that
+  provider is deliberately enabled.
+- Database settings — required only for optional database-backed services.
+- Integration credentials — configure only integrations you intend to use.
+
+Never place production credentials in example files, documentation, screenshots,
+test fixtures, or commits.
+
+## Testing
+
+Install development dependencies, then run:
+
+```bash
 python -m pytest tests/ -q --tb=short --ignore=tests/integration --timeout=120
 ```
 
-For the API and dashboard extras, install `.[dashboard]`; other optional
-features may require their corresponding extras. Check the live CI workflow
-for the authoritative status of a specific commit.
-
-## Local AI and API
-
-The default AI backend is local Ollama at `http://localhost:11434`. Select it
-with `SHADOW313_AI_BACKEND=ollama`, and configure `SHADOW313_AI_MODEL` and
-`SHADOW313_AI_ENDPOINT` as needed. The optional OpenAI-compatible gateway uses `AI_GATEWAY_API_KEY` and defaults
-to `https://ai-gateway.vercel.sh/v1`; the OpenAI backend defaults to
-`https://api.openai.com/v1` and uses `OPENAI_API_KEY`. Set
-`SHADOW313_AI_MODEL` to a model identifier supported by the selected provider.
-The Docker Compose stack passes these settings through to the CLI, authenticated Python API (`POST /api/chat`), and optional Telegram bot. Open WebUI can also expose an OpenAI-compatible gateway provider using `OPENWEBUI_OPENAI_API_BASE_URLS` and `OPENWEBUI_OPENAI_API_KEYS`; if unset, it continues to use local Ollama only. The Telegram bot polls authenticated ShiatoAli SOC alerts; it does not use the static website's unavailable event adapter.
-
-The Python API listens on port `8313` when run in Docker Compose. Compose keeps
-the API internal to its Docker network; the static site adapter does not host
-the Python backend and returns `200` with an explicit unavailable status for
-backend-dependent routes. The Python API also reports unavailable integrations
-in a `200` response after authentication; authentication and routing errors keep
-their appropriate error statuses.
-
----
-
-## 🆕 What's New in v4.0.0 NEXUS
-
-| Feature | Description |
-|---------|-------------|
-| **313 Temporal Binding** | Every computation produces a cryptographic receipt signed with SLH-DSA (FIPS 205), anchored to IPFS |
-| **NEXUS Platform** | Post-Quantum Security Intelligence — every finding is a cryptographic fact |
-| **Insider Attack Immunity** | Documented SHA-3 chain bypass attack + SLH-DSA countermeasure |
-| **STIX 2.1 Handler** | Import/export threat intelligence bundles |
-| **Mobile API** | REST API for iOS/Android companion app |
-| **LoRA Fine-Tune** | Generate training configs for Shadow313-7B security LLM |
-| **Browser Recon** | Playwright-powered SPA fingerprinting + CSP analysis |
-| **Container Scanning** | Dockerfile linting + OCI image CVE analysis (Trivy/Grype) |
-| **AD Auditor** | Kerberoasting, AS-REP roasting, unconstrained delegation detection |
-| **SIEM Integration** | Forward findings to Splunk HEC, Elasticsearch, Wazuh |
-| **Collaborative Sessions** | Multi-user session sharing with E2E encryption |
-| **Malware Sandbox** | YARA-like pattern matching + Docker behavioral analysis |
-
----
-
-## ✨ Full Feature Matrix
-
-### V1 Core Modules (9)
-| Module | Capability |
-|--------|-----------|
-| **Recon** | DNS enum, subdomain discovery, async port scan, WHOIS, OSINT, AI profiling |
-| **Vuln** | CVE correlation, CVSS scoring, exploit availability, dependency audit, AI triage |
-| **Exploit** | Advisory-mode CVE research, payload templates, CTF solver (lab mode required) |
-| **Network** | Live capture, PCAP analysis, anomaly detection, topology mapping |
-| **Defense** | CIS benchmark audit (18 checks), firewall analysis, AI remediation (bash/Ansible) |
-| **Quantum** | Post-quantum crypto audit, TLS/cert/code scanning, NIST PQC migration roadmap |
-| **Plugins** | Sandboxed community/custom extensions, 10 lifecycle hooks |
-| **CI/CD** | SARIF output, 13-pattern secret scanning, GitHub Actions / GitLab CI integration |
-| **Docs** | AI `ask` command, interactive tutorials, man page generation |
-
-### V2 Advanced Modules (17)
-| Module | Capability |
-|--------|-----------|
-| **RAG** | ChromaDB/TF-IDF vector store, 5 knowledge namespaces, LoRA fine-tune config |
-| **Agent** | Agentic auto-chain loop, 4 built-in plans, approval gates, plan persistence |
-| **EPSS** | FIRST.org EPSS v3 scoring, batch API, SQLite cache with 24h TTL |
-| **KEV** | CISA Known Exploited Vulnerabilities catalog, 12h TTL, auto-CRITICAL promotion |
-| **ATT&CK** | 70+ keyword→technique mappings, Navigator v4 JSON export |
-| **ML Anomaly** | IsolationForest → ONNX → z-score fallback chain, 14-feature vector |
-| **JA3/JA3S** | Pure-Python TLS fingerprinting, 9 known-malicious signatures |
-| **DNS Covert** | 6 heuristic rules, DoH detection, DNS tunnel tool signatures |
-| **Campaign** | Asyncio-parallel multi-target scanning, configurable concurrency |
-| **Graph** | NetworkX intelligence graph, 9 node types, risk ranking, GraphML/GEXF export |
-| **Dashboard** | FastAPI + HTMX, dark terminal aesthetic, SSE live feed, RAG AI chat |
-| **Reports** | HTML/PDF security reports, AI executive summaries, 313-BIND receipts |
-| **Plugin Signing** | HMAC-SHA256 + cosign/sigstore, plugin trust registry |
-| **Threat Intel** | FeodoTracker, URLhaus, MalwareBazaar, Shodan InternetDB, OTX feeds |
-| **Docker Sandbox** | CVE reproduction, 6 security constraints, 8 pre-mapped CVEs |
-| **Cloud Hardening** | AWS (7 checks), Kubernetes (7 checks), Terraform (11 rules) |
-| **Crypto Agility** | 7 PQC migration snippets, 11 NIST algorithms, hybrid TLS testing |
-
-### V3 Advanced Modules (6)
-| Module | Capability |
-|--------|-----------|
-| **Browser Recon** | Playwright SPA fingerprinting, CSP analysis, API endpoint discovery |
-| **Container Scan** | Dockerfile linting (12 rules), Trivy/Grype CVE scanning, base image risk |
-| **AD Auditor** | Kerberoasting, AS-REP roasting, unconstrained delegation, password policy |
-| **SIEM** | Splunk HEC, Elasticsearch bulk, Wazuh REST API integration |
-| **Collab** | Multi-user sessions, finding sharing, collaborative notes, timeline |
-| **Malware Sandbox** | YARA-like matching (10 rules), static analysis, Docker behavioral execution |
-
-### V4 NEXUS Modules (5)
-| Module | Capability |
-|--------|-----------|
-| **313 Temporal Binding** | Nanosecond-precise cryptographic receipts, SLH-DSA signatures, IPFS anchoring |
-| **NEXUS** | Platform orchestration, insider attack demo, security posture reports |
-| **STIX 2.1** | Bundle import/export, IOC extraction, ATT&CK STIX integration |
-| **Mobile API** | FastAPI REST server for iOS/Android companion app |
-| **Fine-Tune UI** | LoRA/QLoRA config generator, Unsloth training script, GGUF export |
-
----
-
-## 🚀 Quick Start
-
-### Install from reviewed source (PyPI publication pending)
-
-First clone this repository, review/check out the intended commit, and change
-into its directory. Use a fresh virtual environment; the command below installs
-that checkout, not a package name from PyPI. No registry ownership is asserted.
+Useful local checks include:
 
 ```bash
-pip install .
+python -m compileall -q shadow313 shadow313_sdk shadow313_platform nexus_toolkit
+python -m ruff check .
+python -m black --check .
 ```
 
-### Optional full extra from reviewed source
-```bash
-pip install ".[full]"
-```
+Some checks require optional dependencies or system tools. GitHub Actions is
+the authoritative record for a specific commit; inspect workflow runs and job
+conclusions rather than relying only on the status badge.
 
-### Install (from source)
-```bash
-git clone https://github.com/piyyy314/Shadow313-Nexus
-cd Shadow313-Nexus
-pip install -e ".[full]"
-```
+## Security and responsible use
 
-### Docker (NEXUS)
-```bash
-docker pull piyyy314/shadow313-nexus:4.0.0-nexus
-docker run --rm -it piyyy314/shadow313-nexus:4.0.0-nexus recon --target example.com --mode passive
-```
+Shadow313 NEXUS is intended for defensive security work, authorized assessments,
+research, and isolated labs.
 
-### Docker Compose (full stack)
-```bash
-cp .env.example .env
-# Replace the example secrets before starting the API services.
-# Compose creates a local-only self-signed certificate in a Docker volume.
-docker compose up -d
-# Open WebUI through the nginx development listener: http://localhost:8080
-# Nginx HTTPS listener: https://localhost
-# Ollama and the Python API are internal to the Compose network by default.
-```
+- Obtain written authorization before scanning or testing third-party systems.
+- Use lab-only modes for exploit demonstrations and controlled malware execution.
+- Treat detections as analyst signals, not proof of compromise.
+- Review generated commands and remediation before execution.
+- Protect API credentials, signing keys, session data, and collected evidence.
+- Do not expose a development API directly to the public internet.
+- Review [SECURITY.md](SECURITY.md) before reporting a vulnerability.
 
-### AI Setup (Ollama — local, recommended)
-```bash
-# Install Ollama: https://ollama.com
-ollama pull mistral:7b
-# Set SHADOW313_AI_ENDPOINT=http://localhost:11434 for a native CLI process.
-```
+The presence of cryptographic, AI, or audit-related code does not by itself
+establish certification, legal admissibility, tamper-proof retention, or
+compliance with a security framework. Validate those properties independently.
 
----
+## Deployment status
 
-## 📖 Usage
+The public static site and hosted backend are separate systems.
 
-Use `shadow313 commands` to inspect command-to-handler availability, or `shadow313 --help` for argument details. The `nexus`, `temporal`, and `stix` command handlers are loaded by the core kernel.
+Before the Hetzner backend is considered operational, the project must complete:
 
+1. Server selection based on API, database, worker, and storage requirements.
+2. SSH-key access, firewall policy, OS updates, and host hardening.
+3. Runtime and database deployment with persistent storage and backups.
+4. Backend configuration, secret management, TLS, and restricted network access.
+5. Health checks, logs, monitoring, restore testing, and incident procedures.
+6. Vercel-to-backend integration tests using production-safe credentials.
 
-### V1 Core Commands
-```bash
-# Reconnaissance
-shadow313 recon --target example.com --mode full
-shadow313 recon --target 192.168.1.0/24 --mode active --stealth
+The current scripts are documented in
+[`infra/hetzner/README.md`](infra/hetzner/README.md). Review them before
+running; a bootstrap script is not proof of a finished production deployment.
 
-# Vulnerability Analysis
-shadow313 vuln --from-session <uuid> --epss --kev
-shadow313 vuln --audit-deps requirements.txt
-shadow313 update --db cve
+For release and integration decisions, see
+[`docs/PLATFORM_INTEGRATION_STATUS.md`](docs/PLATFORM_INTEGRATION_STATUS.md)
+and the [GitHub Actions history](https://github.com/piyyy314/Shadow313-Nexus/actions).
 
-# Exploitation Assistance (LAB MODE ONLY)
-shadow313 exploit --cve CVE-2024-1234 --lab-mode
-shadow313 exploit --assist ctf --challenge "Buffer overflow 64-bit ELF" --lab-mode
+## Contributing
 
-# Network Intelligence
-sudo shadow313 network --capture eth0 --duration 60
-shadow313 network --analyze ./capture.pcap --ai-score --ml-anomaly --ja3 --dns-covert
+1. Open an issue for substantial changes or architectural decisions.
+2. Create a focused feature or fix branch.
+3. Add or update tests for behavior changes.
+4. Run relevant local checks.
+5. Open a pull request with scope, validation evidence, and deployment impact.
 
-# Defensive Hardening
-shadow313 defense --audit --profile cis-level2
-shadow313 defense --remediate --output ansible
+Do not bypass required checks or review by pushing directly to the production
+branch.
 
-# Quantum Crypto Audit
-shadow313 quantum --scan-host example.com:443
-shadow313 quantum --scan-code ./src/ --lang python
+## License
 
-# AI-Powered Q&A
-shadow313 ask "what NIST algorithms replace RSA in post-quantum?"
-shadow313 learn --module quantum --interactive
-```
-
-### V2 Advanced Commands
-```bash
-# Agentic Auto-Chain
-shadow313 agent --plan full_pentest --target example.com
-shadow313 agent --plan crypto_audit --target example.com --approval auto
-
-# Multi-Target Campaigns
-shadow313 campaign --targets targets.txt --modules recon,vuln,epss --concurrency 5
-
-# Intelligence Graph
-shadow313 graph --ingest-session <uuid>
-shadow313 graph --risk-ranking
-shadow313 graph --export graphml graph.graphml
-
-# Web Dashboard
-shadow313 serve
-shadow313 serve --port 8080 --host 0.0.0.0
-
-# Security Reports
-shadow313 report --from-session <uuid> --format pdf
-
-# Threat Intelligence
-shadow313 threat-intel --sync
-shadow313 threat-intel --lookup 185.220.100.252
-shadow313 threat-intel --enrich-session <uuid>
-
-# Cloud Hardening
-shadow313 cloud --scan-aws
-shadow313 cloud --scan-k8s
-shadow313 cloud --scan-terraform ./infrastructure/
-
-# PQC Migration
-shadow313 crypto-agility --scan ./src/
-shadow313 crypto-agility --snippet rsa-python
-shadow313 crypto-agility --test-tls example.com:443
-shadow313 crypto-agility --migration-plan
-
-# RAG Knowledge Base
-shadow313 rag --ingest-nvd nvd_feed.json
-shadow313 rag --ingest-mitre
-shadow313 rag --query "what techniques does APT29 use?"
-```
-
-### V4 NEXUS Commands
-```bash
-# 313 Temporal Binding
-shadow313 temporal --bind-session
-shadow313 temporal --verify 313-v4-00000001
-shadow313 temporal --list-receipts
-
-# NEXUS Platform
-shadow313 nexus --status
-shadow313 nexus --bind-all
-shadow313 nexus --insider-attack-demo
-shadow313 nexus --posture-report
-
-# STIX 2.1
-shadow313 stix --import threat_bundle.json
-shadow313 stix --export --export-path findings.stix.json
-
-# Container & Browser
-shadow313 container-scan --image nginx:latest
-shadow313 container-scan --dockerfile ./Dockerfile
-shadow313 browser-recon --target example.com --use-playwright
-
-# Active Directory
-shadow313 ad-audit --server dc01.corp.local --domain corp.local --username admin
-
-# SIEM Integration
-shadow313 siem --forward-session <uuid>
-shadow313 siem --test
-
-# Malware Analysis
-shadow313 malware --file suspicious.exe --yara-only
-shadow313 malware --file suspicious.elf --execute --lab-mode
-
-# Fine-Tuning
-shadow313 finetune --generate-config
-shadow313 finetune --generate-dataset --dataset-size 500
-```
-
----
-
-## 🏗️ Architecture
-
-```
-shadow313/
-├── cli/main.py                    # argparse entry point (50+ commands)
-├── core/
-│   ├── kernel.py                  # Singleton kernel, command bus
-│   ├── config.py                  # YAML + env-var config loader
-│   ├── session.py                 # UUID session management
-│   ├── ai_engine.py               # Ollama/OpenAI/disabled backends
-│   ├── output.py                  # rich/JSON/MD/plain formatter
-│   └── crypto_store.py            # AES-256-GCM encrypted sessions
-├── modules/                       # V1 core modules (9)
-│   ├── recon/, vuln/, exploit/
-│   ├── network/, defense/, quantum/
-│   ├── plugins/, cicd/, docs/
-├── v2/                            # V2 advanced modules (17)
-│   ├── rag/, agent/, vuln_upgrades/
-│   ├── network_upgrades/, campaign/
-│   ├── graph/, dashboard/, reports/
-│   ├── plugin_signing/, threat_intel/
-│   ├── docker_sandbox/, cloud_hardening/
-│   └── crypto_agility/
-├── v3/                            # V3 modules (6)
-│   ├── browser_recon/, container_scan/
-│   ├── ad_auditor/, siem/
-│   ├── collab/, malware_sandbox/
-└── v4/                            # V4 NEXUS modules (5)
-    ├── temporal_binding/          # 313 Temporal Binding Protocol
-    ├── nexus/                     # NEXUS orchestration
-    ├── stix/                      # STIX 2.1 handler
-    ├── mobile_api/                # REST API for mobile
-    └── finetune_ui/               # LoRA fine-tune config
-```
-
----
-
-## 🔐 313 Temporal Binding Protocol
-
-Shadow313 NEXUS is the **only security platform where every finding is a cryptographic fact**.
-
-Every scan produces a **313-BIND receipt**:
-1. Waits for a nanosecond timestamp ending in `...313`
-2. Computes SHA3-512 of content + timestamp
-3. Signs with **SLH-DSA (SPHINCS+, FIPS 205)** — post-quantum secure
-4. Anchors to **IPFS** for permanent public verifiability
-
-```
-Receipt: 313-v4-00000042
-  Timestamp:  1783515056138000313 (ends in ...313)
-  SHA3-512:   a7f3e9b2...
-  Algorithm:  SLH-DSA-SHA2-128f (FIPS 205)
-  IPFS CID:   QmX9f...a3b7
-```
-
-**Why this matters:**
-- A finding from 6 months ago can be proven to have existed at that exact moment
-- No insider can alter historical findings without detection
-- Customers can prove to auditors that their security posture was assessed on a specific date
-- In legal proceedings, Shadow313 findings are cryptographically admissible
-
----
-
-## ⚙️ Configuration
-
-Edit `~/.shadow313/config.yaml`:
-
-```yaml
-shadow313:
-  ai:
-    backend:  ollama          # ollama | openai | gateway | disabled
-    model:    mistral:7b
-    endpoint: http://localhost:11434
-  storage:
-    encrypt: false            # Enable AES-256-GCM session encryption
-  temporal_binding:
-    enabled: true             # 313 Temporal Binding Protocol
-    sign_receipts: true
-  dashboard:
-    port: 7313
-    host: 127.0.0.1
-  threat_intel:
-    otx_api_key: ""           # AlienVault OTX (free tier)
-    enabled_feeds:
-      - feodo
-      - urlhaus
-      - malwarebazaar
-      - shodan
-```
-
----
-
-## ⚠️ Ethics & Legal
-
-- The **Exploit module** is advisory-only — it does NOT execute exploits autonomously
-- All exploit assistance requires `--lab-mode` flag + a valid `scope.yaml`
-- The **Malware Sandbox** requires `--lab-mode` for execution mode
-- The **Docker Sandbox** requires `--lab-mode` for CVE reproduction
-- Only use against systems you own or have written authorization to test
-- All sessions are audit-logged for accountability
-- This tool is for security professionals, researchers, and CTF participants
-
----
-
-## 📜 License
-
-MIT — see [LICENSE](LICENSE)
-
----
-
-## 🗺️ Roadmap
-
-| Feature | Target |
-|---------|--------|
-| ✅ 313 Temporal Binding Protocol | v4.0.0 |
-| ✅ NEXUS Platform | v4.0.0 |
-| ✅ STIX 2.1 Handler | v4.0.0 |
-| ✅ Mobile API | v4.0.0 |
-| ✅ Browser Recon (Playwright) | v4.0.0 |
-| ✅ Container Scanning | v4.0.0 |
-| ✅ AD Auditor | v4.0.0 |
-| ✅ SIEM Integration | v4.0.0 |
-| ✅ Malware Sandbox | v4.0.0 |
-| Autonomous Vulnerability Chains | v4.1 |
-| Threat Actor Profiling | v4.1 |
-| Custom LLM Fine-Tuning UI | v4.2 |
-| iOS/Android Companion App | v4.2 |
-| Collaborative Sessions (E2E) | v4.1 |
-| SIEM Integration (Splunk/Elastic) | v4.0.0 ✅ |
-
----
-
-*Shadow313 NEXUS v4.0.0 — Ottawa, ON, Canada · 2026*
-*"The only security platform where every finding is a cryptographic fact."*
-
-
-
-
-
-### Advanced NEXUS CLI commands
-
-The CLI exposes the advanced kernel services directly:
-
-| Command | Purpose |
-| --- | --- |
-| `shadow313 orchestrate --intent "review security posture"` | Run the AI agent orchestrator |
-| `shadow313 nexus-router --health` | Check NEXUS route health |
-| `shadow313 ledger --stats` | Inspect the append-only audit ledger |
-| `shadow313 workflow --list` | List registered workflows |
-| `shadow313 tools --list-tools` | Browse the advanced security tool catalog |
-| `shadow313 simulate --sim ndi` | Run NDI regression simulations |
-| `shadow313 collab --list` | List collaborative analyst sessions |
-| `shadow313 attack-map` | Map current session findings to MITRE ATT&CK |
-| `shadow313 pe-analyze --file <path>` | Analyze a PE file |
-| `shadow313 dns-intercept --target <domain>` | Inspect DNS exposure for an authorized OT/ICS target |
-
-Run `shadow313 commands --all` to inspect command-to-handler registration, including unavailable handlers.
+Shadow313 NEXUS is distributed under the [MIT License](LICENSE).

@@ -469,26 +469,26 @@ docker logs telegram-bot</div>
   </div>
 </div>
 
-<!-- PHASE 6: NETLIFY -->
+<!-- PHASE 6: HETZNER BACKEND (PENDING) -->
 <div class="phase">
   <div class="phase-header" style="background:rgba(6,182,212,0.08);border-bottom:1px solid rgba(6,182,212,0.2)" onclick="togglePhase(this)">
     <div class="phase-num" style="background:rgba(6,182,212,0.15);color:var(--cyan)">6</div>
-    <div class="phase-title" style="color:var(--cyan)">Netlify — Backup Deployment</div>
-    <div class="phase-meta">3 steps · ~10 min</div>
+    <div class="phase-title" style="color:var(--cyan)">Hetzner — Backend Host (Pending Purchase)</div>
+    <div class="phase-meta">3 steps · after server purchase</div>
     <span style="color:var(--muted);font-size:18px">▼</span>
   </div>
   <div class="phase-body">
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Connect GitHub repo to Netlify <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">netlify.com → Add new site → Import from Git → GitHub → piyyy314/Shadow313-Nexus → Build: none → Publish: docs/</div>
+      <div class="step-title">Select server resources and region <span class="badge-1hr">BEFORE ORDERING</span></div>
+      <div class="step-desc">Choose CPU, RAM, storage, region, backups, and networking based on the API and database workload. Verify current Hetzner pricing and availability at checkout; old CX22 examples are not a sizing recommendation.</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add shadow313.com as Netlify domain <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">Netlify → Domain settings → Add custom domain → shadow313.com (failover if Vercel goes down)</div>
+      <div class="step-title">Provision and harden the host <span class="badge-today">AFTER PURCHASE</span></div>
+      <div class="step-desc">Install a supported Ubuntu LTS release, add SSH-key access, patch the OS, apply a default-deny firewall, configure backups and monitoring, and review the scripts in infra/hetzner/ before running them.</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Enable Netlify Forms for contact page <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">Add netlify attribute to contact form → free form submissions without backend</div>
+      <div class="step-title">Deploy and verify the backend <span class="badge-today">AFTER HARDENING</span></div>
+      <div class="step-desc">Deploy the authenticated API and required services, verify TLS, health checks, logs, persistent storage, and restore procedures, then connect Vercel using secure environment variables. Do not publish the API DNS record before acceptance checks pass.</div>
     </div></div>
   </div>
 </div>
