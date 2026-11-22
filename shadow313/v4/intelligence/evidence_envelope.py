@@ -490,6 +490,8 @@ class ProvenanceClassifier:
             try:
                 pc = ProvenanceClass(env.provenance_class)
                 counts[pc.value] = counts.get(pc.value, 0) + 1
+                if pc is ProvenanceClass.UNCLASSIFIED:
+                    unclassified += 1
             except ValueError:
                 unclassified += 1
 
