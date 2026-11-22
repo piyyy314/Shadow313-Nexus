@@ -1,6 +1,11 @@
 """Unit tests — shadow313.v4.temporal_binding v4"""
+import hashlib
+import hmac
+import json
 import time
+
 import pytest
+from shadow313.v4.temporal_binding import temporal_binding as tb
 from shadow313.v4.temporal_binding.temporal_binding import (
     _wait_for_313,
     _sha3_512,
@@ -88,13 +93,56 @@ class TestTemporalBindingEngine:
         receipt_file = tmp_path / f"{receipt.receipt_id}.json"
         assert receipt_file.exists()
 
-    def test_verify_valid_receipt(self, tmp_path):
+    def test_verify_valid_receipt(self, tmp_path, monkeypatch):
+        key = b"temporal-binding-test-key"
+        monkeypatch.setenv("SHADOW313_BIND_KEY", key.decode())
+
+        def test_signer(message):
+            signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+            return signature, "HMAC-SHA256 (shared-secret)", ""
+
+        monkeypatch.setattr(tb, "_sign_slh_dsa", test_signer)
         engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
         receipt = engine.bind({"verify": "me"})
-        result  = engine.verify(receipt.receipt_id)
+        result = engine.verify(receipt.receipt_id)
+
         assert result["valid"] is True
         assert result["checks"]["timestamp_ends_313"] is True
-        assert result["checks"]["sha3_512_present"] is True
+        assert result["checks"]["sha3_512_matches"] is True
+        assert result["checks"]["signature_verified"] is True
+        assert result["checks"]["ipfs_anchor_recorded"] is False
+
+    def test_verify_rejects_tampered_receipt(self, tmp_path, monkeypatch):
+        key = b"temporal-binding-test-key"
+        monkeypatch.setenv("SHADOW313_BIND_KEY", key.decode())
+
+        def test_signer(message):
+            return hmac.new(key, message, hashlib.sha256).hexdigest(), "HMAC-SHA256 (shared-secret)", ""
+
+        monkeypatch.setattr(tb, "_sign_slh_dsa", test_signer)
+        engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
+        receipt = engine.bind({"verify": "me"})
+        receipt_file = tmp_path / f"{receipt.receipt_id}.json"
+        data = json.loads(receipt_file.read_text())
+        data["content_hash"] = "0" * 64
+        receipt_file.write_text(json.dumps(data))
+
+        result = engine.verify(receipt.receipt_id)
+        assert result["valid"] is False
+        assert result["checks"]["sha3_512_matches"] is False
+        assert result["checks"]["signature_verified"] is False
+
+    def test_unsigned_receipt_is_not_valid(self, tmp_path):
+        engine = TemporalBindingEngine(
+            receipts_dir=tmp_path,
+            ipfs_enabled=False,
+            signing_enabled=False,
+        )
+        receipt = engine.bind({"unsigned": True})
+        result = engine.verify(receipt.receipt_id)
+        assert result["valid"] is False
+        assert result["checks"]["signature_verified"] is False
+        assert receipt.algorithm.startswith("UNSIGNED")
 
     def test_verify_nonexistent_receipt(self, tmp_path):
         engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
@@ -118,7 +166,9 @@ class TestTemporalBindingEngine:
         assert "sha3_512"     in d
         assert "algorithm"    in d
         assert "ipfs_cid"     in d
-        assert "timestamp_iso"in d
+        assert "timestamp_iso" in d
+        assert d["schema_version"] == 2
+        assert "public_key" in d
 
     def test_receipt_id_format(self, tmp_path):
         engine  = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
