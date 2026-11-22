@@ -91,6 +91,14 @@ def _load_or_create_pqc_keypair(
     key_dir = Path(
         os.environ.get("SHADOW313_KEY_DIR", str(Path.home() / ".shadow313" / "keys"))
     ).expanduser()
+    repository_root = Path(__file__).resolve().parents[3]
+    resolved_key_dir = key_dir.resolve()
+    try:
+        resolved_key_dir.relative_to(repository_root)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("SHADOW313_KEY_DIR must be outside the repository")
     key_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     try:
         key_dir.chmod(0o700)
@@ -101,6 +109,8 @@ def _load_or_create_pqc_keypair(
     lock_path = key_dir / f".{key_name}.lock"
 
     def read_keypair() -> tuple[bytes, bytes]:
+        if key_path.is_symlink():
+            raise ValueError(f"Signing key must not be a symlink: {key_path}")
         data = json.loads(key_path.read_text(encoding="utf-8"))
         public_key = bytes.fromhex(data["public_key_hex"])
         secret_key = bytes.fromhex(data["secret_key_hex"])
