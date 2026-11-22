@@ -29,6 +29,7 @@ Minimum fields (from Governance doc):
 
 import hashlib
 import secrets
+
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
