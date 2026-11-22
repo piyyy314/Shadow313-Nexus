@@ -17,6 +17,9 @@ Provenance classes (from roadmap):
   ARTIFACT_INVENTORY — local file metadata and hashes, not event telemetry
   LOCAL_OPERATIONAL_EVENT — locally recorded service activity, not sensor telemetry
   UNCLASSIFIED       — source provenance has not been established
+  ARTIFACT_INVENTORY — local file metadata and hashes, not event telemetry
+  LOCAL_OPERATIONAL_EVENT — locally recorded service activity, not sensor telemetry
+  UNCLASSIFIED       — source provenance has not been established
 
 Minimum fields (from Governance doc):
   event_id, schema_version, source_system, source_identity
