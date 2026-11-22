@@ -124,3 +124,8 @@ Before describing the project as a production SOC, define and test these service
 ## Deployment and merge boundary
 
 PR #116 remains open and unmerged. PR #115 remains separate and merged. No production deployment, repository settings change, history rewrite, or manual deployment trigger was performed as part of this audit.
+
+
+## Compliance documentation correction
+
+The prior SSP draft contained unsupported claims about detection rates, market position, cloud identity, HSM-backed keys, backup retention, and framework implementation. It has been replaced with a draft control-mapping worksheet that removes personal location details and marks controls as not assessed unless verifiable evidence exists. CMMC Level 2 and FedRAMP are now explicitly identified as reference frameworks only.

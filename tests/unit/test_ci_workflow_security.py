@@ -412,3 +412,19 @@ def test_repository_governance_baseline_files_exist():
     ):
         assert (ROOT / relative).is_file(), relative
 
+def test_ssp_document_is_explicitly_unverified_and_not_a_compliance_claim():
+    document = (ROOT / "docs" / "S313-SSP-2026-001.md").read_text(encoding="utf-8").lower()
+    assert "not an approved system security plan" in document
+    assert "not evidence" in document
+    assert "not assessed" in document
+    assert "reference frameworks only" in document
+
+
+def test_ssp_document_contains_no_unverified_operational_or_personal_claims():
+    document = (ROOT / "docs" / "S313-SSP-2026-001.md").read_text(encoding="utf-8").lower()
+    for unsupported in (
+        "100% detection rate", "$4.2b", "zero competitors", "azure ad b2c",
+        "fips 140-2 key vault hsm", "ottawa, on", "daily automated backup",
+        "satisfies: nist", "fully implemented",
+    ):
+        assert unsupported not in document, unsupported
