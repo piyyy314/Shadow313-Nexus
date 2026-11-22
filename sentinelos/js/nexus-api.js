@@ -34,7 +34,7 @@
     const config = options || {};
     const fetcher = config.fetch || (typeof fetch === 'function' ? fetch : null);
     if (!fetcher) throw new Error('Fetch is not available in this environment.');
-    const base = String(config.baseUrl || '/api').replace(/\\/$/, '');
+    const base = String(config.baseUrl || '/api').replace(/\/$/, '');
     const response = await fetcher(base + '/status', {
       method: 'GET',
       headers: { Accept: 'application/json' },
