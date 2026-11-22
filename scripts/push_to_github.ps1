@@ -5,7 +5,9 @@
 [CmdletBinding()]
 param(
     [string]$Remote = "origin",
+    [Alias("BranchName")]
     [string]$Branch = "",
+    [string]$CommitMessage = "",
     [switch]$DryRun,
     [switch]$SkipTests
 )
@@ -29,9 +31,268 @@ try {
     }
     Set-Location $repoRoot
 
-    $remoteUrl = (Invoke-Git remote get-url $Remote | Select-Object -First 1).ToString().Trim()
-    if ($remoteUrl -notmatch '^(?:https://|ssh://git@|git@)github\.com[:/]piyyy314/Shadow313-Nexus(?:\.git)?$') {
-        throw "Remote '$Remote' does not point to piyyy314/Shadow313-Nexus. Refusing to push."
+    $repoPattern = '^(?:https://|ssh://git@|git@)github\.com[:/]piyyy314/Shadow313-Nexus(?:\.git)?
+
+    $currentBranch = (Invoke-Git branch --show-current | Select-Object -First 1).ToString().Trim()
+    if (-not $Branch) {
+        $Branch = "fix/local-sync-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    }
+    if ($Branch -match '(^|/)(master|main) {
+        throw "Direct pushes to '$Branch' are disabled. Use a feature branch."
+    }
+    if ($Branch -notmatch '^[A-Za-z0-9._/-]+$' -or $Branch -match '\.\.|//|^/|/$') {
+        throw "Invalid branch name: $Branch"
+    }
+
+    $status = @(Invoke-Git status --porcelain --untracked-files=all)
+    if ($status.Count -eq 0) {
+        Write-Host "Working tree is clean; nothing to push." -ForegroundColor Green
+        exit 0
+    }
+
+    Write-Host "Repository: $repoRoot"
+    Write-Host "Current branch: $currentBranch"
+    Write-Host "Target feature branch: $Branch"
+    Write-Host "Changed paths:"
+    $status | ForEach-Object { Write-Host "  $_" }
+
+    if ($DryRun) {
+        Write-Host "DRY RUN: no files staged, committed, or pushed." -ForegroundColor Yellow
+        exit 0
+    }
+
+    # Respect .gitignore and stage all eligible changes.
+    Invoke-Git add -A | Out-Null
+    $staged = @(Invoke-Git diff --cached --name-only)
+    if ($staged.Count -eq 0) {
+        Write-Host "No eligible changes remain after .gitignore filtering." -ForegroundColor Green
+        exit 0
+    }
+
+    $sensitivePath = '(?i)(^|/)(\.env(?:\.(?!example$|sample$|template$)[^/]+)?|id_rsa(?:\.pub)?|id_ed25519(?:\.pub)?|credentials(?:\..*)?|secrets?(?:\..*)?|.*\.(?:pem|p12|pfx|key)|logs/.*\.(?:json|log)|.*\.(?:sqlite|db))$'
+    $blocked = @($staged | Where-Object { $_ -match $sensitivePath })
+    if ($blocked.Count -gt 0) {
+        throw "Sensitive/local paths are staged; unstage and review them before syncing: $($blocked -join ', ')"
+    }
+
+    # The secret scanner reads working-tree files; require it to match the staged index.
+    Invoke-Git diff --quiet | Out-Null
+    Invoke-Git diff --cached --check | Out-Null
+
+    $secretScanner = Join-Path $repoRoot "scripts/check-secrets.py"
+    if (-not (Test-Path $secretScanner)) {
+        throw "Required secret scanner scripts/check-secrets.py is missing. No commit or push was made."
+    }
+    & python $secretScanner
+    if ($LASTEXITCODE -ne 0) {
+        throw "Secret scan failed. No commit or push was made."
+    }
+
+    if (-not $SkipTests) {
+        if (Test-Path (Join-Path $repoRoot "pyproject.toml")) {
+            & python -m pytest -q
+            if ($LASTEXITCODE -ne 0) {
+                throw "Pytest failed. No commit or push was made."
+            }
+        }
+        else {
+            Write-Warning "pyproject.toml not found; skipping pytest."
+        }
+    }
+    else {
+        Write-Warning "Tests explicitly skipped; secret scan and staged-diff checks still ran."
+    }
+
+    # Create the feature branch only after preflight succeeds.
+    Invoke-Git switch -c $Branch | Out-Null
+    if ([string]::IsNullOrWhiteSpace($CommitMessage)) {
+        $CommitMessage = "chore(sync): publish reviewed local changes"
+    }
+    Invoke-Git commit -m $CommitMessage | Out-Null
+    Invoke-Git push --set-upstream $Remote $Branch | Out-Null
+
+    Write-Host "Push completed: $Remote/$Branch" -ForegroundColor Green
+    Write-Host "Review the new pull request and its checks before merging."
+    Write-Host "No merge or deployment is performed by this script."
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+    $fetchUrl = (Invoke-Git remote get-url $Remote | Select-Object -First 1).ToString().Trim()
+    $pushUrls = @(Invoke-Git remote get-url --push --all $Remote | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ })
+    $allUrls = @($fetchUrl) + $pushUrls
+    $invalidUrls = @($allUrls | Where-Object { $_ -notmatch $repoPattern })
+    if ($allUrls.Count -lt 2 -or $invalidUrls.Count -gt 0) {
+        throw "Remote '$Remote' fetch/push URLs must all point to piyyy314/Shadow313-Nexus. Refusing to push."
+    }
+
+    $currentBranch = (Invoke-Git branch --show-current | Select-Object -First 1).ToString().Trim()
+    if (-not $Branch) {
+        $Branch = "fix/local-sync-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    }
+    if ($Branch -match '^(master|main)$') {
+        throw "Direct pushes to '$Branch' are disabled. Use a feature branch."
+    }
+    if ($Branch -notmatch '^[A-Za-z0-9._/-]+$' -or $Branch -match '\.\.|//|^/|/$') {
+        throw "Invalid branch name: $Branch"
+    }
+
+    $status = @(Invoke-Git status --porcelain --untracked-files=all)
+    if ($status.Count -eq 0) {
+        Write-Host "Working tree is clean; nothing to push." -ForegroundColor Green
+        exit 0
+    }
+
+    Write-Host "Repository: $repoRoot"
+    Write-Host "Current branch: $currentBranch"
+    Write-Host "Target feature branch: $Branch"
+    Write-Host "Changed paths:"
+    $status | ForEach-Object { Write-Host "  $_" }
+
+    if ($DryRun) {
+        Write-Host "DRY RUN: no files staged, committed, or pushed." -ForegroundColor Yellow
+        exit 0
+    }
+
+    # Respect .gitignore and stage all eligible changes.
+    Invoke-Git add -A | Out-Null
+    $staged = @(Invoke-Git diff --cached --name-only)
+    if ($staged.Count -eq 0) {
+        Write-Host "No eligible changes remain after .gitignore filtering." -ForegroundColor Green
+        exit 0
+    }
+
+    $sensitivePath = '(?i)(^|/)(\.env(?:\.(?!example$|sample$|template$)[^/]+)?|id_rsa(?:\.pub)?|id_ed25519(?:\.pub)?|credentials(?:\..*)?|secrets?(?:\..*)?|.*\.(?:pem|p12|pfx|key)|logs/.*\.(?:json|log)|.*\.(?:sqlite|db))$'
+    $blocked = @($staged | Where-Object { $_ -match $sensitivePath })
+    if ($blocked.Count -gt 0) {
+        throw "Sensitive/local paths are staged; unstage and review them before syncing: $($blocked -join ', ')"
+    }
+
+    Invoke-Git diff --cached --check | Out-Null
+
+    $secretScanner = Join-Path $repoRoot "scripts/check-secrets.py"
+    if (-not (Test-Path $secretScanner)) {
+        throw "Required secret scanner scripts/check-secrets.py is missing. No commit or push was made."
+    }
+    & python $secretScanner
+    if ($LASTEXITCODE -ne 0) {
+        throw "Secret scan failed. No commit or push was made."
+    }
+
+    if (-not $SkipTests) {
+        if (Test-Path (Join-Path $repoRoot "pyproject.toml")) {
+            & python -m pytest -q
+            if ($LASTEXITCODE -ne 0) {
+                throw "Pytest failed. No commit or push was made."
+            }
+        }
+        else {
+            Write-Warning "pyproject.toml not found; skipping pytest."
+        }
+    }
+    else {
+        Write-Warning "Tests explicitly skipped; secret scan and staged-diff checks still ran."
+    }
+
+    # Create the feature branch only after preflight succeeds.
+    Invoke-Git switch -c $Branch | Out-Null
+    Invoke-Git commit -m "chore(sync): publish reviewed local changes" | Out-Null
+    Invoke-Git push --set-upstream $Remote $Branch | Out-Null
+
+    Write-Host "Push completed: $Remote/$Branch" -ForegroundColor Green
+    Write-Host "Review the new pull request and its checks before merging."
+    Write-Host "No merge or deployment is performed by this script."
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+) {
+        throw "Direct pushes to '$Branch' are disabled. Use a feature branch."
+    }
+    if ($Branch -notmatch '^[A-Za-z0-9._/-]+$' -or $Branch -match '\.\.|//|^/|/$') {
+        throw "Invalid branch name: $Branch"
+    }
+
+    $status = @(Invoke-Git status --porcelain --untracked-files=all)
+    if ($status.Count -eq 0) {
+        Write-Host "Working tree is clean; nothing to push." -ForegroundColor Green
+        exit 0
+    }
+
+    Write-Host "Repository: $repoRoot"
+    Write-Host "Current branch: $currentBranch"
+    Write-Host "Target feature branch: $Branch"
+    Write-Host "Changed paths:"
+    $status | ForEach-Object { Write-Host "  $_" }
+
+    if ($DryRun) {
+        Write-Host "DRY RUN: no files staged, committed, or pushed." -ForegroundColor Yellow
+        exit 0
+    }
+
+    # Respect .gitignore and stage all eligible changes.
+    Invoke-Git add -A | Out-Null
+    $staged = @(Invoke-Git diff --cached --name-only)
+    if ($staged.Count -eq 0) {
+        Write-Host "No eligible changes remain after .gitignore filtering." -ForegroundColor Green
+        exit 0
+    }
+
+    $sensitivePath = '(?i)(^|/)(\.env(?:\.(?!example$|sample$|template$)[^/]+)?|id_rsa(?:\.pub)?|id_ed25519(?:\.pub)?|credentials(?:\..*)?|secrets?(?:\..*)?|.*\.(?:pem|p12|pfx|key)|logs/.*\.(?:json|log)|.*\.(?:sqlite|db))$'
+    $blocked = @($staged | Where-Object { $_ -match $sensitivePath })
+    if ($blocked.Count -gt 0) {
+        throw "Sensitive/local paths are staged; unstage and review them before syncing: $($blocked -join ', ')"
+    }
+
+    Invoke-Git diff --cached --check | Out-Null
+
+    $secretScanner = Join-Path $repoRoot "scripts/check-secrets.py"
+    if (-not (Test-Path $secretScanner)) {
+        throw "Required secret scanner scripts/check-secrets.py is missing. No commit or push was made."
+    }
+    & python $secretScanner
+    if ($LASTEXITCODE -ne 0) {
+        throw "Secret scan failed. No commit or push was made."
+    }
+
+    if (-not $SkipTests) {
+        if (Test-Path (Join-Path $repoRoot "pyproject.toml")) {
+            & python -m pytest -q
+            if ($LASTEXITCODE -ne 0) {
+                throw "Pytest failed. No commit or push was made."
+            }
+        }
+        else {
+            Write-Warning "pyproject.toml not found; skipping pytest."
+        }
+    }
+    else {
+        Write-Warning "Tests explicitly skipped; secret scan and staged-diff checks still ran."
+    }
+
+    # Create the feature branch only after preflight succeeds.
+    Invoke-Git switch -c $Branch | Out-Null
+    Invoke-Git commit -m "chore(sync): publish reviewed local changes" | Out-Null
+    Invoke-Git push --set-upstream $Remote $Branch | Out-Null
+
+    Write-Host "Push completed: $Remote/$Branch" -ForegroundColor Green
+    Write-Host "Review the new pull request and its checks before merging."
+    Write-Host "No merge or deployment is performed by this script."
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+    $fetchUrl = (Invoke-Git remote get-url $Remote | Select-Object -First 1).ToString().Trim()
+    $pushUrls = @(Invoke-Git remote get-url --push --all $Remote | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ })
+    $allUrls = @($fetchUrl) + $pushUrls
+    $invalidUrls = @($allUrls | Where-Object { $_ -notmatch $repoPattern })
+    if ($allUrls.Count -lt 2 -or $invalidUrls.Count -gt 0) {
+        throw "Remote '$Remote' fetch/push URLs must all point to piyyy314/Shadow313-Nexus. Refusing to push."
     }
 
     $currentBranch = (Invoke-Git branch --show-current | Select-Object -First 1).ToString().Trim()

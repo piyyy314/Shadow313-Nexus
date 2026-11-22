@@ -31,8 +31,8 @@ Do not place PATs in remote URLs, command-line arguments, commit messages, or lo
 
 ## Retained tools
 
-- `push-to-github.ps1` creates a feature branch, runs tests by default, and pushes that branch. It uses the Git credential helper configured by GitHub CLI.
-- `scripts/push_to_github.ps1` is a separate branch-oriented helper; inspect its dry-run and staging behavior before use.
+- `push-to-github.ps1` is a compatibility wrapper over `scripts/push_to_github.ps1`; it no longer contains a second staging/push implementation.
+- `scripts/push_to_github.ps1` verifies both fetch and push URLs, rejects protected branch names and sensitive staged paths, respects `.gitignore`, requires the secret scanner, and runs pytest unless explicitly skipped. It never force-pushes, merges, or deploys.
 - `scripts/setup-git-workflow.ps1` removes embedded credentials from the remote and configures local safeguards.
 - Read-only audit, inventory, and workstation diagnostics may remain under `scripts/`; they are not production deployment tools.
 

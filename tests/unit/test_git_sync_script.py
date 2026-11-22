@@ -28,3 +28,18 @@ def test_local_sync_script_has_one_complete_error_handler():
     assert SCRIPT.rstrip().endswith("}")
     assert SCRIPT.count("$sensitivePath = '") == 1
     assert "Invoke-Git switch -c $Branch" in SCRIPT
+
+
+def test_local_sync_script_validates_fetch_and_push_urls():
+    assert "remote get-url --push --all" in SCRIPT
+    assert "$invalidUrls" in SCRIPT
+    assert "Invoke-Git diff --quiet" in SCRIPT
+
+
+def test_root_sync_script_is_only_a_wrapper_for_the_safe_helper():
+    root_script = (ROOT / "push-to-github.ps1").read_text(encoding="utf-8")
+    assert "scripts/push_to_github.ps1" in root_script
+    assert "git add" not in root_script.lower()
+    assert "git push" not in root_script.lower()
+    assert "BranchName" in root_script
+    assert "CommitMessage" in root_script
