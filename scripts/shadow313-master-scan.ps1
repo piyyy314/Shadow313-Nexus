@@ -20,7 +20,7 @@
         .\scripts\shadow313-master-scan.ps1 -Fix
 
     To push fixes to GitHub too:
-        .\scripts\shadow313-master-scan.ps1 -Fix -Token "github_pat_xxx"
+        .\scripts\shadow313-master-scan.ps1 -Fix -Token "<read-only GitHub token>"
 #>
 
 param(
@@ -511,13 +511,21 @@ foreach ($tool in $tools.GetEnumerator()) {
 }
 
 # ════════════════════════════════════════════════════════════════
-# SECTION 12: PUSH FIXES TO GITHUB
-# ════════════════════════════════════════════════════════════════
-Write-Section "12/12 PUSH TO GITHUB"
+# SECTION 12: LOCAL REPOSITORY SAFETY
+Write-Section "12/12 LOCAL REPOSITORY SAFETY"
 
-if ($Fix -and (Test-Path "$repo\\.git")) {\n    Push-Location $repo\n    $dirty = git status --short 2>$null\n    if ($dirty) {\n        WARN "Local changes are present. They were not staged, committed, or pushed automatically."\n        INFO "Review with git diff, then publish on a feature branch using the safe sync helper."\n    } else {\n        OK "No repository changes to publish"\n    }\n    Pop-Location\n}
+if ($Fix -and (Test-Path "$repo\.git")) {
+    Push-Location $repo
+    $dirty = git status --short 2>$null
+    if ($dirty) {
+        WARN "Local changes are present. They were not staged, committed, or pushed automatically."
+        INFO "Review with git diff, then publish on a feature branch using the safe sync helper."
+    } else {
+        OK "No repository changes to publish"
+    }
+    Pop-Location
+}
 
-# ════════════════════════════════════════════════════════════════
 # FINAL REPORT
 # ════════════════════════════════════════════════════════════════
 $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds, 1)
