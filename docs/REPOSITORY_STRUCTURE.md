@@ -8,6 +8,7 @@ optional integration is enabled or every deployment target is live.
 ```text
 Shadow313-Nexus/
 ├── .github/                 # GitHub Actions, issue templates, automation
+├── ci/                      # CI templates and reusable validation assets
 ├── api/                     # Static-site API adapters and API contracts
 ├── assets/                  # Shared public-site assets
 ├── about/                   # Public about pages
@@ -16,15 +17,20 @@ Shadow313-Nexus/
 ├── docs/                    # Product docs, technical reports, dashboards
 ├── infra/
 │   └── hetzner/             # Planned server setup and host automation
+├── logs/                    # Tracked diagnostic/report artifacts; review before adding logs
 ├── marketplace/             # Public marketplace pages
 ├── migrations/              # Database migration assets
 ├── nexus_toolkit/           # NEXUS toolkit package
+├── ollama/                  # Local model and Ollama helpers
 ├── platform/                # Public platform pages
+├── policies/                # Container/security policy definitions
 ├── pricing/                 # Public pricing pages
 ├── scripts/                 # Build, validation, maintenance automation
+├── sentinelos/              # SentinelOS assets and components
 ├── shadow313/               # Primary Python application package
 ├── shadow313_platform/      # Platform Python package
 ├── shadow313_sdk/           # SDK Python package
+├── sigma/                   # Sigma detection rules
 ├── site/                    # Static publishing allowlist and metadata
 ├── skills/                  # Project engineering skills
 ├── tests/                   # Automated tests
@@ -84,3 +90,26 @@ The `infra/hetzner/` scripts need focused review before production use. The
 current scripts include VPN-focused provisioning and a broader bootstrap path;
 neither should be assumed to be a complete, validated application deployment
 pipeline.
+
+
+## Supporting and compatibility areas
+
+These directories are retained because they contain separate components or
+historical/operational material. They are not candidates for blind deletion:
+
+| Path | Role | Maintenance guidance |
+|---|---|---|
+| `ci/` | CI templates and reusable validation assets | Promote active templates into workflows only after review |
+| `ghost-watch-terminal/` | Separate Ghost Watch terminal component | Keep isolated from the primary CLI package until integration is tested |
+| `local_bundle/` | Offline copy of selected website pages | Regenerate from canonical pages; avoid hand-editing duplicate content |
+| `ollama/` | Local model files and helper scripts | Keep model/runtime setup separate from hosted infrastructure |
+| `policies/` | Container and policy-as-code rules | Validate policy changes with the matching policy engine |
+| `sentinelos/` | SentinelOS assets and supporting components | Treat as a distinct subsystem |
+| `sigma/` | Sigma detection content | Validate rules with a Sigma-compatible tool |
+| `dist/` | Distribution manifest and receipt artifacts | Do not treat as the Python build output directory without checking its manifest |
+| `logs/` | Tracked diagnostic/report artifacts | Do not commit credentials, personal data, or unreviewed runtime logs |
+
+Several PowerShell maintenance scripts remain at the repository root for
+backward compatibility with existing local workflows. New scripts belong in
+`scripts/`. Move old entry points only after searching for callers and updating
+documentation, workflows, and local automation.

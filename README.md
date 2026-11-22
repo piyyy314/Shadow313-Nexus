@@ -189,8 +189,11 @@ machine; review provider terms and data handling before enabling them.
 | `skills/` | Project engineering skills and workflow definitions |
 | `cyber_lab/` | Lab materials and learning resources |
 
-See [Repository Structure and Ownership](docs/REPOSITORY_STRUCTURE.md) for
-the expanded map and organization rules.
+Supporting areas also include `ci/`, `ghost-watch-terminal/`, `local_bundle/`,
+`ollama/`, `policies/`, `sentinelos/`, and `sigma/`. These are separate lab,
+legacy, offline, or policy assets; they are not interchangeable with the main
+Python package or public website. See [Repository Structure and Ownership](docs/REPOSITORY_STRUCTURE.md)
+for the expanded map and organization rules.
 
 ## Configuration
 

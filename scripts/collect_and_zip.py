@@ -106,10 +106,8 @@ ALWAYS_INCLUDE = [
     "pyproject.toml",
     "vercel.json",
     ".env.example",
-    "setup.py",
     "requirements.txt",
     ".github/workflows/deploy.yml",
-    "todo.md",
 ]
 
 # ── Collector ─────────────────────────────────────────────────────────────────
