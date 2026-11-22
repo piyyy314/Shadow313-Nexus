@@ -117,16 +117,16 @@ try {
 }
 
 # Verify remote
-try {
-    $remoteUrl = git remote get-url $Remote 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "Remote '$Remote' not found" }
-    Write-Ok "Remote '$Remote': $remoteUrl"
-    if ($remoteUrl -notlike "*github.com/piyyy314/Shadow313-Nexus*") {
-        throw "Remote must point to the canonical Shadow313-Nexus repository."
-    }
-    Write-Fail "Remote '$Remote' not configured. Add it with: git remote add origin https://github.com/piyyy314/Shadow313-Nexus.git"
+$remoteUrl = git remote get-url $Remote 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Fail "Remote '$Remote' is not configured."
     exit 1
 }
+if ($remoteUrl -notlike "*github.com/piyyy314/Shadow313-Nexus*") {
+    Write-Fail "Remote must point to the canonical Shadow313-Nexus repository."
+    exit 1
+}
+Write-Ok "Remote '$Remote': $remoteUrl"
 
 # ── Step 3: Check current branch and status ───────────────────────────────────
 Write-Step "3/8 — Checking current branch and status"
