@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.delivery import daemon, daemon_hardened, pipeline
+from scripts.delivery import pipeline
 from scripts.delivery.safe_paths import safe_docs_path
 from shadow313.v4.intelligence.evidence_envelope import (
     EvidenceEnvelope,
