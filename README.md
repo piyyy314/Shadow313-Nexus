@@ -51,6 +51,7 @@ does not publish a fixed test count or claim a passing result.
 | `docs/`, `assets/`, `index.html` | Static website and documentation |
 | `docs/PLATFORM_INTEGRATION_STATUS.md` | Canonical cross-repository integration map, current SOC review status, and release gates |
 | `api/` | Vercel API gateway and OpenAPI contract; forwards allowlisted requests to the separately hosted Python API when configured |
+| `sentinelos/` | Legacy SentinelOS dashboard UI and browser tools; its chat client uses the authenticated NEXUS `/api/chat` gateway, while unconnected tools remain clearly labeled demonstrations |
 | `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
 | `scripts/` | Repository checks, site generation, and maintenance utilities |
 
@@ -78,10 +79,13 @@ to `https://ai-gateway.vercel.sh/v1`; the OpenAI backend defaults to
 The Docker Compose stack passes these settings through to the CLI, authenticated Python API (`POST /api/chat`), and optional Telegram bot. Open WebUI can also expose an OpenAI-compatible gateway provider using `OPENWEBUI_OPENAI_API_BASE_URLS` and `OPENWEBUI_OPENAI_API_KEYS`; if unset, it continues to use local Ollama only. The Telegram bot polls authenticated ShiatoAli SOC alerts; it does not use the static website's unavailable event adapter.
 
 The Python API listens on port `8313` when run in Docker Compose. For hosted deployments, use the included Railway or Render service configuration and connect it to Vercel with server-side `SHADOW313_BACKEND_URL` and `SHADOW313_BACKEND_API_KEY` environment variables. See [backend hosting and gateway setup](docs/backend-hosting.md). Compose keeps
-the API internal to its Docker network; the static site adapter does not host
-the Python backend and returns `200` with an explicit unavailable status for
-backend-dependent routes. The Python API also reports unavailable integrations
-in a `200` response after authentication; authentication and routing errors keep
+the API internal to its Docker network. Vercel serves the static website and
+acts as a server-side gateway: when both backend environment variables are
+configured, it forwards only allowlisted API routes to the hosted Python
+service and injects the API credential server-side. Without a backend URL, the
+gateway reports an explicit `static-site-only` status; it does not fabricate
+live backend results. The Python API also reports unavailable integrations in
+a `200` response after authentication; authentication and routing errors keep
 their appropriate error statuses.
 
 ---
