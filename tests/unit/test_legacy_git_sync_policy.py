@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_windows_sync_helper_rejects_protected_branches_and_scans_secrets():
     source = (ROOT / "push-to-github.ps1").read_text(encoding="utf-8")
-    assert "$BranchName -match '^(master|main)$'" in source
+    assert "$BranchName -match "^(master|main)$"" in source
     assert "scripts/check-secrets.py" in source
     assert source.index("& python $secretScanner") < source.index("git push $Remote $BranchName")
 
