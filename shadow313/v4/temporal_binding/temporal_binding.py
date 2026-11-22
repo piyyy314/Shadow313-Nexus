@@ -83,59 +83,121 @@ def _save_bind_counter(counter: int) -> None:
 
 # ── SLH-DSA signing ──────────────────────────────────────────────────────────
 
-def _sign_slh_dsa(message: bytes) -> tuple[str, str]:
+def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     """
-    Sign with SLH-DSA (SPHINCS+) — three-tier fallback chain.
+    Sign a canonical receipt payload.
 
-    Tier 1 (preferred): pqcrypto — C-accelerated SLH-DSA-SHA2-128f (FIPS 205)
-    Tier 2 (pure-Python): pyspx  — SLH-DSA-SHAKE-128f, no C build required.
-                                    Closes CRQC-012: air-gapped deployments no
-                                    longer silently downgrade to HMAC-SHA256.
-    Tier 3 (last resort): HMAC-SHA256 — quantum-safe as MAC but loses the
-                                    public-key verifiability property of SLH-DSA.
-                                    Logged as WARNING so operators know to install
-                                    pqcrypto or pyspx.
+    Returns (signature_hex, algorithm_name, public_key_hex). SPHINCS+ keys
+    are self-contained in each receipt so signatures can be mathematically
+    verified later. This does not establish signer identity; trust is separate.
 
-    Returns (signature_hex, algorithm_name).
+    HMAC is used only when an explicit SHADOW313_BIND_KEY is configured.
+    Without a public-key backend or stable shared key, the receipt is unsigned.
     """
-    # ── Tier 1: pqcrypto (C-accelerated, preferred) ───────────────────────────
     try:
         from pqcrypto.sign.sphincs_sha2_128f_simple import generate_keypair, sign
-        pk, sk = generate_keypair()
-        sig = sign(sk, message)
-        return sig.hex(), "SLH-DSA-SHA2-128f (FIPS 205)"
+
+        public_key, secret_key = generate_keypair()
+        signature = sign(secret_key, message)
+        return (
+            signature.hex(),
+            "SPHINCS+-SHA2-128f-simple (pqcrypto)",
+            public_key.hex(),
+        )
     except ImportError:
         pass
-    except Exception as _exc:
-        import logging as _log
-        _log.getLogger("shadow313.temporal_binding").debug("pqcrypto sign failed: %s", _exc)
+    except Exception as exc:
+        import logging
+        logging.getLogger("shadow313.temporal_binding").warning(
+            "pqcrypto signing failed; trying pyspx: %s", exc
+        )
 
-    # ── Tier 2: pyspx (pure-Python SLH-DSA, no C required) ───────────────────
-    # Closes CRQC-012: air-gapped environments get real SLH-DSA without C build.
-    # pyspx.shake_128f uses SLH-DSA-SHAKE-128f — FIPS 205 compatible parameter set.
-    # Seed: 48 bytes required by pyspx shake_128f.
     try:
-        import pyspx.shake_128f as _pyspx
-        _seed = os.urandom(48)
-        _pk, _sk = _pyspx.generate_keypair(_seed)
-        _sig = _pyspx.sign(message, _sk)
-        return _sig.hex(), "SLH-DSA-SHAKE-128f (FIPS 205, pyspx pure-Python)"
+        import pyspx.shake_128f as sphincs
+
+        public_key, secret_key = sphincs.generate_keypair(os.urandom(48))
+        signature = sphincs.sign(message, secret_key)
+        return (
+            signature.hex(),
+            "SPHINCS+-SHAKE-128f (pyspx)",
+            public_key.hex(),
+        )
     except ImportError:
         pass
-    except Exception as _exc:
-        import logging as _log
-        _log.getLogger("shadow313.temporal_binding").debug("pyspx sign failed: %s", _exc)
+    except Exception as exc:
+        import logging
+        logging.getLogger("shadow313.temporal_binding").warning(
+            "pyspx signing failed: %s", exc
+        )
 
-    # ── Tier 3: HMAC-SHA256 (last resort — logs WARNING) ─────────────────────
-    import logging as _log
-    _log.getLogger("shadow313.temporal_binding").warning(
-        "CRQC-012: Neither pqcrypto nor pyspx available — falling back to "
-        "HMAC-SHA256. Install pqcrypto (C) or pyspx (pure-Python) to enable "
-        "real SLH-DSA signing. Receipt loses public-key verifiability."
+    key = os.environ.get("SHADOW313_BIND_KEY", "").encode()
+    if key:
+        signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+        return signature, "HMAC-SHA256 (shared-secret)", ""
+
+    import logging
+    logging.getLogger("shadow313.temporal_binding").warning(
+        "No verifiable signing backend or SHADOW313_BIND_KEY is configured; "
+        "creating an explicitly unsigned receipt."
     )
-    key = os.environ.get("SHADOW313_BIND_KEY", "").encode() or os.urandom(32)
-    sig = hmac.new(key, message, hashlib.sha256).hexdigest()
-    return sig, "HMAC-SHA256 (fallback)"
+    return "", "UNSIGNED (no signing backend configured)", ""
+
+
+def _verify_slh_dsa(
+    message: bytes,
+    signature_hex: str,
+    algorithm: str,
+    public_key_hex: str = "",
+) -> bool:
+    """Verify a receipt signature; never treat signature presence as verification."""
+    if not signature_hex:
+        return False
+    try:
+        signature = bytes.fromhex(signature_hex)
+        if algorithm.startswith("SPHINCS+-SHA2-128f-simple"):
+            from pqcrypto.sign.sphincs_sha2_128f_simple import verify
+
+            if not public_key_hex:
+                return False
+            return bool(verify(bytes.fromhex(public_key_hex), message, signature))
+        if algorithm.startswith("SPHINCS+-SHAKE-128f"):
+            import pyspx.shake_128f as sphincs
+
+            if not public_key_hex:
+                return False
+            return bool(sphincs.verify(message, signature, bytes.fromhex(public_key_hex)))
+        if algorithm.startswith("HMAC-SHA256"):
+            key = os.environ.get("SHADOW313_BIND_KEY", "").encode()
+            if not key:
+                return False
+            expected = hmac.new(key, message, hashlib.sha256).hexdigest()
+            return hmac.compare_digest(expected, signature_hex)
+    except (ImportError, ValueError, TypeError):
+        return False
+    except Exception:
+        return False
+    return False
+
+
+def _canonical_bind_payload(
+    content_hash: str,
+    timestamp: int,
+    bind_index: int,
+    session_id: str = "",
+    module: str = "",
+) -> bytes:
+    """Build the exact payload signed and hashed by 313-BIND."""
+    return json.dumps(
+        {
+            "bind_index": bind_index,
+            "content_hash": content_hash,
+            "module": module,
+            "session_id": session_id,
+            "timestamp": timestamp,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
 
 
 # ── IPFS anchoring ────────────────────────────────────────────────────────────
@@ -178,6 +240,7 @@ class Bind313Receipt:
         content_hash: str,
         session_id: str = "",
         module:     str = "",
+        public_key: str = "",
     ) -> None:
         self.bind_index   = bind_index
         self.timestamp    = timestamp
@@ -188,10 +251,12 @@ class Bind313Receipt:
         self.content_hash = content_hash
         self.session_id   = session_id
         self.module       = module
+        self.public_key   = public_key
         self.receipt_id   = f"313-v4-{bind_index:08d}"
 
     def to_dict(self) -> dict:
         return {
+            "schema_version": 2,
             "receipt_id":   self.receipt_id,
             "bind_index":   self.bind_index,
             "timestamp":    self.timestamp,
@@ -200,6 +265,7 @@ class Bind313Receipt:
             "slh_sig":      self.slh_sig[:64] + "…" if len(self.slh_sig) > 64 else self.slh_sig,
             "slh_sig_full": self.slh_sig,
             "algorithm":    self.algorithm,
+            "public_key":   self.public_key,
             "ipfs_cid":     self.ipfs_cid,
             "content_hash": self.content_hash,
             "session_id":   self.session_id,
@@ -224,10 +290,16 @@ class TemporalBindingEngine:
     Produces cryptographically verifiable receipts for every computation.
     """
 
-    def __init__(self, receipts_dir: Path = _RECEIPTS_DIR, ipfs_enabled: bool = True) -> None:
+    def __init__(
+        self,
+        receipts_dir: Path = _RECEIPTS_DIR,
+        ipfs_enabled: bool = True,
+        signing_enabled: bool = True,
+    ) -> None:
         self._dir          = receipts_dir
         self._dir.mkdir(parents=True, exist_ok=True)
         self._ipfs_enabled = ipfs_enabled
+        self._signing_enabled = signing_enabled
         self._counter      = _load_bind_counter()
 
     def bind(
@@ -236,80 +308,129 @@ class TemporalBindingEngine:
         session_id: str = "",
         module: str = "",
     ) -> Bind313Receipt:
-        """
-        Create a 313-BIND receipt for the given content.
-        This is the core NEXUS operation.
-        """
-        # Step 1: Serialize content
+        """Create a signed, hashed 313-BIND receipt when a verifiable backend exists."""
         if isinstance(content, dict):
             content_str = json.dumps(content, sort_keys=True, default=str)
         else:
             content_str = str(content)
 
-        # Step 2: Wait for ...313 nanosecond timestamp
-        ts = _wait_for_313()
+        timestamp = _wait_for_313()
+        content_hash = hashlib.sha3_256(content_str.encode("utf-8")).hexdigest()
 
-        # Step 3: Compute SHA3-512 of content + timestamp
-        bind_input = f"{content_str}|{ts}".encode()
-        sha3       = _sha3_512(bind_input)
-
-        # Step 4: Sign with SLH-DSA (or HMAC fallback)
-        sig, algo = _sign_slh_dsa(bind_input)
-
-        # Step 5: Anchor to IPFS
-        receipt_content = json.dumps({
-            "timestamp": ts,
-            "sha3_512":  sha3,
-            "sig":       sig[:64],
-        })
-        ipfs_cid = _anchor_ipfs(receipt_content) if self._ipfs_enabled else "disabled"
-
-        # Step 6: Increment bind counter
         self._counter += 1
+        bind_index = self._counter
         _save_bind_counter(self._counter)
 
-        # Step 7: Build receipt
-        receipt = Bind313Receipt(
-            bind_index   = self._counter,
-            timestamp    = ts,
-            sha3_512     = sha3,
-            slh_sig      = sig,
-            algorithm    = algo,
-            ipfs_cid     = ipfs_cid,
-            content_hash = hashlib.sha3_256(content_str.encode()).hexdigest(),
-            session_id   = session_id,
-            module       = module,
+        signing_payload = _canonical_bind_payload(
+            content_hash, timestamp, bind_index, session_id, module
         )
+        sha3 = _sha3_512(signing_payload)
+        if self._signing_enabled:
+            signature, algorithm, public_key = _sign_slh_dsa(signing_payload)
+        else:
+            signature, algorithm, public_key = "", "UNSIGNED (disabled by config)", ""
 
-        # Step 8: Persist receipt
+        anchor_content = json.dumps(
+            {
+                "algorithm": algorithm,
+                "bind_index": bind_index,
+                "content_hash": content_hash,
+                "public_key_sha3_256": (
+                    hashlib.sha3_256(public_key.encode()).hexdigest() if public_key else ""
+                ),
+                "sha3_512": sha3,
+                "signature_sha3_256": (
+                    hashlib.sha3_256(signature.encode()).hexdigest() if signature else ""
+                ),
+                "timestamp": timestamp,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        ipfs_cid = _anchor_ipfs(anchor_content) if self._ipfs_enabled else "disabled"
+
+        receipt = Bind313Receipt(
+            bind_index=bind_index,
+            timestamp=timestamp,
+            sha3_512=sha3,
+            slh_sig=signature,
+            algorithm=algorithm,
+            ipfs_cid=ipfs_cid,
+            content_hash=content_hash,
+            session_id=session_id,
+            module=module,
+            public_key=public_key,
+        )
         self._save_receipt(receipt)
         return receipt
 
     def verify(self, receipt_id: str) -> dict:
-        """Verify a stored receipt."""
+        """Verify the receipt hash and signature; report IPFS and signer trust separately."""
         receipt_file = self._dir / f"{receipt_id}.json"
         if not receipt_file.exists():
             return {"valid": False, "error": f"Receipt {receipt_id} not found"}
 
         try:
-            data = json.loads(receipt_file.read_text())
+            data = json.loads(receipt_file.read_text(encoding="utf-8"))
+            timestamp = int(data.get("timestamp", 0))
+            bind_index = int(data.get("bind_index", 0))
+            content_hash = str(data.get("content_hash", ""))
+            session_id = str(data.get("session_id", ""))
+            module = str(data.get("module", ""))
+            payload = _canonical_bind_payload(
+                content_hash, timestamp, bind_index, session_id, module
+            )
+            expected_hash = _sha3_512(payload)
+            stored_hash = str(data.get("sha3_512", ""))
+            hash_matches = bool(stored_hash) and hmac.compare_digest(expected_hash, stored_hash)
+            signature = str(data.get("slh_sig_full", ""))
+            algorithm = str(data.get("algorithm", ""))
+            public_key = str(data.get("public_key", ""))
+            signature_verified = _verify_slh_dsa(payload, signature, algorithm, public_key)
+            cid = str(data.get("ipfs_cid", ""))
+            ipfs_anchor_recorded = bool(cid) and cid != "disabled" and not cid.startswith("local:")
+
+            key_id = (
+                hashlib.sha3_256(bytes.fromhex(public_key)).hexdigest()[:16]
+                if public_key else ""
+            )
+            trusted_key_ids = {
+                value.strip()
+                for value in os.environ.get("SHADOW313_TRUSTED_SIGNER_IDS", "").split(",")
+                if value.strip()
+            }
+            signer_trusted = bool(key_id and key_id in trusted_key_ids)
+            timestamp_valid = timestamp > 0 and timestamp % 1000 == 313
+            checks = {
+                "timestamp_ends_313": timestamp_valid,
+                "sha3_512_present": bool(stored_hash),
+                "sha3_512_matches": hash_matches,
+                "signature_present": bool(signature),
+                "signature_verified": signature_verified,
+                "public_key_present": bool(public_key),
+                "signer_trusted": signer_trusted,
+                "ipfs_anchor_recorded": ipfs_anchor_recorded,
+                "ipfs_anchor_fetched": False,
+            }
+            valid = timestamp_valid and hash_matches and signature_verified
+            return {
+                "valid": valid,
+                "receipt_id": receipt_id,
+                "checks": checks,
+                "signer_key_id": key_id or None,
+                "trust_note": (
+                    "Signature math verified. Signer identity is not trusted unless its key ID "
+                    "is configured in SHADOW313_TRUSTED_SIGNER_IDS."
+                ),
+                "ipfs_note": (
+                    "An IPFS CID is recorded but was not fetched during local verification."
+                    if ipfs_anchor_recorded
+                    else "No externally verified IPFS anchor is available."
+                ),
+                "data": data,
+            }
         except Exception as exc:
             return {"valid": False, "error": str(exc)}
-
-        ts = data.get("timestamp", 0)
-        checks = {
-            "timestamp_ends_313": ts % 1000 == 313,
-            "sha3_512_present":   bool(data.get("sha3_512")),
-            "signature_present":  bool(data.get("slh_sig_full")),
-            "ipfs_anchored":      bool(data.get("ipfs_cid")),
-        }
-        valid = all(checks.values())
-        return {
-            "valid":      valid,
-            "receipt_id": receipt_id,
-            "checks":     checks,
-            "data":       data,
-        }
 
     def list_receipts(self, limit: int = 20) -> list[dict]:
         receipts = []
@@ -338,7 +459,8 @@ class TemporalBindingModule:
         cfg          = kernel.config.get("temporal_binding", default={})
         enabled      = cfg.get("enabled", True)
         self.engine  = TemporalBindingEngine(
-            ipfs_enabled=cfg.get("sign_receipts", True) and enabled
+            ipfs_enabled=cfg.get("ipfs_enabled", True) and enabled,
+            signing_enabled=cfg.get("sign_receipts", True) and enabled,
         )
 
     def register(self, kernel) -> None:
