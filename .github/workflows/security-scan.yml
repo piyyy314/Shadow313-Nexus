@@ -16,6 +16,23 @@ on:
       - "pyproject.toml"
       - "requirements*.txt"
       - "shadow313/**"
+      - "shadow313_sdk/**"
+      - "shadow313_platform/**"
+      - "nexus_toolkit/**"
+      - "scripts/**"
+  push:
+    branches:
+      - 'fix/**'
+      - 'claude/**'
+    paths:
+      - ".github/workflows/security-scan.yml"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "shadow313/**"
+      - "shadow313_sdk/**"
+      - "shadow313_platform/**"
       - "nexus_toolkit/**"
       - "scripts/**"
   workflow_dispatch:
@@ -126,6 +143,9 @@ jobs:
               findings = report.get("results")
               if not isinstance(findings, list):
                   raise ValueError("Bandit JSON report has no results list")
+              errors = report.get("errors")
+              if not isinstance(errors, list) or errors:
+                  raise ValueError("Bandit JSON report contains errors or has no errors list")
           except Exception as exc:
               print(f"Bandit report unavailable or invalid: {exc}", file=sys.stderr)
               sys.exit(1)
@@ -185,7 +205,7 @@ jobs:
         continue-on-error: true
         run: |
           trivy image \
-            --scanners vuln \
+            --scanners vuln,secret \
             --severity CRITICAL,HIGH \
             --format json \
             --output trivy-container.json \
@@ -207,6 +227,7 @@ jobs:
 
           report = json.loads(report_path.read_text(encoding="utf-8"))
           actionable = []
+          actionable_secrets = []
           unpatched = []
           for result in report.get("Results", []) or []:
               for finding in result.get("Vulnerabilities", []) or []:
@@ -224,14 +245,26 @@ jobs:
                       actionable.append(item)
                   else:
                       unpatched.append(item)
+              for finding in result.get("Secrets", []) or []:
+                  severity = str(finding.get("Severity", "")).upper()
+                  if severity in {"CRITICAL", "HIGH"}:
+                      actionable_secrets.append({
+                          "id": finding.get("RuleID", "unknown"),
+                          "target": result.get("Target", "unknown"),
+                          "title": finding.get("Title", "potential secret"),
+                          "severity": severity,
+                      })
 
           print(f"Trivy actionable CRITICAL/HIGH findings: {len(actionable)}")
-          print(f"Trivy HIGH findings without a published fixed version: {len(unpatched)}")
+          print(f"Trivy HIGH/CRITICAL secret findings: {len(actionable_secrets)}")
+          print(f"Trivy HIGH/CRITICAL findings without a published fixed version: {len(unpatched)}")
           if unpatched:
               print("::warning::Debian/vendor has not published a fixed package version for these HIGH findings; see retained SARIF/JSON artifacts.")
-          if actionable:
+          if actionable or actionable_secrets:
               for item in actionable:
                   print(f"::error::{item['severity']} {item['id']} {item['package']} {item['installed']} -> {item['fixed'] or 'no fixed version'}")
+              for item in actionable_secrets:
+                  print(f"::error::{item['severity']} secret {item['id']} in {item['target']}: {item['title']}")
               sys.exit(1)
           PYEOF
       - name: Archive Trivy SARIF for diagnosis
@@ -247,7 +280,7 @@ jobs:
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
-        if: always()
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         with:
           sarif_file: trivy-container.sarif
           category: trivy-container

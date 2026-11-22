@@ -75,7 +75,7 @@ ENV http_proxy="" https_proxy=""
 COPY --from=builder /install /usr/local
 
 # Keep pip in this shared base because the derived NEXUS stage installs optional dependencies.
-# Final image targets remove pip and setuptools after all package installation is complete.
+# Final image targets remove pip, setuptools, and wheel after package installation is complete.
 
 # Create user + all required dirs in ONE RUN layer (was split across 3)
 RUN useradd -m -s /bin/bash shadow313 \
@@ -105,7 +105,7 @@ FROM production-base AS production
 
 USER root
 RUN python -m pip check \
-    && python -m pip uninstall -y pip setuptools
+    && python -m pip uninstall -y pip setuptools wheel
 USER shadow313
 
 
@@ -139,7 +139,7 @@ RUN pip install --no-cache-dir \
     "alembic>=1.13"
 
 RUN python -m pip check \
-    && python -m pip uninstall -y pip setuptools
+    && python -m pip uninstall -y pip setuptools wheel
 
 ENV http_proxy="" https_proxy=""
 USER shadow313
