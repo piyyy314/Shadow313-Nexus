@@ -80,6 +80,10 @@ if ! REMOTE_URL=$(git remote get-url "$REMOTE" 2>/dev/null); then
     exit 1
 fi
 ok "Remote '$REMOTE': $REMOTE_URL"
+if [[ ! "$REMOTE_URL" =~ github\.com[:/]piyyy314/Shadow313-Nexus(\.git)?$ ]]; then
+    fail "Remote does not point to piyyy314/Shadow313-Nexus. Refusing to push."
+    exit 1
+fi
 
 # ── Step 3: Check status ──────────────────────────────────────────────────────
 step "3/8 — Checking current branch and status"
@@ -142,6 +146,14 @@ if git branch --list "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
     BRANCH_NAME="${BRANCH_NAME}-${SUFFIX}"
     warn "Branch already exists locally. Using: $BRANCH_NAME"
 fi
+if [[ "$BRANCH_NAME" =~ ^(master|main)$ ]]; then
+    fail "Direct pushes to protected branches are disabled. Use a feature branch."
+    exit 1
+fi
+if [[ ! "$BRANCH_NAME" =~ ^[A-Za-z0-9._/-]+$ || "$BRANCH_NAME" == *..* || "$BRANCH_NAME" == *//* || "$BRANCH_NAME" == /* || "$BRANCH_NAME" == */ ]]; then
+    fail "Invalid branch name: $BRANCH_NAME"
+    exit 1
+fi
 info "Branch name: $BRANCH_NAME"
 
 # ── Step 6: Create branch and stage ──────────────────────────────────────────
@@ -153,7 +165,17 @@ else
     git checkout -b "$BRANCH_NAME"
     ok "Created branch: $BRANCH_NAME"
     git add -A
-    ok "Staged all changes"
+    mapfile -t STAGED_PATHS < <(git diff --cached --name-only)
+    if printf '%s\\n' "${STAGED_PATHS[@]}" | grep -Eiq '(^|/)(\.env($|\.)|id_rsa|id_ed25519|credentials|secrets?|.*\\.(pem|p12|pfx|key|sqlite|db)|logs/.*\\.(json|log))'; then
+        fail "Sensitive/local paths are staged. Unstage and review them before syncing."
+        exit 1
+    fi
+    if [[ ! -f "$REPO_ROOT/scripts/check-secrets.py" ]]; then
+        fail "Required secret scanner scripts/check-secrets.py is missing."
+        exit 1
+    fi
+    python "$REPO_ROOT/scripts/check-secrets.py"
+    ok "Staged files passed path and secret checks"
 fi
 
 # ── Step 7: Commit ────────────────────────────────────────────────────────────
