@@ -23,7 +23,7 @@ test('does not treat unavailable or malformed responses as connected', () => {
 test('fetches the configured status endpoint without caching', async () => {
   let request;
   const status = await fetchStatus({
-    baseUrl: 'https://api.example.test/',
+    baseUrl: 'https://api.example.test/api/',
     fetch: async (url, options) => {
       request = { url, options };
       return { ok: true, json: async () => ({ status: 'operational' }) };

@@ -118,6 +118,16 @@ The package metadata defines two console entry points: `shadow313` and
 `s313-cli`. PyPI publication is not implied by the repository name. Until an
 official release is published, install from a reviewed source checkout.
 
+For a reproducible install from this reviewed repository revision (without
+relying on an unpublished PyPI package):
+
+```bash
+python -m pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@8cc6bf9d92b2faf03470e92b8555b57f8a821500
+```
+
+Use the full commit SHA shown above when reproducing this revision; update the
+pin only after reviewing a newer commit.
+
 ## CLI usage
 
 Start with the built-in help and command registry:
@@ -281,3 +291,16 @@ branch.
 ## License
 
 Shadow313 NEXUS is distributed under the [MIT License](LICENSE).
+
+## OmniSkill CLI
+
+Shadow313 NEXUS includes repository-local skill discovery and structural validation. These commands use the Python standard library and do not start the NEXUS kernel or external AI services:
+
+```bash
+shadow313 skill list
+shadow313 skill show shadow313-nexus-engineer
+shadow313 skill validate
+shadow313 skill validate shadow313-nexus-engineer
+```
+
+Use `--root /path/to/Shadow313-Nexus` to inspect another checkout. Validation checks skill metadata and local Markdown references; it does not claim to execute or certify the skill's behavior.
