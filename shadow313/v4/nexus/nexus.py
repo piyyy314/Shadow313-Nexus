@@ -107,14 +107,15 @@ class NEXUSModule:
         return bindings
 
     def _verify_audit_chain(self) -> dict:
-        """
-        Verify the integrity of the session audit chain.
-        Demonstrates that Shadow313's audit trail cannot be tampered with
-        by a privileged insider (unlike SHA-3 chained logs).
-        """
+        """Verify receipt hashes, signatures, and sequence continuity separately."""
         audit_path = self.session.session_dir / "audit.log"
         if not audit_path.exists():
-            return {"valid": True, "entries": 0, "note": "No audit log yet"}
+            return {
+                "valid": False,
+                "status": "NOT_VERIFIED",
+                "entries": 0,
+                "note": "No audit log exists yet; no integrity conclusion is possible.",
+            }
 
         entries = []
         try:
@@ -124,80 +125,130 @@ class NEXUSModule:
         except Exception as exc:
             return {"valid": False, "error": str(exc)}
 
-        # Check for gaps in bind_index (would indicate tampering)
         temporal = self.kernel.get_module("temporal")
         receipts = temporal.engine.list_receipts(limit=100) if temporal else []
-
         gaps = []
         if receipts:
-            indices = sorted(r.get("bind_index", 0) for r in receipts)
-            for i in range(len(indices) - 1):
-                if indices[i+1] - indices[i] > 1:
-                    gaps.append({"from": indices[i], "to": indices[i+1]})
+            indices = sorted(int(receipt.get("bind_index", 0)) for receipt in receipts)
+            for left, right in zip(indices, indices[1:]):
+                if right - left > 1:
+                    gaps.append({"from": left, "to": right})
+
+        verifications = []
+        if temporal:
+            for receipt in receipts:
+                receipt_id = str(receipt.get("receipt_id", ""))
+                if receipt_id:
+                    verifications.append(temporal.engine.verify(receipt_id))
+
+        verified = [item for item in verifications if item.get("valid") is True]
+        unverified = [
+            item.get("receipt_id", "unknown")
+            for item in verifications
+            if item.get("valid") is not True
+        ]
+        signature_count = sum(
+            1 for item in verifications
+            if item.get("checks", {}).get("signature_verified") is True
+        )
+        trusted_count = sum(
+            1 for item in verifications
+            if item.get("checks", {}).get("signer_trusted") is True
+        )
+        anchor_count = sum(
+            1 for item in verifications
+            if item.get("checks", {}).get("ipfs_anchor_recorded") is True
+        )
+        sequence_integrity = not gaps
+        valid = bool(receipts) and sequence_integrity and len(verified) == len(receipts)
 
         return {
-            "valid":          len(gaps) == 0,
-            "audit_entries":  len(entries),
-            "receipts":       len(receipts),
-            "gaps_detected":  gaps,
-            "tamper_evident": True,
-            "note":           "SLH-DSA signed receipts prevent insider tampering" if not gaps
-                              else f"WARNING: {len(gaps)} gap(s) detected in receipt chain",
+            "valid": valid,
+            "audit_entries": len(entries),
+            "receipts_checked": len(receipts),
+            "signature_verified": signature_count,
+            "trusted_signers": trusted_count,
+            "ipfs_anchors_recorded": anchor_count,
+            "unverified_receipts": unverified,
+            "gaps_detected": gaps,
+            "sequence_integrity": sequence_integrity,
+            "cryptographic_integrity_verified": valid,
+            "note": (
+                "Receipt hashes and signatures verified. Embedded-key validity does not establish "
+                "signer identity; configure SHADOW313_TRUSTED_SIGNER_IDS to trust key IDs. "
+                "Recorded IPFS CIDs are not fetched during this local check."
+            ),
         }
 
     def _demonstrate_insider_attack(self) -> dict:
         """
-        Demonstrate the SHA-3 chain bypass attack that Shadow313 NEXUS prevents.
-        This is the publishable security research documented in the NEXUS analysis.
+        Demonstrate why an unanchored hash chain can be rewritten by an attacker
+        who controls the complete log, and show sequence-gap detection separately.
         """
         import hashlib
         import time
 
-        self.out.warn("DEMONSTRATING: SHA-3 Chain Bypass Attack (educational)")
-        self.out.info("This attack bypasses every SIEM using SHA-3 chained logs.")
+        self.out.warn("DEMONSTRATING: Unanchored Hash-Chain Rewrite (educational)")
+        self.out.info(
+            "A hash chain alone is not an authenticated signature or trusted external checkpoint."
+        )
 
-        # Simulate a SHA-3 chained audit log
         entries = [
-            {"id": i, "action": f"action_{i}", "user": "admin"}
-            for i in range(1, 13)
+            {"id": index, "action": f"action_{index}", "user": "admin"}
+            for index in range(1, 13)
         ]
 
-        def compute_chain(entries: list[dict]) -> list[str]:
+        def compute_chain(items: list[dict]) -> list[str]:
             chain = []
-            prev  = b""
-            for e in entries:
-                h = hashlib.sha3_512(prev + json.dumps(e).encode()).hexdigest()
-                chain.append(h)
-                prev = h.encode()
+            previous = b""
+            for item in items:
+                digest = hashlib.sha3_512(previous + json.dumps(item).encode()).hexdigest()
+                chain.append(digest)
+                previous = digest.encode()
             return chain
 
-        assert len(compute_chain(entries)) == len(entries), "Chain length must match entry count"
-
-        # ATTACK: Delete entry 7, recompute chain
+        original_chain = compute_chain(entries)
         start = time.perf_counter()
-        tampered = [e for e in entries if e["id"] != 7]
-        tampered_chain = compute_chain(tampered)
+        tampered = [entry for entry in entries if entry["id"] != 7]
+        recomputed_chain = compute_chain(tampered)
         elapsed_ms = (time.perf_counter() - start) * 1000
 
-        # Verify tampered chain (it passes!)
-        # SHA-3 chain bypass: tampered chain still validates (always True — this is the vulnerability)
-        assert tampered_chain[-1] != "", "SHA-3 chain should still validate after tampering"
+        tampered_indices = [entry["id"] for entry in tampered]
+        sequence_gaps = [
+            {"from": left, "to": right}
+            for left, right in zip(tampered_indices, tampered_indices[1:])
+            if right - left > 1
+        ]
+        sequence_gap_detected = bool(sequence_gaps)
 
-        self.out.warn(f"Attack completed in {elapsed_ms:.3f}ms")
-        self.out.warn("SHA-3 chain verify_chain() returns: VALID (UNDETECTED!)")
-        self.out.success("Shadow313 NEXUS SLH-DSA bind_index gap detection: DETECTED!")
+        self.out.warn(f"Recomputed unanchored hash chain in {elapsed_ms:.3f}ms")
+        self.out.info(
+            f"Hash chain was recomputed: {len(recomputed_chain)} entries; "
+            f"original chain had {len(original_chain)}."
+        )
+        if sequence_gap_detected:
+            self.out.success("313-BIND sequence-gap check: DETECTED")
+        else:
+            self.out.warn("313-BIND sequence-gap check: NOT DETECTED")
 
         return {
-            "attack":           "SHA-3 Chain Bypass",
-            "deleted_entry":    7,
-            "elapsed_ms":       round(elapsed_ms, 3),
-            "sha3_detected":    False,
-            "nexus_detected":   True,
+            "attack": "Unanchored Hash-Chain Rewrite",
+            "deleted_entry": 7,
+            "elapsed_ms": round(elapsed_ms, 3),
+            "hash_chain_recomputed": True,
+            "sequence_gap_detected": sequence_gap_detected,
+            "sequence_gaps": sequence_gaps,
             "original_entries": len(entries),
             "tampered_entries": len(tampered),
-            "countermeasure":   "SLH-DSA signed receipts with bind_index gap detection",
-            "cve_candidate":    True,
-            "note":             "This affects every SIEM using SHA-3 chained logs without signature verification",
+            "countermeasure": (
+                "Sequence-gap checks plus per-receipt signature verification; "
+                "trusted signer identity and external anchoring are separate requirements."
+            ),
+            "cve_candidate": False,
+            "note": (
+                "Educational demonstration only, not a CVE claim. A hash chain must be "
+                "anchored to a trusted checkpoint or authenticated signer to resist full-log rewrites."
+            ),
         }
 
     def _security_posture_report(self) -> dict:
