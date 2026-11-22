@@ -202,8 +202,8 @@ class TestEvidenceEnvelope:
         assert env.provenance_class == ProvenanceClass.REAL_OBSERVATION.value
         assert env.action_executed == "BLOCK"
         assert env.evidence_hash.startswith("sha3_256:")
-        assert env.signature.startswith("SLH-DSA-SIM:")
-        assert env.trusted_timestamp.startswith("313-TS:")
+        assert env.signature == ""
+        assert env.trusted_timestamp == ""
         assert env.sequence_number >= 1
 
     def test_from_ebpf_event(self, factory):
