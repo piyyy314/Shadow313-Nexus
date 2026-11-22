@@ -6,6 +6,7 @@
     Delegates to scripts/push_to_github.ps1 so all local syncs use one
     branch-safe implementation with remote validation, secret scanning,
     sensitive-path checks, and tests by default.
+    Authenticate first with: gh auth login; gh auth setup-git.
 
 .EXAMPLE
     .\push-to-github.ps1 -DryRun
