@@ -33,11 +33,11 @@ class AIEngine:
     # Restrict schemes and known metadata destinations.
     # Endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
-    _BLOCKED_HOSTS   = {
-        "169.254.169.254",       # AWS/GCP/Azure instance metadata
+    _BLOCKED_HOSTS = {
+        "169.254.169.254",  # AWS/GCP/Azure instance metadata
         "metadata.google.internal",
-        "169.254.170.2",         # ECS task metadata
-        "100.100.100.200",       # Alibaba Cloud metadata
+        "169.254.170.2",  # ECS task metadata
+        "100.100.100.200",  # Alibaba Cloud metadata
     }
 
     def __init__(self, config: dict) -> None:
@@ -76,15 +76,11 @@ class AIEngine:
         raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
         if self.backend == "gateway":
-            self._api_key = (
-                config.get("gateway_api_key", "")
-                or os.environ.get("AI_GATEWAY_API_KEY", "")
+            self._api_key = config.get("gateway_api_key", "") or os.environ.get(
+                "AI_GATEWAY_API_KEY", ""
             )
         elif self.backend == "openai":
-            self._api_key = (
-                config.get("openai_api_key", "")
-                or os.environ.get("OPENAI_API_KEY", "")
-            )
+            self._api_key = config.get("openai_api_key", "") or os.environ.get("OPENAI_API_KEY", "")
         else:
             self._api_key = ""
 
@@ -115,9 +111,8 @@ class AIEngine:
         if ipv6 and ipv6.ipv4_mapped:
             normalized_host = str(ipv6.ipv4_mapped)
 
-        if (
-            normalized_host in self._BLOCKED_HOSTS
-            or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
+        if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
+            ("169.254.", "fd00:", "fe80:", "fc00:")
         ):
             raise ValueError(
                 f"AI endpoint host '{host}' is in a blocked link-local or metadata range"
@@ -128,16 +123,12 @@ class AIEngine:
         except ValueError:
             address = None
         if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
-            raise ValueError(
-                f"AI endpoint IP '{host}' is not a permitted destination"
-            )
+            raise ValueError(f"AI endpoint IP '{host}' is not a permitted destination")
         if self.backend in {"openai", "gateway"}:
             if host == "localhost" or host.endswith((".localhost", ".local")):
                 raise ValueError("Cloud AI endpoints must not target local hostnames")
             if address is not None and not address.is_global:
-                raise ValueError(
-                    f"Cloud AI endpoint IP '{host}' must be globally routable"
-                )
+                raise ValueError(f"Cloud AI endpoint IP '{host}' must be globally routable")
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -220,13 +211,13 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "stream": False,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
@@ -241,9 +232,7 @@ class AIEngine:
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(
-        self, system: str, user: str
-    ) -> collections.abc.Generator[str, None, None]:
+    def _ollama_stream(self, system: str, user: str) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
@@ -306,7 +295,7 @@ class AIEngine:
             ),
             data=body,
             headers={
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._api_key}",
             },
             method="POST",
