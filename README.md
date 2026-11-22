@@ -281,3 +281,16 @@ branch.
 ## License
 
 Shadow313 NEXUS is distributed under the [MIT License](LICENSE).
+
+## OmniSkill CLI
+
+Shadow313 NEXUS includes repository-local skill discovery and structural validation. These commands use the Python standard library and do not start the NEXUS kernel or external AI services:
+
+```bash
+shadow313 skill list
+shadow313 skill show shadow313-nexus-engineer
+shadow313 skill validate
+shadow313 skill validate shadow313-nexus-engineer
+```
+
+Use `--root /path/to/Shadow313-Nexus` to inspect another checkout. Validation checks skill metadata and local Markdown references; it does not claim to execute or certify the skill's behavior.
