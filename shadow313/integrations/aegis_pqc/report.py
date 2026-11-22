@@ -1,4 +1,4 @@
-from __future__ import annotations
+# ruff: noqa: E501 -- long lines live in the embedded HTML template
 """
 shadow313.integrations.aegis_pqc.report
 ─────────────────────────────────────────
@@ -12,13 +12,13 @@ Every report includes:
   - Verification instructions
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Tuple
 
-from .parser import PQCAuditResult, PQCComponent
 from ...core.binding_sdk.binder import BindReceipt
-
+from .parser import PQCAuditResult, PQCComponent
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -202,7 +202,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
-def _component_html(comp: "PQCComponent") -> str:
+def _component_html(comp: PQCComponent) -> str:
     risk_class = f"risk-{comp.risk_level}"
     fix_html = ""
     if comp.pqc_replacement:
@@ -236,7 +236,7 @@ def generate_bound_report(
     audit: PQCAuditResult,
     receipt: BindReceipt,
     output_dir: str = "aegis_bound_reports",
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """
     Generate HTML and JSON reports with embedded 313 receipt.
 
@@ -254,45 +254,49 @@ def generate_bound_report(
     # Status color
     status_color = {
         "VULNERABLE": "critical",
-        "DEGRADED":   "high",
-        "SECURE":     "safe",
+        "DEGRADED": "high",
+        "SECURE": "safe",
     }.get(audit.overall_status, "")
 
     # Canonical string for verification
-    verify_canonical = json.dumps({
-        "payload_hash": receipt.payload_hash,
-        "timestamp_ns": receipt.timestamp_ns,
-        "prev_hash":    receipt.prev_chain_hash,
-        "app_id":       receipt.app_id,
-    }, sort_keys=True, separators=(',', ':'))
+    verify_canonical = json.dumps(
+        {
+            "payload_hash": receipt.payload_hash,
+            "timestamp_ns": receipt.timestamp_ns,
+            "prev_hash": receipt.prev_chain_hash,
+            "app_id": receipt.app_id,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
 
     # Render HTML
     html = HTML_TEMPLATE.format(
-        bind_id              = receipt.bind_id,
-        source_file          = audit.source_file,
-        source_format        = audit.source_format,
-        generated_at         = audit.generated_at,
-        tool_name            = audit.tool_name,
-        tool_version         = audit.tool_version,
-        timestamp_ns         = receipt.timestamp_ns,
-        timestamp_iso        = receipt.timestamp_iso,
-        payload_hash         = receipt.payload_hash,
-        chain_hash           = receipt.chain_hash,
-        signature_algorithm  = receipt.signature_algorithm,
-        ipfs_cid             = receipt.ipfs_cid or "Not anchored",
-        ipfs_anchored        = "✅ Anchored" if receipt.ipfs_anchored else "⚠️ Not anchored",
-        ipfs_color           = "green" if receipt.ipfs_anchored else "amber",
-        app_id               = receipt.app_id,
-        app_version          = receipt.app_version,
-        overall_risk_score   = audit.overall_risk_score,
-        status_color         = status_color,
-        critical_count       = audit.critical_count,
-        high_count           = audit.high_count,
-        quantum_safe_count   = audit.quantum_safe_count,
-        quantum_readiness_pct= audit.quantum_readiness_pct,
-        total_components     = len(audit.components),
-        components_html      = components_html,
-        verify_canonical     = verify_canonical[:80] + "...",
+        bind_id=receipt.bind_id,
+        source_file=audit.source_file,
+        source_format=audit.source_format,
+        generated_at=audit.generated_at,
+        tool_name=audit.tool_name,
+        tool_version=audit.tool_version,
+        timestamp_ns=receipt.timestamp_ns,
+        timestamp_iso=receipt.timestamp_iso,
+        payload_hash=receipt.payload_hash,
+        chain_hash=receipt.chain_hash,
+        signature_algorithm=receipt.signature_algorithm,
+        ipfs_cid=receipt.ipfs_cid or "Not anchored",
+        ipfs_anchored="✅ Anchored" if receipt.ipfs_anchored else "⚠️ Not anchored",
+        ipfs_color="green" if receipt.ipfs_anchored else "amber",
+        app_id=receipt.app_id,
+        app_version=receipt.app_version,
+        overall_risk_score=audit.overall_risk_score,
+        status_color=status_color,
+        critical_count=audit.critical_count,
+        high_count=audit.high_count,
+        quantum_safe_count=audit.quantum_safe_count,
+        quantum_readiness_pct=audit.quantum_readiness_pct,
+        total_components=len(audit.components),
+        components_html=components_html,
+        verify_canonical=verify_canonical[:80] + "...",
     )
 
     html_path = str(out / f"aegis_bound_{safe_bind_id}.html")
@@ -303,7 +307,7 @@ def generate_bound_report(
     # JSON report
     json_report = {
         "receipt": receipt.to_dict(),
-        "audit":   audit.to_bind_payload(),
+        "audit": audit.to_bind_payload(),
         "summary": audit.to_summary(),
     }
     Path(json_path).write_text(
