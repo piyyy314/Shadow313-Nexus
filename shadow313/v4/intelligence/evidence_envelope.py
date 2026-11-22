@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.intelligence.evidence_envelope
 Canonical Evidence Envelope — Shadow313 NEXUS v4
@@ -24,18 +23,19 @@ Minimum fields (from Governance doc):
   secret_redaction_status, chain_of_custody, validation_status
 """
 
+from __future__ import annotations
+
 import hashlib
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
 
 
 # ── Provenance Classification ─────────────────────────────────────────────────
 
-class ProvenanceClass(str, Enum):
+class ProvenanceClass(StrEnum):
     """Mandatory provenance classification for all evidence records."""
     REAL_OBSERVATION = "REAL_OBSERVATION"   # Live sensor data
     SYNTHETIC_TEST   = "SYNTHETIC_TEST"     # Generated test data
@@ -49,7 +49,7 @@ class ProvenanceClass(str, Enum):
     UNCLASSIFIED = "UNCLASSIFIED"  # Source provenance not established
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH     = "HIGH"
     MEDIUM   = "MEDIUM"
@@ -57,14 +57,14 @@ class Severity(str, Enum):
     INFO     = "INFO"
 
 
-class ValidationStatus(str, Enum):
+class ValidationStatus(StrEnum):
     PENDING   = "PENDING"
     VERIFIED  = "VERIFIED"
     REJECTED  = "REJECTED"
     DISPUTED  = "DISPUTED"
 
 
-class RedactionStatus(str, Enum):
+class RedactionStatus(StrEnum):
     CLEAN     = "CLEAN"       # No secrets detected
     REDACTED  = "REDACTED"    # Secrets found and redacted
     PENDING   = "PENDING"     # Not yet scanned
@@ -94,8 +94,8 @@ class EvidenceEnvelope:
     environment:      str = "production"  # production | staging | test | demo
 
     # ── Timing ────────────────────────────────────────────────────────────────
-    observed_at:      str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    ingested_at:      str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    observed_at:      str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    ingested_at:      str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # ── Classification ────────────────────────────────────────────────────────
     event_type:       str = ""
@@ -104,26 +104,26 @@ class EvidenceEnvelope:
     provenance_class: str = ProvenanceClass.UNCLASSIFIED.value
 
     # ── References ────────────────────────────────────────────────────────────
-    asset:            Optional[str] = None
-    workload:         Optional[str] = None
-    process:          Optional[str] = None
-    source_ip:        Optional[str] = None
-    technique:        Optional[str] = None  # ATT&CK technique ID
-    tactic:           Optional[str] = None
+    asset:            str | None = None
+    workload:         str | None = None
+    process:          str | None = None
+    source_ip:        str | None = None
+    technique:        str | None = None  # ATT&CK technique ID
+    tactic:           str | None = None
 
     # ── Versions ──────────────────────────────────────────────────────────────
-    rule_version:     Optional[str] = None
-    model_version:    Optional[str] = None
-    policy_version:   Optional[str] = None
+    rule_version:     str | None = None
+    model_version:    str | None = None
+    policy_version:   str | None = None
 
     # ── Action ────────────────────────────────────────────────────────────────
-    action_requested:  Optional[str] = None
-    action_authorized: Optional[str] = None
-    action_executed:   Optional[str] = None
-    action_result:     Optional[str] = None
+    action_requested:  str | None = None
+    action_authorized: str | None = None
+    action_executed:   str | None = None
+    action_result:     str | None = None
 
     # ── Payload ───────────────────────────────────────────────────────────────
-    payload:          Optional[dict] = None
+    payload:          dict | None = None
 
     # ── Integrity ─────────────────────────────────────────────────────────────
     evidence_hash:    str = ""
@@ -253,7 +253,7 @@ class EvidenceFactory:
         envelope.signature        = self._sign(envelope)
         envelope.trusted_timestamp = self._trusted_timestamp()
         envelope.chain_of_custody.append(
-            f"{self.source_system}:{datetime.now(timezone.utc).isoformat()}"
+            f"{self.source_system}:{datetime.now(UTC).isoformat()}"
         )
         return envelope
 
@@ -262,10 +262,10 @@ class EvidenceFactory:
         source_ip:  str,
         service:    str,
         action:     str,
-        technique:  Optional[str] = None,
+        technique:  str | None = None,
         severity:   str = Severity.HIGH.value,
         blocked:    bool = True,
-        payload:    Optional[dict] = None,
+        payload:    dict | None = None,
     ) -> EvidenceEnvelope:
         """Create evidence envelope from honeypot event."""
         env = EvidenceEnvelope(
@@ -326,8 +326,8 @@ class EvidenceFactory:
         technique:    str,
         tactic:       str,
         score:        float,
-        source_ip:    Optional[str] = None,
-        rule_id:      Optional[str] = None,
+        source_ip:    str | None = None,
+        rule_id:      str | None = None,
         description:  str = "",
         severity:     str = Severity.HIGH.value,
     ) -> EvidenceEnvelope:
