@@ -21,3 +21,10 @@ def test_local_sync_script_requires_secret_scan_before_commit():
     assert 'Secret scan failed' in SCRIPT
     assert 'Invoke-Git commit' in SCRIPT
     assert SCRIPT.index('Secret scan failed') < SCRIPT.index('Invoke-Git commit')
+
+
+def test_local_sync_script_has_one_complete_error_handler():
+    assert SCRIPT.count("catch {") == 1
+    assert SCRIPT.rstrip().endswith("}")
+    assert SCRIPT.count("$sensitivePath = '") == 1
+    assert "Invoke-Git switch -c $Branch" in SCRIPT
