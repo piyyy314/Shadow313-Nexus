@@ -234,7 +234,13 @@ class ModelRegistry:
     def get_detector(self) -> Any:
         """Get or create the LSTM sequence detector."""
         if "lstm" not in self._models:
-            from shadow313.v3.lstm_detector import LSTMSequenceDetector
+            try:
+                from shadow313.v3.lstm_detector import LSTMSequenceDetector
+            except ModuleNotFoundError as exc:
+                raise RuntimeError(
+                    "V3 LSTM detector is unavailable: "
+                    "shadow313.v3.lstm_detector is not included in this checkout."
+                ) from exc
             self._models["lstm"] = LSTMSequenceDetector(window_size=8)
         return self._models["lstm"]
 
@@ -242,7 +248,13 @@ class ModelRegistry:
         """Get or create the incident response engine."""
         key = f"ir_{analyst_id}"
         if key not in self._models:
-            from shadow313.v3.incident_response import IncidentResponseEngine
+            try:
+                from shadow313.v3.incident_response import IncidentResponseEngine
+            except ModuleNotFoundError as exc:
+                raise RuntimeError(
+                    "V3 incident response is unavailable: "
+                    "shadow313.v3.incident_response is not included in this checkout."
+                ) from exc
             self._models[key] = IncidentResponseEngine(
                 analyst_id=analyst_id,
                 dry_run=True,  # Safe default — no real containment actions
@@ -350,7 +362,16 @@ async def v3_detect(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     ctx.output.info("Initializing v3 LSTM detection engine...")
 
     registry = ModelRegistry()
-    detector = registry.get_detector()
+    try:
+        detector = registry.get_detector()
+    except RuntimeError as exc:
+        ctx.output.warning(str(exc))
+        return {
+            "success": False,
+            "available": False,
+            "component": "v3_lstm_detector",
+            "message": str(exc),
+        }
 
     # Load events from file or kwargs
     events = []
@@ -444,7 +465,10 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     def _start_monitors():
         from shadow313.v3.countermeasures.ebpf_self_protection import EBPFSelfProtection
         from shadow313.v3.countermeasures.continuous_eprocess_monitor import ContinuousEProcessMonitor
-        from shadow313.v3.ztas.hypervisor_attestation_bridge import HypervisorAttestationBridge
+        try:
+            from shadow313.v3.ztas.hypervisor_attestation_bridge import HypervisorAttestationBridge
+        except ModuleNotFoundError:
+            HypervisorAttestationBridge = None
 
         def on_alert(alert):
             mon.alerts.append({
@@ -455,7 +479,7 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
 
         mon.ebpf      = EBPFSelfProtection()
         mon.eprocess  = ContinuousEProcessMonitor(on_alert)
-        mon.hypervisor= HypervisorAttestationBridge()
+        mon.hypervisor = HypervisorAttestationBridge() if HypervisorAttestationBridge else None
 
         mon.ebpf.start()
         mon.eprocess.start()
@@ -466,13 +490,20 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     ctx.output.success("v3 ZTAS monitors active:")
     ctx.output.info("  ✓ eBPF self-protection (11 kprobes, guardian probe)")
     ctx.output.info("  ✓ EPROCESS monitor (1s interval, TPM-sealed baseline)")
-    ctx.output.info("  ✓ Hypervisor attestation bridge (EPT + VMCS)")
+    active_monitors = ["ebpf", "eprocess"]
+    if mon.hypervisor:
+        active_monitors.append("hypervisor")
+        ctx.output.info("  ✓ Hypervisor attestation bridge (EPT + VMCS)")
+    else:
+        ctx.output.warning("  ! Hypervisor attestation bridge unavailable in this checkout")
 
     return {
         "success":    True,
+        "available":  True,
         "session_id": session_id,
-        "monitors":   ["ebpf", "eprocess", "hypervisor"],
-        "message":    "v3 ZTAS monitors started",
+        "monitors":   active_monitors,
+        "unavailable_monitors": [] if mon.hypervisor else ["hypervisor"],
+        "message":    "Available v3 ZTAS monitors started",
     }
 
 
@@ -560,11 +591,20 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
 
     ctx.output.info(f"v3 Incident Response — score={score:.3f} technique={technique} host={host}")
 
-    registry  = ModelRegistry()
-    ir_engine = registry.get_ir_engine()
+    registry = ModelRegistry()
+    try:
+        ir_engine = registry.get_ir_engine()
+        from shadow313.v3.incident_response import ThreatAlert
+    except RuntimeError as exc:
+        ctx.output.warning(str(exc))
+        return {
+            "success": False,
+            "available": False,
+            "component": "v3_incident_response",
+            "message": str(exc),
+        }
 
     # Build ThreatAlert from kwargs
-    from shadow313.v3.incident_response import ThreatAlert
     import uuid
 
     alert = ThreatAlert(
@@ -613,7 +653,23 @@ async def v3_attest(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     """
     ctx.output.info("Running v3 TPM-sealed attestation...")
 
-    from shadow313.v3.ztas.tpm_sealed_attestation import SimulatedTPM2, TPMSealedAttestationEngine
+    try:
+        from shadow313.v3.ztas.tpm_sealed_attestation import (
+            SimulatedTPM2,
+            TPMSealedAttestationEngine,
+        )
+    except ModuleNotFoundError as exc:
+        message = (
+            "V3 TPM attestation is unavailable: "
+            "shadow313.v3.ztas.tpm_sealed_attestation is not included in this checkout."
+        )
+        ctx.output.warning(message)
+        return {
+            "success": False,
+            "available": False,
+            "component": "v3_tpm_attestation",
+            "message": message,
+        }
     import hashlib
 
     tpm    = SimulatedTPM2()
@@ -652,17 +708,29 @@ async def v3_status(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     mon = _active_monitors.get(session_id)
 
     registry = ModelRegistry()
-    detector = registry.get_detector()
-    stats    = detector.get_stats()
+    try:
+        detector = registry.get_detector()
+    except RuntimeError as exc:
+        detector = None
+        stats = {}
+        detector_message = str(exc)
+    else:
+        stats = detector.get_stats()
+        detector_message = "available"
 
     ctx.output.info("v3 Integration Status:")
-    ctx.output.info(f"  LSTM detector:    loaded ({stats.get('total_sequences_analyzed', 0)} sequences analyzed)")
+    if detector:
+        ctx.output.info(f"  LSTM detector:    loaded ({stats.get('total_sequences_analyzed', 0)} sequences analyzed)")
+    else:
+        ctx.output.warning(f"  LSTM detector:    unavailable ({detector_message})")
     ctx.output.info(f"  Active monitors:  {'YES' if mon and mon.is_running else 'NO'}")
     ctx.output.info(f"  Model registry:   {len(registry._models)} models loaded")
 
     return {
         "success":         True,
-        "lstm_loaded":     True,
+        "lstm_loaded":     detector is not None,
+        "lstm_available":  detector is not None,
+        "lstm_message":    detector_message,
         "monitors_active": bool(mon and mon.is_running),
         "lstm_stats":      stats,
     }
