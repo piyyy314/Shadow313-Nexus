@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Optional, Protocol, Tuple
+from typing import Any, Protocol
 
 from .parser import PQCAuditParser, PQCAuditResult
 
@@ -37,18 +37,18 @@ class ReceiptLike(Protocol):
     chain_hash: str
     prev_chain_hash: str
     signature_algorithm: str
-    ipfs_cid: Optional[str]
+    ipfs_cid: str | None
     ipfs_anchored: bool
     app_id: str
     app_version: str
 
     def to_dict(self) -> dict[str, Any]: ...
 
-_APP_IDENTITY_KWARGS = dict(
-    app_id      = "aegis-pqc",
-    app_name    = "Aegis PQC Audit",
-    app_version = "4.0.0",
-)
+_APP_IDENTITY_KWARGS = {
+    "app_id": "aegis-pqc",
+    "app_name": "Aegis PQC Audit",
+    "app_version": "4.0.0",
+}
 
 
 class AegisPQCBinder:
@@ -82,7 +82,7 @@ class AegisPQCBinder:
         self,
         components: list[dict],
         source_file: str = "shadow313_crypto_sbom",
-    ) -> Tuple[PQCAuditResult, ReceiptLike]:
+    ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse Shadow313 crypto_sbom output and bind with 313 receipt."""
         audit   = self.parser.parse_shadow313_sbom(components, source_file)
         receipt = self._bind(audit)
@@ -92,7 +92,7 @@ class AegisPQCBinder:
         self,
         data: dict,
         source_file: str = "cyclonedx_sbom.json",
-    ) -> Tuple[PQCAuditResult, ReceiptLike]:
+    ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse CycloneDX JSON SBOM and bind with 313 receipt."""
         audit   = self.parser.parse_cyclonedx(data, source_file)
         receipt = self._bind(audit)
@@ -102,7 +102,7 @@ class AegisPQCBinder:
         self,
         json_str: str,
         source_file: str = "",
-    ) -> Tuple[PQCAuditResult, ReceiptLike]:
+    ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse JSON string and bind with 313 receipt."""
         audit   = self.parser.parse_json(json_str, source_file)
         receipt = self._bind(audit)
@@ -112,7 +112,7 @@ class AegisPQCBinder:
         self,
         data: dict,
         source_file: str = "",
-    ) -> Tuple[PQCAuditResult, ReceiptLike]:
+    ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse dict and bind with 313 receipt."""
         audit   = self.parser.parse_dict(data, source_file)
         receipt = self._bind(audit)
