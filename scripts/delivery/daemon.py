@@ -25,6 +25,7 @@ import argparse
 import hashlib
 import http.server
 import json
+import mimetypes
 import os
 import secrets
 import signal
@@ -36,6 +37,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
+
+from scripts.delivery.safe_paths import safe_docs_path
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -345,23 +349,23 @@ class DaemonHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/status":
             self._json({"status": "running", "deliveries": _current_manifest.get("delivery_count", 0)})
         elif path.startswith("/download/"):
-            fname = path[len("/download/"):]
-            fpath = DOCS_DIR / fname
-            if fpath.exists():
+            requested_name = path[len("/download/"):]
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
                 data = fpath.read_bytes()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/octet-stream")
-                self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+                self.send_header("Content-Disposition", f"attachment; filename*=UTF-8''{quote(fpath.name, safe='')}")
                 self.send_header("Content-Length", str(len(data)))
                 self.end_headers()
                 self.wfile.write(data)
             else:
                 self.send_error(404)
         elif path.startswith("/"):
-            fname = path.lstrip("/")
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
-                ctype = "text/html" if fname.endswith(".html") else "application/json"
+            requested_name = path.lstrip("/")
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
+                ctype = mimetypes.guess_type(fpath.name)[0] or "application/octet-stream"
                 self._bytes(fpath.read_bytes(), ctype)
             else:
                 self.send_error(404)
@@ -464,8 +468,8 @@ class DeliveryDaemon:
         class QuietServer(socketserver.TCPServer):
             allow_reuse_address = True
 
-        self._server = QuietServer(("", SERVER_PORT), DaemonHandler)
-        self.log.info(f"Delivery server: http://localhost:{SERVER_PORT}")
+        self._server = QuietServer(("127.0.0.1", SERVER_PORT), DaemonHandler)
+        self.log.info(f"Delivery server: http://127.0.0.1:{SERVER_PORT}")
         self._server.serve_forever()
 
     def start(self):

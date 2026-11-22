@@ -29,6 +29,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
+
+from scripts.delivery.safe_paths import safe_docs_path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO_ROOT   = Path(__file__).parent.parent.parent
@@ -262,14 +265,15 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
         elif path.startswith("/download/"):
             # P0-2: Force download with hash header
             # P0-7: Create receipt for every download
-            fname = path[len("/download/"):]
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
+            requested_name = path[len("/download/"):]
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
+                relative_name = fpath.relative_to(DOCS_DIR.resolve()).as_posix()
                 content = fpath.read_bytes()
                 sha3    = hashlib.sha3_256(content).hexdigest()
 
                 # Create download receipt
-                receipt = create_download_receipt(fname, sha3, client_ip)
+                receipt = create_download_receipt(relative_name, sha3, client_ip)
                 with _receipt_lock:
                     _download_receipts.append(receipt)
                     # Save receipt
@@ -278,7 +282,7 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
 
                 self.send_response(200)
                 self.send_header("Content-Type", "application/octet-stream")
-                self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+                self.send_header("Content-Disposition", f"attachment; filename*=UTF-8''{quote(fpath.name, safe='')}")
                 self.send_header("Content-Length", str(len(content)))
                 # P0-2: Hash headers for client verification
                 self.send_header("X-Content-SHA3-256", sha3)
@@ -290,12 +294,12 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
                 self.send_error(404)
 
         elif path.startswith("/"):
-            fname = path.lstrip("/")
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
+            requested_name = path.lstrip("/")
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
                 content = fpath.read_bytes()
                 sha3    = hashlib.sha3_256(content).hexdigest()
-                ctype   = "text/html; charset=utf-8" if fname.endswith(".html") else "application/json"
+                ctype   = "text/html; charset=utf-8" if fpath.name.endswith(".html") else "application/octet-stream"
                 self.send_response(200)
                 self.send_header("Content-Type", ctype)
                 self.send_header("Content-Length", str(len(content)))

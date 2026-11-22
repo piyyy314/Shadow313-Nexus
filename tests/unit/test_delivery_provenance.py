@@ -2,7 +2,8 @@
 
 from pathlib import Path
 
-from scripts.delivery import pipeline
+from scripts.delivery import daemon, daemon_hardened, pipeline
+from scripts.delivery.safe_paths import safe_docs_path
 from shadow313.v4.intelligence.evidence_envelope import (
     EvidenceEnvelope,
     ProvenanceClass,
@@ -72,3 +73,43 @@ def test_local_delivery_daemon_auto_commit_is_opt_in_and_hook_safe():
     assert '"branch", "--show-current"' in daemon
     assert 'scripts" / "check-secrets.py' in daemon
     assert '"git", "commit"' in daemon
+
+
+def test_safe_docs_path_rejects_traversal_and_symlink_escapes(tmp_path):
+    docs = tmp_path / "docs"
+    nested = docs / "nested"
+    nested.mkdir(parents=True)
+    safe_file = nested / "report.html"
+    safe_file.write_text("safe", encoding="utf-8")
+    outside = tmp_path / "secret.txt"
+    outside.write_text("secret", encoding="utf-8")
+
+    assert safe_docs_path(docs, "nested/report.html") == safe_file.resolve()
+    for unsafe in (
+        "../secret.txt",
+        "%2e%2e/secret.txt",
+        "nested/%2e%2e/%2e%2e/secret.txt",
+        "/etc/passwd",
+        r"..\\secret.txt",
+        r"nested\\..\\secret.txt",
+    ):
+        assert safe_docs_path(docs, unsafe) is None
+
+    link = docs / "escape.txt"
+    try:
+        link.symlink_to(outside)
+    except (OSError, NotImplementedError):
+        pass
+    else:
+        assert safe_docs_path(docs, "escape.txt") is None
+
+
+def test_both_delivery_daemons_use_safe_paths_and_loopback_binding():
+    daemon_source = (ROOT / "scripts/delivery/daemon.py").read_text(encoding="utf-8")
+    hardened_source = (ROOT / "scripts/delivery/daemon_hardened.py").read_text(encoding="utf-8")
+    assert "safe_docs_path(DOCS_DIR, requested_name)" in daemon_source
+    assert "safe_docs_path(DOCS_DIR, requested_name)" in hardened_source
+    assert 'QuietServer(("127.0.0.1", SERVER_PORT)' in daemon_source
+    assert 'BIND_HOST       = "127.0.0.1"' in hardened_source
+    assert 'QuietServer(("", SERVER_PORT)' not in daemon_source
+
