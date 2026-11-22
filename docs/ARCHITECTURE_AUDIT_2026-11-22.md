@@ -2,7 +2,7 @@
 
 **Audit date:** 2026-11-22  
 **Reference master commit:** 76092ff411913841a65576f26d13aa492b63e9d9  
-**Reference PR #116 head:** 3e06d4cb232a0128c83d6f979bc0521069c1f7d2
+**Audited PR #116 tree commit:** a90a8912b078587d68e5fd8ccd5f37a12a2c8f1e (the snapshot before this inventory correction)
 
 ## Scope and limits
 
@@ -35,7 +35,7 @@ These are architectural references, not a ranked top-ten list. Each solves a dif
 
 ## Current repository inventory
 
-At the PR #116 reference head, the tracked tree contains 1,065 files and 180 directories, including 643 Python files, 190 HTML pages, 34 PowerShell files, and 72 Markdown documents. This breadth is a strength, but it also increases the importance of clear ownership, canonical sources, and tested generation pipelines.
+At the audited PR #116 tree commit, the tracked tree contains 1,073 files and 181 directories, including 644 Python files, 190 HTML pages, 34 PowerShell files, and 77 Markdown documents. The tree inventory includes 1,260 total entries (files plus directories). This breadth is a strength, but it also increases the importance of clear ownership, canonical sources, and tested generation pipelines.
 
 ## What is already strong
 
