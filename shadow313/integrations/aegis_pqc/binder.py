@@ -21,6 +21,7 @@ logger = logging.getLogger("shadow313.aegis_pqc.binder")
 
 try:
     from shadow313.core.binding_sdk.binder import AppIdentity, Binder313
+
     HAS_BINDER = True
 except ImportError:
     HAS_BINDER = False
@@ -43,6 +44,7 @@ class ReceiptLike(Protocol):
     app_version: str
 
     def to_dict(self) -> dict[str, Any]: ...
+
 
 _APP_IDENTITY_KWARGS = {
     "app_id": "aegis-pqc",
@@ -71,7 +73,7 @@ class AegisPQCBinder:
         self._binder = None
         if HAS_BINDER:
             try:
-                identity     = AppIdentity(**_APP_IDENTITY_KWARGS)
+                identity = AppIdentity(**_APP_IDENTITY_KWARGS)
                 self._binder = Binder313(identity=identity)
             except Exception as exc:
                 logger.warning("Could not init Binder313: %s", exc)
@@ -84,7 +86,7 @@ class AegisPQCBinder:
         source_file: str = "shadow313_crypto_sbom",
     ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse Shadow313 crypto_sbom output and bind with 313 receipt."""
-        audit   = self.parser.parse_shadow313_sbom(components, source_file)
+        audit = self.parser.parse_shadow313_sbom(components, source_file)
         receipt = self._bind(audit)
         return audit, receipt
 
@@ -94,7 +96,7 @@ class AegisPQCBinder:
         source_file: str = "cyclonedx_sbom.json",
     ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse CycloneDX JSON SBOM and bind with 313 receipt."""
-        audit   = self.parser.parse_cyclonedx(data, source_file)
+        audit = self.parser.parse_cyclonedx(data, source_file)
         receipt = self._bind(audit)
         return audit, receipt
 
@@ -104,7 +106,7 @@ class AegisPQCBinder:
         source_file: str = "",
     ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse JSON string and bind with 313 receipt."""
-        audit   = self.parser.parse_json(json_str, source_file)
+        audit = self.parser.parse_json(json_str, source_file)
         receipt = self._bind(audit)
         return audit, receipt
 
@@ -114,7 +116,7 @@ class AegisPQCBinder:
         source_file: str = "",
     ) -> tuple[PQCAuditResult, ReceiptLike]:
         """Parse dict and bind with 313 receipt."""
-        audit   = self.parser.parse_dict(data, source_file)
+        audit = self.parser.parse_dict(data, source_file)
         receipt = self._bind(audit)
         return audit, receipt
 
@@ -136,7 +138,7 @@ class AegisPQCBinder:
         """Return compact summary dict."""
         s = audit.to_summary()
         if receipt:
-            s["bind_id"]    = getattr(receipt, "bind_id", None)
+            s["bind_id"] = getattr(receipt, "bind_id", None)
             s["timestamp_ns"] = getattr(receipt, "timestamp_ns", None)
             s["chain_hash"] = getattr(receipt, "chain_hash", None)
         return s
@@ -149,9 +151,9 @@ class AegisPQCBinder:
         if self._binder:
             try:
                 receipt = self._binder.bind(
-                    payload  = payload,
-                    metadata = {
-                        "source":         "AegisPQC",
+                    payload=payload,
+                    metadata={
+                        "source": "AegisPQC",
                         "overall_status": audit.overall_status,
                         "critical_count": audit.critical_count,
                     },
@@ -171,36 +173,38 @@ class _SimulatedReceipt:
         import hashlib
         import secrets
         import time
+
         ts = time.time_ns()
         ts = int(str(ts)[:-3] + "313")
-        self.timestamp_ns        = ts
-        self.timestamp_iso       = __import__("datetime").datetime.now(
-            __import__("datetime").timezone.utc).isoformat()  # nosec S01
+        self.timestamp_ns = ts
+        self.timestamp_iso = (
+            __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+        )  # nosec S01
         raw = json.dumps(payload, sort_keys=True, default=str).encode()
-        self.payload_hash        = "sha3_256:" + hashlib.sha3_256(raw).hexdigest()
-        self.chain_hash          = "sha3_512:" + hashlib.sha3_512(raw).hexdigest()
-        self.prev_chain_hash     = ""
-        self.bind_id             = f"AEGIS-PQC-{secrets.token_hex(4).upper()}"
+        self.payload_hash = "sha3_256:" + hashlib.sha3_256(raw).hexdigest()
+        self.chain_hash = "sha3_512:" + hashlib.sha3_512(raw).hexdigest()
+        self.prev_chain_hash = ""
+        self.bind_id = f"AEGIS-PQC-{secrets.token_hex(4).upper()}"
         self.signature_algorithm = "SHA3-512 (simulated — install shadow313 core for SLH-DSA)"
-        self.signature           = self.chain_hash
-        self.ipfs_cid            = None
-        self.ipfs_anchored       = False
-        self.app_id              = "aegis-pqc"
-        self.app_version         = "4.0.0"
-        self.sequence            = 1
+        self.signature = self.chain_hash
+        self.ipfs_cid = None
+        self.ipfs_anchored = False
+        self.app_id = "aegis-pqc"
+        self.app_version = "4.0.0"
+        self.sequence = 1
 
     def to_dict(self) -> dict:
         return {
-            "bind_id":             self.bind_id,
-            "timestamp_ns":        self.timestamp_ns,
-            "timestamp_iso":       self.timestamp_iso,
-            "payload_hash":        self.payload_hash,
-            "chain_hash":          self.chain_hash,
-            "prev_chain_hash":     self.prev_chain_hash,
+            "bind_id": self.bind_id,
+            "timestamp_ns": self.timestamp_ns,
+            "timestamp_iso": self.timestamp_iso,
+            "payload_hash": self.payload_hash,
+            "chain_hash": self.chain_hash,
+            "prev_chain_hash": self.prev_chain_hash,
             "signature_algorithm": self.signature_algorithm,
-            "ipfs_cid":            self.ipfs_cid,
-            "ipfs_anchored":       self.ipfs_anchored,
-            "app_id":              self.app_id,
-            "app_version":         self.app_version,
-            "sequence":            self.sequence,
+            "ipfs_cid": self.ipfs_cid,
+            "ipfs_anchored": self.ipfs_anchored,
+            "app_id": self.app_id,
+            "app_version": self.app_version,
+            "sequence": self.sequence,
         }
