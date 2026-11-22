@@ -85,6 +85,30 @@ def test_validation_requires_top_level_frontmatter_fields(tmp_path: Path):
     assert "Missing required frontmatter field: description" in errors
 
 
+def test_validation_accepts_parentheses_in_markdown_destinations(tmp_path: Path):
+    skill = tmp_path / "skills" / "example-skill"
+    _write_skill(skill / "references" / "guide(v2).md", "# Guide\\n")
+    _write_skill(
+        skill / "SKILL.md",
+        "---\\nname: example-skill\\ndescription: test\\n---\\n"
+        "# Example\\n[guide](references/guide(v2).md)\\n"
+        "[titled](references/guide(v2).md \\"Guide\\")\\n",
+    )
+    assert validate_skill("example-skill", tmp_path / "skills") == []
+
+
+def test_validation_rejects_non_standalone_frontmatter_delimiter(tmp_path: Path):
+    skill = tmp_path / "skills" / "example-skill"
+    _write_skill(
+        skill / "SKILL.md",
+        "---\\nname: example-skill\\ndescription: test\\n---invalid\\n"
+        "# Example\\n",
+    )
+    assert "YAML frontmatter is not closed." in validate_skill(
+        "example-skill", tmp_path / "skills"
+    )
+
+
 def test_validation_reports_invalid_utf8_without_raising(tmp_path: Path):
     skill = tmp_path / "skills" / "example-skill"
     skill.mkdir(parents=True)
