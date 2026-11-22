@@ -8,12 +8,8 @@ on:
   push:
     tags:
       - "v*.*.*"
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to build (e.g. 4.0.1)"
-        required: false
-        default: "dev"
+  # Manual dispatch builds artifacts for inspection; publishing remains tag-only.
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -61,7 +57,7 @@ jobs:
             --add-data "shadow313:shadow313" \
             --hidden-import shadow313.cli.main \
             --hidden-import shadow313.core \
-            --hidden-import pyyaml \
+            --hidden-import yaml \
             --hidden-import rich \
             shadow313/cli/main.py
           ls -lh dist/
@@ -75,7 +71,7 @@ jobs:
             --add-data "shadow313;shadow313" `
             --hidden-import shadow313.cli.main `
             --hidden-import shadow313.core `
-            --hidden-import pyyaml `
+            --hidden-import yaml `
             --hidden-import rich `
             shadow313/cli/main.py
           dir dist\

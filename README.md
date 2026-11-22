@@ -310,3 +310,8 @@ shadow313 skill validate shadow313-nexus-engineer
 ```
 
 Use `--root /path/to/Shadow313-Nexus` to inspect another checkout. Validation checks skill metadata and local Markdown references; it does not claim to execute or certify the skill's behavior.
+
+
+## Legacy automation
+
+Historical workstation scripts that pushed directly to `master` or embedded personal access tokens in Git remote URLs are being retired. Use GitHub CLI authentication and the branch-based workflow documented in [docs/LEGACY_AUTOMATION.md](docs/LEGACY_AUTOMATION.md).

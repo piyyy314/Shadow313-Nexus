@@ -7,14 +7,14 @@ optional integration is enabled or every deployment target is live.
 
 ```text
 Shadow313-Nexus/
-├── .github/                 # GitHub Actions, issue templates, automation
+├── .github/                 # Workflows, CODEOWNERS, issue and PR templates
 ├── ci/                      # CI templates and reusable validation assets
 ├── api/                     # Static-site API adapters and API contracts
 ├── assets/                  # Shared public-site assets
 ├── about/                   # Public about pages
 ├── blog/                    # Public technical articles
 ├── cyber_lab/               # Lab exercises and learning materials
-├── docs/                    # Product docs, technical reports, dashboards
+├── docs/                    # Product docs, ADRs, audit reports, dashboards
 ├── infra/
 │   └── hetzner/             # Planned server setup and host automation
 ├── logs/                    # Local workstation diagnostics (not committed)
@@ -25,7 +25,7 @@ Shadow313-Nexus/
 ├── platform/                # Public platform pages
 ├── policies/                # Container/security policy definitions
 ├── pricing/                 # Public pricing pages
-├── scripts/                 # Build, validation, maintenance automation
+├── scripts/                 # Build, validation, reviewed local tooling
 ├── sentinelos/              # SentinelOS assets and components
 ├── shadow313/               # Primary Python application package
 ├── shadow313_platform/      # Platform Python package
@@ -109,7 +109,8 @@ historical/operational material. They are not candidates for blind deletion:
 | `dist/` | Distribution manifest and receipt artifacts | Do not treat as the Python build output directory without checking its manifest |
 | `logs/` | Local workstation diagnostics | Keep machine-specific runtime reports local and ignored; do not commit them |
 
-Several PowerShell maintenance scripts remain at the repository root for
-backward compatibility with existing local workflows. New scripts belong in
-`scripts/`. Move old entry points only after searching for callers and updating
-documentation, workflows, and local automation.
+Historical direct-to-master scripts that embedded PATs in Git remote URLs have
+been retired. Remaining local scanners and maintenance helpers are not approved
+for direct production changes. See `docs/LEGACY_AUTOMATION.md` before running
+PowerShell tooling. New scripts belong in `scripts/` and must use branch-based
+Git workflows with the GitHub CLI or credential manager.
