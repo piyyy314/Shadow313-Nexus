@@ -1,19 +1,24 @@
-from __future__ import annotations
 """
 shadow313.v2.agent.agent
 Feature #3 — Agentic Auto-Chain Loop
 State machine that chains modules autonomously (recon → vuln → exploit-check → report)
 with human-in-the-loop approval gates, step logging, and rollback capability.
 """
+
+from __future__ import annotations
+
 import json
+import logging
+import re
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
-from enum import Enum
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
-from typing import Any, Callable
-import logging
+from typing import Any
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +27,7 @@ logger = logging.getLogger(__name__)
 # State & Step definitions
 # ---------------------------------------------------------------------------
 
-class StepStatus(str, Enum):
+class StepStatus(StrEnum):
     PENDING   = "pending"
     RUNNING   = "running"
     COMPLETED = "completed"
@@ -31,7 +36,7 @@ class StepStatus(str, Enum):
     AWAITING  = "awaiting_approval"
 
 
-class ApprovalPolicy(str, Enum):
+class ApprovalPolicy(StrEnum):
     AUTO       = "auto"         # Never pause for approval
     GATE_HIGH  = "gate_high"    # Pause before high-risk steps
     FULL_HUMAN = "full_human"   # Pause before every step
@@ -65,7 +70,7 @@ class AgentPlan:
     target:      str             = ""
     description: str             = ""
     steps:       list[AgentStep] = field(default_factory=list)
-    created_at:  str             = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at:  str             = field(default_factory=lambda: datetime.now(UTC).isoformat())
     policy:      ApprovalPolicy  = ApprovalPolicy.GATE_HIGH
 
     def to_dict(self) -> dict:
@@ -256,7 +261,10 @@ class AgentExecutor:
         started = time.time()
 
         print(f"\n[AGENT] Starting run {run_id} — {plan.description}")
-        print(f"[AGENT] Target: {plan.target} | Steps: {len(plan.steps)} | Policy: {plan.policy.value}\n")
+        print(
+            f"[AGENT] Target: {plan.target} | Steps: {len(plan.steps)} "
+            f"| Policy: {plan.policy.value}\n"
+        )
 
         for step in plan.steps:
             # Approval gate
@@ -432,12 +440,11 @@ class AgentExecutor:
         )
         raw = self.kernel.ai.chat(prompt)
         try:
-            import re
-            m = re.search(r'\[.*?\]', raw, re.DOTALL)
-            if m:
-                return json.loads(m.group())
-        except Exception:
-            pass
+            match = re.search(r'\[.*?\]', raw, re.DOTALL)
+            if match:
+                return json.loads(match.group())
+        except (json.JSONDecodeError, re.error) as exc:
+            logger.debug("AI plan suggestion parsing failed: %s", exc)
         return []
 
     # ── List saved plans ──────────────────────────────────────────────────
@@ -453,6 +460,6 @@ class AgentExecutor:
                     "created_at": data.get("created_at"),
                     "steps":      len(data.get("steps", [])),
                 })
-            except Exception:
-                pass
-        return sorted(plans, key=lambda x: x.get("created_at",""), reverse=True)
+            except (OSError, json.JSONDecodeError) as exc:
+                logger.warning("Could not load agent plan %s: %s", f, exc)
+        return sorted(plans, key=lambda x: x.get("created_at", ""), reverse=True)
