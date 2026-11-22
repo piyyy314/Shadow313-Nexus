@@ -91,6 +91,8 @@ jobs:
             --ignore=tests/integration \
             --timeout=120 \
             -x
+      - name: Run SentinelOS API bridge tests
+        run: node --test tests/sentinelos-api.test.cjs
       - name: Upload coverage
         if: matrix.python-version == '3.11'
         uses: codecov/codecov-action@v7
