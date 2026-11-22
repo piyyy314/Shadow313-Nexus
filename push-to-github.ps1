@@ -198,6 +198,12 @@ if ($BranchName -eq "") {
     $timestamp  = Get-Date -Format "yyyyMMdd-HHmm"
     $BranchName = "shadow313/sandbox-sync-$timestamp"
 }
+if ($BranchName -match "^(master|main)$") {
+    throw "Direct pushes to protected branches are disabled. Use a feature branch."
+}
+if ($BranchName -notmatch "^[A-Za-z0-9._/-]+$" -or $BranchName -match "\.\.|//|^/|/$") {
+    throw "Invalid branch name: $BranchName"
+}
 Write-Info "Branch name: $BranchName"
 
 # Check if branch already exists locally
