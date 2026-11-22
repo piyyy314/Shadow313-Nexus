@@ -113,8 +113,21 @@ class AIEngine:
             normalized_host = str(ipv6.ipv4_mapped)
 
         # urllib/libc accept legacy IPv4 forms such as 2130706433, 0177.0.0.1,
-        # and 0x7f000001. Normalize numeric-looking hosts before policy checks.
-        if all(char in "0123456789abcdefABCDEFxX." for char in host):
+        # and 0x7f000001. Normalize numeric address components before policy checks.
+        parts = host.split(".")
+        numeric_ipv4_candidate = len(parts) <= 4 and all(
+            part
+            and (
+                all(char in "0123456789" for char in part)
+                or (
+                    part.lower().startswith("0x")
+                    and len(part) > 2
+                    and all(char in "0123456789abcdef" for char in part[2:])
+                )
+            )
+            for part in parts
+        )
+        if numeric_ipv4_candidate:
             try:
                 normalized_host = str(IPv4Address(socket.inet_aton(host)))
             except OSError:
