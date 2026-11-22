@@ -20,7 +20,7 @@ from .parser import PQCAuditParser, PQCAuditResult
 logger = logging.getLogger("shadow313.aegis_pqc.binder")
 
 try:
-    from shadow313.core.binding_sdk.binder import Binder313, AppIdentity, BindReceipt
+    from shadow313.core.binding_sdk.binder import AppIdentity, Binder313
     HAS_BINDER = True
 except ImportError:
     HAS_BINDER = False
@@ -168,7 +168,9 @@ class _SimulatedReceipt:
     """Fallback receipt when Binder313 SDK is not installed."""
 
     def __init__(self, payload: dict) -> None:
-        import hashlib, time, secrets
+        import hashlib
+        import secrets
+        import time
         ts = time.time_ns()
         ts = int(str(ts)[:-3] + "313")
         self.timestamp_ns        = ts
