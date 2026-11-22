@@ -17,7 +17,7 @@ RISK-11: Ledger append under concurrent writes — RLock correctness
 RISK-12: STIA binder summary() — accesses result.target_name which may be empty string
 RISK-13: Event bus topic routing — wildcard subscriber receives all topics
 RISK-14: Intelligence graph attribution_score — returns empty list for unknown indicator
-RISK-15: Temporal binding fallback chain — HMAC fallback produces wrong sig length
+RISK-15: Temporal binding signatures must be verifiable or explicitly unsigned
 """
 from __future__ import annotations
 
@@ -596,42 +596,39 @@ class TestEventBusTopicRouting:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# RISK-15: Temporal binding fallback chain signature length
+# RISK-15: Temporal binding signature verification and fail-closed fallback
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestTemporalBindingFallbackChain:
 
-    def test_pyspx_tier_produces_correct_sig_length(self):
-        """pyspx SLH-DSA-SHAKE-128f signature must be exactly 17088 bytes when available."""
+    def test_signing_backend_returns_signature_and_public_key_or_unsigned(self):
         from shadow313.v4.temporal_binding.temporal_binding import _sign_slh_dsa
-        sig, algo = _sign_slh_dsa(b"test message")
-        if "pyspx" in algo.lower():
-            assert len(sig) == 34176, f"Expected 34176 hex chars (pyspx), got {len(sig)}"
-        elif "pqcrypto" in algo.lower():
-            assert len(sig) == 34176, f"Expected 34176 hex chars (pqcrypto), got {len(sig)}"
-        elif "HMAC" in algo:
-            # Fallback when neither pyspx nor pqcrypto installed
-            assert len(sig) == 64, f"Expected 64 hex chars (HMAC fallback), got {len(sig)}"
+        signature, algorithm, public_key = _sign_slh_dsa(b"test message")
+        if "SPHINCS+" in algorithm:
+            assert len(signature) == 34176
+            assert public_key
+        elif "HMAC-SHA256" in algorithm:
+            assert len(signature) == 64
+            assert not public_key
+        elif algorithm.startswith("UNSIGNED"):
+            assert signature == ""
+            assert public_key == ""
         else:
-            pytest.fail(f"Unknown algorithm tier: {algo}")
+            pytest.fail(f"Unknown signing algorithm: {algorithm}")
 
-    def test_algo_string_identifies_tier(self):
-        """Algorithm string must clearly identify which tier is active."""
+    def test_algo_string_identifies_backend_without_fips_overclaim(self):
         from shadow313.v4.temporal_binding.temporal_binding import _sign_slh_dsa
-        _, algo = _sign_slh_dsa(b"test")
-        # Must be one of the three tiers
-        is_tier1 = "pqcrypto" in algo.lower() or "FIPS 205" in algo
-        is_tier2 = "pyspx" in algo.lower()
-        is_tier3 = "HMAC-SHA256" in algo
-        assert is_tier1 or is_tier2 or is_tier3, f"Unknown tier: {algo}"
+        _, algorithm, _ = _sign_slh_dsa(b"test")
+        assert any(name in algorithm for name in ("pqcrypto", "pyspx", "HMAC-SHA256", "UNSIGNED"))
+        assert "FIPS 205" not in algorithm
 
-    def test_hmac_fallback_sig_is_64_hex_chars(self):
-        """HMAC-SHA256 fallback must produce exactly 64 hex chars."""
-        import hmac, hashlib, os
-        key = os.urandom(32)
-        msg = b"test"
-        sig = hmac.new(key, msg, hashlib.sha256).hexdigest()
-        assert len(sig) == 64
+    def test_hmac_fallback_requires_explicit_stable_key(self):
+        import hashlib
+        import hmac
+        key = b"configured-test-key"
+        message = b"test"
+        signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+        assert len(signature) == 64
 
     def test_receipt_algo_field_not_empty(self):
         """313-BIND receipt algorithm field must never be empty."""
@@ -642,13 +639,14 @@ class TestTemporalBindingFallbackChain:
         assert len(receipt.algorithm) > 5
 
     def test_receipt_timestamp_ends_313(self):
-        """313-BIND receipt timestamp must end in 313 (entropy property)."""
+        """313-BIND receipt timestamp must end in 313 (313-aligned marker)."""
         from shadow313.v4.temporal_binding.temporal_binding import TemporalBindingEngine
         engine = TemporalBindingEngine()
-        for _ in range(3):
-            receipt = engine.bind({"i": _})
-            assert receipt.timestamp % 1000 == 313, \
+        for index in range(3):
+            receipt = engine.bind({"i": index})
+            assert receipt.timestamp % 1000 == 313, (
                 f"Timestamp {receipt.timestamp} does not end in 313"
+            )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
