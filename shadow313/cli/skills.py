@@ -86,11 +86,7 @@ def _markdown_link_targets(content: str):
             if char == "\\":
                 cursor += 2
                 continue
-            if (
-                char in ("'", '"')
-                and cursor > target_start
-                and content[cursor - 1].isspace()
-            ):
+            if char in ("'", '"') and cursor > target_start and content[cursor - 1].isspace():
                 quote_char = char
                 cursor += 1
                 while cursor < len(content):
