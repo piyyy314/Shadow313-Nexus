@@ -6,6 +6,7 @@ from __future__ import annotations
 import collections.abc
 import json
 import os
+import socket
 import urllib.error
 import urllib.request
 
@@ -86,7 +87,7 @@ class AIEngine:
 
     def _validate_endpoint(self, endpoint: str) -> str:
         """Validate an administrator-configured HTTP(S) AI endpoint."""
-        from ipaddress import IPv6Address, ip_address
+        from ipaddress import IPv4Address, IPv6Address, ip_address
         from urllib.parse import urlsplit
 
         parsed = urlsplit(endpoint)
@@ -110,6 +111,14 @@ class AIEngine:
             ipv6 = None
         if ipv6 and ipv6.ipv4_mapped:
             normalized_host = str(ipv6.ipv4_mapped)
+
+        # urllib/libc accept legacy IPv4 forms such as 2130706433, 0177.0.0.1,
+        # and 0x7f000001. Normalize numeric-looking hosts before policy checks.
+        if all(char in "0123456789abcdefABCDEFxX." for char in host):
+            try:
+                normalized_host = str(IPv4Address(socket.inet_aton(host)))
+            except OSError:
+                pass
 
         if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
             ("169.254.", "fd00:", "fe80:", "fc00:")
