@@ -38,6 +38,7 @@ from enum import StrEnum
 
 class ProvenanceClass(StrEnum):
     """Mandatory provenance classification for all evidence records."""
+
     REAL_OBSERVATION = "REAL_OBSERVATION"  # Live sensor data
     SYNTHETIC_TEST = "SYNTHETIC_TEST"  # Generated test data
     SIMULATION = "SIMULATION"  # Simulation output
@@ -66,13 +67,14 @@ class ValidationStatus(StrEnum):
 
 
 class RedactionStatus(StrEnum):
-    CLEAN     = "CLEAN"       # No secrets detected
-    REDACTED = "REDACTED"    # Secrets found and redacted
-    PENDING   = "PENDING"     # Not yet scanned
-    FLAGGED   = "FLAGGED"     # Secrets found, not yet redacted
+    CLEAN = "CLEAN"  # No secrets detected
+    REDACTED = "REDACTED"  # Secrets found and redacted
+    PENDING = "PENDING"  # Not yet scanned
+    FLAGGED = "FLAGGED"  # Secrets found, not yet redacted
 
 
 # ── Evidence Envelope ─────────────────────────────────────────────────────────
+
 
 @dataclass
 class EvidenceEnvelope:
@@ -84,101 +86,103 @@ class EvidenceEnvelope:
 
     Schema version: 1.0 (Evidence Envelope v1 from 90-Day Roadmap)
     """
+
     # ── Identity ──────────────────────────────────────────────────────────────
-    event_id:         str
-    schema_version:   str = "1.0"
-    source_system:    str = ""   # AEGIS | APC | NEXUS | Ghost-Watch | Honeypot | eBPF
-    source_identity:  str = ""   # Sensor/agent ID
+    event_id: str
+    schema_version: str = "1.0"
+    source_system: str = ""  # AEGIS | APC | NEXUS | Ghost-Watch | Honeypot | eBPF
+    source_identity: str = ""  # Sensor/agent ID
 
     # ── Tenancy ───────────────────────────────────────────────────────────────
-    tenant:           str = "shadow313-nexus"
-    environment:      str = "production"  # production | staging | test | demo
+    tenant: str = "shadow313-nexus"
+    environment: str = "production"  # production | staging | test | demo
 
     # ── Timing ────────────────────────────────────────────────────────────────
-    observed_at:      str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    ingested_at:      str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    observed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    ingested_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # ── Classification ────────────────────────────────────────────────────────
-    event_type:       str = ""
-    severity:         str = Severity.INFO.value
-    confidence:       float = 1.0
+    event_type: str = ""
+    severity: str = Severity.INFO.value
+    confidence: float = 1.0
     provenance_class: str = ProvenanceClass.UNCLASSIFIED.value
 
     # ── References ────────────────────────────────────────────────────────────
-    asset:            str | None = None
-    workload:         str | None = None
-    process:          str | None = None
-    source_ip:        str | None = None
-    technique:        str | None = None  # ATT&CK technique ID
-    tactic:           str | None = None
+    asset: str | None = None
+    workload: str | None = None
+    process: str | None = None
+    source_ip: str | None = None
+    technique: str | None = None  # ATT&CK technique ID
+    tactic: str | None = None
 
     # ── Versions ──────────────────────────────────────────────────────────────
-    rule_version:     str | None = None
-    model_version:    str | None = None
-    policy_version:   str | None = None
+    rule_version: str | None = None
+    model_version: str | None = None
+    policy_version: str | None = None
 
     # ── Action ────────────────────────────────────────────────────────────────
-    action_requested:  str | None = None
+    action_requested: str | None = None
     action_authorized: str | None = None
-    action_executed:   str | None = None
-    action_result:     str | None = None
+    action_executed: str | None = None
+    action_result: str | None = None
 
     # ── Payload ───────────────────────────────────────────────────────────────
-    payload:          dict | None = None
+    payload: dict | None = None
 
     # ── Integrity ─────────────────────────────────────────────────────────────
-    evidence_hash:    str = ""
-    signature:        str = ""
+    evidence_hash: str = ""
+    signature: str = ""
     trusted_timestamp: str = ""
-    sequence_number:  int  = 0
-    loss_indicator:   bool = False
+    sequence_number: int = 0
+    loss_indicator: bool = False
 
     # ── Governance ────────────────────────────────────────────────────────────
     secret_redaction_status: str = RedactionStatus.PENDING.value
-    chain_of_custody:        list[str] = field(default_factory=list)
-    validation_status:       str = ValidationStatus.PENDING.value
-    review_status:           str = "UNREVIEWED"
+    chain_of_custody: list[str] = field(default_factory=list)
+    validation_status: str = ValidationStatus.PENDING.value
+    review_status: str = "UNREVIEWED"
 
     def to_dict(self) -> dict:
         return {
-            "event_id":               self.event_id,
-            "schema_version":         self.schema_version,
-            "source_system":          self.source_system,
-            "source_identity":        self.source_identity,
-            "tenant":                 self.tenant,
-            "environment":            self.environment,
-            "observed_at":            self.observed_at,
-            "ingested_at":            self.ingested_at,
-            "event_type":             self.event_type,
-            "severity":               self.severity,
-            "confidence":             self.confidence,
-            "provenance_class":       self.provenance_class,
-            "asset":                  self.asset,
-            "workload":               self.workload,
-            "process":                self.process,
-            "source_ip":              self.source_ip,
-            "technique":              self.technique,
-            "tactic":                 self.tactic,
-            "rule_version":           self.rule_version,
-            "model_version":          self.model_version,
-            "action_requested":       self.action_requested,
-            "action_authorized":      self.action_authorized,
-            "action_executed":        self.action_executed,
-            "action_result":          self.action_result,
-            "payload":                self.payload,
-            "evidence_hash":          self.evidence_hash,
-            "signature":              self.signature,
-            "trusted_timestamp":      self.trusted_timestamp,
-            "sequence_number":        self.sequence_number,
-            "loss_indicator":         self.loss_indicator,
+            "event_id": self.event_id,
+            "schema_version": self.schema_version,
+            "source_system": self.source_system,
+            "source_identity": self.source_identity,
+            "tenant": self.tenant,
+            "environment": self.environment,
+            "observed_at": self.observed_at,
+            "ingested_at": self.ingested_at,
+            "event_type": self.event_type,
+            "severity": self.severity,
+            "confidence": self.confidence,
+            "provenance_class": self.provenance_class,
+            "asset": self.asset,
+            "workload": self.workload,
+            "process": self.process,
+            "source_ip": self.source_ip,
+            "technique": self.technique,
+            "tactic": self.tactic,
+            "rule_version": self.rule_version,
+            "model_version": self.model_version,
+            "action_requested": self.action_requested,
+            "action_authorized": self.action_authorized,
+            "action_executed": self.action_executed,
+            "action_result": self.action_result,
+            "payload": self.payload,
+            "evidence_hash": self.evidence_hash,
+            "signature": self.signature,
+            "trusted_timestamp": self.trusted_timestamp,
+            "sequence_number": self.sequence_number,
+            "loss_indicator": self.loss_indicator,
             "secret_redaction_status": self.secret_redaction_status,
-            "chain_of_custody":       self.chain_of_custody,
-            "validation_status":      self.validation_status,
-            "review_status":          self.review_status,
+            "chain_of_custody": self.chain_of_custody,
+            "validation_status": self.validation_status,
+            "review_status": self.review_status,
         }
 
 
 # ── Evidence Factory ──────────────────────────────────────────────────────────
+
 
 class EvidenceFactory:
     """
@@ -205,15 +209,15 @@ class EvidenceFactory:
 
     def __init__(
         self,
-        source_system:   str = "NEXUS",
+        source_system: str = "NEXUS",
         source_identity: str = "shadow313-nexus-v4",
-        tenant:          str = "shadow313-nexus",
-        environment:     str = "production",
+        tenant: str = "shadow313-nexus",
+        environment: str = "production",
     ) -> None:
-        self.source_system   = source_system
+        self.source_system = source_system
         self.source_identity = source_identity
-        self.tenant          = tenant
-        self.environment     = environment
+        self.tenant = tenant
+        self.environment = environment
 
     def _next_seq(self) -> int:
         EvidenceFactory._sequence += 1
@@ -225,14 +229,19 @@ class EvidenceFactory:
     def _compute_hash(self, envelope: EvidenceEnvelope) -> str:
         """Compute SHA3-256 hash of envelope content."""
         import json
-        content = json.dumps({
-            "event_id":       envelope.event_id,
-            "event_type":     envelope.event_type,
-            "observed_at":    envelope.observed_at,
-            "source_system":  envelope.source_system,
-            "provenance_class": envelope.provenance_class,
-            "payload":        envelope.payload,
-        }, sort_keys=True, default=str)
+
+        content = json.dumps(
+            {
+                "event_id": envelope.event_id,
+                "event_type": envelope.event_type,
+                "observed_at": envelope.observed_at,
+                "source_system": envelope.source_system,
+                "provenance_class": envelope.provenance_class,
+                "payload": envelope.payload,
+            },
+            sort_keys=True,
+            default=str,
+        )
         return "sha3_256:" + hashlib.sha3_256(content.encode()).hexdigest()
 
     def _finalize(self, envelope: EvidenceEnvelope) -> EvidenceEnvelope:
@@ -242,24 +251,22 @@ class EvidenceFactory:
         independently trusted timestamp. Those fields remain empty until a
         configured cryptographic signer and timestamp authority are integrated.
         """
-        envelope.sequence_number  = self._next_seq()
-        envelope.evidence_hash    = self._compute_hash(envelope)
-        envelope.signature        = ""
+        envelope.sequence_number = self._next_seq()
+        envelope.evidence_hash = self._compute_hash(envelope)
+        envelope.signature = ""
         envelope.trusted_timestamp = ""
-        envelope.chain_of_custody.append(
-            f"{self.source_system}:{datetime.now(UTC).isoformat()}"
-        )
+        envelope.chain_of_custody.append(f"{self.source_system}:{datetime.now(UTC).isoformat()}")
         return envelope
 
     def from_honeypot_event(
         self,
-        source_ip:  str,
-        service:    str,
-        action:     str,
-        technique:  str | None = None,
-        severity:   str = Severity.HIGH.value,
-        blocked:    bool = True,
-        payload:    dict | None = None,
+        source_ip: str,
+        service: str,
+        action: str,
+        technique: str | None = None,
+        severity: str = Severity.HIGH.value,
+        blocked: bool = True,
+        payload: dict | None = None,
     ) -> EvidenceEnvelope:
         """Create evidence envelope from honeypot event."""
         env = EvidenceEnvelope(
@@ -286,11 +293,11 @@ class EvidenceFactory:
 
     def from_ebpf_event(
         self,
-        comm:     str,
-        syscall:  str,
-        args:     str,
-        pid:      int = 0,
-        status:   str = "intercepted",
+        comm: str,
+        syscall: str,
+        args: str,
+        pid: int = 0,
+        status: str = "intercepted",
         severity: str = Severity.HIGH.value,
     ) -> EvidenceEnvelope:
         """Create evidence envelope from eBPF kernel intercept."""
@@ -317,13 +324,13 @@ class EvidenceFactory:
 
     def from_detection(
         self,
-        technique:    str,
-        tactic:       str,
-        score:        float,
-        source_ip:    str | None = None,
-        rule_id:      str | None = None,
-        description:  str = "",
-        severity:     str = Severity.HIGH.value,
+        technique: str,
+        tactic: str,
+        score: float,
+        source_ip: str | None = None,
+        rule_id: str | None = None,
+        description: str = "",
+        severity: str = Severity.HIGH.value,
     ) -> EvidenceEnvelope:
         """Create evidence envelope from detection finding."""
         env = EvidenceEnvelope(
@@ -349,11 +356,11 @@ class EvidenceFactory:
 
     def from_simulation(
         self,
-        sim_id:       str,
-        threat_id:    str,
-        detected:     bool,
-        score:        float,
-        technique:    str = "",
+        sim_id: str,
+        threat_id: str,
+        detected: bool,
+        score: float,
+        technique: str = "",
     ) -> EvidenceEnvelope:
         """Create evidence envelope from simulation result — SIMULATION provenance."""
         env = EvidenceEnvelope(
@@ -369,10 +376,10 @@ class EvidenceFactory:
             provenance_class=ProvenanceClass.SIMULATION.value,  # CRITICAL: not REAL
             technique=technique,
             payload={
-                "sim_id":   sim_id,
+                "sim_id": sim_id,
                 "threat_id": threat_id,
                 "detected": detected,
-                "score":    score,
+                "score": score,
             },
             secret_redaction_status=RedactionStatus.CLEAN.value,
             validation_status=ValidationStatus.VERIFIED.value,
@@ -381,10 +388,10 @@ class EvidenceFactory:
 
     def from_weforge_decoy(
         self,
-        decoy_id:    str,
+        decoy_id: str,
         target_node: str,
-        dns_beacon:  str,
-        watermark:   str,
+        dns_beacon: str,
+        watermark: str,
     ) -> EvidenceEnvelope:
         """Create evidence envelope from WE-FORGE decoy trigger."""
         env = EvidenceEnvelope(
@@ -401,10 +408,10 @@ class EvidenceFactory:
             technique="T1598",
             tactic="reconnaissance",
             payload={
-                "decoy_id":    decoy_id,
+                "decoy_id": decoy_id,
                 "target_node": target_node,
-                "dns_beacon":  dns_beacon,
-                "watermark":   watermark,
+                "dns_beacon": dns_beacon,
+                "watermark": watermark,
             },
             secret_redaction_status=RedactionStatus.CLEAN.value,
             validation_status=ValidationStatus.VERIFIED.value,
@@ -413,6 +420,7 @@ class EvidenceFactory:
 
 
 # ── Provenance Classifier ─────────────────────────────────────────────────────
+
 
 class ProvenanceClassifier:
     """
@@ -489,13 +497,12 @@ class ProvenanceClassifier:
 
         total = len(envelopes)
         return {
-            "total":          total,
-            "classified":     total - unclassified,
-            "unclassified":   unclassified,
-            "coverage_pct":   round((total - unclassified) / total * 100, 1) if total else 0,
-            "by_class":       counts,
+            "total": total,
+            "classified": total - unclassified,
+            "unclassified": unclassified,
+            "coverage_pct": round((total - unclassified) / total * 100, 1) if total else 0,
+            "by_class": counts,
             "production_eligible": sum(
-                v for k, v in counts.items()
-                if ProvenanceClass(k) in cls.PRODUCTION_CLASSES
+                v for k, v in counts.items() if ProvenanceClass(k) in cls.PRODUCTION_CLASSES
             ),
         }
