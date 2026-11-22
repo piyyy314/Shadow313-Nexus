@@ -23,8 +23,6 @@ Minimum fields (from Governance doc):
   secret_redaction_status, chain_of_custody, validation_status
 """
 
-from __future__ import annotations
-
 import hashlib
 import secrets
 import time
