@@ -37,6 +37,10 @@ def test_reserved_endpoints_and_non_http_schemes_are_rejected(endpoint):
     [
         "http://10.0.0.8/v1",
         "http://127.0.0.1:8080/v1",
+        "http://2130706433/v1",
+        "http://0177.0.0.1/v1",
+        "http://0x7f000001/v1",
+        "http://127.1/v1",
         "http://192.168.1.20/v1",
         "http://[::1]/v1",
         "http://localhost:8080/v1",
