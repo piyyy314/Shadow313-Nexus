@@ -16,8 +16,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from ...core.binding_sdk.binder import BindReceipt
+if TYPE_CHECKING:
+    from .binder import ReceiptLike
+
 from .parser import PQCAuditResult, PQCComponent
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -234,7 +237,7 @@ def _component_html(comp: PQCComponent) -> str:
 
 def generate_bound_report(
     audit: PQCAuditResult,
-    receipt: BindReceipt,
+    receipt: ReceiptLike,
     output_dir: str = "aegis_bound_reports",
 ) -> tuple[str, str]:
     """

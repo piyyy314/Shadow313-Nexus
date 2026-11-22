@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.binder
 ─────────────────────────────────────────
@@ -10,9 +9,11 @@ Usage:
     html_path, json_path = binder.generate_report(audit, receipt)
 """
 
+from __future__ import annotations
+
 import json
 import logging
-from typing import Optional, Tuple
+from typing import Any, Optional, Protocol, Tuple
 
 from .parser import PQCAuditParser, PQCAuditResult
 
@@ -24,6 +25,24 @@ try:
 except ImportError:
     HAS_BINDER = False
     logger.warning("Binder313 SDK not available — receipts will be simulated")
+
+
+class ReceiptLike(Protocol):
+    """Structural contract shared by real and simulated binding receipts."""
+
+    bind_id: str
+    timestamp_ns: int
+    timestamp_iso: str
+    payload_hash: str
+    chain_hash: str
+    prev_chain_hash: str
+    signature_algorithm: str
+    ipfs_cid: Optional[str]
+    ipfs_anchored: bool
+    app_id: str
+    app_version: str
+
+    def to_dict(self) -> dict[str, Any]: ...
 
 _APP_IDENTITY_KWARGS = dict(
     app_id      = "aegis-pqc",
@@ -63,7 +82,7 @@ class AegisPQCBinder:
         self,
         components: list[dict],
         source_file: str = "shadow313_crypto_sbom",
-    ) -> Tuple[PQCAuditResult, object]:
+    ) -> Tuple[PQCAuditResult, ReceiptLike]:
         """Parse Shadow313 crypto_sbom output and bind with 313 receipt."""
         audit   = self.parser.parse_shadow313_sbom(components, source_file)
         receipt = self._bind(audit)
@@ -73,7 +92,7 @@ class AegisPQCBinder:
         self,
         data: dict,
         source_file: str = "cyclonedx_sbom.json",
-    ) -> Tuple[PQCAuditResult, object]:
+    ) -> Tuple[PQCAuditResult, ReceiptLike]:
         """Parse CycloneDX JSON SBOM and bind with 313 receipt."""
         audit   = self.parser.parse_cyclonedx(data, source_file)
         receipt = self._bind(audit)
@@ -83,7 +102,7 @@ class AegisPQCBinder:
         self,
         json_str: str,
         source_file: str = "",
-    ) -> Tuple[PQCAuditResult, object]:
+    ) -> Tuple[PQCAuditResult, ReceiptLike]:
         """Parse JSON string and bind with 313 receipt."""
         audit   = self.parser.parse_json(json_str, source_file)
         receipt = self._bind(audit)
@@ -93,7 +112,7 @@ class AegisPQCBinder:
         self,
         data: dict,
         source_file: str = "",
-    ) -> Tuple[PQCAuditResult, object]:
+    ) -> Tuple[PQCAuditResult, ReceiptLike]:
         """Parse dict and bind with 313 receipt."""
         audit   = self.parser.parse_dict(data, source_file)
         receipt = self._bind(audit)
@@ -102,7 +121,7 @@ class AegisPQCBinder:
     def generate_report(
         self,
         audit: PQCAuditResult,
-        receipt: object,
+        receipt: ReceiptLike,
         output_dir: str = "aegis_bound_reports",  # nosec S03 — default string, not credential
     ) -> Tuple[str, str]:
         """Generate HTML + JSON bound report."""
@@ -113,7 +132,7 @@ class AegisPQCBinder:
             logger.warning("Report generation failed: %s", exc)
             return "", ""
 
-    def summary(self, audit: PQCAuditResult, receipt: object) -> dict:
+    def summary(self, audit: PQCAuditResult, receipt: ReceiptLike) -> dict:
         """Return compact summary dict."""
         s = audit.to_summary()
         if receipt:
@@ -124,7 +143,7 @@ class AegisPQCBinder:
 
     # ── Internal ──────────────────────────────────────────────────────────────
 
-    def _bind(self, audit: PQCAuditResult) -> object:
+    def _bind(self, audit: PQCAuditResult) -> ReceiptLike:
         """Create a 313 temporal bind for the audit result."""
         payload = audit.to_bind_payload()
         if self._binder:
