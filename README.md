@@ -51,6 +51,7 @@ is configured or a hosted service is running.
 |---|---|---|---|
 | Source control and CI | GitHub | Repository, pull requests, automated checks | In use |
 | Public website | Vercel | Static build, previews, production hosting | In use |
+| Delivery artifact portal | GitHub Pages | Versioned `dist/` manifest and receipt artifacts only | Secondary |
 | DNS for `shadow313.com` | Cloudflare | DNS zone and record management | In use |
 | DNS for `shadow313.dev` | Vercel DNS | Existing domain DNS configuration | In use |
 | Backend infrastructure | Hetzner | Planned API and service host | Pending purchase and setup |
@@ -58,6 +59,11 @@ is configured or a hosted service is running.
 The `www` hostnames are configured to redirect to their respective apex
 hostnames. Both domains are connected to the Vercel website project; this is
 not a cross-domain redirect from `.com` to `.dev`.
+
+GitHub Pages is a secondary delivery-artifact portal, not a second copy of the
+public website. The sole publisher is `.github/workflows/deliver.yml`, which
+publishes generated files from `dist/` only. It must never publish the repository
+root; Vercel remains the canonical public website host.
 
 **Render, Netlify, and Railway are not part of the intended hosting
 architecture.** Do not add a second frontend host or temporary backend provider

@@ -83,6 +83,7 @@ Shadow313-Nexus/
 - **Vercel:** public static website and deployment previews.
 - **Cloudflare:** DNS management for `shadow313.com`.
 - **GitHub:** source control and CI/CD.
+- **GitHub Pages:** secondary delivery portal for generated `dist/` manifests and receipts only; `.github/workflows/deliver.yml` is the sole publisher.
 - **Hetzner:** planned backend host; not yet provisioned.
 - **Render, Netlify, and Railway:** not part of the approved deployment topology.
 

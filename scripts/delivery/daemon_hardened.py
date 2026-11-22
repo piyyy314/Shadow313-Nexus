@@ -29,6 +29,12 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
+
+try:
+    from scripts.delivery.safe_paths import safe_docs_path
+except ModuleNotFoundError:  # Direct script execution puts this directory on sys.path.
+    from safe_paths import safe_docs_path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO_ROOT   = Path(__file__).parent.parent.parent
@@ -169,7 +175,7 @@ def scan_with_hashes(docs_dir: Path) -> list[dict]:
                         "s313-threat-board.html",
                         "shadow313-nexus-dashboard.html",
                     ],
-                    "provenance_class": "REAL_OBSERVATION",  # P0-6
+                    "provenance_class": "ARTIFACT_INVENTORY",  # File inventory only; not sensor evidence
                 })
     files.sort(key=lambda f: (not f["priority"], f["name"]))
     return files
@@ -186,12 +192,14 @@ def create_download_receipt(filename: str, sha3: str, client_ip: str) -> dict:
         "bind_id":       f"313-DL-{secrets.token_hex(4).upper()}",
         "timestamp_ns":  ts_313,
         "timestamp_iso": datetime.now(timezone.utc).isoformat(),
+        "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
         "filename":      filename,
         "sha3_256":      sha3,
         "client_ip":     client_ip,
         "payload_hash":  "sha3_256:" + hashlib.sha3_256(payload).hexdigest(),
         "event_type":    "file.download",
-        "provenance":    "REAL_OBSERVATION",
+        "signature_status": "UNSIGNED",
+        "provenance":    "LOCAL_OPERATIONAL_EVENT",
     }
 
 
@@ -260,14 +268,15 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
         elif path.startswith("/download/"):
             # P0-2: Force download with hash header
             # P0-7: Create receipt for every download
-            fname = path[len("/download/"):]
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
+            requested_name = path[len("/download/"):]
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
+                relative_name = fpath.relative_to(DOCS_DIR.resolve()).as_posix()
                 content = fpath.read_bytes()
                 sha3    = hashlib.sha3_256(content).hexdigest()
 
                 # Create download receipt
-                receipt = create_download_receipt(fname, sha3, client_ip)
+                receipt = create_download_receipt(relative_name, sha3, client_ip)
                 with _receipt_lock:
                     _download_receipts.append(receipt)
                     # Save receipt
@@ -276,29 +285,29 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
 
                 self.send_response(200)
                 self.send_header("Content-Type", "application/octet-stream")
-                self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+                self.send_header("Content-Disposition", f"attachment; filename*=UTF-8''{quote(fpath.name, safe='')}")
                 self.send_header("Content-Length", str(len(content)))
                 # P0-2: Hash headers for client verification
                 self.send_header("X-Content-SHA3-256", sha3)
                 self.send_header("X-Delivery-Receipt", receipt["bind_id"])
-                self.send_header("X-Provenance-Class", "REAL_OBSERVATION")
+                self.send_header("X-Provenance-Class", "ARTIFACT_INVENTORY")
                 self.end_headers()
                 self.wfile.write(content)
             else:
                 self.send_error(404)
 
         elif path.startswith("/"):
-            fname = path.lstrip("/")
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
+            requested_name = path.lstrip("/")
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
                 content = fpath.read_bytes()
                 sha3    = hashlib.sha3_256(content).hexdigest()
-                ctype   = "text/html; charset=utf-8" if fname.endswith(".html") else "application/json"
+                ctype   = "text/html; charset=utf-8" if fpath.name.endswith(".html") else "application/octet-stream"
                 self.send_response(200)
                 self.send_header("Content-Type", ctype)
                 self.send_header("Content-Length", str(len(content)))
                 self.send_header("X-Content-SHA3-256", sha3)  # P0-2
-                self.send_header("X-Provenance-Class", "REAL_OBSERVATION")  # P0-6
+                self.send_header("X-Provenance-Class", "ARTIFACT_INVENTORY")  # File inventory only
                 # Security headers
                 self.send_header("X-Frame-Options", "DENY")
                 self.send_header("X-Content-Type-Options", "nosniff")
@@ -416,9 +425,10 @@ class HardenedDaemon:
             "git_sha":           git_sha,
             "generated_at":      ts,
             "timestamp_313":     ts_313,
+            "timestamp_status":  "LOCAL_CLOCK_UNVERIFIED",
             "total_files":       len(files),
             "files":             files,
-            "provenance_class":  "REAL_OBSERVATION",
+            "provenance_class":  "ARTIFACT_INVENTORY",
             "source":            "hardened-daemon",
             "security_controls": {
                 "localhost_only":    True,

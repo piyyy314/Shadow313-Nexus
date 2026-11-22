@@ -133,10 +133,11 @@ def generate_manifest(files: list[dict]) -> dict:
         "git_branch":       git_branch,
         "generated_at":     ts,
         "timestamp_313":    ts_313,
+        "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
         "total_files":      len(files),
         "total_size_kb":    round(sum(f["size"] for f in files) / 1024, 1),
         "files":            files,
-        "provenance_class": "REAL_OBSERVATION",
+        "provenance_class": "ARTIFACT_INVENTORY",
         "delivery_id":      f"DEL-{secrets.token_hex(4).upper()}",
     }
 
@@ -175,7 +176,9 @@ def create_delivery_receipt(manifest: dict) -> dict:
         "delivery_id":         manifest["delivery_id"],
         "payload_hash":        payload_hash,
         "chain_hash":          chain_hash,
-        "signature_algorithm": "SHA3-512 (SLH-DSA pending liboqs)",
+        "signature_algorithm": "NONE",
+        "signature_status": "UNSIGNED",
+        "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
         "files_delivered":     manifest["total_files"],
         "platform_version":    manifest["platform_version"],
         "git_sha":             manifest["git_sha"],

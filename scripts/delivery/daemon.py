@@ -9,7 +9,7 @@ Features:
   - Automatic versioning with semantic bump detection
   - Local HTTP delivery server with real download buttons
   - 313-BIND receipt chain for every delivery
-  - Git auto-commit on successful delivery
+  - Optional Git auto-commit (disabled by default)
   - Offline-capable — zero external dependencies
   - Systemd/launchd service file generation
 
@@ -25,6 +25,7 @@ import argparse
 import hashlib
 import http.server
 import json
+import mimetypes
 import os
 import secrets
 import signal
@@ -36,6 +37,12 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
+
+try:
+    from scripts.delivery.safe_paths import safe_docs_path
+except ModuleNotFoundError:  # Direct script execution puts this directory on sys.path.
+    from safe_paths import safe_docs_path
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -53,7 +60,7 @@ WATCH_DIRS      = [DOCS_DIR, REPO_ROOT / "shadow313" / "v4" / "detection"]
 POLL_INTERVAL   = 3.0   # seconds between file system polls
 DEBOUNCE_DELAY  = 1.5   # seconds to wait after last change before rebuilding
 SERVER_PORT     = 8313
-AUTO_GIT_COMMIT = True
+AUTO_GIT_COMMIT = os.getenv("SHADOW313_AUTO_GIT_COMMIT", "0").strip().lower() in {"1", "true", "yes"}
 
 
 # ── Logger ────────────────────────────────────────────────────────────────────
@@ -224,11 +231,12 @@ class DeliveryBuilder:
             "git_sha":          git_sha,
             "generated_at":     ts,
             "timestamp_313":    ts_313,
+            "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
             "total_files":      len(files),
             "total_size_kb":    round(sum(f["size_kb"] for f in files), 1),
             "files":            files,
             "source":           "local-daemon",
-            "provenance_class": "REAL_OBSERVATION",
+            "provenance_class": "ARTIFACT_INVENTORY",
         }
         content = json.dumps(
             {k: v for k, v in manifest.items() if k != "manifest_hash"},
@@ -246,6 +254,8 @@ class DeliveryBuilder:
             "bind_id":          f"313-DEL-{secrets.token_hex(4).upper()}",
             "timestamp_ns":     ts_313,
             "timestamp_iso":    ts,
+            "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
+            "signature_status": "UNSIGNED",
             "delivery_id":      delivery["delivery_id"],
             "delivery_count":   delivery["delivery_count"],
             "payload_hash":     payload_hash,
@@ -259,21 +269,72 @@ class DeliveryBuilder:
         return manifest, receipt
 
     def git_commit(self, delivery_id: str):
-        """Auto-commit manifest and receipts to git."""
+        """Optionally commit generated delivery artifacts on a feature branch."""
         if not AUTO_GIT_COMMIT:
             return
+
         try:
-            subprocess.run(["git", "add", "dist/manifest.json", "dist/receipts/"],
-                           cwd=REPO_ROOT, capture_output=True)
+            branch_result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            branch = branch_result.stdout.strip()
+            if branch in {"master", "main"}:
+                self.log.warn("Git auto-commit refused on protected branch.")
+                return
+
+            # These are generated delivery artifacts; force-add is scoped to this directory.
             subprocess.run(
-                ["git", "commit", "-m",
-                 f"chore(daemon): delivery {delivery_id} [skip ci]",
-                 "--no-verify"],
-                cwd=REPO_ROOT, capture_output=True
+                ["git", "add", "-f", "dist/manifest.json", "dist/receipts/"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            staged_result = subprocess.run(
+                ["git", "diff", "--cached", "--name-only"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            if not staged_result.stdout.strip():
+                self.log.info("No delivery artifact changes to commit.")
+                return
+
+            subprocess.run(
+                ["git", "diff", "--cached", "--check"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            secret_scanner = REPO_ROOT / "scripts" / "check-secrets.py"
+            if not secret_scanner.is_file():
+                raise RuntimeError("Required secret scanner scripts/check-secrets.py is missing.")
+            subprocess.run(
+                [sys.executable, str(secret_scanner)],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "commit", "-m", f"chore(daemon): delivery {delivery_id} [skip ci]"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
             )
             self.log.ok(f"Git commit: {delivery_id}")
-        except Exception as e:
-            self.log.warn(f"Git commit failed: {e}")
+        except subprocess.CalledProcessError as exc:
+            details = (exc.stderr or exc.stdout or str(exc)).strip()
+            self.log.warn(f"Git commit failed: {details}")
+        except Exception as exc:
+            self.log.warn(f"Git commit failed: {exc}")
 
 
 # ── HTTP Server ───────────────────────────────────────────────────────────────
@@ -291,23 +352,23 @@ class DaemonHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/status":
             self._json({"status": "running", "deliveries": _current_manifest.get("delivery_count", 0)})
         elif path.startswith("/download/"):
-            fname = path[len("/download/"):]
-            fpath = DOCS_DIR / fname
-            if fpath.exists():
+            requested_name = path[len("/download/"):]
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
                 data = fpath.read_bytes()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/octet-stream")
-                self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+                self.send_header("Content-Disposition", f"attachment; filename*=UTF-8''{quote(fpath.name, safe='')}")
                 self.send_header("Content-Length", str(len(data)))
                 self.end_headers()
                 self.wfile.write(data)
             else:
                 self.send_error(404)
         elif path.startswith("/"):
-            fname = path.lstrip("/")
-            fpath = DOCS_DIR / fname
-            if fpath.exists() and fpath.is_file():
-                ctype = "text/html" if fname.endswith(".html") else "application/json"
+            requested_name = path.lstrip("/")
+            fpath = safe_docs_path(DOCS_DIR, requested_name)
+            if fpath is not None and fpath.is_file():
+                ctype = mimetypes.guess_type(fpath.name)[0] or "application/octet-stream"
                 self._bytes(fpath.read_bytes(), ctype)
             else:
                 self.send_error(404)
@@ -410,8 +471,8 @@ class DeliveryDaemon:
         class QuietServer(socketserver.TCPServer):
             allow_reuse_address = True
 
-        self._server = QuietServer(("", SERVER_PORT), DaemonHandler)
-        self.log.info(f"Delivery server: http://localhost:{SERVER_PORT}")
+        self._server = QuietServer(("127.0.0.1", SERVER_PORT), DaemonHandler)
+        self.log.info(f"Delivery server: http://127.0.0.1:{SERVER_PORT}")
         self._server.serve_forever()
 
     def start(self):

