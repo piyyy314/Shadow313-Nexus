@@ -75,15 +75,16 @@ class TestSignSLHDSA:
         sig, algo, public_key = _sign_slh_dsa(b"test")
         assert isinstance(sig, str)
         assert isinstance(algo, str)
+        assert isinstance(public_key, str)
 
     def test_uses_sphincs_not_hmac(self):
         """SPHINCS+ backend must be active, not HMAC fallback."""
         _, algo, _ = _sign_slh_dsa(b"test")
-        assert "SPHINCS+" in algo, f"Expected SLH-DSA, got: {algo}"
+        assert "SPHINCS+" in algo, f"Expected SPHINCS+, got: {algo}"
         assert "HMAC" not in algo, f"Must NOT use HMAC fallback, got: {algo}"
 
     def test_algo_does_not_claim_fips_205(self):
-        _, algo = _sign_slh_dsa(b"test")
+        _, algo, _ = _sign_slh_dsa(b"test")
         assert "FIPS 205" not in algo and "SPHINCS+" in algo
 
     def test_algo_mentions_pyspx(self):
@@ -97,7 +98,7 @@ class TestSignSLHDSA:
 
     def test_signature_length_is_sphincs(self):
         """SPHINCS+-SHAKE-128f signature = 17088 bytes = 34176 hex chars."""
-        sig, algo = _sign_slh_dsa(b"test")
+        sig, algo, _ = _sign_slh_dsa(b"test")
         if "pyspx" in algo.lower() or "pqcrypto" in algo.lower():
             assert len(sig) == 34176, f"Expected 34176 hex chars, got {len(sig)}"
 
@@ -105,22 +106,26 @@ class TestSignSLHDSA:
         sig1, algo1, public_key1 = _sign_slh_dsa(b"message one")
         sig2, algo2, public_key2 = _sign_slh_dsa(b"message two")
         assert sig1 != sig2
+        assert public_key1 == public_key2
+        assert _verify_slh_dsa(b"message one", sig1, algo1, public_key1)
+        assert _verify_slh_dsa(b"message two", sig2, algo2, public_key2)
 
-    def test_same_message_produces_different_sigs(self):
-        """SLH-DSA uses randomized signing — same message → different signatures."""
-        sig1, _ = _sign_slh_dsa(b"same message")
-        sig2, _ = _sign_slh_dsa(b"same message")
-        # pyspx uses fresh randomness each call
-        assert sig1 != sig2
+    def test_same_message_signatures_are_verifiable(self):
+        """The persisted public key verifies repeated signatures for the same payload."""
+        sig1, algo1, public_key1 = _sign_slh_dsa(b"same message")
+        sig2, algo2, public_key2 = _sign_slh_dsa(b"same message")
+        assert public_key1 == public_key2
+        assert _verify_slh_dsa(b"same message", sig1, algo1, public_key1)
+        assert _verify_slh_dsa(b"same message", sig2, algo2, public_key2)
 
     def test_empty_message_works(self):
-        sig, algo = _sign_slh_dsa(b"")
+        sig, algo, _ = _sign_slh_dsa(b"")
         assert len(sig) > 0
-        assert "SLH-DSA" in algo
+        assert "SPHINCS+" in algo
 
     def test_large_message_works(self):
         large_msg = b"x" * 100_000
-        sig, algo = _sign_slh_dsa(large_msg)
+        sig, algo, _ = _sign_slh_dsa(large_msg)
         assert "SLH-DSA" in algo
         assert len(sig) > 0
 
