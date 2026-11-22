@@ -23,7 +23,7 @@ def test_vercel_config_has_name_and_valid_destinations():
         assert destination.exists(), rewrite["destination"]
 
 
-def test_deploy_workflow_targets_repo_root_static_site():
+def test_deploy_workflow_targets_allowlisted_public_site():
     workflow = yaml.safe_load(WORKFLOW_PATH.read_text())
 
     quality_steps = workflow["jobs"]["quality"]["steps"]
@@ -46,30 +46,48 @@ def test_deploy_workflow_targets_repo_root_static_site():
         assert path in required_paths
         assert (REPO_ROOT / path).is_file()
 
-    for stale_path in (
-        "tools/index.html",
-        "tools/aegis-nexus.html",
-        "tools/sovereign-shield.html",
-        "tools/vsat-tactical-suite.html",
-        "marketplace/index.html",
-        "marketplace/analytics.html",
-        "marketplace/analytics-live.html",
-        "about/index.html",
-    ):
-        assert stale_path not in required_paths
+    build_test = next(
+        step for step in quality_steps
+        if step.get("name") == "Build and verify allowlisted deployment artifact"
+    )
+    assert "tests/public-site-build.test.cjs" in build_test["run"]
 
     preview_steps = workflow["jobs"]["preview"]["steps"]
+    preview_build = next(
+        step for step in preview_steps if step.get("name") == "Build allowlisted deployment root"
+    )
+    assert preview_build["run"] == "node scripts/build-public-site.cjs"
+    preview_pull = next(step for step in preview_steps if step.get("name") == "Pull Vercel environment")
+    assert preview_pull["working-directory"] == "public-site"
     deploy_step = next(step for step in preview_steps if step.get("name") == "Deploy Preview")
+    assert deploy_step["working-directory"] == "public-site"
+    assert "vercel deploy --yes" in deploy_step["run"]
     assert "grep -Eo" in deploy_step["run"]
     assert r"\.vercel\.(app|dev)" in deploy_step["run"]
     summary_step = next(
         step for step in preview_steps if step.get("name") == "Summarize preview deployment"
     )
-    assert 'steps.deploy.outputs.preview_url' in summary_step['run']
-    assert 'GITHUB_STEP_SUMMARY' in summary_step['run']
+    assert "steps.deploy.outputs.preview_url" in summary_step["run"]
+    assert "GITHUB_STEP_SUMMARY" in summary_step["run"]
 
     production_steps = workflow["jobs"]["production"]["steps"]
-    smoke_step = next(step for step in production_steps if step.get("name") == "Smoke test production deployment")
+    production_build = next(
+        step for step in production_steps if step.get("name") == "Build allowlisted deployment root"
+    )
+    assert production_build["run"] == "node scripts/build-public-site.cjs"
+    production_pull = next(
+        step for step in production_steps if step.get("name") == "Pull Vercel environment"
+    )
+    assert production_pull["working-directory"] == "public-site"
+    production_deploy = next(
+        step for step in production_steps if step.get("name") == "Deploy to Production"
+    )
+    assert production_deploy["working-directory"] == "public-site"
+    assert "vercel deploy --prod --yes" in production_deploy["run"]
+
+    smoke_step = next(
+        step for step in production_steps if step.get("name") == "Smoke test production deployment"
+    )
     smoke_block = re.search(r'routes=\(\s*(.*?)\s*\)', smoke_step["run"], re.DOTALL)
     assert smoke_block is not None
     smoke_routes = set(re.findall(r'"([^"]+)"', smoke_block.group(1)))
