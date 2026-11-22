@@ -1,6 +1,8 @@
 """Regressions for evidence provenance and local delivery receipts."""
 
 from pathlib import Path
+import subprocess
+import sys
 
 from scripts.delivery import daemon, daemon_hardened, pipeline
 from scripts.delivery.safe_paths import safe_docs_path
@@ -104,11 +106,28 @@ def test_safe_docs_path_rejects_traversal_and_symlink_escapes(tmp_path):
         assert safe_docs_path(docs, "escape.txt") is None
 
 
+def test_delivery_daemon_supports_direct_script_execution():
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/delivery/daemon.py"), "--help"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "Local Delivery Daemon" in result.stdout
+
+
 def test_both_delivery_daemons_use_safe_paths_and_loopback_binding():
     daemon_source = (ROOT / "scripts/delivery/daemon.py").read_text(encoding="utf-8")
     hardened_source = (ROOT / "scripts/delivery/daemon_hardened.py").read_text(encoding="utf-8")
     assert "safe_docs_path(DOCS_DIR, requested_name)" in daemon_source
+    assert "except ModuleNotFoundError" in daemon_source
+    assert "from safe_paths import safe_docs_path" in daemon_source
     assert "safe_docs_path(DOCS_DIR, requested_name)" in hardened_source
+    assert "except ModuleNotFoundError" in hardened_source
+    assert "from safe_paths import safe_docs_path" in hardened_source
     assert 'QuietServer(("127.0.0.1", SERVER_PORT)' in daemon_source
     assert 'BIND_HOST       = "127.0.0.1"' in hardened_source
     assert 'QuietServer(("", SERVER_PORT)' not in daemon_source
