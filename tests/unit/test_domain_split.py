@@ -55,7 +55,7 @@ class DomainSplitTests(unittest.TestCase):
     def test_sentinelos_assets_exist(self):
         page = Assets()
         page.feed((ROOT / 'sentinelos/index.html').read_text())
-        self.assertEqual(len(page.paths), 15)
+        self.assertEqual(len(page.paths), 16)
         for path in page.paths:
             self.assertTrue((ROOT / path.lstrip('/')).is_file(), path)
 
