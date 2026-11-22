@@ -169,5 +169,6 @@
   "tools/soar-builder.html",
   "tools/sovereign-shield.html",
   "tools/threat-predictor.html",
-  "tools/vsat-tactical-suite.html"
+  "tools/vsat-tactical-suite.html",
+  "vercel.json"
 ]
