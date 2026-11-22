@@ -83,21 +83,99 @@ def _save_bind_counter(counter: int) -> None:
 
 # ── SLH-DSA signing ──────────────────────────────────────────────────────────
 
+def _load_or_create_pqc_keypair(
+    key_name: str,
+    generate_keypair,
+) -> tuple[bytes, bytes]:
+    """Load a persistent local keypair, creating it once with restrictive permissions."""
+    key_dir = Path(
+        os.environ.get("SHADOW313_KEY_DIR", str(Path.home() / ".shadow313" / "keys"))
+    ).expanduser()
+    key_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        key_dir.chmod(0o700)
+    except OSError:
+        pass
+
+    key_path = key_dir / f"{key_name}.json"
+    lock_path = key_dir / f".{key_name}.lock"
+
+    def read_keypair() -> tuple[bytes, bytes]:
+        data = json.loads(key_path.read_text(encoding="utf-8"))
+        public_key = bytes.fromhex(data["public_key_hex"])
+        secret_key = bytes.fromhex(data["secret_key_hex"])
+        try:
+            key_path.chmod(0o600)
+        except OSError:
+            pass
+        return public_key, secret_key
+
+    if key_path.exists():
+        return read_keypair()
+
+    lock_fd = None
+    deadline = time.monotonic() + 15
+    while lock_fd is None:
+        try:
+            lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            if key_path.exists():
+                return read_keypair()
+            try:
+                if time.time() - lock_path.stat().st_mtime > 120:
+                    lock_path.unlink(missing_ok=True)
+                    continue
+            except FileNotFoundError:
+                continue
+            if time.monotonic() >= deadline:
+                raise TimeoutError(f"Timed out waiting for signing-key lock: {lock_path}")
+            time.sleep(0.05)
+
+    try:
+        if key_path.exists():
+            return read_keypair()
+        public_key, secret_key = generate_keypair()
+        temporary_path = key_dir / f".{key_name}.{os.getpid()}.tmp"
+        fd = os.open(temporary_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "algorithm": key_name,
+                    "public_key_hex": public_key.hex(),
+                    "secret_key_hex": secret_key.hex(),
+                },
+                handle,
+            )
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, key_path)
+        try:
+            key_path.chmod(0o600)
+        except OSError:
+            pass
+        return public_key, secret_key
+    finally:
+        os.close(lock_fd)
+        lock_path.unlink(missing_ok=True)
+
+
 def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     """
     Sign a canonical receipt payload.
 
-    Returns (signature_hex, algorithm_name, public_key_hex). SPHINCS+ keys
-    are self-contained in each receipt so signatures can be mathematically
-    verified later. This does not establish signer identity; trust is separate.
+    Returns (signature_hex, algorithm_name, public_key_hex). SPHINCS+ keypairs
+    are persisted outside the repository and public keys are embedded in receipts.
+    This verifies signature integrity; signer identity still requires a trusted key ID.
 
-    HMAC is used only when an explicit SHADOW313_BIND_KEY is configured.
+    HMAC is used only when SHADOW313_BIND_KEY is explicitly configured.
     Without a public-key backend or stable shared key, the receipt is unsigned.
     """
     try:
         from pqcrypto.sign.sphincs_sha2_128f_simple import generate_keypair, sign
 
-        public_key, secret_key = generate_keypair()
+        public_key, secret_key = _load_or_create_pqc_keypair(
+            "sphincs_sha2_128f_simple", generate_keypair
+        )
         signature = sign(secret_key, message)
         return (
             signature.hex(),
@@ -115,7 +193,9 @@ def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     try:
         import pyspx.shake_128f as sphincs
 
-        public_key, secret_key = sphincs.generate_keypair(os.urandom(48))
+        public_key, secret_key = _load_or_create_pqc_keypair(
+            "sphincs_shake_128f", lambda: sphincs.generate_keypair(os.urandom(48))
+        )
         signature = sphincs.sign(message, secret_key)
         return (
             signature.hex(),
