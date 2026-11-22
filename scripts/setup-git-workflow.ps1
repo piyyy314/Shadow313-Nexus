@@ -244,7 +244,7 @@ if ($currentRemote -match "ghp_") {
 Write-Host ""
 
 # ── STEP 6: REVIEW SETUP CHANGES ───────────────────────────────────
-Write-Host "[6/6] Committing and pushing all changes..." -ForegroundColor Yellow
+Write-Host "[6/6] Reviewing setup changes..." -ForegroundColor Yellow
 
 Write-Host "  Setup files were generated locally; nothing was staged, committed, or pushed." -ForegroundColor Green
 Write-Host "  Review changes with: git status --short" -ForegroundColor Gray
