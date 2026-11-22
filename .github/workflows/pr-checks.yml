@@ -71,7 +71,8 @@ jobs:
               gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
-              git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+              merge_base="$(git merge-base "$BASE_SHA" "$GITHUB_SHA")"
+              git diff --name-only -z --diff-filter=ACMR "$merge_base" "$GITHUB_SHA" > "$changed_files"
             fi
           fi
           files=()
@@ -99,7 +100,8 @@ jobs:
               gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
-              git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+              merge_base="$(git merge-base "$BASE_SHA" "$GITHUB_SHA")"
+              git diff --name-only -z --diff-filter=ACMR "$merge_base" "$GITHUB_SHA" > "$changed_files"
             fi
           fi
           files=()
@@ -127,7 +129,8 @@ jobs:
               gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
-              git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+              merge_base="$(git merge-base "$BASE_SHA" "$GITHUB_SHA")"
+              git diff --name-only -z --diff-filter=ACMR "$merge_base" "$GITHUB_SHA" > "$changed_files"
             fi
           fi
           files=()
@@ -205,7 +208,8 @@ jobs:
               gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[] | select(.status != "removed") | .filename' |
                 while IFS= read -r path; do printf '%s\0' "$path"; done > "$changed_files"
             else
-              git diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$GITHUB_SHA" > "$changed_files"
+              merge_base="$(git merge-base "$BASE_SHA" "$GITHUB_SHA")"
+              git diff --name-only -z --diff-filter=ACMR "$merge_base" "$GITHUB_SHA" > "$changed_files"
             fi
           fi
           files=()
