@@ -44,7 +44,12 @@ jobs:
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          MERGE_BASE="$(git merge-base "$BASE_SHA" "$GITHUB_SHA" || true)"
+          if [ -z "$MERGE_BASE" ]; then
+            echo "::error::Could not find a common ancestor for changed-file lint."
+            exit 1
+          fi
+          mapfile -t candidates < <(git diff --name-only "$MERGE_BASE" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
           changed_files=()
           for file in "${candidates[@]}"; do
             if [ -f "$file" ]; then
