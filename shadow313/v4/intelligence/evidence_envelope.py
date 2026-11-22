@@ -32,7 +32,6 @@ Minimum fields (from Governance doc):
 import hashlib
 import secrets
 import time
-
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -43,12 +42,12 @@ from enum import StrEnum
 class ProvenanceClass(StrEnum):
     """Mandatory provenance classification for all evidence records."""
     REAL_OBSERVATION = "REAL_OBSERVATION"   # Live sensor data
-    SYNTHETIC_TEST   = "SYNTHETIC_TEST"     # Generated test data
-    SIMULATION       = "SIMULATION"         # Simulation output
-    DEMO             = "DEMO"               # Demonstration data
-    REPLAY           = "REPLAY"             # Replayed historical event
-    MODEL_GENERATED  = "MODEL_GENERATED"    # ML model output
-    EXTERNAL_SOURCE  = "EXTERNAL_SOURCE"    # Third-party threat intel
+    SYNTHETIC_TEST = "SYNTHETIC_TEST"  # Generated test data
+    SIMULATION = "SIMULATION"  # Simulation output
+    DEMO = "DEMO"  # Demonstration data
+    REPLAY = "REPLAY"  # Replayed historical event
+    MODEL_GENERATED = "MODEL_GENERATED"  # ML model output
+    EXTERNAL_SOURCE = "EXTERNAL_SOURCE"  # Third-party threat intel
     ARTIFACT_INVENTORY = "ARTIFACT_INVENTORY"  # Local file metadata and hashes
     LOCAL_OPERATIONAL_EVENT = "LOCAL_OPERATIONAL_EVENT"  # Local service activity
     UNCLASSIFIED = "UNCLASSIFIED"  # Source provenance not established
@@ -56,22 +55,22 @@ class ProvenanceClass(StrEnum):
 
 class Severity(StrEnum):
     CRITICAL = "CRITICAL"
-    HIGH     = "HIGH"
-    MEDIUM   = "MEDIUM"
-    LOW      = "LOW"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
     INFO     = "INFO"
 
 
 class ValidationStatus(StrEnum):
-    PENDING   = "PENDING"
-    VERIFIED  = "VERIFIED"
-    REJECTED  = "REJECTED"
-    DISPUTED  = "DISPUTED"
+    PENDING = "PENDING"
+    VERIFIED = "VERIFIED"
+    REJECTED = "REJECTED"
+    DISPUTED = "DISPUTED"
 
 
 class RedactionStatus(StrEnum):
     CLEAN     = "CLEAN"       # No secrets detected
-    REDACTED  = "REDACTED"    # Secrets found and redacted
+    REDACTED = "REDACTED"    # Secrets found and redacted
     PENDING   = "PENDING"     # Not yet scanned
     FLAGGED   = "FLAGGED"     # Secrets found, not yet redacted
 
