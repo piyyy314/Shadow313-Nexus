@@ -23,12 +23,13 @@ Minimum fields (from Governance doc):
   secret_redaction_status, chain_of_custody, validation_status
 """
 
-import hashlib
-import secrets
-import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
+
+import hashlib
+import secrets
+import time
 
 
 # ── Provenance Classification ─────────────────────────────────────────────────
