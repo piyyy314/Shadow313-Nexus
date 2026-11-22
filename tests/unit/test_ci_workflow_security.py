@@ -390,3 +390,12 @@ def test_complete_system_fix_does_not_embed_pat_in_git_remote():
     assert "gh auth setup-git" in script
     assert "https://piyyy314:$Token@" not in script
 
+
+def test_complete_system_fix_uses_github_cli_without_token_remote():
+    script = (ROOT / "scripts" / "shadow313-fix-all.ps1").read_text(encoding="utf-8")
+    assert "gh auth status --hostname github.com" in script
+    assert "git pull --ff-only origin master" in script
+    assert "$Token" not in script
+    assert "https://piyyy314:$Token@" not in script
+    assert "git remote set-url origin" not in script
+

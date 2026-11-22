@@ -8,7 +8,7 @@
     .\shadow313-fix-all.ps1
 #>
 
-param([string]$Token = "")
+
 
 $ErrorActionPreference = "Continue"
 
@@ -408,20 +408,18 @@ $repoPath = "$env:USERPROFILE\shadow313-nexus"
 if (Test-Path "$repoPath\.git") {
     Push-Location $repoPath
     
-    if ($Token) {
-        git remote set-url origin "https://piyyy314:$Token@github.com/piyyy314/Shadow313-Nexus.git"
-    }
-    
-    git pull origin master 2>&1 | Out-Null
-    
+    # Use the user's configured GitHub CLI credential helper; never place a PAT in .git/config.
+    & gh auth status --hostname github.com 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0) {
-        Write-OK "Repo updated — missing security files pulled"
+        git pull --ff-only origin master 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-OK "Repo updated — missing security files pulled"
+        } else {
+            Write-Warn "Git pull failed; inspect local branch changes and retry manually"
+        }
     } else {
-        Write-Warn "Git pull had issues — check token or run manually"
+        Write-Warn "GitHub CLI authentication is unavailable. Run 'gh auth login' and 'gh auth setup-git', then pull manually."
     }
-    
-    # Reset remote URL to clean version
-    git remote set-url origin "https://github.com/piyyy314/Shadow313-Nexus.git"
     Pop-Location
 } else {
     Write-Warn "Repo not found at $repoPath"
