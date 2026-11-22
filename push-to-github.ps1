@@ -121,7 +121,9 @@ try {
     $remoteUrl = git remote get-url $Remote 2>&1
     if ($LASTEXITCODE -ne 0) { throw "Remote '$Remote' not found" }
     Write-Ok "Remote '$Remote': $remoteUrl"
-    if ($remoteUrl -notmatch 'github\.com[:/]piyyy314/Shadow313-Nexus(?:\.git)?
+    if ($remoteUrl -notlike "*github.com/piyyy314/Shadow313-Nexus*") {
+        throw "Remote must point to the canonical Shadow313-Nexus repository."
+    }
     Write-Fail "Remote '$Remote' not configured. Add it with: git remote add origin https://github.com/piyyy314/Shadow313-Nexus.git"
     exit 1
 }
