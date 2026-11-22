@@ -571,7 +571,7 @@ Provide:
 
     async def _timing_analysis(self, client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
         """Analyze response timing for side-channel information."""
-        timings = []
+        timings: list[dict[str, Any]] = []
         anomalies = []
 
         # Measure response times for different paths
