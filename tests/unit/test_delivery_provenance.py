@@ -1,8 +1,8 @@
 """Regressions for evidence provenance and local delivery receipts."""
 
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 from scripts.delivery import daemon, daemon_hardened, pipeline
 from scripts.delivery.safe_paths import safe_docs_path
@@ -116,7 +116,7 @@ def test_delivery_daemon_supports_direct_script_execution():
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert "Local Delivery Daemon" in result.stdout
+    assert "S313 NEXUS Delivery Daemon" in result.stdout
 
 
 def test_both_delivery_daemons_use_safe_paths_and_loopback_binding():
