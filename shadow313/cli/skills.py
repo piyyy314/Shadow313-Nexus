@@ -65,7 +65,7 @@ def _markdown_link_targets(content: str):
             continue
         label_end = index + 1
         while label_end < len(content):
-            if content[label_end] == "\\\\":
+            if content[label_end] == "\\":
                 label_end += 2
                 continue
             if content[label_end] == "]":
@@ -79,7 +79,7 @@ def _markdown_link_targets(content: str):
         depth = 1
         while cursor < len(content) and depth:
             char = content[cursor]
-            if char == "\\\\":
+            if char == "\\":
                 cursor += 2
                 continue
             if char == "(":
@@ -115,12 +115,17 @@ def validate_skill(skill_id: str, root: Path) -> list[str]:
 
     if not content.startswith("---\n"):
         return ["SKILL.md must begin with YAML frontmatter (---)."]
-    closing = content.find("\n---", 4)
-    if closing < 0:
+    closing_match = re.search(r"(?m)^---[ \t]*$", content[4:])
+    if closing_match is None:
         return ["YAML frontmatter is not closed."]
 
+    closing_start = 4 + closing_match.start()
+    body_start = 4 + closing_match.end()
+    if body_start < len(content) and content[body_start] == "\n":
+        body_start += 1
+
     errors: list[str] = []
-    frontmatter = content[4:closing]
+    frontmatter = content[4:closing_start]
     fields = set()
     for line in frontmatter.splitlines():
         match = re.match(r"^(name|description):(?:\s|$)", line)
@@ -130,7 +135,7 @@ def validate_skill(skill_id: str, root: Path) -> list[str]:
         if required not in fields:
             errors.append(f"Missing required frontmatter field: {required}")
 
-    if not re.search(r"(?m)^#\s+.+", content[closing + 4 :]):
+    if not re.search(r"(?m)^#\s+.+", content[body_start:]):
         errors.append("Missing a top-level Markdown heading.")
 
     # Validate relative Markdown links without following external URLs or anchors.
