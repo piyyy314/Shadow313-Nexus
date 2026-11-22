@@ -4,7 +4,7 @@
 // separately and is reached only through server-side environment variables.
 const backendRoutes = [
   ['GET', /^\/api\/(modules|attck\/coverage|bind|audit|audit\/chain|stream|events|docs|openapi\.json)$/],
-  ['GET', /^\/api\/bind\/[^/]+$/],
+  ['GET', /^\/api\/bind\/(?!create$)[^/]+$/],
   ['GET', /^\/api\/mobile\/(status|alerts|findings|sessions)$/],
   ['POST', /^\/api\/(detect|webshell\/scan|bind\/create|mobile\/scan|scan\/recon|scan\/vuln|chat)$/],
   ['GET', /^\/api\/shiatoali(?:\/.*)?$/],
