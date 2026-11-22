@@ -45,6 +45,11 @@ def test_delivery_manifest_and_receipt_disclose_unsigned_local_provenance(monkey
     assert receipt["signature_status"] == "UNSIGNED"
     assert receipt["timestamp_status"] == "LOCAL_CLOCK_UNVERIFIED"
 
+    daemon = (ROOT / "scripts/delivery/daemon.py").read_text(encoding="utf-8")
+    hardened = (ROOT / "scripts/delivery/daemon_hardened.py").read_text(encoding="utf-8")
+    assert '"signature_status": "UNSIGNED"' in daemon
+    assert '"signature_status": "UNSIGNED"' in hardened
+
 
 def test_delivery_daemons_do_not_claim_live_sensor_provenance():
     for relative in (

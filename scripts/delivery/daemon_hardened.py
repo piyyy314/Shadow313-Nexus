@@ -192,6 +192,7 @@ def create_download_receipt(filename: str, sha3: str, client_ip: str) -> dict:
         "client_ip":     client_ip,
         "payload_hash":  "sha3_256:" + hashlib.sha3_256(payload).hexdigest(),
         "event_type":    "file.download",
+        "signature_status": "UNSIGNED",
         "provenance":    "LOCAL_OPERATIONAL_EVENT",
     }
 

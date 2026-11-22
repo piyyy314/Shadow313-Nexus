@@ -248,6 +248,7 @@ class DeliveryBuilder:
             "timestamp_ns":     ts_313,
             "timestamp_iso":    ts,
             "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
+            "signature_status": "UNSIGNED",
             "delivery_id":      delivery["delivery_id"],
             "delivery_count":   delivery["delivery_count"],
             "payload_hash":     payload_hash,
