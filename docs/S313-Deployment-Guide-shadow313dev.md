@@ -53,14 +53,25 @@ not served as a web root.
 For a change:
 
 1. Create a focused GitHub branch and pull request.
-2. Wait for required CI, security, and validation checks.
-3. Inspect the Vercel preview and verify affected routes.
-4. Merge only when required checks and reviews are satisfied.
-5. Confirm the production deployment reaches `READY`.
-6. Test the apex and `www` hostnames over HTTPS.
+2. The `deploy.yml` workflow runs its `quality` job on pushes to `master`
+   and on pull requests targeting `master`. This validates routes, HTML,
+   configuration, and the repository's deployment-safety tests.
+3. Pull-request and push events do **not** deploy a preview or production site.
+   The preview and production jobs run only through `workflow_dispatch`.
+4. After required CI, security checks, and reviews pass, inspect the changes
+   and merge the pull request.
+5. To create a preview, manually dispatch `Shadow313 NEXUS — Deploy to Vercel`
+   with target `preview`. The preview job requires the quality job to succeed.
+6. To deploy production, manually dispatch the same workflow from `master`
+   with target `production`. The production job requires the quality job to
+   succeed and is restricted to the default branch. Any configured GitHub
+   production-environment approval rules also apply.
+7. Confirm the resulting Vercel deployment reaches `READY`, then test the
+   apex and `www` hostnames over HTTPS.
 
 A successful quality-check job with a skipped deployment job is not a
-production deployment.
+production deployment. Snyk or another external quota error must be reported
+as externally blocked, not represented as a successful security scan.
 
 ## 4. Backend deployment — Hetzner (planned)
 
