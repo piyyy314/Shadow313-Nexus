@@ -150,3 +150,20 @@ def test_repository_root_is_not_a_second_github_pages_publisher():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "secondary delivery-artifact portal" in readme
     assert "Vercel remains the canonical public website host" in readme
+
+def test_provenance_coverage_does_not_count_unclassified_as_classified():
+    classified = EvidenceEnvelope(
+        event_id="EVT-REAL",
+        provenance_class=ProvenanceClass.REAL_OBSERVATION.value,
+    )
+    unclassified = EvidenceEnvelope(
+        event_id="EVT-UNKNOWN",
+        provenance_class=ProvenanceClass.UNCLASSIFIED.value,
+    )
+    report = ProvenanceClassifier.audit_provenance_coverage([classified, unclassified])
+
+    assert report["total"] == 2
+    assert report["classified"] == 1
+    assert report["unclassified"] == 1
+    assert report["coverage_pct"] == 50.0
+    assert report["production_eligible"] == 1
