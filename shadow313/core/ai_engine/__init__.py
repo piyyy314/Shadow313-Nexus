@@ -130,8 +130,8 @@ class AIEngine:
         if numeric_ipv4_candidate:
             try:
                 normalized_host = str(IPv4Address(socket.inet_aton(host)))
-            except OSError:
-                normalized_host = host
+            except OSError as exc:
+                raise ValueError("AI endpoint contains an invalid numeric IPv4 host") from exc
 
         if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
             ("169.254.", "fd00:", "fe80:", "fc00:")
