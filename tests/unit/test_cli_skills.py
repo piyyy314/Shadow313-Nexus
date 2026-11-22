@@ -164,3 +164,14 @@ def test_main_skill_validate_all(tmp_path: Path, capsys):
     )
     assert main(["skill", "--root", str(tmp_path), "validate"]) == 0
     assert "PASS example-skill" in capsys.readouterr().out
+
+
+def test_validation_checks_missing_reference_with_unbalanced_title_parenthesis(tmp_path: Path):
+    skill = tmp_path / "skills" / "example-skill"
+    _write_skill(
+        skill / "SKILL.md",
+        "---\\nname: example-skill\\ndescription: test\\n---\\n"
+        '# Example\\n[guide](references/missing.md "Draft (")\\n',
+    )
+    errors = validate_skill("example-skill", tmp_path / "skills")
+    assert any("Broken local reference: references/missing.md" in item for item in errors)
