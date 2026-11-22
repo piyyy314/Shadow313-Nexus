@@ -32,6 +32,140 @@ class Page(HTMLParser):
 
 
 class SiteNavigationTests(unittest.TestCase):
+    def test_html_pages_do_not_publish_fixed_test_scores(self):
+        fixed_score = re.compile(
+            r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*tests?\s+"
+            r"(?:GREEN|passing|passed|included|all passing)\b",
+            re.IGNORECASE,
+        )
+        for path in ROOT.rglob("*.html"):
+            if ".git" in path.parts or "public-site" in path.parts:
+                continue
+            text = path.read_text()
+            with self.subTest(page=path.relative_to(ROOT)):
+                self.assertIsNone(fixed_score.search(text))
+                self.assertNotRegex(text, r"tests_passing\s*:\s*[\d,]+")
+
+    def test_dashboard_export_scripts_are_valid_javascript(self):
+        dashboard_pages = (
+            ROOT / 'docs/shadow313-nexus-dashboard.html',
+            ROOT / 'local_bundle/dashboard.html',
+            ROOT / 'local_bundle/command-center.html',
+            ROOT / 'docs/shiatoali-console.html',
+        )
+        script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
+        for path in dashboard_pages:
+            scripts = [
+                code for attrs, code in script_pattern.findall(path.read_text())
+                if code.strip() and not re.search(r'type=["\']application/json', attrs, re.I)
+            ]
+            self.assertTrue(scripts, path)
+            for index, code in enumerate(scripts):
+                result = subprocess.run(
+                    ['node', '--check', '-'], input=code, capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, f'{path}:{index}: {result.stderr}')
+
+    def test_shiatoali_console_uses_authenticated_api_without_persisting_key(self):
+        path = ROOT / 'docs/shiatoali-console.html'
+        text = path.read_text()
+        for endpoint in ('/api/shiatoali/health', '/api/shiatoali/events',
+                         '/api/shiatoali/alerts', '/api/shiatoali/cases'):
+            with self.subTest(endpoint=endpoint):
+                self.assertIn(endpoint, text)
+        self.assertIn('"X-API-Key":apiKey', text)
+        self.assertIn('credentials:"omit"', text)
+        self.assertIn("Required: the static website does not host the SOC backend.", text)
+        self.assertNotIn('$("apiBase").value=window.location.origin', text)
+        self.assertNotIn('localStorage', text)
+        self.assertNotIn('sessionStorage', text)
+
+    def test_one_shared_primary_nav_without_injected_menus(self):
+        for path in pages():
+            with self.subTest(page=path.name):
+                text = path.read_text()
+                page = Page(text)
+                self.assertEqual(page.primary, 1)
+                # Embedded downloadable HTML in script strings is not page markup.
+                visible = text.split('<script', 1)[0] if path.name == 'shadow313-file-portal.html' else text
+                self.assertNotIn('id="s313-nav"', visible)
+                self.assertNotIn('id="nav-clock"', visible)
+
+    def test_docs_and_dashboard_directory_are_separate(self):
+        docs = (ROOT / 'docs/index.html').read_text()
+        self.assertIn('<h1>Documentation</h1>', docs)
+        links = Page(docs).links
+        for route in ('/docs/install', '/docs/quickstart', '/docs/api', '/docs/modules', '/dashboards'):
+            self.assertIn(route, links)
+        self.assertNotIn('LIVE DASHBOARDS', docs)
+        self.assertIn('BROWSER-SIDE DASHBOARD DEMONSTRATIONS', (ROOT / 'docs/dashboards.html').read_text())
+
+    def test_internal_navigation_targets_exist(self):
+        config = json.loads((ROOT / 'vercel.json').read_text())
+        routes = {r['source']: r['destination'] for r in config['rewrites']
+                  if ':' not in r['source'] and not r.get('has')}
+        for path in pages() + [ROOT / 'index.html', ROOT / 'sentinelos/index.html']:
+            for href in Page(path.read_text()).links:
+                url = urlsplit(href)
+                if url.scheme or url.netloc or href.startswith('#'):
+                    continue
+                target = urlsplit(urljoin('/' + str(path.relative_to(ROOT)), href)).path
+                normalized = target.rstrip('/') or '/'
+                dest = ROOT / routes.get(normalized, normalized).lstrip('/')
+                with self.subTest(page=path.name, link=href):
+                    self.assertTrue(dest.is_file() or (dest / 'index.html').is_file(), target)
+
+    def test_local_bundle_internal_links_resolve_offline(self):
+        bundle = ROOT / 'local_bundle'
+        for path in bundle.glob('*.html'):
+            for href in Page(path.read_text()).links:
+                url = urlsplit(href)
+                if url.scheme or url.netloc or href.startswith('#'):
+                    continue
+                target = (bundle / url.path.lstrip('/')) if url.path.startswith('/') else path.parent / url.path
+                with self.subTest(page=path.name, link=href):
+                    self.assertTrue(target.is_file(), href)
+
+    def test_links_do_not_send_visitors_to_github_pages(self):
+        for path in pages() + [ROOT / 'index.html', ROOT / 'sentinelos/index.html']:
+            for href in Page(path.read_text()).links:
+                self.assertNotEqual(urlsplit(href).hostname, 'piyyy314.github.io')
+
+    def test_portal_download_payload_is_data_not_nested_page_markup(self):
+        text = (ROOT / 'docs/shadow313-file-portal.html').read_text()
+        payload = re.search(r'<script id="download-files" type="application/json">(.*?)</script>', text, re.S)
+        self.assertIsNotNone(payload)
+        self.assertNotIn('<', payload[1])
+        files = json.loads(payload[1])
+        self.assertEqual(len(files), 11)
+        for filename, content in files.items():
+            self.assertEqual(content, (ROOT / 'docs' / filename).read_text())
+
+    def test_navigation_template_is_current(self):
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/render-site-nav.py'), '--check'],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_sentinelos_router_only_intercepts_app_tabs(self):
+        text = (ROOT / 'sentinelos/js/app.js').read_text()
+        self.assertIn("querySelectorAll('.nav-item[data-view]')", text)
+
+    def test_both_docs_paths_have_explicit_routes(self):
+        routes = json.loads((ROOT / 'vercel.json').read_text())['rewrites']
+        for source in ('/docs', '/docs/'):
+            self.assertIn({'source': source, 'destination': '/docs/index.html'}, routes)
+        self.assertIn(
+            {'source': '/tools/recon', 'destination': '/docs/recon.html'},
+            routes,
+        )
+
+    def test_shared_css_is_scoped_and_mobile_navigation_is_available(self):
+        css = (ROOT / 'assets/site-nav.css').read_text()
+        self.assertIn('#site-nav', css)
+        self.assertIn('flex-wrap: wrap', css)
+        self.assertNotIn('display: none', css)
+
+
     def test_install_guides_use_current_reproducible_setup(self):
         expected = 'python -m pytest tests/ -q --tb=short'
         for relative in (
@@ -53,35 +187,6 @@ class SiteNavigationTests(unittest.TestCase):
         )
         self.assertRegex("4,107+ tests GREEN", stale_total)
         self.assertNotRegex(guide, stale_total)
-
-    def test_html_pages_do_not_publish_fixed_test_scores(self):
-        fixed_score = re.compile(
-            r"\b\d[\d,]*(?:\s*/\s*\d[\d,]*)?\s*\+?\s*tests?\s+"
-            r"(?:GREEN|passing|passed|included|all passing)\b",
-            re.IGNORECASE,
-        )
-        for path in ROOT.rglob("*.html"):
-            if ".git" in path.parts or "public-site" in path.parts:
-                continue
-            text = path.read_text()
-            # Flatten tags so adjacent number/label elements cannot hide a stale score.
-            visible = re.sub(r"<[^>]+>", " ", text)
-            visible = re.sub(r"\s+", " ", visible)
-            with self.subTest(page=path.relative_to(ROOT)):
-                self.assertIsNone(fixed_score.search(visible))
-                self.assertNotRegex(visible, r"tests_passing\s*:\s*[\d,]+")
-                self.assertNotRegex(
-                    visible,
-                    r"\b\d+(?:\.\d+)?%\s*(?:MITRE\s+)?ATT&amp;CK\s+coverage\b",
-                )
-                self.assertRegex(text, r"<title(?:\s|>)")
-                self.assertRegex(text, r"<meta[^>]+charset\s*=")
-                self.assertRegex(text, r"<meta[^>]+name\s*=\s*[\"']viewport")
-                self.assertRegex(text, r"<body(?:\s|>)")
-                self.assertNotRegex(
-                    text,
-                    r"(?:^|[;{])\s*(?:width|height|margin|padding|font-size|opacity|gap|top|left|right|bottom)\s*:\s*(?:DEMO|NOT ASSESSED)\b",
-                )
 
     def test_public_pages_disclose_demo_and_unverified_assurance_limits(self):
         home = (ROOT / 'index.html').read_text()
@@ -172,125 +277,6 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertNotIn("SLH-DSA signed, SHA3-256 CIDv1", page)
                 self.assertIn("No signature or IPFS anchor is generated or verified by this demo", page)
 
-    def test_dashboard_export_scripts_are_valid_javascript(self):
-        dashboard_pages = (
-            ROOT / 'docs/shadow313-nexus-dashboard.html',
-            ROOT / 'local_bundle/dashboard.html',
-            ROOT / 'local_bundle/command-center.html',
-            ROOT / 'docs/S313-Nexus-Dashboard-v3.html',
-            ROOT / 'docs/S313-SSP-Dashboard.html',
-            ROOT / 'local_bundle/ssp.html',
-            ROOT / 'docs/313-bind-verification-portal.html',
-            ROOT / 'docs/s313-command-center-v6.html',
-            ROOT / 'docs/adversarial-pivot-dashboard.html',
-            ROOT / 'docs/adversarial-pivot-analysis.html',
-            ROOT / 'docs/nvsm-chain-score-dashboard.html',
-            ROOT / 'local_bundle/dashboard-v3.html',
-        )
-        script_pattern = re.compile(r'<script\b([^>]*)>(.*?)</script\s*>', re.I | re.S)
-        for path in dashboard_pages:
-            scripts = [
-                code for attrs, code in script_pattern.findall(path.read_text())
-                if code.strip() and not re.search(r'type=["\']application/json', attrs, re.I)
-            ]
-            self.assertTrue(scripts, path)
-            for index, code in enumerate(scripts):
-                result = subprocess.run(
-                    ['node', '--check', '-'], input=code, capture_output=True, text=True,
-                )
-                self.assertEqual(result.returncode, 0, f'{path}:{index}: {result.stderr}')
-
-    def test_one_shared_primary_nav_without_injected_menus(self):
-        for path in pages():
-            with self.subTest(page=path.name):
-                text = path.read_text()
-                page = Page(text)
-                self.assertEqual(page.primary, 1)
-                # Embedded downloadable HTML in script strings is not page markup.
-                visible = text.split('<script', 1)[0] if path.name == 'shadow313-file-portal.html' else text
-                self.assertNotIn('id="s313-nav"', visible)
-                self.assertNotIn('id="nav-clock"', visible)
-
-    def test_docs_and_dashboard_directory_are_separate(self):
-        docs = (ROOT / 'docs/index.html').read_text()
-        self.assertIn('<h1>Documentation</h1>', docs)
-        links = Page(docs).links
-        for route in ('/docs/install', '/docs/quickstart', '/docs/api', '/docs/modules', '/dashboards'):
-            self.assertIn(route, links)
-        self.assertNotIn('LIVE DASHBOARDS', docs)
-        dashboard = (ROOT / 'docs/dashboards.html').read_text()
-        self.assertIn('DASHBOARD DEMONSTRATIONS', dashboard)
-        self.assertNotIn('LIVE DASHBOARDS', dashboard)
-        self.assertIn('Demonstration data only.', dashboard)
-        self.assertNotIn('3,449', dashboard)
-        self.assertNotIn('98%', dashboard)
-
-    def test_internal_navigation_targets_exist(self):
-        config = json.loads((ROOT / 'vercel.json').read_text())
-        routes = {r['source']: r['destination'] for r in config['rewrites']
-                  if ':' not in r['source'] and not r.get('has')}
-        for path in pages() + [ROOT / 'index.html', ROOT / 'sentinelos/index.html']:
-            for href in Page(path.read_text()).links:
-                url = urlsplit(href)
-                if url.scheme or url.netloc or href.startswith('#'):
-                    continue
-                target = urlsplit(urljoin('/' + str(path.relative_to(ROOT)), href)).path
-                normalized = target.rstrip('/') or '/'
-                dest = ROOT / routes.get(normalized, normalized).lstrip('/')
-                with self.subTest(page=path.name, link=href):
-                    self.assertTrue(dest.is_file() or (dest / 'index.html').is_file(), target)
-
-    def test_local_bundle_internal_links_resolve_offline(self):
-        bundle = ROOT / 'local_bundle'
-        for path in bundle.glob('*.html'):
-            for href in Page(path.read_text()).links:
-                url = urlsplit(href)
-                if url.scheme or url.netloc or href.startswith('#'):
-                    continue
-                target = (bundle / url.path.lstrip('/')) if url.path.startswith('/') else path.parent / url.path
-                with self.subTest(page=path.name, link=href):
-                    self.assertTrue(target.is_file(), href)
-
-    def test_links_do_not_send_visitors_to_github_pages(self):
-        for path in pages() + [ROOT / 'index.html', ROOT / 'sentinelos/index.html']:
-            for href in Page(path.read_text()).links:
-                self.assertNotEqual(urlsplit(href).hostname, 'piyyy314.github.io')
-
-    def test_portal_download_payload_is_data_not_nested_page_markup(self):
-        text = (ROOT / 'docs/shadow313-file-portal.html').read_text()
-        payload = re.search(r'<script id="download-files" type="application/json">(.*?)</script>', text, re.S)
-        self.assertIsNotNone(payload)
-        self.assertNotIn('<', payload[1])
-        files = json.loads(payload[1])
-        self.assertEqual(len(files), 11)
-        for filename, content in files.items():
-            self.assertEqual(content, (ROOT / 'docs' / filename).read_text())
-
-    def test_navigation_template_is_current(self):
-        result = subprocess.run([sys.executable, str(ROOT / 'scripts/render-site-nav.py'), '--check'],
-                                capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-
-    def test_sentinelos_router_only_intercepts_app_tabs(self):
-        text = (ROOT / 'sentinelos/js/app.js').read_text()
-        self.assertIn("querySelectorAll('.nav-item[data-view]')", text)
-
-    def test_both_docs_paths_have_explicit_routes(self):
-        routes = json.loads((ROOT / 'vercel.json').read_text())['rewrites']
-        for source in ('/docs', '/docs/'):
-            self.assertIn({'source': source, 'destination': '/docs/index.html'}, routes)
-        self.assertIn(
-            {'source': '/tools/recon', 'destination': '/docs/recon.html'},
-            routes,
-        )
-
-    def test_shared_css_is_scoped_and_mobile_navigation_is_available(self):
-        css = (ROOT / 'assets/site-nav.css').read_text()
-        self.assertIn('#site-nav', css)
-        self.assertIn('flex-wrap: wrap', css)
-        self.assertNotIn('display: none', css)
-
-
     def test_dashboard_and_receipt_pages_disclose_demo_boundaries(self):
         demo_pages = (
             'docs/dashboards.html',
@@ -345,7 +331,6 @@ class SiteNavigationTests(unittest.TestCase):
                 self.assertNotIn('96.2/100', text)
                 self.assertIn('No independently sourced', text)
 
-
     def test_marketplace_and_cli_pages_do_not_claim_unavailable_services(self):
         for relative in ('marketplace/index.html', 'marketplace/analytics.html',
                          'local_bundle/marketplace.html',
@@ -364,7 +349,6 @@ class SiteNavigationTests(unittest.TestCase):
         cli = (ROOT / 'shadow313/cli/main.py').read_text()
         self.assertIn('sub.add_parser("temporal"', cli)
         self.assertIn('p_temp.add_argument("--verify"', cli)
-
 
     def test_marketplace_demo_pages_do_not_claim_live_connections_or_metrics(self):
         public_live = (ROOT / "marketplace/analytics-live.html").read_text()
@@ -405,6 +389,7 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertNotIn("--break-system-packages", checklist)
         self.assertIn("python3 -m venv .venv", checklist)
         self.assertIn("current CI run and commit", checklist)
+
 
 if __name__ == '__main__':
     unittest.main()

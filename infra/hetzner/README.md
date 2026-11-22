@@ -1,119 +1,91 @@
-# Shadow313 NEXUS — Hetzner VPS Setup (SHA-24/25)
+# Shadow313 NEXUS — Hetzner Infrastructure Plan
 
-## Overview
+**Status: planned — server not yet purchased or provisioned.**
 
-Sets up a Hetzner CX22 VPS (~€4.15/month) as a WireGuard VPN gateway
-for the Shadow313 NEXUS workstation.
+Hetzner is the selected destination for the future Shadow313 backend. Vercel
+continues to host the public static website; GitHub remains the source-control
+and CI system; Cloudflare manages DNS for `shadow313.com`.
 
-## Architecture
+This directory contains early provisioning automation. Review each script and
+its side effects before execution. Do not run a bootstrap script against a new
+production server until its package, firewall, SSH, database, persistence, and
+application assumptions have been checked against the final server plan.
 
-```
-Dell Latitude 5490 (Ottawa)
-  └── WireGuard client (wg0: 10.13.13.2)
-        │
-        │ Encrypted tunnel (UDP 51820)
-        │
-  Hetzner CX22 VPS (Nuremberg)
-        └── WireGuard server (wg0: 10.13.13.1)
-              └── NAT → Internet
-```
+## Intended responsibility
 
-## Quick Start
+The Hetzner host is expected to run backend components that should not be served
+from the static website, such as the authenticated Python API and background
+services. The exact service set, database layout, resource size, backup design,
+and public API hostname remain to be finalized.
 
-### Step 1 — Rent VPS via Hetzner API (automated)
-
-```bash
-# Get API token from: console.hetzner.cloud → Security → API Tokens
-export HETZNER_API_TOKEN="your-token-here"
-bash infra/hetzner/create_vps.sh
-```
-
-### Step 2 — Or rent manually via Hetzner Console
-
-1. Go to [console.hetzner.cloud](https://console.hetzner.cloud)
-2. New Project → `shadow313-nexus`
-3. Add Server:
-   - **Location:** Nuremberg (nbg1) — EU privacy laws
-   - **Image:** Ubuntu 24.04
-   - **Type:** CX22 (2 vCPU, 4GB RAM, 40GB SSD)
-   - **SSH Key:** paste your `~/.ssh/id_ed25519.pub`
-4. Note the VPS IP address
-
-### Step 3 — Provision the VPS
-
-```bash
-# SSH into VPS
-ssh root@<VPS_IP>
-
-# Run provisioner (installs WireGuard, hardens SSH, configures firewall)
-bash /root/provision.sh
-
-# Or run directly:
-curl -fsSL https://raw.githubusercontent.com/piyyy314/Shadow313-Nexus/master/infra/hetzner/provision.sh | bash
+```text
+Visitors
+  |
+Cloudflare DNS (.com) / Vercel DNS (.dev)
+  |
+Vercel — public static website
+  |
+  +---- HTTPS API requests (after backend is deployed)
+                 |
+              Hetzner
+              - Python API
+              - background workers (if enabled)
+              - database / persistent storage (after design review)
+              - monitoring and backups
 ```
 
-### Step 4 — Setup WireGuard on your laptop
+## Before ordering
 
-```bash
-# Copy client config from VPS
-scp -P 2222 shadow313@<VPS_IP>:/etc/wireguard/client_shadow313.conf .
+1. Confirm API workload and expected concurrency.
+2. Estimate memory, CPU, storage IOPS, database size, and backup capacity.
+3. Choose a server region based on latency, data residency, and provider
+   availability; do not assume an old example region or price is current.
+4. Confirm the selected plan supports required private networking, backups,
+   snapshots, and firewall features.
+5. Add an SSH public key before server creation.
+6. Keep the Hetzner API token in a local environment variable or secret
+   manager; never commit it.
 
-# Setup WireGuard in WSL2
-bash infra/hetzner/setup_wireguard_client.sh client_shadow313.conf
+## Files in this directory
 
-# Verify
-curl https://ipinfo.io/ip  # should show VPS IP
-```
+| File | Current purpose |
+|---|---|
+| `create_vps.sh` | Creates a Hetzner Cloud server through the API |
+| `bootstrap.sh` | Broad host bootstrap path; installs several services and must be reviewed before use |
+| `provision.sh` | SSH hardening and WireGuard-focused server provisioning |
+| `setup_wireguard_client.sh` | Configures a client tunnel on the operator workstation |
 
-### Step 5 — Windows WireGuard app
+The scripts are not interchangeable. The WireGuard provisioner is not a
+complete application deployment. The broad bootstrap script must be audited
+for firewall openings, service exposure, secrets, persistence, and compatibility
+with the final application architecture.
 
-1. Open **WireGuard** app on Windows
-2. **Import tunnel(s) from file** → select `client_shadow313.conf`
-3. Click **Activate**
-4. Verify: `curl https://ipinfo.io/ip` in PowerShell
+## Provisioning safeguards
 
-## What provision.sh Does
+- Use SSH keys; disable password authentication only after verifying key access.
+- Keep a second administrative session open while changing SSH configuration.
+- Apply a default-deny firewall and open only ports required by the final design.
+- Do not expose PostgreSQL, Docker control sockets, or internal dashboards
+  publicly.
+- Store application secrets outside the repository.
+- Configure persistent database volumes and encrypted off-server backups.
+- Enable host and application monitoring before public traffic is enabled.
+- Test restore procedures; a snapshot alone is not a complete backup strategy.
+- Do not point `api.shadow313.com` at the host until TLS, authentication,
+  firewall rules, health checks, and monitoring are verified.
 
-| Phase | Action |
-|-------|--------|
-| 1 | System update + install WireGuard, UFW, fail2ban |
-| 2 | Create `shadow313` operator user |
-| 3 | Harden SSH (port 2222, key-only, no root login) |
-| 4 | Kernel hardening (sysctl: anti-spoofing, SYN cookies, ASLR) |
-| 5 | WireGuard server + generate client keys |
-| 6 | UFW firewall (deny all → allow SSH 2222 + WireGuard 51820) |
-| 7 | Fail2ban (3 attempts → 24h ban) |
-| 8 | Unattended security upgrades |
-| 9 | QR code for mobile WireGuard |
+## Production acceptance checklist
 
-## Ports
+- [ ] Server plan and region selected for the measured workload.
+- [ ] SSH public key installed and access verified.
+- [ ] OS patched and host firewall reviewed.
+- [ ] SSH hardening verified without locking out administrators.
+- [ ] Runtime and application deployment procedure documented.
+- [ ] Database persistence and backup restoration tested.
+- [ ] Secrets stored outside Git and rotated where necessary.
+- [ ] API authentication, rate limits, and request-size limits verified.
+- [ ] TLS and DNS configured only after the service is ready.
+- [ ] Monitoring, logs, alerting, and recovery procedure tested.
+- [ ] Vercel-to-Hetzner integration verified end to end.
 
-| Port | Protocol | Purpose |
-|------|----------|---------|
-| 2222 | TCP | SSH (hardened, key-only) |
-| 51820 | UDP | WireGuard VPN |
-
-## Files
-
-| File | Purpose |
-|------|---------|
-| `create_vps.sh` | Hetzner API — create CX22 VPS automatically |
-| `provision.sh` | Run on VPS — full setup (WireGuard + hardening) |
-| `setup_wireguard_client.sh` | Run on laptop — configure WireGuard client |
-| `vps_info.json` | Auto-generated — VPS IP, ID, SSH key path |
-
-## Cost
-
-| Resource | Cost |
-|----------|------|
-| CX22 VPS | ~€4.15/month |
-| Traffic | 20TB included |
-| Snapshots | €0.0119/GB/month |
-
-## Security Notes
-
-- SSH root login disabled after provisioning
-- Password authentication disabled (key-only)
-- All traffic through WireGuard is encrypted with Curve25519 + ChaCha20-Poly1305
-- DNS queries routed through Quad9 (9.9.9.9) via VPN
-- Fail2ban bans IPs after 3 failed SSH attempts for 24 hours
+Until every required item is verified, the backend status remains **pending**.

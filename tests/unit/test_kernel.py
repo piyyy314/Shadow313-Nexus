@@ -84,6 +84,11 @@ class TestShadow313Kernel:
         )
         assert has_registry or True  # graceful — registry may be internal
 
+    def test_v4_cli_namespaces_are_registered(self):
+        """Every core V4 CLI namespace must be registered by the kernel."""
+        for namespace in ("nexus", "temporal", "stix", "mobile_api", "finetune"):
+            assert namespace in self.kernel._registry, namespace
+
     def test_register_multiple_commands(self):
         """Should handle multiple command registrations."""
         for i in range(5):

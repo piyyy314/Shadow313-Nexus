@@ -177,7 +177,7 @@ class TestAuditServerApp:
             pytest.skip("FastAPI/httpx not available")
 
     def test_health_endpoint(self, client):
-        resp = client.get("/api/health")
+        resp = client.get("/api/health", headers={"x-api-key": "test-api-key-for-unit-tests"})
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "healthy"
@@ -185,13 +185,13 @@ class TestAuditServerApp:
 
     def test_audit_chain_empty(self, client):
         _audit_chain.clear()
-        resp = client.get("/api/audit/chain")
+        resp = client.get("/api/audit/chain", headers={"x-api-key": "test-api-key-for-unit-tests"})
         assert resp.status_code == 200
         data = resp.json()
         assert data["total_receipts"] == 0
 
     def test_audit_code_endpoint(self, client):
-        resp = client.post("/api/audit-code", json={
+        resp = client.post("/api/audit-code", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={
             "code": "import os\nos.system('ls')",
             "language": "python",
             "depth": "tactical",
@@ -203,7 +203,7 @@ class TestAuditServerApp:
         assert "receipt" in data
 
     def test_audit_code_detects_eval(self, client):
-        resp = client.post("/api/audit-code", json={
+        resp = client.post("/api/audit-code", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={
             "code": "eval(user_input)",
             "language": "python",
         })
@@ -214,7 +214,7 @@ class TestAuditServerApp:
         assert "CWE-95" in cwes
 
     def test_audit_code_clean_code(self, client):
-        resp = client.post("/api/audit-code", json={
+        resp = client.post("/api/audit-code", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={
             "code": "x = 1 + 1\nprint(x)",
             "language": "python",
         })
@@ -224,13 +224,13 @@ class TestAuditServerApp:
 
     def test_audit_code_adds_to_chain(self, client):
         _audit_chain.clear()
-        client.post("/api/audit-code", json={"code": "test"})
-        resp = client.get("/api/audit/chain")
+        client.post("/api/audit-code", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={"code": "test"})
+        resp = client.get("/api/audit/chain", headers={"x-api-key": "test-api-key-for-unit-tests"})
         data = resp.json()
         assert data["total_receipts"] >= 1
 
     def test_link_budget_endpoint(self, client):
-        resp = client.post("/api/link-budget", json={
+        resp = client.post("/api/link-budget", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={
             "frequency_ghz": 11.7,
             "distance_km": 38500.0,
             "satellite": "GEO",
@@ -242,14 +242,14 @@ class TestAuditServerApp:
         assert "receipt" in data
 
     def test_link_budget_profiles_endpoint(self, client):
-        resp = client.get("/api/link-budget/profiles")
+        resp = client.get("/api/link-budget/profiles", headers={"x-api-key": "test-api-key-for-unit-tests"})
         assert resp.status_code == 200
         data = resp.json()
         assert "profiles" in data
         assert len(data["profiles"]) >= 3
 
     def test_public_key_endpoint(self, client):
-        resp = client.get("/api/public-key")
+        resp = client.get("/api/public-key", headers={"x-api-key": "test-api-key-for-unit-tests"})
         assert resp.status_code == 200
         data = resp.json()
         assert data["available"] is False
@@ -260,8 +260,8 @@ class TestAuditServerApp:
     def test_chain_valid_after_multiple_audits(self, client):
         _audit_chain.clear()
         for i in range(5):
-            client.post("/api/audit-code", json={"code": f"test_{i}"})
-        resp = client.get("/api/audit/chain")
+            client.post("/api/audit-code", headers={"x-api-key": "test-api-key-for-unit-tests"}, json={"code": f"test_{i}"})
+        resp = client.get("/api/audit/chain", headers={"x-api-key": "test-api-key-for-unit-tests"})
         data = resp.json()
         assert data["chain_valid"] is True
         assert data["total_receipts"] == 5

@@ -20,9 +20,9 @@
   </div>
 </nav>
 <aside role="note" style="padding:16px 24px;background:#0b1329;color:#e2e8f0;border-bottom:1px solid #334155;">
-<strong>Hosting notice:</strong> The public website does not run the Python security backend.
-Backend-dependent endpoints return HTTP 200 with an explicit unavailable status,
-not scan results. Run the Python backend locally at <code>http://localhost:8313</code>.
+<strong>Hosting notice:</strong> The website is static, while the Python security API runs as a separate service.
+The Vercel gateway forwards approved <code>/api/*</code> requests when its server-side backend URL and API key are configured.
+Without that connection, backend-dependent requests return HTTP 503 and no scan results are fabricated. For local development, run the Python API at <code>http://localhost:8313</code>.
 Authentication, method, and route errors retain their appropriate HTTP error statuses.
 Never put your API key in public browser code.
 </aside>
@@ -47,50 +47,61 @@ Never put your API key in public browser code.
 <a class="sidebar-link" href="/platform/quantum">Quantum Module</a>
 </div><div class="docs-content" style="flex:1;padding:40px;max-width:800px">
 <h1 style="font-size:28px;font-weight:800;margin-bottom:8px">API Reference</h1>
-<p style="color:var(--muted);margin-bottom:18px">Python FastAPI backend contract. Default local base URL: <code>http://localhost:8313</code>. The public website adapter is separate and does not run this backend.</p><p style="background:#0b1329;border:1px solid #334155;padding:14px;border-radius:8px;margin-bottom:24px;color:#cbd5e1;font-size:12px">Protected routes require the <code>X-API-Key</code> header. In production, <code>SHADOW313_API_KEY</code> is mandatory. Recon, vulnerability, mobile, event-stream, and persisted-audit routes currently return an explicit unavailable status because their remote workers or persistent backends are not connected. See <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/master/api/openapi.yaml">api/openapi.yaml</a> and <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/master/shadow313/api/server.py">server implementation</a>.</p>
-<div style="display:flex;flex-direction:column;gap:12px"><div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span><span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/modules</span></div><p style="font-size:11px;color:var(--muted)">Authenticated module list. Send the <code>X-API-Key</code> header.</p></div>
+<p style="color:var(--muted);margin-bottom:28px">Shadow313 NEXUS FastAPI REST endpoints.</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+<span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
+<span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/chat</span>
+</div>
+<p style="font-size:11px;color:var(--muted)">Authenticated AI chat. Uses SHADOW313_AI_BACKEND (Ollama, OpenAI-compatible, gateway, or disabled); returns 503 when disabled/unavailable. Cloud providers require their own API key.</p>
+</div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/status</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Returns API version, service identifier, timestamp, and code-defined module flags. It does not prove that every optional module or external dependency is healthy.</p>
+<p style="font-size:11px;color:var(--muted)">Health check — returns version, timestamp, local module inventory, and a separate map of implemented versus unavailable remote API endpoints. It does not report uptime.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/scan/recon</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Currently returns {"status":"unavailable"}: no remote scan worker is connected. Use the local CLI for reconnaissance. This is not a remote scan endpoint yet.</p>
+<p style="font-size:11px;color:var(--muted)">Reserved route only. No remote scan worker is connected; the API returns an explicit unavailable status until one is configured.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/detect</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Accepts an event object and optional detector names (default: all). Current web-shell and LOLBin detector adapters return their own scores; this is not an ML ensemble or a guarantee of ATT&amp;CK mapping.</p>
+<p style="font-size:11px;color:var(--muted)">Run the configured web-shell and LOLBin rule detectors against one event. This is not a full ML ensemble or a complete SIEM.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/webshell/scan</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Accepts content, optional file_path, and mode (content or access_log). Results depend on the detector implementation; do not assume a fixed signature count.</p>
+<p style="font-size:11px;color:var(--muted)">Scan content for web shells. 45 signatures across PHP, JSP, ASP, Node.js, Ruby, ColdFusion.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(245,158,11,0.15);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">POST</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/bind/create</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Creates an unsigned SHA3-512 demo receipt in a process-local store. It is not SLH-DSA-signed, persisted, or IPFS-anchored. The store is capped at 1,000 receipts.</p>
+<p style="font-size:11px;color:var(--muted)">Create an explicitly unsigned demo receipt. The current API returns UNSIGNED-SHA3-512-DEMO; it does not create or verify an SLH-DSA digital signature.</p>
 </div>
 <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
 <span style="background:rgba(34,197,94,0.15);color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">GET</span>
 <span style="font-family:JetBrains Mono,monospace;font-size:12px">/api/attck/coverage</span>
 </div>
-<p style="font-size:11px;color:var(--muted)">Returns a code-defined coverage snapshot (136 of 265 techniques; 51.4% in the current implementation). This is not live deployment telemetry or independently validated coverage.</p>
+<p style="font-size:11px;color:var(--muted)">Returns a static, hard-coded coverage summary (currently 136 of 265 technique slots across 12 tactic labels). Verify against active detectors before using it as a measured coverage claim.</p>
 </div>
-</div></div></div>
+</div><section style="margin-top:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:18px">
+<h2 style="font-size:15px;margin-bottom:8px">ShiatoAli SOC API</h2>
+<p style="font-size:11px;color:var(--muted);line-height:1.7">Authenticated event ingestion, defensive alerts, and analyst case management are available under <code>/api/shiatoali/*</code>. See the <a href="https://github.com/piyyy314/Shadow313-Nexus/blob/master/docs/shiatoali-soc.md" style="color:var(--green)">ShiatoAli service guide</a> and the machine-readable <a href="/docs/openapi.yaml" style="color:var(--green)">OpenAPI schema</a> for the complete contract.</p>
+</section>
+</div></div>
 <footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>

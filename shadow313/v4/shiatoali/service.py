@@ -3,7 +3,6 @@
 The service supports SQLite for local use and an optional PostgreSQL backend
 for shared deployments. PostgreSQL requires the versioned schema migration.
 """
-
 from __future__ import annotations
 
 import hashlib
@@ -146,13 +145,17 @@ class ShiatoAliStore:
     """SQLite/PostgreSQL event and alert store with idempotent ingestion."""
 
     def __init__(self, database_path: str | Path | None = None) -> None:
-        configured_url = None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
+        configured_url = (
+            None if database_path is not None else os.getenv("SHIAATOALI_DATABASE_URL")
+        )
         self._engine: Any | None = None
         self._memory_uri: str | None = None
         self._memory_anchor: sqlite3.Connection | None = None
         if configured_url:
             if not configured_url.startswith("postgresql+psycopg://"):
-                raise ValueError("SHIAATOALI_DATABASE_URL must use postgresql+psycopg://")
+                raise ValueError(
+                    "SHIAATOALI_DATABASE_URL must use postgresql+psycopg://"
+                )
             try:
                 from sqlalchemy import create_engine, text
             except ImportError as exc:
@@ -325,17 +328,9 @@ class ShiatoAliStore:
                  src_ip, timestamp, raw_json, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
-                    data["event_id"],
-                    data["source"],
-                    data["host"],
-                    data["event_type"],
-                    data["message"],
-                    data["severity"],
-                    data["username"],
-                    data["src_ip"],
-                    data["timestamp"],
-                    json.dumps(data["raw"], sort_keys=True),
-                    created_at,
+                    data["event_id"], data["source"], data["host"], data["event_type"],
+                    data["message"], data["severity"], data["username"], data["src_ip"],
+                    data["timestamp"], json.dumps(data["raw"], sort_keys=True), created_at,
                 ),
             )
             inserted = cursor.rowcount == 1
@@ -368,16 +363,14 @@ class ShiatoAliStore:
                 (event["host"], event["username"], cutoff, event["timestamp"]),
             ).fetchone()[0]
             if failures >= 5:
-                matches.append(
-                    {
-                        "id": "SHIA-ID-001",
-                        "name": "Repeated authentication failures",
-                        "severity": "high",
-                        "risk": 80,
-                        "tactic": "Credential Access",
-                        "technique": "T1110",
-                    }
-                )
+                matches.append({
+                    "id": "SHIA-ID-001",
+                    "name": "Repeated authentication failures",
+                    "severity": "high",
+                    "risk": 80,
+                    "tactic": "Credential Access",
+                    "technique": "T1110",
+                })
 
         created_alerts: list[dict[str, Any]] = []
         for rule in matches:
@@ -389,16 +382,9 @@ class ShiatoAliStore:
                  risk_score, tactic, technique, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
-                    str(uuid.uuid4()),
-                    fingerprint,
-                    event["event_id"],
-                    rule["id"],
-                    rule["name"],
-                    rule["severity"],
-                    rule["risk"],
-                    rule["tactic"],
-                    rule["technique"],
-                    _now().isoformat(),
+                    str(uuid.uuid4()), fingerprint, event["event_id"], rule["id"],
+                    rule["name"], rule["severity"], rule["risk"], rule["tactic"],
+                    rule["technique"], _now().isoformat(),
                 ),
             )
             row = db.execute(
@@ -453,20 +439,12 @@ class ShiatoAliStore:
         with self._session() as db:
             events = db.execute("SELECT COUNT(*) FROM shiatoali_events").fetchone()[0]
             alerts = db.execute("SELECT COUNT(*) FROM shiatoali_alerts").fetchone()[0]
-        return {
-            "service": "shiatoali-event-detection",
-            "status": "ok",
-            "events": events,
-            "alerts": alerts,
-        }
+        return {"service": "shiatoali-event-detection", "status": "ok",
+                "events": events, "alerts": alerts}
 
     def create_case(
-        self,
-        title: str,
-        description: str = "",
-        priority: str = "medium",
-        created_by: str = "system",
-        alert_id: str | None = None,
+        self, title: str, description: str = "", priority: str = "medium",
+        created_by: str = "system", alert_id: str | None = None,
     ) -> dict[str, Any]:
         title = title.strip()
         if not title:
@@ -502,12 +480,8 @@ class ShiatoAliStore:
 
     @staticmethod
     def _record_case_activity(
-        db: sqlite3.Connection,
-        case_id: str,
-        actor: str,
-        action: str,
-        details: str,
-        created_at: str,
+        db: sqlite3.Connection, case_id: str, actor: str, action: str,
+        details: str, created_at: str,
     ) -> None:
         db.execute(
             """INSERT INTO shiatoali_case_activity
@@ -556,11 +530,8 @@ class ShiatoAliStore:
         return result
 
     def update_case(
-        self,
-        case_id: str,
-        actor: str = "analyst",
-        status: str | None = None,
-        assignee: str | None = None,
+        self, case_id: str, actor: str = "analyst",
+        status: str | None = None, assignee: str | None = None,
         note: str | None = None,
     ) -> dict[str, Any]:
         allowed_statuses = {"open", "investigating", "contained", "resolved", "closed"}
@@ -581,12 +552,8 @@ class ShiatoAliStore:
                     (status, now, case_id),
                 )
                 self._record_case_activity(
-                    db,
-                    case_id,
-                    actor,
-                    "status_changed",
-                    f'{row["status"]} -> {status}',
-                    now,
+                    db, case_id, actor, "status_changed",
+                    f'{row["status"]} -> {status}', now,
                 )
             if assignee is not None and assignee != row["assignee"]:
                 db.execute(
@@ -594,12 +561,7 @@ class ShiatoAliStore:
                     (assignee, now, case_id),
                 )
                 self._record_case_activity(
-                    db,
-                    case_id,
-                    actor,
-                    "assigned",
-                    assignee or "unassigned",
-                    now,
+                    db, case_id, actor, "assigned", assignee or "unassigned", now,
                 )
             if note:
                 db.execute(

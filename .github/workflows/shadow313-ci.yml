@@ -29,30 +29,22 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Resolve current comparison base
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            BASE_SHA="$(git rev-parse HEAD^)"
-          fi
-          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
-          echo "HEAD_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - name: Install dev dependencies
-        run: pip install ruff black==24.3.0 mypy pyyaml rich
+        run: pip install ruff black mypy pyyaml rich
       - name: Identify changed Python files
         id: changed-python
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         shell: bash
         run: |
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BASE_SHA="$(git rev-parse HEAD^)"
           fi
-          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
+          mapfile -t candidates < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- 'shadow313/*.py' 'shadow313/**/*.py')
           changed_files=()
           for file in "${candidates[@]}"; do
             if [ -f "$file" ]; then
@@ -69,7 +61,7 @@ jobs:
         run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; black --check --diff "${files[@]}"
       - name: MyPy type check (changed Python files)
         if: steps.changed-python.outputs.count != '0'
-        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports --follow-imports=silent
+        run: mapfile -t files < "$RUNNER_TEMP/shadow313-changed-python.txt"; mypy "${files[@]}" --ignore-missing-imports
 
 # ── Unit Tests ────────────────────────────────────────────────────────────────
   test:
@@ -89,7 +81,7 @@ jobs:
           cache: pip
       - name: Install Shadow313 + test deps
         run: |
-          pip install -e ".[dev]" alembic
+          pip install -e ".[dev]"
           pip install pyyaml rich pytest-asyncio pyspx fastapi httpx uvicorn pytest-timeout \
             numpy scipy scapy dnspython python-whois cryptography \
             requests aiohttp sqlalchemy pydantic
@@ -99,6 +91,8 @@ jobs:
             --ignore=tests/integration \
             --timeout=120 \
             -x
+      - name: Run SentinelOS API bridge tests
+        run: node --test tests/sentinelos-api.test.cjs
       - name: Upload coverage
         if: matrix.python-version == '3.11'
         uses: codecov/codecov-action@v7
@@ -133,7 +127,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install PostgreSQL test dependencies
-        run: pip install -e ".[dev]" alembic "psycopg[binary]>=3.1"
+        run: pip install -e ".[dev]"
       - name: Apply ShiatoAli schema migration
         run: alembic -c alembic-shiatoali.ini upgrade head
       - name: Run real PostgreSQL integration tests

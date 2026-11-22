@@ -252,7 +252,7 @@ jobs:
           pip install pytest pytest-cov pytest-timeout -q
       - run: |
           python3 -m pytest tests/ --tb=short --timeout=60 -q \
-            --cov=shadow313 --cov-report=term-missing 2>&1
+            --cov=shadow313 --cov-report=term-missing
 
   shell-validation:
     name: "Shell Script Validation"

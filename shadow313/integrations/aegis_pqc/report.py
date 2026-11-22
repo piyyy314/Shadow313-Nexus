@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 shadow313.integrations.aegis_pqc.report
 ─────────────────────────────────────────
@@ -12,10 +13,12 @@ Every report includes:
 """
 
 import json
-import pathlib
+from pathlib import Path
+from typing import Tuple
 
-import shadow313.core.binding_sdk.binder as binder
-import shadow313.integrations.aegis_pqc.parser as parser
+from .parser import PQCAuditResult, PQCComponent
+from ...core.binding_sdk.binder import BindReceipt
+
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -29,19 +32,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     --cyan:#06b6d4; --purple:#a78bfa;
   }}
   * {{ box-sizing:border-box; margin: 0; padding: 0; }}
-  body {{
-    font-family:'Segoe UI',system-ui,sans-serif;
-    background:#050a05;
-    color:#e2e8f0;
-    padding:24px;
-  }}
-  .header {{
-    background:linear-gradient(135deg,#0a1a0a,#0d2a0d);
-    border-bottom:2px solid var(--green);
-    padding:20px;
-    margin-bottom:20px;
-    border-radius:8px;
-  }}
+  body {{ font-family:'Segoe UI',system-ui,sans-serif; background:#050a05; color:#e2e8f0; padding:24px; }}
+  .header {{ background:linear-gradient(135deg,#0a1a0a,#0d2a0d);
+             border-bottom:2px solid var(--green); padding:20px; margin-bottom:20px; border-radius:8px; }}
   .header h1 {{ font-size:22px; color:var(--green); letter-spacing:.05em; }}
   .header .sub {{ font-size:12px; color:#94a3b8; margin-top:6px; font-family:monospace; }}
   .receipt-banner {{
@@ -209,7 +202,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
-def _component_html(comp: parser.PQCComponent) -> str:
+def _component_html(comp: "PQCComponent") -> str:
     risk_class = f"risk-{comp.risk_level}"
     fix_html = ""
     if comp.pqc_replacement:
@@ -221,10 +214,7 @@ def _component_html(comp: parser.PQCComponent) -> str:
         failure_html = f'<div class="comp-detail">&#x26A0;&#xFE0F; {comp.failure_channel}</div>'
     code_html = ""
     if comp.target_code_line:
-        code_html = (
-            '<div class="comp-detail" style="font-family:monospace">'
-            f"&#x1F4CD; {comp.target_code_line}</div>"
-        )
+        code_html = f'<div class="comp-detail" style="font-family:monospace">&#x1F4CD; {comp.target_code_line}</div>'
 
     safe_color = "#22c55e" if comp.is_quantum_safe else "#ef4444"
     return f"""
@@ -235,9 +225,7 @@ def _component_html(comp: parser.PQCComponent) -> str:
     <span class="comp-algo">{comp.algorithm}</span>
     <span style="margin-left:auto;font-size:10px;color:#475569;">{comp.crypto_type}</span>
   </div>
-  <div class="comp-detail">
-    PQC Readiness: <span style="color:{safe_color}">{comp.pqc_readiness}</span>
-  </div>
+  <div class="comp-detail">PQC Readiness: <span style="color:{safe_color}">{comp.pqc_readiness}</span></div>
   {failure_html}
   {code_html}
   {fix_html}
@@ -245,17 +233,17 @@ def _component_html(comp: parser.PQCComponent) -> str:
 
 
 def generate_bound_report(
-    audit: parser.PQCAuditResult,
-    receipt: binder.BindReceipt,
+    audit: PQCAuditResult,
+    receipt: BindReceipt,
     output_dir: str = "aegis_bound_reports",
-) -> tuple[str, str]:
+) -> Tuple[str, str]:
     """
     Generate HTML and JSON reports with embedded 313 receipt.
 
     Returns:
         (html_path, json_path) tuple of generated file paths
     """
-    out = pathlib.Path(output_dir)
+    out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
 
     safe_bind_id = receipt.bind_id.replace("-", "_")
@@ -266,63 +254,59 @@ def generate_bound_report(
     # Status color
     status_color = {
         "VULNERABLE": "critical",
-        "DEGRADED": "high",
-        "SECURE": "safe",
+        "DEGRADED":   "high",
+        "SECURE":     "safe",
     }.get(audit.overall_status, "")
 
     # Canonical string for verification
-    verify_canonical = json.dumps(
-        {
-            "payload_hash": receipt.payload_hash,
-            "timestamp_ns": receipt.timestamp_ns,
-            "prev_hash": receipt.prev_chain_hash,
-            "app_id": receipt.app_id,
-        },
-        sort_keys=True,
-        separators=(",", ":"),
-    )
+    verify_canonical = json.dumps({
+        "payload_hash": receipt.payload_hash,
+        "timestamp_ns": receipt.timestamp_ns,
+        "prev_hash":    receipt.prev_chain_hash,
+        "app_id":       receipt.app_id,
+    }, sort_keys=True, separators=(',', ':'))
 
     # Render HTML
     html = HTML_TEMPLATE.format(
-        bind_id=receipt.bind_id,
-        source_file=audit.source_file,
-        source_format=audit.source_format,
-        generated_at=audit.generated_at,
-        tool_name=audit.tool_name,
-        tool_version=audit.tool_version,
-        timestamp_ns=receipt.timestamp_ns,
-        timestamp_iso=receipt.timestamp_iso,
-        payload_hash=receipt.payload_hash,
-        chain_hash=receipt.chain_hash,
-        signature_algorithm=receipt.signature_algorithm,
-        ipfs_cid=receipt.ipfs_cid or "Not anchored",
-        ipfs_anchored="✅ Anchored" if receipt.ipfs_anchored else "⚠️ Not anchored",
-        ipfs_color="green" if receipt.ipfs_anchored else "amber",
-        app_id=receipt.app_id,
-        app_version=receipt.app_version,
-        overall_risk_score=audit.overall_risk_score,
-        status_color=status_color,
-        critical_count=audit.critical_count,
-        high_count=audit.high_count,
-        quantum_safe_count=audit.quantum_safe_count,
-        quantum_readiness_pct=audit.quantum_readiness_pct,
-        total_components=len(audit.components),
-        components_html=components_html,
-        verify_canonical=verify_canonical[:80] + "...",
+        bind_id              = receipt.bind_id,
+        source_file          = audit.source_file,
+        source_format        = audit.source_format,
+        generated_at         = audit.generated_at,
+        tool_name            = audit.tool_name,
+        tool_version         = audit.tool_version,
+        timestamp_ns         = receipt.timestamp_ns,
+        timestamp_iso        = receipt.timestamp_iso,
+        payload_hash         = receipt.payload_hash,
+        chain_hash           = receipt.chain_hash,
+        signature_algorithm  = receipt.signature_algorithm,
+        ipfs_cid             = receipt.ipfs_cid or "Not anchored",
+        ipfs_anchored        = "✅ Anchored" if receipt.ipfs_anchored else "⚠️ Not anchored",
+        ipfs_color           = "green" if receipt.ipfs_anchored else "amber",
+        app_id               = receipt.app_id,
+        app_version          = receipt.app_version,
+        overall_risk_score   = audit.overall_risk_score,
+        status_color         = status_color,
+        critical_count       = audit.critical_count,
+        high_count           = audit.high_count,
+        quantum_safe_count   = audit.quantum_safe_count,
+        quantum_readiness_pct= audit.quantum_readiness_pct,
+        total_components     = len(audit.components),
+        components_html      = components_html,
+        verify_canonical     = verify_canonical[:80] + "...",
     )
 
     html_path = str(out / f"aegis_bound_{safe_bind_id}.html")
     json_path = str(out / f"aegis_bound_{safe_bind_id}.json")
 
-    pathlib.Path(html_path).write_text(html, encoding="utf-8")
+    Path(html_path).write_text(html, encoding="utf-8")
 
     # JSON report
     json_report = {
         "receipt": receipt.to_dict(),
-        "audit": audit.to_bind_payload(),
+        "audit":   audit.to_bind_payload(),
         "summary": audit.to_summary(),
     }
-    pathlib.Path(json_path).write_text(
+    Path(json_path).write_text(
         json.dumps(json_report, indent=2, default=str),
         encoding="utf-8",
     )

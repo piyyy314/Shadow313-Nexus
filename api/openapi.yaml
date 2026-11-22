@@ -3,9 +3,10 @@ info:
   title: Shadow313 NEXUS API
   description: >-
     Local-First AI-Powered Security Intelligence REST API. This contract describes
-    the separately hosted Python backend, not the static website. The static-site
-    adapter returns HTTP 200 with an explicit unavailable status for backend-dependent
-    routes and never fabricates scan results.
+    the separately hosted Python backend, not the static website. The Vercel website
+    gateway forwards approved routes when configured and returns HTTP 503 when the
+    backend URL is missing or the Python service cannot be reached; it never fabricates
+    successful scan results.
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team
@@ -19,14 +20,18 @@ servers:
   - url: http://localhost:8313
     description: Local development
 
+security:
+  - ApiKeyAuth: []
+
 paths:
   /api/status:
     get:
       summary: Python API status
       operationId: getPythonApiStatus
+      security: []
       responses:
         "200":
-          description: API operational
+          description: Service health, local module inventory, and remote API endpoint capability status
 
   /health:
     get:
@@ -34,6 +39,7 @@ paths:
       operationId: healthCheck
       servers:
         - url: http://localhost:8313
+      security: []
       responses:
         "200":
           description: Healthy
@@ -50,6 +56,33 @@ paths:
         "401":
           description: Unauthorized
 
+  /api/chat:
+    post:
+      summary: Generate a response with the configured AI backend
+      operationId: chat
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt: {type: string, minLength: 1, maxLength: 20000}
+                system_prompt: {type: [string, "null"], maxLength: 4000}
+                context: {type: [object, "null"], additionalProperties: true}
+      responses:
+        "200":
+          description: AI-generated response
+        "401":
+          description: Unauthorized
+        "502":
+          description: AI provider request failed
+        "503":
+          description: AI backend disabled or unavailable
+
   /api/detect:
     post:
       summary: Run threat detection
@@ -64,9 +97,7 @@ paths:
               type: object
               required: [event]
               properties:
-                event:
-                  type: object
-                  additionalProperties: true
+                event: {type: object, additionalProperties: true}
                 detectors:
                   type: array
                   items: {type: string}
@@ -92,11 +123,11 @@ paths:
               required: [content]
               properties:
                 content: {type: string}
-                file_path: {type: string}
+                file_path: {type: [string, "null"]}
                 mode: {type: string, enum: [content, access_log], default: content}
       responses:
         "200":
-          description: Web-shell detector results
+          description: Web-shell scan results
         "401":
           description: Unauthorized
 
@@ -122,26 +153,16 @@ paths:
               type: object
               required: [payload]
               properties:
-                payload:
-                  type: object
-                  additionalProperties: true
-                metadata:
-                  type: object
-                  additionalProperties: true
+                payload: {type: object, additionalProperties: true}
+                metadata: {type: [object, "null"], additionalProperties: true}
       responses:
         "200":
-          description: Unsigned SHA3-512 demo receipt stored in process memory
-        "401":
-          description: Unauthorized
-        "503":
-          description: In-memory receipt store is full
+          description: Receipt created
 
   /api/bind/{bind_id}:
     get:
       summary: Get bind receipt
       operationId: getBind
-      security:
-        - ApiKeyAuth: []
       parameters:
         - name: bind_id
           in: path
@@ -201,41 +222,22 @@ paths:
 
   /api/scan/recon:
     post:
-      summary: Run an authorized reconnaissance scan
+      summary: Reserved reconnaissance scan endpoint (currently unavailable)
+      description: No remote scan worker is connected. Use the local CLI for authorized scans.
       operationId: scanRecon
       security:
         - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [target]
-              properties:
-                target: {type: string}
-                mode: {type: string, default: passive}
-                ports: {type: string}
       responses:
         "200": {description: Scan status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
 
   /api/scan/vuln:
     post:
-      summary: Run vulnerability analysis on an authorized target
+      summary: Reserved vulnerability scan endpoint (currently unavailable)
+      description: No remote scan worker is connected. Use the local CLI for authorized analysis.
       operationId: scanVulnerabilities
       security:
         - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                target: {type: string}
-                cve_id: {type: string}
-                from_session: {type: string}
       responses:
         "200": {description: Analysis status; unavailable when no remote worker is connected}
         "401": {description: Unauthorized}
@@ -300,82 +302,39 @@ paths:
         "200": {description: Event data status; unavailable when no event backend is connected}
         "401": {description: Unauthorized}
 
-
-  /api/chat:
-    post:
-      summary: Run a response through the configured AI backend
-      operationId: chat
-      security:
-        - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [prompt]
-              properties:
-                prompt:
-                  type: string
-                  minLength: 1
-                  maxLength: 20000
-                system_prompt:
-                  type: string
-                  nullable: true
-                  maxLength: 4000
-                context:
-                  type: object
-                  nullable: true
-                  additionalProperties: true
-      responses:
-        "200":
-          description: Generated response from the configured AI backend
-        "401":
-          description: Unauthorized
-        "422":
-          description: Invalid request
-        "502":
-          description: AI provider request failed
-        "503":
-          description: AI backend is disabled or unavailable
-
   /api/shiatoali/health:
     get:
-      summary: ShiatoAli SOC service health
-      operationId: shiatoAliHealth
+      summary: ShiatoAli SOC service health and record counts
+      operationId: shiatoaliHealth
       security:
         - ApiKeyAuth: []
       responses:
         "200":
-          description: SOC service health and storage status
+          description: Local SOC event store health
         "401":
           description: Unauthorized
 
   /api/shiatoali/events:
     get:
-      summary: List ingested SOC events
-      operationId: listShiatoAliEvents
+      summary: List normalized security events
+      operationId: shiatoaliListEvents
       security:
         - ApiKeyAuth: []
       parameters:
         - name: limit
           in: query
-          required: false
           schema: {type: integer, minimum: 1, maximum: 500, default: 100}
         - name: offset
           in: query
-          required: false
           schema: {type: integer, minimum: 0, default: 0}
       responses:
         "200":
-          description: Paginated SOC event records
+          description: Stored event page
         "401":
           description: Unauthorized
-        "422":
-          description: Invalid pagination parameters
     post:
-      summary: Ingest a SOC event
-      operationId: ingestShiatoAliEvent
+      summary: Ingest and evaluate one normalized security event
+      operationId: shiatoaliIngestEvent
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -386,82 +345,44 @@ paths:
               type: object
               required: [source, host, event_type, message]
               properties:
-                source: {type: string, minLength: 1, maxLength: 100}
-                host: {type: string, minLength: 1, maxLength: 255}
-                event_type: {type: string, minLength: 1, maxLength: 100}
-                message: {type: string, minLength: 1, maxLength: 20000}
-                severity: {type: string, default: low}
-                username: {type: string, nullable: true, maxLength: 255}
-                src_ip: {type: string, nullable: true, maxLength: 64}
-                timestamp: {type: string, nullable: true}
-                event_id: {type: string, nullable: true, maxLength: 100}
-                raw:
-                  type: object
-                  additionalProperties: true
+                source: {type: string, maxLength: 100}
+                host: {type: string, maxLength: 255}
+                event_type: {type: string, maxLength: 100}
+                message: {type: string, maxLength: 20000}
+                severity: {type: string, enum: [informational, low, medium, high, critical]}
+                username: {type: [string, "null"]}
+                src_ip: {type: [string, "null"]}
+                timestamp: {type: [string, "null"], format: date-time}
+                event_id: {type: [string, "null"]}
+                raw: {type: object}
       responses:
         "202":
-          description: Event accepted and processed
+          description: Event accepted or identified as a duplicate
         "401":
           description: Unauthorized
         "422":
-          description: Invalid event payload
-
-  /api/shiatoali/alerts:
-    get:
-      summary: List generated SOC alerts
-      operationId: listShiatoAliAlerts
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - name: limit
-          in: query
-          required: false
-          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
-        - name: offset
-          in: query
-          required: false
-          schema: {type: integer, minimum: 0, default: 0}
-        - name: since
-          in: query
-          required: false
-          schema: {type: string, format: date-time, nullable: true}
-        - name: order
-          in: query
-          required: false
-          schema: {type: string, enum: [asc, desc], default: desc}
-      responses:
-        "200":
-          description: Paginated SOC alert records
-        "401":
-          description: Unauthorized
-        "422":
-          description: Invalid alert query parameters
+          description: Invalid event
 
   /api/shiatoali/cases:
     get:
-      summary: List SOC cases
-      operationId: listShiatoAliCases
+      summary: List analyst cases
+      operationId: shiatoaliListCases
       security:
         - ApiKeyAuth: []
       parameters:
         - name: limit
           in: query
-          required: false
           schema: {type: integer, minimum: 1, maximum: 500, default: 100}
         - name: offset
           in: query
-          required: false
           schema: {type: integer, minimum: 0, default: 0}
       responses:
-        "200":
-          description: Paginated SOC cases
-        "401":
-          description: Unauthorized
-        "422":
-          description: Invalid pagination parameters
+        "200": {description: Analyst case page}
+        "401": {description: Unauthorized}
     post:
-      summary: Create a SOC case
-      operationId: createShiatoAliCase
+      summary: Create an analyst case, optionally linked to an alert
+      description: The creator is assigned by the API from the authenticated credential. A shared API key does not identify an individual human analyst.
+      operationId: shiatoaliCreateCase
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -470,25 +391,22 @@ paths:
           application/json:
             schema:
               type: object
-              required: [title]
               additionalProperties: false
+              required: [title]
               properties:
-                title: {type: string, minLength: 1, maxLength: 255}
-                description: {type: string, maxLength: 10000, default: ""}
-                priority: {type: string, default: medium}
-                alert_id: {type: string, nullable: true}
+                title: {type: string, maxLength: 255}
+                description: {type: string, maxLength: 10000}
+                priority: {type: string, enum: [low, medium, high, critical]}
+                alert_id: {type: [string, "null"]}
       responses:
-        "201":
-          description: SOC case created; actor is assigned by the authenticated API dependency
-        "401":
-          description: Unauthorized
-        "422":
-          description: Invalid case payload
+        "201": {description: Case created}
+        "401": {description: Unauthorized}
+        "422": {description: Invalid case data}
 
   /api/shiatoali/cases/{case_id}:
     get:
-      summary: Retrieve a SOC case
-      operationId: getShiatoAliCase
+      summary: Retrieve case details, linked alerts, and activity
+      operationId: shiatoaliGetCase
       security:
         - ApiKeyAuth: []
       parameters:
@@ -497,15 +415,13 @@ paths:
           required: true
           schema: {type: string}
       responses:
-        "200":
-          description: SOC case details and activity
-        "401":
-          description: Unauthorized
-        "404":
-          description: Case not found
+        "200": {description: Case details}
+        "401": {description: Unauthorized}
+        "404": {description: Case not found}
     patch:
-      summary: Update a SOC case
-      operationId: updateShiatoAliCase
+      summary: Update case status or assignee and append an analyst note
+      description: The activity actor is assigned by the API from the authenticated credential; client-supplied actor values are rejected.
+      operationId: shiatoaliUpdateCase
       security:
         - ApiKeyAuth: []
       parameters:
@@ -521,18 +437,40 @@ paths:
               type: object
               additionalProperties: false
               properties:
-                status: {type: string, nullable: true}
-                assignee: {type: string, nullable: true, maxLength: 255}
-                note: {type: string, nullable: true, maxLength: 5000}
+                status: {type: string, enum: [open, investigating, contained, resolved, closed]}
+                assignee: {type: [string, "null"]}
+                note: {type: [string, "null"], maxLength: 5000}
+      responses:
+        "200": {description: Case updated}
+        "401": {description: Unauthorized}
+        "404": {description: Case not found}
+        "422": {description: Invalid update}
+
+  /api/shiatoali/alerts:
+    get:
+      summary: List alerts generated by ShiatoAli detections
+      operationId: shiatoaliListAlerts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
+        - name: offset
+          in: query
+          schema: {type: integer, minimum: 0, default: 0}
+        - name: since
+          in: query
+          description: Return alerts created at or after this ISO-8601 timestamp
+          schema: {type: string, format: date-time}
+        - name: order
+          in: query
+          schema: {type: string, enum: [asc, desc], default: desc}
       responses:
         "200":
-          description: Updated SOC case and activity record
+          description: Stored alert page
         "401":
           description: Unauthorized
-        "404":
-          description: Case not found
-        "422":
-          description: Invalid case update
 
 components:
   securitySchemes:

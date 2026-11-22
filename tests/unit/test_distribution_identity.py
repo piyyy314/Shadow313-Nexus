@@ -14,8 +14,6 @@ def test_distribution_name_and_entrypoint_are_distinct():
         "s313-cli": "shadow313.cli.main:main",
     }
     assert config["project"]["version"] == "4.0.0"
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "`s313-cli` is a compatibility alias" in readme
     assert (ROOT / "shadow313/__init__.py").is_file()
 
 

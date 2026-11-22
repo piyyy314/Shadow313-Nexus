@@ -1,5 +1,4 @@
 """FastAPI routes for the ShiatoAli SOC event and alert service."""
-
 from __future__ import annotations
 
 from collections.abc import Callable

@@ -1,5 +1,6 @@
 """Behavioral regressions for the reproduced audit release blockers."""
 
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -11,6 +12,16 @@ from shadow313.core.binding_sdk.binder import AppIdentity, Binder313, BindReceip
 
 def binder():
     return Binder313(AppIdentity(app_id="fixture", app_name="Fixture"))
+
+
+def test_delivery_forces_tracking_of_ignored_artifacts():
+    workflow = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "deliver.yml"
+    )
+    assert "git add -f dist/manifest.json dist/receipts/" in workflow.read_text()
 
 
 def test_receipts_round_trip_metadata_sequence_and_full_signature():
@@ -134,7 +145,7 @@ def test_gateway_url_and_key_without_network(monkeypatch, endpoint):
     monkeypatch.setenv("AI_GATEWAY_API_KEY", "fixture")
     engine = AIEngine({"backend": "gateway", "endpoint": endpoint})
     with patch(
-        "shadow313.core.ai_engine.request.urlopen", side_effect=OSError("intercepted")
+        "urllib.request.urlopen", side_effect=OSError("intercepted")
     ) as send:
         engine.chat("test")
     req = send.call_args.args[0]

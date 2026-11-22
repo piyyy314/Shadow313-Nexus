@@ -771,5 +771,17 @@
   ],
   "buildCommand": "node scripts/build-public-site.cjs",
   "outputDirectory": "public-site",
-  "installCommand": "echo \"No npm installation required\""
+  "installCommand": "echo \"No npm installation required\"",
+  "redirects": [
+    {
+      "source": "/shadow313",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/shadow313/",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
 }

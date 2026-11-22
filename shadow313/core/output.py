@@ -35,6 +35,9 @@ class _C:
     WHITE = "\033[97m"
     DIM = "\033[2m"
     PURPLE = "\033[95m"
+    GOLD = "\033[38;5;220m"
+    LIME = "\033[38;5;154m"
+    ELECTRIC_BLUE = "\033[38;5;75m"
 
 
 SEVERITY_COLORS = {
@@ -45,8 +48,7 @@ SEVERITY_COLORS = {
     "info": _C.CYAN,
 }
 
-BANNER = f"SHADOW313 NEXUS  |  v{__version__}\n" "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
-BANNER_WIDTH = 62
+BANNER = f"Shadow313 NEXUS v{__version__} | LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
 
 
 class OutputFormatter:
@@ -79,41 +81,57 @@ class OutputFormatter:
 
     # ── Banner ────────────────────────────────────────────────────────────────
     def banner(self) -> None:
-        if self.fmt in ("json", "markdown"):
+        """Print the boxed Shadow313 NEXUS identity header."""
+        if self.fmt in ("json", "sarif", "junit"):
             return
 
-        top = "╔" + "═" * BANNER_WIDTH + "╗"
-        bottom = "╚" + "═" * BANNER_WIDTH + "╝"
-        title = f"SHADOW313 NEXUS  |  v{__version__}"
-        tagline = "LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
-        welcome = "WELCOME TO SHADOW313 NEXUS"
+        top = "╔" + "═" * 76 + "╗"
+        bottom = "╚" + "═" * 76 + "╝"
+        brand = f"  SHADOW313  NEXUS  |  v{__version__}"
+        tagline = "  LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE"
+        mission = "  DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE"
 
         if self._has_rich:
-            from rich.align import Align
             from rich.box import DOUBLE
             from rich.panel import Panel
             from rich.text import Text
 
-            body = Text()
-            body.append("⬡  SHADOW313 NEXUS", style="bold bright_cyan")
-            body.append(f"  v{__version__}\n", style="bold white")
-            body.append(tagline + "\n", style="cyan")
-            body.append(welcome, style="bold bright_magenta")
+            content = Text()
+            content.append("◈  ", style="bold bright_yellow")
+            content.append("SHADOW313", style="bold bright_green")
+            content.append("  NEXUS", style="bold bright_cyan")
+            content.append(f"  v{__version__}", style="bold bright_blue")
+            content.append("\n")
+            content.append(
+                "   LOCAL-FIRST AI-POWERED SECURITY INTELLIGENCE",
+                style="bold bright_cyan",
+            )
+            content.append("\n")
+            content.append(
+                "   DETECT  •  ANALYZE  •  DEFEND  •  AUTOMATE",
+                style="bold bright_green",
+            )
             self._rich_console.print(
-                Panel(Align.center(body), box=DOUBLE, border_style="bright_cyan", padding=(1, 2))
+                Panel(
+                    content,
+                    box=DOUBLE,
+                    border_style="bright_green",
+                    padding=(0, 2),
+                    expand=False,
+                )
             )
             return
 
-        lines = (
-            top,
-            "║" + title.center(BANNER_WIDTH) + "║",
-            "║" + tagline.center(BANNER_WIDTH) + "║",
-            "║" + welcome.center(BANNER_WIDTH) + "║",
-            bottom,
+        print(self._c(_C.YELLOW, top))
+        print(
+            self._c(_C.GREEN, "║")
+            + self._c(_C.YELLOW, " ◈ ")
+            + self._c(_C.GREEN, brand.ljust(74))
+            + self._c(_C.GREEN, "║")
         )
-        for index, line in enumerate(lines):
-            color = _C.PURPLE if index in (0, 4) else _C.CYAN
-            print(self._c(color, line))
+        print(self._c(_C.GREEN, "║") + self._c(_C.CYAN, tagline.ljust(76)) + self._c(_C.GREEN, "║"))
+        print(self._c(_C.GREEN, "║") + self._c(_C.BLUE, mission.ljust(76)) + self._c(_C.GREEN, "║"))
+        print(self._c(_C.YELLOW, bottom))
 
     # ── Info / success / warn / error ─────────────────────────────────────────
     def info(self, msg: str, prefix: str = "•") -> None:

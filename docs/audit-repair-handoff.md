@@ -238,8 +238,9 @@ CLI runs:
 - `AI_GATEWAY_API_KEY=<enter privately, never commit>`
 
 The CLI now joins `/v1` correctly. No real billable model call was made here.
-The public site's `/api/chat` still returns honest 503; it is not a public Gateway
-proxy and does not connect to your laptop localhost. Do not expose unauthenticated
+The public static site's `/api/chat` adapter returns an explicit unavailable status;
+it is not a public Gateway proxy and does not connect to your laptop localhost. The
+separately hosted Python API now exposes an authenticated `/api/chat` endpoint. Do not expose unauthenticated
 Ollama just to make cloud access work. Hosted chat requires separately reviewed
 authentication, budget/abuse controls, data-sharing consent and endpoint contracts.
 

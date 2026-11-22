@@ -47,7 +47,7 @@ Write-Host "  → Recommend: merge #88, close #87, review #86 carefully" -Foregr
 Write-Host "" -ForegroundColor White
 Write-Host "  MANUAL ACTIONS STILL NEEDED:" -ForegroundColor Yellow
 Write-Host "  1. Archive 313-cli: github.com/piyyy314/313-cli/settings" -ForegroundColor Cyan
-Write-Host "  2. Set GitHub email: github.com/settings/emails (for Railway)" -ForegroundColor Cyan
+Write-Host "  2. Verify GitHub commit identity and repository access" -ForegroundColor Cyan
 Write-Host "  3. Add secret: SHADOW313_MOBILE_TOKEN in GitHub Secrets" -ForegroundColor Cyan
 Write-Host "  4. Branch protection: github.com/piyyy314/Shadow313-Nexus/settings/branches" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan

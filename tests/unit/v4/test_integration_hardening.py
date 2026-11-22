@@ -314,6 +314,40 @@ class TestNexusBridgeOptionalComponents:
         result = bridge.enforce(detection, pid=99999)
         assert result.enforced is False
 
+    @pytest.mark.parametrize(
+        ("action", "expected_enforced"),
+        [
+            ("ERROR", False),
+            ("KILLED", True),
+            ("NOT_FOUND", True),
+            ("PERMISSION_DENIED", False),
+            ("UNKNOWN", False),
+        ],
+    )
+    def test_bridge_enforce_reports_kill_action(self, action, expected_enforced):
+        from types import SimpleNamespace
+
+        from nexus_toolkit.shadow313_bridge.bridge import Shadow313Bridge
+
+        bridge = Shadow313Bridge()
+        bridge._temporal_engine = None
+        bridge._ledger = None
+        bridge._enforcement = SimpleNamespace(
+            terminator=SimpleNamespace(kill_pid=lambda *_: {"action": action})
+        )
+        detection = SimpleNamespace(
+            log_id="ENF-ACTION",
+            threat_level="HIGH",
+            techniques=[],
+            indicators=[],
+            anomaly_score=SimpleNamespace(score=0.9),
+        )
+
+        result = bridge.enforce(detection, pid=1234)
+
+        assert result.enforced is expected_enforced
+        assert result.enforcement_action == f"{action} PID 1234"
+
     def test_bridge_status_reflects_component_availability(self):
         """status() must accurately reflect which components loaded."""
         from nexus_toolkit.shadow313_bridge.bridge import Shadow313Bridge

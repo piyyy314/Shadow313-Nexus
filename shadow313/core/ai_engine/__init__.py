@@ -7,7 +7,7 @@ import collections.abc
 import json
 import os
 import urllib.error
-from urllib import request
+import urllib.request
 
 
 class AIEngine:
@@ -33,16 +33,16 @@ class AIEngine:
     # Restrict schemes and known metadata destinations.
     # Endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
-    _BLOCKED_HOSTS = {
-        "169.254.169.254",  # AWS/GCP/Azure instance metadata
+    _BLOCKED_HOSTS   = {
+        "169.254.169.254",       # AWS/GCP/Azure instance metadata
         "metadata.google.internal",
-        "169.254.170.2",  # ECS task metadata
-        "100.100.100.200",  # Alibaba Cloud metadata
+        "169.254.170.2",         # ECS task metadata
+        "100.100.100.200",       # Alibaba Cloud metadata
     }
 
     def __init__(self, config: dict) -> None:
-        self.backend: str = config.get("backend", "ollama")
-        self.model: str = config.get("model", "mistral:7b")
+        self.backend:  str = config.get("backend", "ollama")
+        self.model:    str = config.get("model", "mistral:7b")
         configured_endpoint = config.get("endpoint")
         local_defaults = {"http://localhost:11434", "http://ollama:11434"}
         if self.backend == "gateway":
@@ -60,14 +60,18 @@ class AIEngine:
             configured_endpoint = endpoint_default
         raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
-        self.timeout: int = int(config.get("timeout", 120))
-        self.ctx_win: int = int(config.get("context_window", 8192))
+        self.timeout:  int = int(config.get("timeout", 120))
+        self.ctx_win:  int = int(config.get("context_window", 8192))
         if self.backend == "gateway":
-            self._api_key = config.get("gateway_api_key", "") or os.environ.get(
-                "AI_GATEWAY_API_KEY", ""
+            self._api_key = (
+                config.get("gateway_api_key", "")
+                or os.environ.get("AI_GATEWAY_API_KEY", "")
             )
         elif self.backend == "openai":
-            self._api_key = config.get("openai_api_key", "") or os.environ.get("OPENAI_API_KEY", "")
+            self._api_key = (
+                config.get("openai_api_key", "")
+                or os.environ.get("OPENAI_API_KEY", "")
+            )
         else:
             self._api_key = ""
 
@@ -83,7 +87,7 @@ class AIEngine:
             raise ValueError("AI endpoint must use http or https")
         if not host or parsed.username is not None or parsed.password is not None:
             raise ValueError("AI endpoint must include a host and must not include user info")
-        # Accessing .port validates malformed port strings before any request.
+        # Accessing .port validates malformed port strings before any urllib.request.
         _ = parsed.port
         if host in self._BLOCKED_HOSTS:
             raise ValueError(f"AI endpoint host '{host}' is blocked")
@@ -96,8 +100,9 @@ class AIEngine:
         if ipv6 and ipv6.ipv4_mapped:
             normalized_host = str(ipv6.ipv4_mapped)
 
-        if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
-            ("169.254.", "fd00:", "fe80:", "fc00:")
+        if (
+            normalized_host in self._BLOCKED_HOSTS
+            or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
         ):
             raise ValueError(
                 f"AI endpoint host '{host}' is in a blocked link-local or metadata range"
@@ -108,7 +113,9 @@ class AIEngine:
         except ValueError:
             address = None
         if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
-            raise ValueError(f"AI endpoint IP '{host}' is not a permitted destination")
+            raise ValueError(
+                f"AI endpoint IP '{host}' is not a permitted destination"
+            )
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -154,8 +161,8 @@ class AIEngine:
             return False
         try:
             if self.backend == "ollama":
-                req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-                with request.urlopen(req, timeout=5):  # nosec B310
+                req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+                with urllib.request.urlopen(req, timeout=5):  # nosec B310
                     return True
             # For openai-compatible, just check the key is set
             return bool(self._api_key)
@@ -167,8 +174,8 @@ class AIEngine:
         if self.backend != "ollama":
             return []
         try:
-            req = request.Request(f"{self.endpoint}/api/tags", method="GET")
-            with request.urlopen(req, timeout=10) as resp:  # nosec B310
+            req = urllib.request.Request(f"{self.endpoint}/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
@@ -191,20 +198,20 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user", "content": user},
+                {"role": "user",   "content": user},
             ],
             "stream": False,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data.get("message", {}).get("content", "").strip()
         except urllib.error.URLError as exc:
@@ -212,25 +219,27 @@ class AIEngine:
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(self, system: str, user: str) -> collections.abc.Generator[str, None, None]:
+    def _ollama_stream(
+        self, system: str, user: str
+    ) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user", "content": user},
+                {"role": "user",   "content": user},
             ],
             "stream": True,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req = request.Request(
+        req  = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 # FIX: add packet counter to prevent infinite loop if 'done' never arrives
                 max_packets = 10_000
                 count = 0
@@ -262,12 +271,12 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user", "content": user},
+                {"role": "user",   "content": user},
             ],
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req = request.Request(
+        req  = urllib.request.Request(
             (
                 f"{self.endpoint}/chat/completions"
                 if self.endpoint.endswith("/v1")
@@ -275,13 +284,13 @@ class AIEngine:
             ),
             data=body,
             headers={
-                "Content-Type": "application/json",
+                "Content-Type":  "application/json",
                 "Authorization": f"Bearer {self._api_key}",
             },
             method="POST",
         )
         try:
-            with request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310
                 data = json.loads(resp.read())
                 return data["choices"][0]["message"]["content"].strip()
         except Exception as exc:

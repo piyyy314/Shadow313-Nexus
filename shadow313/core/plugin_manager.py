@@ -91,9 +91,8 @@ class PluginManager:
         for hook in manifest.get("hooks", []):
             if hook in self._hooks:
                 self._hooks[hook].append(
-                    lambda data, name=plugin_name, selected_hook=hook: self._dispatch(
-                        name, selected_hook, data
-                    )
+                    lambda data, name=plugin_name, selected_hook=hook:
+                    self._dispatch(name, selected_hook, data)
                 )
         self._plugins[plugin_name] = manifest
         return True
@@ -109,7 +108,9 @@ class PluginManager:
 
     def _dispatch(self, plugin_name: str, hook: str, data: dict) -> dict | None:
         try:
-            module = importlib.import_module(f"shadow313.plugins.{plugin_name}.analyzer")
+            module = importlib.import_module(
+                f"shadow313.plugins.{plugin_name}.analyzer"
+            )
             handler = getattr(module, "handle", None)
             if callable(handler):
                 return handler(hook, data)
@@ -125,9 +126,16 @@ class PluginManager:
         manifest_path = plugin_path / "plugin.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(manifest_path)
-        signature = hmac.new(self.secret, manifest_path.read_bytes(), hashlib.sha256).hexdigest()
-        (plugin_path / "plugin.shadow313sig").write_text(signature, encoding="utf-8")
+        signature = hmac.new(
+            self.secret, manifest_path.read_bytes(), hashlib.sha256
+        ).hexdigest()
+        (plugin_path / "plugin.shadow313sig").write_text(
+            signature, encoding="utf-8"
+        )
         return signature
 
     def list_plugins(self) -> list[dict[str, Any]]:
-        return [{"name": name, "manifest": manifest} for name, manifest in self._plugins.items()]
+        return [
+            {"name": name, "manifest": manifest}
+            for name, manifest in self._plugins.items()
+        ]

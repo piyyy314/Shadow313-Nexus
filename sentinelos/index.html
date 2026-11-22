@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/sentinelos/styles.css">
 </head>
 <body>
-    <aside style="position:fixed;bottom:0;left:0;right:0;z-index:10000;background:#0b1229;color:#e2e8f8;padding:6px;text-align:center;font:12px sans-serif">Restored SentinelOS prototype — simulated data and demo tools; hosted AI is not connected.</aside>
+    <aside id="nexus-backend-status" class="nexus-backend-status" role="status" aria-live="polite" data-state="checking">CHECKING NEXUS BACKEND…</aside>
     <!-- 1. LOADING SCREEN -->
     <div class="loading-screen" id="loading-screen">
         <div class="loading-logo"></div>
@@ -1473,6 +1473,7 @@
     </div>
 
     <!-- Platform dynamic scripts -->
+    <script src="/sentinelos/js/nexus-api.js"></script>
     <script src="/sentinelos/js/app.js"></script>
     <script src="/sentinelos/js/quantum.js"></script>
     <script src="/sentinelos/js/threat.js"></script>

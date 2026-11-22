@@ -94,3 +94,6 @@ docker/nginx/ssl/*.key
 
 docker/nginx/ssl/shadow313.key
 scripts/secret-fixtures.json
+
+# Generated local TLS certificates
+docker/nginx/ssl/*.crt

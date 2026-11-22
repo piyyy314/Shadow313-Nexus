@@ -1,24 +1,19 @@
-"""Shadow313 NEXUS CLI — Local-first AI-powered security intelligence platform."""
-from __future__ import annotations
-import os
-"""
-shadow313.cli.main  — v4 NEXUS
-Primary CLI entry point — argparse-based command router.
-All commands dispatch through the Core Kernel's command bus.
+"""Shadow313 NEXUS CLI — local-first AI-powered security intelligence platform.
 
-BUG FIXES vs v1:
-  - _dispatch() had no handler for 'status' command — added.
-  - 'ask' command fallback used sys.argv[2:] which broke when --no-stream
-    was passed — fixed to use args.question only.
-  - 'session --purge' used hardcoded Config() without passing config_path —
-    fixed to use kernel.config.
-  - Missing commands: agent, campaign, graph, serve, report, threat-intel,
-    sandbox, cloud, crypto-agility, rag, temporal, nexus, stix — all added.
+Primary CLI entry point — argparse-based command router. All commands dispatch
+through the Core Kernel's command bus.
+
+The command router includes explicit handlers for the core, advanced, and NEXUS
+command groups. See `shadow313 commands` for handler availability.
 """
+
+from __future__ import annotations
 
 import argparse
 import sys
 from pathlib import Path
+
+# fmt: off
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,7 +44,10 @@ Docs:
     parser.add_argument("--version",   action="version",  version="shadow313 v4.0.0-NEXUS")
     parser.add_argument("--config",    metavar="PATH",    help="Config file path")
     parser.add_argument("--session",   metavar="UUID",    help="Resume session by ID")
-    parser.add_argument("--output",    choices=["rich","json","markdown","plain"], help="Output format override")
+    parser.add_argument(
+        "--output", choices=["rich", "json", "markdown", "plain"],
+        help="Output format override",
+    )
     parser.add_argument("--verbose",   action="store_true", help="Verbose output")
     parser.add_argument("--no-color",  action="store_true", help="Disable color output")
     parser.add_argument("--no-banner", action="store_true", help="Skip ASCII banner")
@@ -96,7 +94,9 @@ Docs:
     p_exp.add_argument("--ops",           metavar="OPS")
 
     # ── network ───────────────────────────────────────────────────────────────
-    p_net = sub.add_parser("network", help="Network intelligence — capture, PCAP, anomaly, topology")
+    p_net = sub.add_parser(
+        "network", help="Network intelligence — capture, PCAP, anomaly, topology"
+    )
     p_net.add_argument("--capture",    metavar="IFACE")
     p_net.add_argument("--duration",   type=int, default=30)
     p_net.add_argument("--analyze",    metavar="PCAP")
@@ -109,11 +109,16 @@ Docs:
     p_net.add_argument("--dns-covert", action="store_true", dest="dns_covert")
 
     # ── defense ───────────────────────────────────────────────────────────────
-    p_def = sub.add_parser("defense", help="Defensive hardening — CIS audit, firewall, AI remediation")
+    p_def = sub.add_parser(
+        "defense", help="Defensive hardening — CIS audit, firewall, AI remediation"
+    )
     p_def.add_argument("--audit",      action="store_true")
     p_def.add_argument("--profile",    default="cis-level1", choices=["cis-level1","cis-level2"])
     p_def.add_argument("--firewall",   action="store_true")
-    p_def.add_argument("--fw-tool",   default="auto", choices=["auto","ufw","iptables","nftables"], dest="fw_tool")
+    p_def.add_argument(
+        "--fw-tool", default="auto", choices=["auto", "ufw", "iptables", "nftables"],
+        dest="fw_tool",
+    )
     p_def.add_argument("--remediate",  action="store_true")
     p_def.add_argument("--output",    choices=["bash","ansible"], default="bash", dest="output_fmt")
     p_def.add_argument("--apply",     action="store_true", dest="apply_fixes")
@@ -123,7 +128,10 @@ Docs:
     p_q.add_argument("--scan-host",   metavar="HOST:PORT", dest="scan_host")
     p_q.add_argument("--audit-certs", metavar="PATH", dest="audit_certs")
     p_q.add_argument("--scan-code",   metavar="PATH", dest="scan_code")
-    p_q.add_argument("--lang",        metavar="LANG", choices=["python","javascript","java","go","c","rust"])
+    p_q.add_argument(
+        "--lang", metavar="LANG",
+        choices=["python", "javascript", "java", "go", "c", "rust"],
+    )
     p_q.add_argument("--report",      action="store_true")
 
     # ── plugin ────────────────────────────────────────────────────────────────
@@ -147,7 +155,10 @@ Docs:
     p_ci.add_argument("--output",     choices=["rich","json","sarif","junit"], default="rich")
     p_ci.add_argument("--secrets",    action="store_true")
     p_ci.add_argument("--diff",       metavar="FILE/-")
-    p_ci.add_argument("--generate",   metavar="TEMPLATE", choices=["github-actions","gitlab-ci","pre-commit"])
+    p_ci.add_argument(
+        "--generate", metavar="TEMPLATE",
+        choices=["github-actions", "gitlab-ci", "pre-commit"],
+    )
     p_ci.add_argument("--pr-summary", action="store_true", dest="pr_summary")
     p_ci.add_argument("--from",       metavar="FILE", dest="from_file")
     p_ci.add_argument("--quiet",      action="store_true")
@@ -180,7 +191,10 @@ Docs:
 
     # ── update ────────────────────────────────────────────────────────────────
     p_upd = sub.add_parser("update", help="Update local databases (CVE, ExploitDB, KEV, EPSS)")
-    p_upd.add_argument("--db",      metavar="DB", choices=["cve","exploitdb","kev","epss","all"], required=True)
+    p_upd.add_argument(
+        "--db", metavar="DB", choices=["cve", "exploitdb", "kev", "epss", "all"],
+        required=True,
+    )
     p_upd.add_argument("--api-key", metavar="KEY", dest="api_key", default="")
 
     # ── status ────────────────────────────────────────────────────────────────
@@ -188,7 +202,10 @@ Docs:
 
     # ── V2 commands ───────────────────────────────────────────────────────────
     p_agent = sub.add_parser("agent", help="Agentic auto-chain module execution")
-    p_agent.add_argument("--plan",         default="quick_vuln", choices=["full_pentest","quick_vuln","defense_audit","crypto_audit"])
+    p_agent.add_argument(
+        "--plan", default="quick_vuln",
+        choices=["full_pentest", "quick_vuln", "defense_audit", "crypto_audit"],
+    )
     p_agent.add_argument("--target",       metavar="HOST", default="")
     p_agent.add_argument("--approval",     choices=["auto","gate_high","full_human"], default="")
     p_agent.add_argument("--suggest-plan", action="store_true", dest="suggest_plan")
@@ -279,8 +296,12 @@ Docs:
 
     p_finetune = sub.add_parser("finetune", help="LoRA fine-tuning config generator")
     p_finetune.add_argument("--generate-config",  action="store_true", dest="generate_config")
-    p_finetune.add_argument("--dataset-path",     default="shadow313_training_data.jsonl", dest="dataset_path")
-    p_finetune.add_argument("--output-dir",       default="./shadow313-7b-output", dest="output_dir")
+    p_finetune.add_argument(
+        "--dataset-path", default="shadow313_training_data.jsonl", dest="dataset_path"
+    )
+    p_finetune.add_argument(
+        "--output-dir", default="./shadow313-7b-output", dest="output_dir"
+    )
     p_finetune.add_argument("--generate-dataset", action="store_true", dest="generate_dataset")
     p_finetune.add_argument("--dataset-size",     type=int, default=100, dest="dataset_size")
 
@@ -354,7 +375,9 @@ Docs:
     p_gw.add_argument('--stats',         action='store_true')
 
     # ── Quantum NEXUS ─────────────────────────────────────────────────────────
-    p_qn = sub.add_parser('quantum-nexus', help='Advanced quantum security (HNDL, QKD, sensor fusion)')
+    p_qn = sub.add_parser(
+        'quantum-nexus', help='Advanced quantum security (HNDL, QKD, sensor fusion)'
+    )
     p_qn.add_argument('--hndl-analyze',    action='store_true', dest='hndl_analyze')
     p_qn.add_argument('--algorithm',       default='RSA-2048')
     p_qn.add_argument('--sensitivity',     default='CONFIDENTIAL')
@@ -406,7 +429,7 @@ Docs:
     p_health.add_argument('--json',        action='store_true', dest='json_output')
 
     # ── Doctor (alias for health --full) ──────────────────────────────────────
-    p_doctor = sub.add_parser('doctor', help='Full system diagnostic (alias for health --full)')
+    sub.add_parser('doctor', help='Full system diagnostic (alias for health --full)')
 
     # ── Ghost-Watch CADL ──────────────────────────────────────────────────────
     p_cadl = sub.add_parser('cadl', help='CADL escalation control (via Aegis)')
@@ -414,11 +437,121 @@ Docs:
     p_cadl.add_argument('--incident',   default='')
     p_cadl.add_argument('--simulate',   action='store_true')
 
+    # ── Command discovery ─────────────────────────────────────────────────────
+    p_commands = sub.add_parser("commands", help="List CLI commands and their registered handlers")
+    p_commands.add_argument(
+        "--all", action="store_true", help="Include commands with unavailable handlers"
+    )
+
     # ── Quantum NEXUS ACTS ────────────────────────────────────────────────────
     p_acts = sub.add_parser('acts', help='ACTS deception stack (via Ghost-Watch)')
     p_acts.add_argument('--deploy',     metavar='TYPE', default='api_server')
     p_acts.add_argument('--port',       type=int, default=0)
     p_acts.add_argument('--list',       action='store_true')
+
+    # ── Advanced NEXUS service commands ───────────────────────────────────────
+    p_orch = sub.add_parser("orchestrate", help="Run the AI agent orchestrator")
+    p_orch.add_argument("--intent", default="")
+    p_orch.add_argument("--workflow-type", default="research",
+                        choices=["research", "synthesis", "execution", "monitoring", "feedback"])
+    p_orch.add_argument("--tools", default="")
+    p_orch.add_argument("--metrics", action="store_true")
+    p_orch.add_argument("--session-id", default="")
+
+    p_router = sub.add_parser("nexus-router", help="Inspect and test NEXUS request routing")
+    p_router.add_argument("--path", default="/")
+    p_router.add_argument("--method", default="GET")
+    p_router.add_argument("--remote-addr", default="127.0.0.1")
+    p_router.add_argument("--stats", action="store_true")
+    p_router.add_argument("--health", action="store_true")
+    p_router.add_argument("--test-ndi", default="")
+
+    p_ledger = sub.add_parser("ledger", help="Inspect and manage the append-only audit ledger")
+    p_ledger.add_argument("--append", default="")
+    p_ledger.add_argument("--key", default="default")
+    p_ledger.add_argument("--query", default="")
+    p_ledger.add_argument("--diagnose", action="store_true")
+    p_ledger.add_argument("--stats", action="store_true")
+    p_ledger.add_argument("--health", action="store_true")
+    p_ledger.add_argument("--verify", default="")
+    p_ledger.add_argument("--freeze", type=int, default=0)
+    p_ledger.add_argument("--epoch-close", action="store_true")
+
+    p_workflow = sub.add_parser("workflow", help="Register, inspect, and execute workflows")
+    p_workflow.add_argument("--execute", default="")
+    p_workflow.add_argument("--list", action="store_true", dest="list_wf")
+    p_workflow.add_argument("--stats", action="store_true")
+    p_workflow.add_argument("--logs", default="")
+    p_workflow.add_argument("--dlq-depth", action="store_true")
+    p_workflow.add_argument("--register-yaml", default="")
+    p_workflow.add_argument("--sample", action="store_true")
+
+    p_tools = sub.add_parser("tools", help="Browse and run the advanced security tool suite")
+    p_tools.add_argument("--tool", default="")
+    p_tools.add_argument("--target", default="")
+    p_tools.add_argument("--query", default="")
+    p_tools.add_argument("--framework", default="")
+    p_tools.add_argument("--cvss", type=float, default=0.0)
+    p_tools.add_argument("--epss", type=float, default=0.0)
+    p_tools.add_argument("--is-kev", action="store_true")
+    p_tools.add_argument("--list-tools", action="store_true")
+
+    p_sim = sub.add_parser("simulate", help="Run NEXUS component and platform simulations")
+    p_sim.add_argument("--sim", default="all",
+                       choices=["all", "agent", "routing", "circuit_breaker", "memory",
+                                "safety", "temporal", "ndi", "stress", "ledger"])
+    p_sim.add_argument("--full", action="store_false", dest="quick",
+                       help="Run the extended simulation suite")
+    p_sim.add_argument("--n", type=int, default=100)
+    p_sim.add_argument("--save", default="")
+
+    p_collab = sub.add_parser("collab", help="Manage collaborative analyst sessions")
+    p_collab.add_argument("--create", action="store_true")
+    p_collab.add_argument("--join", default="")
+    p_collab.add_argument("--add-member", default="")
+    p_collab.add_argument("--share-session", default="")
+    p_collab.add_argument("--note", default="")
+    p_collab.add_argument("--username", default="analyst")
+    p_collab.add_argument("--list", action="store_true", dest="list_sessions")
+    p_collab.add_argument("--timeline", default="")
+
+    p_attack = sub.add_parser("attack-map", help="Map session findings to MITRE ATT&CK")
+    p_attack.add_argument("--from-session", default="")
+    p_attack.add_argument("--output-navigator", default="")
+    p_attack.add_argument("--technique-summary", action="store_true")
+
+    p_pe = sub.add_parser("pe-analyze", help="Analyze PE files and generate forensic reports")
+    p_pe.add_argument("--file", default="")
+    p_pe.add_argument("--entropy", action="store_true")
+    p_pe.add_argument("--forensics", action="store_true")
+    p_pe.add_argument("--save", default="")
+    p_pe.add_argument("--threat-posture", default="LOW",
+                      choices=["LOW", "MEDIUM", "HIGH", "CRITICAL"])
+
+    p_dns = sub.add_parser("dns-intercept", help="Inspect DNS exposure in OT/ICS environments")
+    p_dns.add_argument("--target", default="")
+    p_dns.add_argument("--scan-ot", action="store_true")
+    p_dns.add_argument("--geo-deck", action="store_true")
+    p_dns.add_argument("--save", default="")
+    p_dns.add_argument("--report-txt", default="")
+
+    # ── Local OmniSkill management ────────────────────────────────────────────
+    p_skill = sub.add_parser(
+        "skill", help="Discover, inspect, and validate local OmniSkills"
+    )
+    p_skill.add_argument(
+        "--root", help="Repository root or skills/ directory (auto-detected by default)"
+    )
+    skill_sub = p_skill.add_subparsers(dest="skill_action", required=True)
+    skill_sub.add_parser("list", help="List installed repository skills")
+    p_skill_show = skill_sub.add_parser("show", help="Display a skill entrypoint")
+    p_skill_show.add_argument("skill_id")
+    p_skill_validate = skill_sub.add_parser(
+        "validate", help="Validate skill metadata and local references"
+    )
+    p_skill_validate.add_argument(
+        "skill_id", nargs="?", help="Skill ID; omit to validate all skills"
+    )
 
     return parser
 
@@ -426,6 +559,17 @@ Docs:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args   = parser.parse_args(argv)
+
+    # Local skill commands are standard-library-only and must not boot the kernel.
+    if args.command == "skill":
+        from shadow313.cli.skills import run_skill_command
+
+        skill_args = argparse.Namespace(
+            root=args.root,
+            action=args.skill_action,
+            skill_id=getattr(args, "skill_id", None),
+        )
+        return run_skill_command(skill_args)
 
     if args.command is None:
         _boot(args)
@@ -436,7 +580,65 @@ def main(argv: list[str] | None = None) -> int:
     if kernel is None:
         return 1
 
+    missing = [name for name in _required_namespaces(args)
+               if name not in kernel.registered_commands()]
+    if missing:
+        kernel.out.error(
+            f"'{args.command}' cannot run because required handler(s) are unavailable: "
+            + ", ".join(missing)
+        )
+        kernel.out.info("Run 'shadow313 health --full' for module diagnostics.")
+        return 2
+
     return _dispatch(kernel, args, parser)
+
+
+def _required_namespaces(args) -> list[str]:
+    """Return the command-bus handlers required by the selected CLI command."""
+    command = args.command
+    routes = {
+        "recon": ["recon"], "vuln": ["vuln"], "exploit": ["exploit"],
+        "network": ["network"], "defense": ["defense"], "quantum": ["quantum"],
+        "cicd": ["cicd"], "docs": ["docs"], "ask": ["ask"], "learn": ["learn"],
+        "agent": ["agent"], "campaign": ["campaign"], "graph": ["graph"],
+        "serve": ["dashboard"], "report": ["report"], "threat-intel": ["threat_intel"],
+        "sandbox": ["sandbox"], "cloud": ["cloud"], "crypto-agility": ["crypto_agility"],
+        "rag": ["rag"], "temporal": ["temporal"], "nexus": ["nexus"], "stix": ["stix"],
+        "finetune": ["finetune"], "mobile-api": ["mobile_api"],
+        "browser-recon": ["browser_recon"], "container-scan": ["container_scan"],
+        "ad-audit": ["ad_audit"], "siem": ["siem"], "malware": ["malware"],
+        "vanguard": ["vanguard"], "aegis": ["aegis"], "ghost-watch": ["ghost_watch"],
+        "quantum-nexus": ["quantum_nexus"], "satellite": ["satellite"],
+        "threat-actor": ["threat_actor"], "benchmark": ["benchmark"],
+        "health": ["health_check"], "doctor": ["health_check"],
+        "cadl": ["aegis"], "acts": ["ghost_watch"],
+        "orchestrate": ["orchestrate"], "nexus-router": ["nexus_router"],
+        "ledger": ["ledger"], "workflow": ["workflow"], "tools": ["tools"],
+        "simulate": ["simulate"], "collab": ["collab"],
+        "attack-map": ["attack_map"], "pe-analyze": ["pe_analyze"],
+        "dns-intercept": ["dns_intercept"],
+    }
+    required = list(routes.get(command, []))
+    if command == "network":
+        required.extend(
+            name for flag, name in (
+                ("ml_anomaly", "ml_anomaly"), ("ja3", "ja3"), ("dns_covert", "dns_covert")
+            ) if getattr(args, flag, False)
+        )
+    elif command == "plugin":
+        required.append("plugin_sign" if (
+            getattr(args, "sign", None) or getattr(args, "verify", None)
+            or getattr(args, "verify_all", False)
+        ) else "plugins")
+    elif command == "update":
+        required = []
+        if args.db in ("cve", "all"):
+            required.append("vuln")
+        if args.db in ("kev", "all"):
+            required.append("kev")
+        if args.db in ("epss", "all"):
+            required.append("epss")
+    return required
 
 
 def _boot(args):
@@ -909,6 +1111,90 @@ def _dispatch(kernel, args, parser) -> int:
             kernel.dispatch('ghost_watch', list_hubs=True)
         else:
             kernel.dispatch('ghost_watch', deploy_decoy=args.deploy, port=args.port)
+
+    elif cmd == "orchestrate":
+        kernel.dispatch("orchestrate", intent=args.intent,
+                        workflow_type=args.workflow_type, tools=args.tools,
+                        metrics=args.metrics, session_id=args.session_id)
+
+    elif cmd == "nexus-router":
+        kernel.dispatch("nexus_router", path=args.path, method=args.method,
+                        remote_addr=args.remote_addr, stats=args.stats,
+                        health=args.health, test_ndi=args.test_ndi)
+
+    elif cmd == "ledger":
+        kernel.dispatch("ledger", append=args.append, key=args.key, query=args.query,
+                        diagnose=args.diagnose, stats=args.stats, health=args.health,
+                        verify=args.verify, freeze=args.freeze, epoch_close=args.epoch_close)
+
+    elif cmd == "workflow":
+        kernel.dispatch("workflow", execute=args.execute, list_wf=args.list_wf,
+                        stats=args.stats, logs=args.logs, dlq_depth=args.dlq_depth,
+                        register_yaml=args.register_yaml, sample=args.sample)
+
+    elif cmd == "tools":
+        kernel.dispatch("tools", tool=args.tool, target=args.target, query=args.query,
+                        framework=args.framework, cvss=args.cvss, epss=args.epss,
+                        is_kev=args.is_kev, list_tools=args.list_tools)
+
+    elif cmd == "simulate":
+        kernel.dispatch("simulate", sim=args.sim, quick=args.quick, n=args.n, save=args.save)
+
+    elif cmd == "collab":
+        kernel.dispatch("collab", create=args.create, join=args.join,
+                        add_member=args.add_member, share_session=args.share_session,
+                        note=args.note, username=args.username,
+                        list_sessions=args.list_sessions, timeline=args.timeline)
+
+    elif cmd == "attack-map":
+        kernel.dispatch("attack_map", from_session=args.from_session,
+                        output_navigator=args.output_navigator,
+                        technique_summary=args.technique_summary)
+
+    elif cmd == "pe-analyze":
+        kernel.dispatch("pe_analyze", file=args.file, entropy=args.entropy,
+                        forensics=args.forensics, save=args.save,
+                        threat_posture=args.threat_posture)
+
+    elif cmd == "dns-intercept":
+        kernel.dispatch("dns_intercept", target=args.target, scan_ot=args.scan_ot,
+                        geo_deck=args.geo_deck, save=args.save, report_txt=args.report_txt)
+
+    elif cmd == "commands":
+        route_map = {
+            "recon": "recon", "vuln": "vuln", "exploit": "exploit",
+            "network": "network", "defense": "defense", "quantum": "quantum",
+            "plugin": "plugins / plugin_sign", "cicd": "cicd", "docs": "docs",
+            "ask": "ask", "learn": "learn", "session": "built-in",
+            "update": "vuln / kev / epss", "status": "built-in",
+            "agent": "agent", "campaign": "campaign", "graph": "graph",
+            "serve": "dashboard", "report": "report", "threat-intel": "threat_intel",
+            "sandbox": "sandbox", "cloud": "cloud", "crypto-agility": "crypto_agility",
+            "rag": "rag", "temporal": "temporal", "nexus": "nexus", "stix": "stix",
+            "finetune": "finetune", "mobile-api": "mobile_api",
+            "browser-recon": "browser_recon", "container-scan": "container_scan",
+            "ad-audit": "ad_audit", "siem": "siem", "malware": "malware",
+            "vanguard": "vanguard", "aegis": "aegis", "ghost-watch": "ghost_watch",
+            "quantum-nexus": "quantum_nexus", "satellite": "satellite",
+            "orchestrate": "orchestrate", "nexus-router": "nexus_router",
+            "ledger": "ledger", "workflow": "workflow", "tools": "tools", "simulate": "simulate",
+            "collab": "collab", "attack-map": "attack_map",
+            "pe-analyze": "pe_analyze", "dns-intercept": "dns_intercept",
+            "threat-actor": "threat_actor", "benchmark": "benchmark",
+            "health": "health_check", "doctor": "health_check",
+            "cadl": "aegis", "acts": "ghost_watch",
+        }
+        registered = set(kernel.registered_commands())
+        rows = []
+        for name, handler in sorted(route_map.items()):
+            required = [part.strip() for part in handler.split("/")]
+            available_count = sum(part in registered for part in required)
+            available = handler == "built-in" or available_count == len(required)
+            partial = 0 < available_count < len(required)
+            if available or partial or args.all:
+                status = "READY" if available else "PARTIAL" if partial else "UNAVAILABLE"
+                rows.append([name, handler, status])
+        kernel.out.table(["CLI COMMAND", "HANDLER", "STATUS"], rows, "SHADOW313 COMMAND DIRECTORY")
 
     else:
         parser.print_help()

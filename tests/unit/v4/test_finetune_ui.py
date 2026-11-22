@@ -4,8 +4,8 @@ import pytest
 class TestFinetuneUI:
     def test_module_importable(self):
         try:
-            from shadow313.v4.finetune_ui.finetune_ui import FinetuneUI
-            assert FinetuneUI is not None
+            from shadow313.v4.finetune_ui.finetune_ui import FineTuneModule
+            assert FineTuneModule is not None
         except ImportError:
             pytest.skip("finetune_ui not available")
 

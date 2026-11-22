@@ -16,26 +16,28 @@ ATT&CK techniques countered:
   T1620  Reflective Code Loading (memfd_create fileless)
 """
 from __future__ import annotations
+
 import os
 import signal
-import pytest
 import sys
+from pathlib import Path
+
+import pytest
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from shadow313.v4.detection.enforcement import (
-    ProcessTerminator,
-    OutboundTrafficFilter,
-    EnforcementEngine,
-    EnforcementAction,
-    OTFRule,
     BLOCKED_OUTBOUND_PORTS,
+    EnforcementAction,
+    EnforcementEngine,
+    OutboundTrafficFilter,
+    ProcessTerminator,
     RESTRICTED_PROCESSES,
-    T1620_TOKENS,
     T1620_SENSITIVE_SYSCALLS,
+    T1620_TOKENS,
 )
 from shadow313.v4.detection.zero_evasion.zero_evasion_countermeasure import (
     EBPFSyscallTracer,
-    ZERO_EVASION_TOKENS,
 )
 
 
@@ -219,6 +221,89 @@ class TestProcessTerminatorEnforcement:
     def test_kill_pid_nonexistent_returns_not_found(self, terminator):
         result = terminator.kill_pid(9999999, "test")
         assert result["action"] in ("NOT_FOUND", "KILLED", "PERMISSION_DENIED")
+
+    def test_kill_pid_uses_portable_signal_when_sigkill_is_unavailable(
+        self, terminator, monkeypatch
+    ):
+        monkeypatch.delattr(signal, "SIGKILL", raising=False)
+        calls = []
+        monkeypatch.setattr(os, "kill", lambda pid, sig: calls.append((pid, sig)))
+
+        result = terminator.kill_pid(12345, "test")
+
+        assert result["action"] == "KILLED"
+        assert calls == [(12345, signal.SIGTERM)]
+
+    def test_find_and_kill_process_reads_windows_tasklist(self, terminator, monkeypatch):
+        from types import SimpleNamespace
+
+        import shadow313.v4.detection.enforcement as enforcement
+
+        monkeypatch.setattr(enforcement.sys, "platform", "win32")
+        monkeypatch.setattr(
+            enforcement.subprocess,
+            "run",
+            lambda *args, **kwargs: SimpleNamespace(
+                stdout='"notepad.exe","1234","Console","1","1,024 K"\r\n'
+            ),
+        )
+        killed = []
+        monkeypatch.setattr(
+            terminator,
+            "kill_pid",
+            lambda pid, reason: killed.append((pid, reason)) or {"pid": pid},
+        )
+
+        results = terminator.find_and_kill_process("notepad")
+
+        assert results == [{"pid": 1234}]
+        assert killed == [(1234, "process name match: notepad")]
+
+    def test_find_and_kill_process_uses_exact_unix_names(self, terminator, monkeypatch):
+        import shadow313.v4.detection.enforcement as enforcement
+
+        monkeypatch.setattr(enforcement.sys, "platform", "linux")
+        monkeypatch.setattr(
+            terminator,
+            "_iter_processes",
+            lambda: iter([(1234, "worker.prod"), (1235, "worker")]),
+        )
+        killed = []
+        monkeypatch.setattr(
+            terminator,
+            "kill_pid",
+            lambda pid, reason: killed.append(pid) or {"pid": pid},
+        )
+
+        results = terminator.find_and_kill_process("worker")
+
+        assert results == [{"pid": 1235}]
+        assert killed == [1235]
+
+    def test_process_enumeration_replaces_invalid_utf8_and_continues(
+        self, tmp_path, monkeypatch
+    ):
+        import shadow313.v4.detection.enforcement as enforcement
+
+        proc_dir = tmp_path / "proc"
+        first_process = proc_dir / "1234"
+        second_process = proc_dir / "1235"
+        first_process.mkdir(parents=True)
+        second_process.mkdir()
+        (first_process / "comm").write_bytes(b"worker\xff\n")
+        (second_process / "comm").write_text("another-worker\n", encoding="utf-8")
+
+        monkeypatch.setattr(enforcement.sys, "platform", "linux")
+        monkeypatch.setattr(
+            enforcement,
+            "Path",
+            lambda value: proc_dir if value == "/proc" else Path(value),
+        )
+
+        assert sorted(ProcessTerminator._iter_processes()) == [
+            (1234, "worker�"),
+            (1235, "another-worker"),
+        ]
 
     def test_find_and_kill_nonexistent_process_returns_empty(self, terminator):
         results = terminator.find_and_kill_process("__nonexistent_process_xyz__")

@@ -4,8 +4,8 @@ import pytest
 class TestMobileAPI:
     def test_module_importable(self):
         try:
-            from shadow313.v4.mobile_api.mobile_api import MobileAPI
-            assert MobileAPI is not None
+            from shadow313.v4.mobile_api.mobile_api import MobileAPIModule
+            assert MobileAPIModule is not None
         except ImportError:
             pytest.skip("mobile_api not available")
 

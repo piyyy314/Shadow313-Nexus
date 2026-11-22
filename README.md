@@ -1,180 +1,312 @@
 # Shadow313 NEXUS
 
-**Version:** 4.0.0  
-**Repository:** [piyyy314/Shadow313-Nexus](https://github.com/piyyy314/Shadow313-Nexus)  
-**Website:** [shadow313.dev](https://shadow313.dev)  
-**License:** MIT
+**A local-first security engineering toolkit with a Python CLI, modular analysis capabilities, and a static web presence.**
 
-Shadow313 NEXUS is a Python security-intelligence toolkit. The repository contains a command-line interface (CLI), Python packages, optional API and AI integrations, tests, Docker configuration, and a static documentation/demo website.
+[![CI](https://img.shields.io/github/actions/workflow/status/piyyy314/Shadow313-Nexus/shadow313-ci.yml?branch=master&label=CI)](https://github.com/piyyy314/Shadow313-Nexus/actions/workflows/shadow313-ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Important scope and status:** The website is primarily static documentation and browser-side demonstrations. A page or UI demonstration does not prove that a backend service, scanner, AI agent, quantum computer, deployment, or external integration is running. Optional integrations require their dependencies, credentials, network access, and local configuration. Do not treat sample counters, simulated outputs, badges, or feature descriptions as operational evidence.
->
-> **Release status:** The intended package distribution name is `shadow313-nexus`. PyPI publication is not confirmed by this repository state. Install from a reviewed source checkout; do not assume a similarly named registry package is this project.
+Shadow313 NEXUS is a modular toolkit for authorized security assessment,
+defensive engineering, security research, and controlled lab work. This
+repository contains the Python package, command-line interface, optional API
+and local AI integrations, tests, deployment configuration, and public static
+website.
 
-## What is in this repository
+> **Operational status:** The public website is hosted by Vercel. Cloudflare
+> manages DNS for `shadow313.com`; `shadow313.dev` uses its existing Vercel
+> DNS configuration. The Python backend is **not yet deployed as a hosted
+> service**. Hetzner is the planned backend host and remains pending purchase,
+> provisioning, hardening, and deployment validation. Website availability
+> does not mean backend-dependent features are online.
 
-| Path | Purpose |
-|---|---|
-| `shadow313/` | Main Python package, CLI, core services, and versioned modules |
-| `shadow313_sdk/` | Python SDK package |
-| `shadow313_platform/` | Platform package |
-| `nexus_toolkit/` | Supporting toolkit package |
-| `tests/` | Automated tests, including unit and integration coverage |
-| `docs/`, `index.html`, `assets/` | Documentation and static website assets |
-| `api/` | Website/API adapter and API contract |
-| `docker/`, `Dockerfile`, `docker-compose.yml` | Optional container configuration |
-| `scripts/` | Build, validation, and maintenance scripts |
-| `.github/workflows/` | GitHub Actions automation |
+## Contents
 
-The primary CLI entry point is `shadow313`; `s313-cli` is a compatibility alias. Both resolve to `shadow313.cli.main:main`. Python imports use `shadow313`.
+- [Project overview](#project-overview)
+- [Hosting architecture](#hosting-architecture)
+- [Quick start](#quick-start)
+- [CLI usage](#cli-usage)
+- [Optional local services](#optional-local-services)
+- [Repository structure](#repository-structure)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Security and responsible use](#security-and-responsible-use)
+- [Deployment status](#deployment-status)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Requirements
+## Project overview
 
-- Python 3.11 or newer.
-- Git for cloning the repository.
-- Optional tools and services only for the features that use them (for example Docker, Ollama, or browser automation).
+The codebase includes capability areas for reconnaissance, vulnerability
+analysis, defensive hardening, network analysis, post-quantum cryptography,
+threat intelligence, automation, reporting, and selected integrations.
 
-## Install from source
+Availability varies by module and optional dependency. The CLI help and
+command registry are the source of truth for commands and registered handlers.
+A feature description or website page is not proof that an external integration
+is configured or a hosted service is running.
 
-Use a fresh virtual environment and a reviewed checkout:
+## Hosting architecture
+
+| Layer | Platform | Responsibility | State |
+|---|---|---|---|
+| Source control and CI | GitHub | Repository, pull requests, automated checks | In use |
+| Public website | Vercel | Static build, previews, production hosting | In use |
+| DNS for `shadow313.com` | Cloudflare | DNS zone and record management | In use |
+| DNS for `shadow313.dev` | Vercel DNS | Existing domain DNS configuration | In use |
+| Backend infrastructure | Hetzner | Planned API and service host | Pending purchase and setup |
+
+The `www` hostnames are configured to redirect to their respective apex
+hostnames. Both domains are connected to the Vercel website project; this is
+not a cross-domain redirect from `.com` to `.dev`.
+
+**Render, Netlify, and Railway are not part of the intended hosting
+architecture.** Do not add a second frontend host or temporary backend provider
+without an explicit architecture decision.
+
+### Static website build
+
+The Vercel project runs:
+
+```bash
+node scripts/build-public-site.cjs
+```
+
+The build publishes the files allowlisted by `site/public-files.json` into
+`public-site/`. The repository is not served as a raw web root. Do not expose
+Python source, private configuration, credentials, or internal assets by
+loosening the publishing allowlist without review.
+
+### Backend boundary
+
+The repository includes Python API code and local Docker Compose services.
+The static Vercel website is not the Python backend. Backend-dependent routes
+must report an explicit unavailable state until a real backend has been
+deployed, configured, authenticated, and health-checked.
+
+The Vercel Node.js API gateway can forward a reviewed allowlist of `/api/*`
+requests to the Python API when `SHADOW313_BACKEND_URL` and
+`SHADOW313_BACKEND_API_KEY` are configured as server-side Vercel environment
+variables. The backend is **not yet deployed**; Hetzner remains the planned
+host. Never expose the backend key in browser code or public build variables.
+
+## Quick start
+
+### Requirements
+
+- Python 3.11 or newer
+- Git
+- A Python virtual environment (recommended)
+- Optional: Docker Engine and Docker Compose plugin for local services
+
+### Install from source
 
 ```bash
 git clone https://github.com/piyyy314/Shadow313-Nexus.git
 cd Shadow313-Nexus
 
 python -m venv .venv
-# Linux/macOS:
+# Linux / macOS
 source .venv/bin/activate
 # Windows PowerShell:
-# .\.venv\Scripts\Activate.ps1
+# .venv\Scripts\Activate.ps1
 
 python -m pip install --upgrade pip
-python -m pip install .
-```
-
-For development and tests:
-
-```bash
 python -m pip install -e ".[dev]"
-python -m pytest tests/ -q --tb=short
 ```
 
-Optional dependency groups are declared in `pyproject.toml`. Install only the groups needed for the integration you intend to use. The `full` extra is a convenience subset; it does not include every heavyweight or external integration.
-
-`requirements.txt` contains application and optional-feature dependencies. `requirements-dev.txt` layers test and local audit tools on top; the editable `.[dev]` install above remains the recommended developer setup. Safety CLI is installed by CI as a scanner and is not an application/runtime dependency.
-
-## CLI quick reference
-
-Check the installed version and available commands:
+For the broader optional dependency set:
 
 ```bash
-shadow313 --version
-shadow313 --help
-shadow313 <command> --help
+python -m pip install -e ".[full]"
 ```
 
-Command groups defined by the CLI include:
+The package metadata defines two console entry points: `shadow313` and
+`s313-cli`. PyPI publication is not implied by the repository name. Until an
+official release is published, install from a reviewed source checkout.
 
-- `recon` — reconnaissance workflows.
-- `vuln` — vulnerability and dependency analysis.
-- `exploit` — advisory and explicitly scoped lab assistance.
-- `network` — packet capture and network analysis.
-- `defense` — defensive configuration auditing and remediation output.
-- `quantum` — post-quantum cryptography audit utilities.
-- `plugin` and `cicd` — plugin and CI/security tooling.
-- `docs`, `learn`, and `ask` — documentation and optional AI-assisted help.
-- `session`, `update`, and other versioned command groups — inspect `shadow313 --help` for the installed build.
-
-Examples (review targets and authorization before running active operations):
+For a reproducible install from this reviewed repository revision (without
+relying on an unpublished PyPI package):
 
 ```bash
-shadow313 recon --target example.com --mode passive
-shadow313 vuln --audit-deps requirements.txt
-shadow313 quantum --scan-host example.com:443
-shadow313 defense --audit
-shadow313 --help
+python -m pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@8cc6bf9d92b2faf03470e92b8555b57f8a821500
 ```
 
-Use scanning and exploitation-related features only on systems you own or are explicitly authorized to assess. Some operations can generate network traffic or modify local state.
+Use the full commit SHA shown above when reproducing this revision; update the
+pin only after reviewing a newer commit.
 
-## Optional local AI and API integrations
+## CLI usage
 
-The CLI supports configurable AI backends. The default local Ollama endpoint is `http://localhost:11434`; configure the backend, model, and endpoint using the documented environment variables and configuration file. A local default does not guarantee that every feature stays offline: integrations may call external services when enabled.
+Start with the built-in help and command registry:
 
-The optional Python API runs on port `8313` in the repository's Docker Compose configuration. The static website adapter is not the Python API server. Backend-dependent website routes can return an explicit unavailable response when the corresponding service is not configured or running.
+```bash
+shadow313 --help
+shadow313 commands
+shadow313 commands --all
+```
 
-Never commit API keys, tokens, private keys, or populated `.env` files. Use `.env.example` only as a template and replace example values locally.
+Explore available module options with the CLI help:
 
-## Docker
+```bash
+shadow313 recon --help
+shadow313 vuln --help
+shadow313 defense --help
+shadow313 quantum --help
+shadow313 nexus --help
+```
 
-Review `docker-compose.yml`, `.env.example`, and the deployment documentation before starting containers:
+Optional modules may require additional extras, system packages, permissions,
+or external credentials. Use only targets and environments for which you have
+explicit authorization. Prefer passive or lab modes when evaluating unfamiliar
+capabilities.
+
+## Optional local services
+
+### Docker Compose
+
+The Compose configuration supports local development and integration testing.
+Review `.env.example` and the Compose files before starting services:
 
 ```bash
 cp .env.example .env
-# Edit .env locally; do not commit it.
-docker compose config --quiet
+# Replace example values with local, non-production values.
+docker compose config
 docker compose up -d
 docker compose ps
 ```
 
-Container health, persistent-data migration, TLS configuration, and actual model inference must be verified in the target environment. A successful image build is not proof that the complete stack is operational.
+Do not commit a populated `.env` file. Keep API keys, tokens, signing material,
+and database credentials in an appropriate secret store.
 
-## Website and documentation
+### Local AI
 
-The website is a static site with HTML pages, assets, documentation, and browser demonstrations. Start with:
+Ollama can be used as an optional local model provider. Configure the backend,
+model, and endpoint with the supported `SHADOW313_AI_*` environment variables.
+Cloud AI providers may transmit prompts or analysis data outside the local
+machine; review provider terms and data handling before enabling them.
 
-- [Documentation index](docs/index.html)
-- [Installation guide](docs/install.html)
-- [Quick start](docs/quickstart.html)
-- [API reference](docs/api.html)
-- [Platform integration status](docs/PLATFORM_INTEGRATION_STATUS.md)
-- [Audit repair handoff](docs/audit-repair-handoff.md)
+## Repository structure
 
-The dashboard gallery at [shadow313.dev/dashboards](https://shadow313.dev/dashboards) is a directory of static interfaces and browser-side demonstrations. Dashboard counters, threat feeds, ATT&CK coverage, RF health, scenario findings, and event streams are illustrative unless a page links to current, independently verifiable evidence. A browser demo or passing CI workflow is not proof of a deployed service or production telemetry.
+| Path | Purpose |
+|---|---|
+| `shadow313/` | Primary Python package, CLI, API, core services, and modules |
+| `shadow313_sdk/` | Python SDK |
+| `shadow313_platform/` | Platform-level Python components |
+| `nexus_toolkit/` | NEXUS toolkit components |
+| `tests/` | Unit, integration, and regression tests |
+| `api/` | Static-site API adapters and API contract assets |
+| `site/` | Public-site allowlist and metadata |
+| `index.html`, `assets/`, `about/`, `blog/`, `marketplace/`, `platform/`, `pricing/`, `tools/` | Public website source pages and assets |
+| `docs/` | Technical documentation, runbooks, reports, and dashboards |
+| `infra/hetzner/` | Planned Hetzner host preparation and server scripts |
+| `docker/`, `Dockerfile`, `docker-compose*.yml`, `nginx.conf` | Container and local service configuration |
+| `.github/workflows/` | CI, validation, security, release, and deployment workflows |
+| `scripts/` | Build, validation, maintenance, and repository automation |
+| `migrations/` | Database migration assets |
+| `skills/` | Project engineering skills and workflow definitions |
+| `cyber_lab/` | Lab materials and learning resources |
 
-Interactive pages may use sample data or simulated behavior. Check each page's own notice and the relevant API/service status before interpreting displayed data as live.
+Supporting areas also include `ci/`, `ghost-watch-terminal/`, `local_bundle/`,
+`ollama/`, `policies/`, `sentinelos/`, and `sigma/`. These are separate lab,
+legacy, offline, or policy assets; they are not interchangeable with the main
+Python package or public website. See [Repository Structure and Ownership](docs/REPOSITORY_STRUCTURE.md)
+for the expanded map and organization rules.
 
-## Validation and security status
+## Configuration
 
-GitHub Actions is the source of truth for automated checks on a specific commit. Review the [Actions runs](https://github.com/piyyy314/Shadow313-Nexus/actions) and the commit's check suites/statuses. A successful workflow does not imply that external providers, hosted previews, production services, or optional integrations were exercised.
+Start with `.env.example` and the relevant service documentation. Common
+configuration groups include:
 
-External service limits (including Snyk quotas), skipped jobs, and pending provider checks must be reported separately from passed tests. Do not describe quota-blocked scans as clean scans.
+- `SHADOW313_AI_*` — optional AI backend, model, and endpoint.
+- `OPENAI_API_KEY` or `AI_GATEWAY_API_KEY` — provider credentials when that
+  provider is deliberately enabled.
+- Database settings — required only for optional database-backed services.
+- Integration credentials — configure only integrations you intend to use.
 
-See [SECURITY.md](SECURITY.md) for vulnerability reporting and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
+Never place production credentials in example files, documentation, screenshots,
+test fixtures, or commits.
 
-## API contract and service boundaries
+## Testing
 
-The canonical API contract is `api/openapi.yaml`; the Python FastAPI implementation is
-`shadow313/api/server.py`. The local backend listens on `http://localhost:8313`
-by default. The public static-site adapter in `api/index.js` is not that backend.
-It deliberately returns an explicit `unavailable` status for backend-dependent
-operations when no Python worker/service is connected.
+Install development dependencies, then run:
 
-Implemented Python API routes include `GET /health`, `GET /api/status`,
-authenticated `GET /api/modules`, `POST /api/detect`,
-`POST /api/webshell/scan`, `GET /api/attck/coverage`, and the in-memory
-`/api/bind` receipt routes. Recon, vulnerability, mobile, event-stream, and
-persisted audit routes currently return an explicit unavailable response; they
-must not be described as completed remote scanning or persistent services.
-Use `X-API-Key` for protected routes. Production mode requires
-`SHADOW313_API_KEY`.
+```bash
+python -m pytest tests/ -q --tb=short
+```
 
-Important limits: API-created 313-BIND receipts are explicitly unsigned
-SHA3-512 demo receipts, stored in process memory, and are not SLH-DSA-signed,
-IPFS-anchored, durable, or legal attestations. The ATT&CK coverage response is
-a static code-defined snapshot, not a live measurement of deployed detection
-coverage. Consult `api/openapi.yaml` and the implementation before building
-clients; do not infer an endpoint's behavior from a dashboard card.
+Useful local checks include:
 
-## Package identity
+```bash
+python -m compileall -q shadow313 shadow313_sdk shadow313_platform nexus_toolkit
+python -m ruff check .
+python -m black --check .
+```
 
-- Distribution name: `shadow313-nexus`
-- CLI executable: `shadow313`
-- Python import package: `shadow313`
-- Current source version: `4.0.0`
+Some checks require optional dependencies or system tools. GitHub Actions is
+the authoritative record for a specific commit; inspect workflow runs and job
+conclusions rather than relying only on the status badge.
 
-These names describe this repository's package metadata; they do not establish that a release has been uploaded to PyPI.
+## Security and responsible use
+
+Shadow313 NEXUS is intended for defensive security work, authorized assessments,
+research, and isolated labs.
+
+- Obtain written authorization before scanning or testing third-party systems.
+- Use lab-only modes for exploit demonstrations and controlled malware execution.
+- Treat detections as analyst signals, not proof of compromise.
+- Review generated commands and remediation before execution.
+- Protect API credentials, signing keys, session data, and collected evidence.
+- Do not expose a development API directly to the public internet.
+- Review [SECURITY.md](SECURITY.md) before reporting a vulnerability.
+
+The presence of cryptographic, AI, or audit-related code does not by itself
+establish certification, legal admissibility, tamper-proof retention, or
+compliance with a security framework. Validate those properties independently.
+
+## Deployment status
+
+The public static site and hosted backend are separate systems.
+
+Before the Hetzner backend is considered operational, the project must complete:
+
+1. Server selection based on API, database, worker, and storage requirements.
+2. SSH-key access, firewall policy, OS updates, and host hardening.
+3. Runtime and database deployment with persistent storage and backups.
+4. Backend configuration, secret management, TLS, and restricted network access.
+5. Health checks, logs, monitoring, restore testing, and incident procedures.
+6. Vercel-to-backend integration tests using production-safe credentials.
+
+The current scripts are documented in
+[`infra/hetzner/README.md`](infra/hetzner/README.md). Review them before
+running; a bootstrap script is not proof of a finished production deployment.
+
+For release and integration decisions, see
+[`docs/PLATFORM_INTEGRATION_STATUS.md`](docs/PLATFORM_INTEGRATION_STATUS.md)
+and the [GitHub Actions history](https://github.com/piyyy314/Shadow313-Nexus/actions).
+
+## Contributing
+
+1. Open an issue for substantial changes or architectural decisions.
+2. Create a focused feature or fix branch.
+3. Add or update tests for behavior changes.
+4. Run relevant local checks.
+5. Open a pull request with scope, validation evidence, and deployment impact.
+
+Do not bypass required checks or review by pushing directly to the production
+branch.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Shadow313 NEXUS is distributed under the [MIT License](LICENSE).
+
+## OmniSkill CLI
+
+Shadow313 NEXUS includes repository-local skill discovery and structural validation. These commands use the Python standard library and do not start the NEXUS kernel or external AI services:
+
+```bash
+shadow313 skill list
+shadow313 skill show shadow313-nexus-engineer
+shadow313 skill validate
+shadow313 skill validate shadow313-nexus-engineer
+```
+
+Use `--root /path/to/Shadow313-Nexus` to inspect another checkout. Validation checks skill metadata and local Markdown references; it does not claim to execute or certify the skill's behavior.

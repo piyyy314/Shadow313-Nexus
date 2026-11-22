@@ -43,7 +43,7 @@ def test_unavailable_integrations_document_200_without_503():
             assert "503" not in operation["responses"]
 
 
-def test_static_api_adapter_returns_200_with_unavailable_status():
+def test_static_api_adapter_returns_503_when_backend_is_not_configured():
     cases = [
         ("POST", "/api/scan/recon"),
         ("POST", "/api/scan/vuln"),
@@ -55,18 +55,21 @@ def test_static_api_adapter_returns_200_with_unavailable_status():
         ("GET", "/api/events"),
     ]
     script = """
-const handler = require('./api/index.js');
+const handler = require('./api/index.js').createHandler({ env: {} });
 const cases = JSON.parse(process.argv[1]);
-const results = cases.map(([method, url]) => {
-  const res = {
-    headers: {},
-    setHeader(name, value) { this.headers[name] = value; },
-    end(body) { this.body = body; },
-  };
-  handler({ method, url }, res);
-  return { statusCode: res.statusCode, body: JSON.parse(res.body) };
-});
-console.log(JSON.stringify(results));
+(async () => {
+  const results = [];
+  for (const [method, url] of cases) {
+    const res = {
+      headers: {},
+      setHeader(name, value) { this.headers[name] = value; },
+      end(body) { this.body = body; },
+    };
+    await handler({ method, url }, res);
+    results.push({ statusCode: res.statusCode, body: JSON.parse(res.body) });
+  }
+  console.log(JSON.stringify(results));
+})().catch(error => { console.error(error); process.exitCode = 1; });
 """
     result = subprocess.run(
         ["node", "-e", script, json.dumps(cases)],
@@ -77,5 +80,92 @@ console.log(JSON.stringify(results));
     )
     responses = json.loads(result.stdout)
     assert len(responses) == len(cases)
-    assert all(response["statusCode"] == 200 for response in responses)
-    assert all(response["body"]["status"] == "unavailable" for response in responses)
+    assert all(response["statusCode"] == 503 for response in responses)
+    assert all(response["body"]["status"] == "static-site-only" for response in responses)
+    assert all(response["body"]["backend_connected"] is False for response in responses)
+
+
+
+def test_static_openapi_contract_is_published_without_api_rewrite():
+    source = (ROOT / "api/openapi.yaml").read_text(encoding="utf-8")
+    published = (ROOT / "docs/openapi.yaml").read_text(encoding="utf-8")
+    public_files = json.loads(
+        (ROOT / "site/public-files.json").read_text(encoding="utf-8")
+    )
+    build_script = (ROOT / "scripts/build-public-site.cjs").read_text(encoding="utf-8")
+
+    assert published == source
+    assert "docs/openapi.yaml" in public_files
+    assert "yaml|yml" in build_script
+    api_page = (ROOT / "docs/api.html").read_text(encoding="utf-8")
+    assert 'href="/docs/openapi.yaml"' in api_page
+
+
+def test_openapi_auth_and_request_schemas_match_api_behavior():
+    contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
+
+    assert contract["security"] == [{"ApiKeyAuth": []}]
+    assert contract["paths"]["/api/status"]["get"]["security"] == []
+    assert contract["paths"]["/health"]["get"]["security"] == []
+
+    detect = contract["paths"]["/api/detect"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert detect["required"] == ["event"]
+    assert set(detect["properties"]) == {"event", "detectors"}
+
+    webshell = contract["paths"]["/api/webshell/scan"]["post"]["requestBody"][
+        "content"
+    ]["application/json"]["schema"]
+    assert webshell["required"] == ["content"]
+    assert {"content", "file_path", "mode"} == set(webshell["properties"])
+
+    bind = contract["paths"]["/api/bind/create"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert bind["required"] == ["payload"]
+
+    chat = contract["paths"]["/api/chat"]["post"]["requestBody"]["content"][
+        "application/json"
+    ]["schema"]
+    assert chat["properties"]["system_prompt"]["type"] == ["string", "null"]
+    assert chat["properties"]["context"]["type"] == ["object", "null"]
+
+    for path in ("/api/scan/recon", "/api/scan/vuln"):
+        operation = contract["paths"][path]["post"]
+        assert "requestBody" not in operation
+        assert "No remote scan worker is connected" in operation["description"]
+
+    assert contract["paths"]["/api/bind/{bind_id}"]["get"].get("security") is None
+    assert contract["paths"]["/api/attck/coverage"]["get"].get("security") is None
+
+
+def test_openapi_documents_soc_alert_cursor_parameters():
+    contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
+    parameters = contract["paths"]["/api/shiatoali/alerts"]["get"]["parameters"]
+    event_parameters = contract["paths"]["/api/shiatoali/events"]["get"]["parameters"]
+
+    assert {parameter["name"] for parameter in parameters} == {
+        "limit", "offset", "since", "order"
+    }
+    assert {parameter["name"] for parameter in event_parameters} == {"limit", "offset"}
+    since = next(parameter for parameter in parameters if parameter["name"] == "since")
+    order = next(parameter for parameter in parameters if parameter["name"] == "order")
+    assert since["schema"]["format"] == "date-time"
+    assert order["schema"]["enum"] == ["asc", "desc"]
+
+
+    
+def test_soc_case_actor_fields_are_server_assigned():
+    contract = yaml.safe_load((ROOT / "api/openapi.yaml").read_text(encoding="utf-8"))
+    create_schema = contract["paths"]["/api/shiatoali/cases"]["post"]["requestBody"][
+        "content"
+    ]["application/json"]["schema"]
+    update_schema = contract["paths"]["/api/shiatoali/cases/{case_id}"]["patch"][
+        "requestBody"
+    ]["content"]["application/json"]["schema"]
+
+    assert "created_by" not in create_schema["properties"]
+    assert "actor" not in update_schema["properties"]
+    assert create_schema["additionalProperties"] is False
+    assert update_schema["additionalProperties"] is False

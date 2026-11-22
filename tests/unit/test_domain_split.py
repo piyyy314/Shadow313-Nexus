@@ -33,6 +33,17 @@ class DomainSplitTests(unittest.TestCase):
         for host in ('shadow313.com', 'www.shadow313.com', 'shadow313.dev', 'www.shadow313.dev', 'preview.vercel.app'):
             self.assertEqual(self.destination(host, '/'), '/index.html')
 
+    def test_legacy_shadow313_path_redirects_to_canonical_homepage(self):
+        config = json.loads((ROOT / 'vercel.json').read_text())
+        redirects = {rule['source']: rule for rule in config.get('redirects', [])}
+        for path in ('/shadow313', '/shadow313/'):
+            self.assertEqual(redirects[path]['destination'], '/')
+            self.assertIs(redirects[path]['permanent'], True)
+
+    def test_shadow313_package_subpaths_remain_blocked(self):
+        routes = json.loads((ROOT / 'vercel.json').read_text())['rewrites']
+        self.assertIn({'source': '/shadow313/:path*', 'destination': '/404.html'}, routes)
+
     def test_sentinelos_still_has_explicit_entrypoint(self):
         self.assertEqual(self.destination('shadow313.dev', '/sentinelos'), '/sentinelos/index.html')
 
@@ -44,7 +55,7 @@ class DomainSplitTests(unittest.TestCase):
     def test_sentinelos_assets_exist(self):
         page = Assets()
         page.feed((ROOT / 'sentinelos/index.html').read_text())
-        self.assertEqual(len(page.paths), 15)
+        self.assertEqual(len(page.paths), 16)
         for path in page.paths:
             self.assertTrue((ROOT / path.lstrip('/')).is_file(), path)
 

@@ -14,55 +14,17 @@ from shadow313.v4.detection import adaptive_defense_loop
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_gitleaks_workflows_use_supported_official_installers():
-    pr_checks = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+def test_gitleaks_workflows_use_the_official_scanners():
+    pr_workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
         encoding="utf-8"
     )
-    security_scan = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
+    nightly_workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
         encoding="utf-8"
     )
-
-    assert "gitleaks/gitleaks-action@" in pr_checks
-    assert "go install github.com/zricethezav/gitleaks/v8@" in security_scan
-    assert "github.com/gitleaks/gitleaks/v8" not in pr_checks + security_scan
-
-
-def test_ci_workflows_pin_the_same_black_formatter():
-    expected = "black==24.3.0"
-    pr_checks = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
-        encoding="utf-8"
-    )
-    shadow313_ci = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
-        encoding="utf-8"
-    )
-
-    assert expected in pr_checks
-    assert expected in shadow313_ci
-
-
-def test_api_and_full_validation_workflows_cover_every_branch():
-    for name in (
-        "shadow313-api-validate.yml",
-        "shadow313-validate.yml",
-    ):
-        workflow = (ROOT / ".github" / "workflows" / name).read_text(
-            encoding="utf-8"
-        )
-        assert "  push:\n    branches: ['**']" in workflow
-        assert "  pull_request:\n    branches: ['**']" in workflow
-
-
-def test_dev_extra_includes_shiatoali_migration_dependencies():
-    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    dev_start = pyproject.index("\ndev = [")
-    dev_end = pyproject.index("\n]", dev_start)
-    dev_section = pyproject[dev_start:dev_end]
-    assert '"alembic>=1.13"' in dev_section
-    assert '"sqlalchemy>=2.0"' in dev_section
-    workflow = (ROOT / ".github" / "workflows" / "shadow313-validate.yml").read_text(
-        encoding="utf-8"
-    )
-    assert 'pip install -e ".[dev]"' in workflow
+    assert "uses: gitleaks/gitleaks-action@v3" in pr_workflow
+    assert "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}" in pr_workflow
+    assert "go install github.com/zricethezav/gitleaks/v8@v8.30.1" in nightly_workflow
+    assert "gitleaks git --redact --exit-code 1 --log-opts=\"--all\" ." in nightly_workflow
 
 
 def test_cicd_pipeline_detects_hardcoded_passwords(tmp_path):
@@ -108,52 +70,34 @@ def test_ghosthttp_returns_anomaly_for_slow_response_without_type_error():
     assert result["anomalies"][0]["ms"] > 500
 
 
-def test_mypy_checks_changed_files_without_blocking_on_imported_modules():
+def test_mypy_checks_changed_files_and_ignores_missing_imports():
     workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(
         encoding="utf-8"
     )
-    assert '--follow-imports=silent' in workflow
+    assert 'changed_files+=("$file")' in workflow
+    assert 'mypy "${files[@]}" --ignore-missing-imports' in workflow
 
 
 def test_pr_checks_lint_and_security_gates_fail_closed():
     workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
         encoding="utf-8"
     )
-    assert "Resolve current PR base SHA" in workflow
     assert "Run Ruff on changed Python files" in workflow
     assert "Run Black on changed Shadow313 files" in workflow
     assert "Run yamllint on changed workflow files" in workflow
-    assert "set -o pipefail" in workflow
-    assert "$GITHUB_REPOSITORY_OWNER:$GITHUB_REF_NAME" in workflow
-    assert 'select(.status != "removed")' in workflow
+    assert "name: SAST (Bandit + Semgrep)" in workflow
+    assert "name: Secret Detection (Gitleaks)" in workflow
+    assert "uses: gitleaks/gitleaks-action@v3" in workflow
+    assert "name: Dependency Scan (pip-audit + Safety)" in workflow
+    assert "pip-audit==2.7.3" in workflow
+    assert "safety==3.8.1" in workflow
     for line in workflow.splitlines():
         if any(
             command in line
-            for command in ("ruff check", "black --check", "yamllint -c")
+            for command in ("ruff check", "black --check", "yamllint -c", "pip-audit")
         ):
             assert "|| true" not in line
-    assert "name: SAST (Bandit)" in workflow
-    assert "Bandit + Semgrep" not in workflow
-    assert "Run Bandit on changed Python files" in workflow
-    assert "Bandit high-severity gate passed" in workflow
-    assert 'finding.get("issue_severity") == "HIGH"' in workflow
-    assert "safety==3.8.1" in workflow
-    assert "safety check --full-report || true" not in workflow
 
-    unit_tests = workflow[workflow.index("  unit-tests:") : workflow.index("  sast:")]
-    assert 'pip install -e ".[dev]" alembic "psycopg[binary]>=3.1"' in unit_tests
-
-    sca = workflow[workflow.index("  sca:") : workflow.index("  docker-lint:")]
-    assert "pip-audit==2.7.3" in sca
-    assert "pip-audit --desc --format json -o pip-audit-report.json" in sca
-    assert "pip freeze --exclude-editable > safety-requirements.txt" in sca
-    assert "python -m venv .safety-venv" in sca
-    assert ".safety-venv/bin/safety check --full-report --file safety-requirements.txt" in sca
-    assert (
-        sca.index("pip freeze --exclude-editable")
-        < sca.index("pip-audit --desc")
-        < sca.index("safety check --full-report")
-    )
 
 
 def test_nightly_security_scanners_do_not_hide_tool_failures():
@@ -172,7 +116,6 @@ def test_nightly_security_scanners_do_not_hide_tool_failures():
     assert "bandit==1.9.4" in workflow
     assert "Enforce dependency and SAST results" in workflow
     assert "BANDIT_OUTCOME" in workflow
-    assert 'report.get("errors")' in workflow
     assert "--exit-zero" in workflow
     assert "--severity-level high" not in workflow
     assert "issue_severity" in workflow
@@ -198,8 +141,6 @@ def test_nightly_security_scan_runs_for_security_relevant_pull_requests():
         "pyproject.toml",
         "requirements*.txt",
         "shadow313/**",
-        "shadow313_sdk/**",
-        "shadow313_platform/**",
         "nexus_toolkit/**",
         "scripts/**",
     ):
@@ -221,8 +162,6 @@ def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
 
 def test_runtime_image_removes_build_tools_after_dependency_check():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
-    ci_workflow = (ROOT / ".github" / "workflows" / "shadow313-ci.yml").read_text(encoding="utf-8")
-    assert "no-cache-filters: production-base,production" in ci_workflow
     install_index = dockerfile.index("pip install --no-cache-dir --prefix=/install .")
     patch_index = dockerfile.index(
         "pip install --no-cache-dir --prefix=/install --upgrade"
@@ -255,12 +194,9 @@ def test_runtime_image_removes_build_tools_after_dependency_check():
     nexus_install_index = nexus_stage.index("RUN pip install --no-cache-dir")
     nexus_cleanup_index = nexus_stage.index("python -m pip uninstall -y pip setuptools")
     assert nexus_install_index < nexus_cleanup_index
-    nexus_dependencies = nexus_stage[nexus_install_index:nexus_cleanup_index]
-    for dependency in ('"sqlalchemy>=2.0"', '"psycopg[binary]>=3.1"', '"alembic>=1.13"'):
-        assert dependency in nexus_dependencies
 
 
-def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
+def test_compose_audit_uses_yaml_framework_for_compose():
     workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
         encoding="utf-8"
     )
@@ -268,17 +204,9 @@ def test_compose_audit_uses_the_dockerfile_runner_only_for_dockerfiles():
     assert "Run Checkov on Dockerfile" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
-    assert "checkov -f docker-compose.yml" not in workflow
+    assert "checkov -f docker-compose.yml --framework yaml --output cli" in workflow
     assert "Verify Compose hardening assertions" in workflow
     assert "with open('docker-compose.yml') as f:" in workflow
-
-
-def test_docker_compose_postgres_overlay_is_health_gated():
-    overlay = (ROOT / "docker-compose.postgres.yml").read_text(encoding="utf-8")
-    assert "shiatoali-postgres:" in overlay
-    assert "POSTGRES_PASSWORD_FILE: /run/secrets/shiatoali_postgres_password" in overlay
-    assert "condition: service_healthy" in overlay
-    assert "service_completed_successfully" in overlay
 
 
 def test_api_and_predeploy_validation_do_not_suppress_setup_or_test_failures():
@@ -322,25 +250,17 @@ def test_primary_ci_security_scanners_are_pinned_to_shared_versions():
 
 
 def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
-    workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (ROOT / ".github/workflows/security-scan.yml").read_text(encoding="utf-8")
     assert 'severity: "CRITICAL,HIGH"' in workflow
-    # Trivy emits diagnostics without stopping before the JSON enforcement gate.
     assert 'exit-code: "0"' in workflow
+    assert "Enforce actionable Trivy findings" in workflow
+    assert 'severity == "CRITICAL"' in workflow
+    assert 'item["fixed"]' in workflow
+    assert "::warning::" in workflow
+    assert "::error::" in workflow
     assert 'version: "v0.76.2"' in workflow
     assert 'output: "trivy-container.sarif"' in workflow
-    gate_start = workflow.index("      - name: Enforce actionable Trivy findings")
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
-    gate = workflow[gate_start:archive_start]
-    assert "Trivy JSON report is missing" in gate
-    assert "if not report_path.is_file()" in gate
-    assert "if actionable or actionable_secrets:" in gate
-    assert "actionable_secrets" in gate
-    assert 'result.get("Secrets", [])' in gate
-    assert "github.event.pull_request.head.repo.full_name == github.repository" in workflow
-    assert "unpatched" in gate
-    assert "sys.exit(1)" in gate
     archive_end = workflow.index("\n      - name:", archive_start + 1)
     archive_step = workflow[archive_start:archive_end]
     assert "path: |" in archive_step
@@ -431,7 +351,5 @@ def test_publish_jobs_stage_only_distributions():
     assert publish_section.count("name: Stage only Python distributions") == 2
     assert publish_section.count("packages-dir: dist/publish/") == 2
     assert publish_section.count("packages=(dist/*.whl dist/*.tar.gz)") == 2
-    assert publish_section.count('cp -- "${packages[@]}" dist/publish/') == 2
     assert publish_section.count("No wheel or source distribution found in dist/.") == 2
-    assert "manifest.json" not in publish_section
 

@@ -63,8 +63,7 @@ LABEL org.opencontainers.image.url="https://shadow313.dev"
 # Install runtime deps with retry
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
-        tcpdump=4.99.5-2 nmap=7.95+dfsg-3 bind9-dnsutils=1:9.20.30-1~deb13u1 \
-        iputils-ping=3:20240905-3 libssl3t64=3.5.7-1~deb13u3 \
+        libssl3t64=3.5.7-1~deb13u3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Apply the latest Debian security fixes to base-image packages
@@ -103,7 +102,6 @@ CMD ["--help"]
 
 # ── Stage 3: Slim production runtime ──────────────────────────────
 FROM production-base AS production
-# Trivy scans this production target; build tooling is removed before runtime.
 
 USER root
 RUN python -m pip check \
@@ -123,6 +121,7 @@ USER root
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
         python3-dev=3.13.5-1 libpcap-dev=1.10.5-2 whois=5.6.3 nmap=7.95+dfsg-3 \
+        tcpdump=4.99.5-2 bind9-dnsutils=1:9.20.30-1~deb13u1 iputils-ping=3:20240905-3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
@@ -136,12 +135,11 @@ RUN pip install --no-cache-dir \
     "networkx>=3.2" \
     "scikit-learn>=1.3" \
     "joblib>=1.3" \
-    "sqlalchemy>=2.0" \
     "psycopg[binary]>=3.1" \
     "alembic>=1.13"
 
 RUN python -m pip check \
-    && python -m pip uninstall -y pip setuptools
+    && python -m pip uninstall -y pip setuptools wheel
 
 ENV http_proxy="" https_proxy=""
 USER shadow313

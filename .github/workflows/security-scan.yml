@@ -241,7 +241,7 @@ jobs:
                       "fixed": finding.get("FixedVersion"),
                       "severity": severity,
                   }
-                  if item["fixed"]:
+                  if severity == "CRITICAL" or item["fixed"]:
                       actionable.append(item)
                   else:
                       unpatched.append(item)
@@ -250,7 +250,7 @@ jobs:
                   if severity in {"CRITICAL", "HIGH"}:
                       actionable_secrets.append({
                           "id": finding.get("RuleID", "unknown"),
-                          "target": finding.get("Target", "unknown"),
+                          "target": result.get("Target", "unknown"),
                           "title": finding.get("Title", "potential secret"),
                           "severity": severity,
                       })
@@ -259,7 +259,7 @@ jobs:
           print(f"Trivy HIGH/CRITICAL secret findings: {len(actionable_secrets)}")
           print(f"Trivy HIGH/CRITICAL findings without a published fixed version: {len(unpatched)}")
           if unpatched:
-              print("::warning::Debian/vendor has not published a fixed package version for these HIGH/CRITICAL findings; see retained SARIF/JSON artifacts.")
+              print("::warning::Debian/vendor has not published a fixed package version for these HIGH findings; see retained SARIF/JSON artifacts.")
           if actionable or actionable_secrets:
               for item in actionable:
                   print(f"::error::{item['severity']} {item['id']} {item['package']} {item['installed']} -> {item['fixed'] or 'no fixed version'}")
@@ -318,6 +318,9 @@ jobs:
 
       - name: Run Checkov on Dockerfile
         run: checkov -f Dockerfile --framework dockerfile --output cli
+
+      - name: Run Checkov on Docker Compose
+        run: checkov -f docker-compose.yml --framework yaml --output cli
 
       - name: Verify Compose hardening assertions
         run: |

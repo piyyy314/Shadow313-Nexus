@@ -69,13 +69,25 @@ services:
           memory: 64M
     restart: unless-stopped
     depends_on:
-      ollama:
+      ollama-init:
+        condition: service_completed_successfully
+      shadow313-api:
         condition: service_healthy
+    volumes:
+    - shadow313_data:/home/shadow313/.shadow313:rw
     environment:
+    - TELEGRAM_STATE_PATH=/home/shadow313/.shadow313/telegram-state.json
+    - TELEGRAM_INITIAL_LOOKBACK_SECONDS=${TELEGRAM_INITIAL_LOOKBACK_SECONDS:-900}
     - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
     - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
     - OLLAMA_URL=http://ollama:11434
-    - OLLAMA_MODEL=${OLLAMA_MODEL:-matarmohamad313/shadow313-nexus}
+    - OLLAMA_MODEL=${OLLAMA_MODEL:-${OLLAMA_DEFAULT_MODEL:-matarmohamad313/shadow313-nexus}}
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_ENDPOINT=${SHADOW313_AI_ENDPOINT:-http://ollama:11434}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - AI_GATEWAY_ENDPOINT=${AI_GATEWAY_ENDPOINT:-https://ai-gateway.vercel.sh/v1}
+    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - TELEGRAM_POLL_INTERVAL=${TELEGRAM_POLL_INTERVAL:-2}
     - SHADOW313_API_URL=http://shadow313-api:8313
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
@@ -101,7 +113,7 @@ services:
     container_name: shadow313-ollama-init
     depends_on:
       ollama:
-        condition: service_healthy
+        condition: service_started
     volumes:
     - ollama_data:/root/.ollama
     - ./docker/ollama/init.sh:/init.sh:ro
@@ -110,6 +122,10 @@ services:
     - /init.sh
     environment:
     - OLLAMA_HOST=http://ollama:11434
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - OLLAMA_DEFAULT_MODEL=${OLLAMA_DEFAULT_MODEL:-${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}}
+    - OLLAMA_EXTRA_MODELS=${OLLAMA_EXTRA_MODELS:-mistral:7b nomic-embed-text:latest}
     networks:
     - shadow313_internal
     restart: 'no'
@@ -133,7 +149,9 @@ services:
     - WEBUI_AUTH=true
     - WEBUI_NAME=Shadow313 NEXUS AI
     - WEBUI_URL=${WEBUI_URL:-http://localhost:8080}
-    - DEFAULT_MODELS=matarmohamad313/shadow313-nexus
+    - DEFAULT_MODELS=${OLLAMA_DEFAULT_MODEL:-matarmohamad313/shadow313-nexus}
+    - OPENAI_API_BASE_URLS=${OPENWEBUI_OPENAI_API_BASE_URLS:-${AI_GATEWAY_ENDPOINT:-}}
+    - OPENAI_API_KEYS=${OPENWEBUI_OPENAI_API_KEYS:-${AI_GATEWAY_API_KEY:-}}
     - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?WEBUI_SECRET_KEY must be set}
     - SCARF_NO_ANALYTICS=true
     - DO_NOT_TRACK=true
@@ -179,17 +197,21 @@ services:
     - shadow313_data:/home/shadow313/.shadow313:rw
     - ./:/workspace:ro
     environment:
-    - SHADOW313_AI_ENDPOINT=http://ollama:11434
-    - SHADOW313_AI_BACKEND=ollama
-    - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+    - SHADOW313_AI_ENDPOINT=${SHADOW313_AI_ENDPOINT:-http://ollama:11434}
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - AI_GATEWAY_ENDPOINT=${AI_GATEWAY_ENDPOINT:-https://ai-gateway.vercel.sh/v1}
+    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_OUTPUT=rich
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     stdin_open: true
     tty: true
     networks:
     - shadow313_internal
+    - shadow313_external
     deploy:
       resources:
         limits:
@@ -224,23 +246,26 @@ services:
     volumes:
     - shadow313_data:/home/shadow313/.shadow313:rw
     environment:
-    - SHADOW313_AI_ENDPOINT=http://ollama:11434
-    - SHADOW313_AI_BACKEND=ollama
-    - SHADOW313_AI_MODEL=matarmohamad313/shadow313-nexus
+    - SHADOW313_AI_ENDPOINT=${SHADOW313_AI_ENDPOINT:-http://ollama:11434}
+    - SHADOW313_AI_BACKEND=${SHADOW313_AI_BACKEND:-ollama}
+    - SHADOW313_AI_MODEL=${SHADOW313_AI_MODEL:-matarmohamad313/shadow313-nexus}
+    - AI_GATEWAY_API_KEY=${AI_GATEWAY_API_KEY:-}
+    - AI_GATEWAY_ENDPOINT=${AI_GATEWAY_ENDPOINT:-https://ai-gateway.vercel.sh/v1}
+    - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     - SHADOW313_API_KEY=${SHADOW313_API_KEY:?SHADOW313_API_KEY must be set}
     - SHADOW313_ENV=production
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     networks:
     - shadow313_internal
     - shadow313_external
     healthcheck:
       test:
       - CMD
-      - curl
-      - -sf
-      - http://localhost:8313/health
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8313/health', timeout=5)
       interval: 30s
       timeout: 10s
       retries: 3
@@ -288,6 +313,28 @@ services:
           memory: 256M
     profiles:
     - rag
+  nginx-cert-init:
+    image: alpine:3.22
+    container_name: shadow313-nginx-cert-init
+    restart: "no"
+    volumes:
+    - nginx_ssl:/certs
+    entrypoint:
+    - /bin/sh
+    - -ec
+    command:
+    - |
+      if [ ! -s /certs/shadow313.crt ] || [ ! -s /certs/shadow313.key ]; then
+        apk add --no-cache openssl >/dev/null
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+          -keyout /certs/shadow313.key \
+          -out /certs/shadow313.crt \
+          -subj "/C=CA/ST=Ontario/L=Ottawa/O=Shadow313 NEXUS/CN=localhost" \
+          -addext "subjectAltName=DNS:localhost,DNS:shadow313.local,IP:127.0.0.1"
+      fi
+      chown 101:101 /certs/shadow313.crt /certs/shadow313.key
+      chmod 644 /certs/shadow313.crt
+      chmod 640 /certs/shadow313.key
   nginx:
     security_opt:
     - no-new-privileges:true
@@ -308,11 +355,15 @@ services:
     - 127.0.0.1:8080:8080
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    - nginx_ssl:/etc/nginx/ssl:ro
     - nginx_logs:/var/log/nginx
     depends_on:
-    - open-webui
-    - shadow313-api
+      open-webui:
+        condition: service_started
+      shadow313-api:
+        condition: service_started
+      nginx-cert-init:
+        condition: service_completed_successfully
     networks:
     - shadow313_external
     - shadow313_internal
@@ -333,6 +384,8 @@ volumes:
   chroma_data:
     driver: local
   nginx_logs:
+    driver: local
+  nginx_ssl:
     driver: local
 networks:
   shadow313_internal:

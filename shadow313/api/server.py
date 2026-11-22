@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 # ── Models ────────────────────────────────────────────────────────
 
 if HAS_FASTAPI:
-
     class DetectRequest(BaseModel):
         event: dict[str, Any]
         detectors: list[str] = ["all"]
@@ -57,7 +56,6 @@ if HAS_FASTAPI:
 
 
 # ── App factory ───────────────────────────────────────────────────
-
 
 def create_app(api_key: str | None = None) -> FastAPI:
     if not HAS_FASTAPI:
@@ -115,7 +113,6 @@ def create_app(api_key: str | None = None) -> FastAPI:
 
     # ShiatoAli SOC vertical slice: durable events + defensive alert generation.
     from shadow313.v4.shiatoali.router import build_router as build_shiatoali_router
-
     app.include_router(build_shiatoali_router(verify_api_key))
 
     install_limits(app)
@@ -125,16 +122,16 @@ def create_app(api_key: str | None = None) -> FastAPI:
     @app.get("/api/status")
     async def status():
         return {
-            "status": "operational",
-            "version": __version__,
-            "service": "shadow313-nexus-api",
+            "status":    "operational",
+            "version":   __version__,
+            "service":   "shadow313-nexus-api",
             "timestamp": datetime.now(UTC).isoformat(),
             "modules": {
-                "recon": True,
-                "vuln": True,
-                "network": True,
-                "defense": True,
-                "quantum": True,
+                "recon":    True,
+                "vuln":     True,
+                "network":  True,
+                "defense":  True,
+                "quantum":  True,
                 "detection": True,
                 "webshell": True,
             },
@@ -158,15 +155,15 @@ def create_app(api_key: str | None = None) -> FastAPI:
     async def list_modules(_: str = Depends(verify_api_key)):
         return {
             "modules": [
-                {"name": "recon", "version": __version__, "status": "active"},
-                {"name": "vuln", "version": __version__, "status": "active"},
-                {"name": "exploit", "version": __version__, "status": "lab_only"},
-                {"name": "network", "version": __version__, "status": "active"},
-                {"name": "defense", "version": __version__, "status": "active"},
-                {"name": "quantum", "version": __version__, "status": "active"},
-                {"name": "plugins", "version": __version__, "status": "active"},
-                {"name": "cicd", "version": __version__, "status": "active"},
-                {"name": "docs", "version": __version__, "status": "active"},
+                {"name": "recon",    "version": __version__, "status": "active"},
+                {"name": "vuln",     "version": __version__, "status": "active"},
+                {"name": "exploit",  "version": __version__, "status": "lab_only"},
+                {"name": "network",  "version": __version__, "status": "active"},
+                {"name": "defense",  "version": __version__, "status": "active"},
+                {"name": "quantum",  "version": __version__, "status": "active"},
+                {"name": "plugins",  "version": __version__, "status": "active"},
+                {"name": "cicd",     "version": __version__, "status": "active"},
+                {"name": "docs",     "version": __version__, "status": "active"},
             ]
         }
 
@@ -211,11 +208,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "webshell" in req.detectors:
             try:
                 from shadow313.v4.detection.webshell_detector import WebShellDetector
-
                 webshell_detector = WebShellDetector()
                 score = webshell_detector.score_event(req.event)
                 results["webshell"] = {
-                    "score": round(score, 4),
+                    "score":    round(score, 4),
                     "detected": score >= 0.65,
                     "technique": "T1505.003",
                 }
@@ -225,11 +221,10 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if "all" in req.detectors or "lolbin" in req.detectors:
             try:
                 from shadow313.v4.detection.lolbin_detector import LOLBinDetector
-
                 lolbin_detector = LOLBinDetector()
                 alert = lolbin_detector.analyze_event(req.event)
                 results["lolbin"] = {
-                    "score": alert.risk_score if alert else 0.0,
+                    "score":    alert.risk_score if alert else 0.0,
                     "detected": alert is not None,
                     "technique": "T1218",
                 }
@@ -239,15 +234,14 @@ def create_app(api_key: str | None = None) -> FastAPI:
         if any("error" in value for value in results.values()):
             raise HTTPException(503, detail={"status": "detector_unavailable", "results": results})
         return {
-            "event": req.event,
-            "results": results,
+            "event":     req.event,
+            "results":   results,
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
     @app.post("/api/webshell/scan")
     async def webshell_scan(req: WebShellScanRequest, _: str = Depends(verify_api_key)):
         from shadow313.v4.detection.webshell_detector import WebShellDetector
-
         det = WebShellDetector()
         if req.mode == "access_log":
             result = det.scan_access_log(req.content, source=req.file_path or "<api>")
@@ -260,20 +254,20 @@ def create_app(api_key: str | None = None) -> FastAPI:
         return {
             "overall_pct": 51.4,
             "techniques_covered": 136,
-            "techniques_total": 265,
+            "techniques_total":   265,
             "tactics": {
-                "Initial Access": {"covered": 4, "total": 5, "pct": 80.0},
-                "Execution": {"covered": 5, "total": 5, "pct": 100.0},
-                "Persistence": {"covered": 4, "total": 5, "pct": 80.0},
+                "Initial Access":       {"covered": 4, "total": 5, "pct": 80.0},
+                "Execution":            {"covered": 5, "total": 5, "pct": 100.0},
+                "Persistence":          {"covered": 4, "total": 5, "pct": 80.0},
                 "Privilege Escalation": {"covered": 5, "total": 5, "pct": 100.0},
-                "Defense Evasion": {"covered": 5, "total": 5, "pct": 100.0},
-                "Credential Access": {"covered": 4, "total": 5, "pct": 80.0},
-                "Discovery": {"covered": 2, "total": 5, "pct": 40.0},
-                "Lateral Movement": {"covered": 2, "total": 5, "pct": 40.0},
-                "Command and Control": {"covered": 5, "total": 5, "pct": 100.0},
-                "Impact": {"covered": 6, "total": 6, "pct": 100.0},
-                "Reconnaissance": {"covered": 2, "total": 5, "pct": 40.0},
-                "Collection": {"covered": 1, "total": 5, "pct": 20.0},
+                "Defense Evasion":      {"covered": 5, "total": 5, "pct": 100.0},
+                "Credential Access":    {"covered": 4, "total": 5, "pct": 80.0},
+                "Discovery":            {"covered": 2, "total": 5, "pct": 40.0},
+                "Lateral Movement":     {"covered": 2, "total": 5, "pct": 40.0},
+                "Command and Control":  {"covered": 5, "total": 5, "pct": 100.0},
+                "Impact":               {"covered": 6, "total": 6, "pct": 100.0},
+                "Reconnaissance":       {"covered": 2, "total": 5, "pct": 40.0},
+                "Collection":           {"covered": 1, "total": 5, "pct": 20.0},
             },
             "timestamp": datetime.now(UTC).isoformat(),
         }
@@ -287,7 +281,7 @@ def create_app(api_key: str | None = None) -> FastAPI:
         ts = int(str(ts)[:-3] + "313")  # nudge to end in ...313
 
         payload_bytes = json.dumps(req.payload, sort_keys=True, default=str).encode()
-        payload_hash = "sha3_256:" + hashlib.sha3_256(payload_bytes).hexdigest()
+        payload_hash  = "sha3_256:" + hashlib.sha3_256(payload_bytes).hexdigest()
 
         prev_hash = "0" * 128
         if _receipts:
@@ -295,23 +289,23 @@ def create_app(api_key: str | None = None) -> FastAPI:
             prev_hash = last.get("chain_hash", "0" * 128)
 
         chain_input = f"{payload_hash}:{prev_hash}:{ts}".encode()
-        chain_hash = "sha3_512:" + hashlib.sha3_512(chain_input).hexdigest()
+        chain_hash  = "sha3_512:" + hashlib.sha3_512(chain_input).hexdigest()
 
         bind_id = f"313-API-{secrets.token_hex(4).upper()}"
 
         receipt = {
-            "bind_id": bind_id,
-            "timestamp_ns": ts,
-            "timestamp_iso": datetime.now(UTC).isoformat(),
-            "payload_hash": payload_hash,
-            "chain_hash": chain_hash,
-            "prev_chain_hash": prev_hash,
+            "bind_id":             bind_id,
+            "timestamp_ns":        ts,
+            "timestamp_iso":       datetime.now(UTC).isoformat(),
+            "payload_hash":        payload_hash,
+            "chain_hash":          chain_hash,
+            "prev_chain_hash":     prev_hash,
             "signature_algorithm": "UNSIGNED-SHA3-512-DEMO",
-            "ipfs_cid": None,
-            "ipfs_anchored": False,
-            "metadata": req.metadata or {},
-            "app_id": "shadow313-nexus-api",
-            "app_version": __version__,
+            "ipfs_cid":            None,
+            "ipfs_anchored":       False,
+            "metadata":            req.metadata or {},
+            "app_id":              "shadow313-nexus-api",
+            "app_version":         __version__,
         }
         _receipts[bind_id] = receipt
         return receipt
@@ -325,7 +319,7 @@ def create_app(api_key: str | None = None) -> FastAPI:
     @app.get("/api/bind")
     async def bind_list(_: str = Depends(verify_api_key)):
         return {
-            "count": len(_receipts),
+            "count":    len(_receipts),
             "receipts": list(_receipts.values()),
         }
 
@@ -358,13 +352,12 @@ def create_app(api_key: str | None = None) -> FastAPI:
 
 # ── Entry point ───────────────────────────────────────────────────
 
-
 def main():
     parser = argparse.ArgumentParser(description="Shadow313 NEXUS API Server")
-    parser.add_argument("--host", default="127.0.0.1", help="Bind host")
-    parser.add_argument("--port", default=8313, type=int, help="Bind port")
-    parser.add_argument("--reload", action="store_true", help="Auto-reload on change")
-    parser.add_argument("--api-key", default=None, help="API key (optional)")
+    parser.add_argument("--host",    default="127.0.0.1", help="Bind host")
+    parser.add_argument("--port",    default=8313, type=int, help="Bind port")
+    parser.add_argument("--reload",  action="store_true",   help="Auto-reload on change")
+    parser.add_argument("--api-key", default=None,          help="API key (optional)")
     args = parser.parse_args()
 
     if not HAS_FASTAPI:
@@ -386,6 +379,7 @@ def main():
         reload=args.reload,
         log_level="info",
     )
+
 
 
 if __name__ == "__main__":
