@@ -51,7 +51,7 @@ does not publish a fixed test count or claim a passing result.
 | `docs/`, `assets/`, `index.html` | Static website and documentation |
 | `docs/PLATFORM_INTEGRATION_STATUS.md` | Canonical cross-repository integration map, current SOC review status, and release gates |
 | `api/` | Vercel API gateway and OpenAPI contract; forwards allowlisted requests to the separately hosted Python API when configured |
-| `sentinelos/` | Legacy SentinelOS dashboard UI and browser tools; its chat client uses the authenticated NEXUS `/api/chat` gateway, while unconnected tools remain clearly labeled demonstrations |
+| [`sentinelos/`](/sentinelos) | Legacy SentinelOS dashboard frontend; its chat client uses the authenticated NEXUS `/api/chat` gateway. The Python backend lives in `shadow313/api/server.py`; this folder contains no backend service or model weights, and remaining browser tools are demonstrations |
 | `docker/`, `docker-compose.yml`, `Dockerfile` | Optional local Ollama, Open WebUI, API, and proxy stack |
 | `scripts/` | Repository checks, site generation, and maintenance utilities |
 
