@@ -71,7 +71,11 @@ def _markdown_link_targets(content: str):
             if content[label_end] == "]":
                 break
             label_end += 1
-        if label_end >= len(content) or label_end + 1 >= len(content) or content[label_end + 1] != "(":
+        if (
+            label_end >= len(content)
+            or label_end + 1 >= len(content)
+            or content[label_end + 1] != "("
+        ):
             index += 1
             continue
         target_start = label_end + 2
