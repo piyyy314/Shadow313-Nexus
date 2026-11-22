@@ -25,7 +25,7 @@
 
 param(
     [switch]$Fix,           # Auto-fix issues found
-    [string]$Token = "",    # GitHub PAT for pushing fixes
+    [string]$Token = "",    # Optional GitHub PAT for read-only secrets inventory
     [switch]$SkipStorage    # Skip slow storage scan
 )
 
@@ -378,7 +378,7 @@ if (Test-Path "$repo\.git") {
     if ([int]$behind -gt 0) { WARN "Repo is $behind commits BEHIND — run: git pull origin master" }
     else { OK "Repo is up to date with origin" }
     
-    if ([int]$ahead -gt 0) { WARN "Repo is $ahead commits AHEAD — run: git push origin master" }
+    if ([int]$ahead -gt 0) { WARN "Repo is $ahead commits AHEAD — publish via a reviewed feature branch and pull request." }
     
     $dirty = git status --short 2>$null
     if ($dirty) {
@@ -445,7 +445,7 @@ if ($Token) {
         WARN "Could not check GitHub secrets (token may lack permissions)"
     }
 } else {
-    INFO "Provide -Token to check GitHub secrets"
+    INFO "Provide -Token only for read-only GitHub secrets inventory"
     INFO "Required: $($requiredSecrets -join ', ')"
     INFO "Optional: $($optionalSecrets -join ', ')"
 }
@@ -515,25 +515,7 @@ foreach ($tool in $tools.GetEnumerator()) {
 # ════════════════════════════════════════════════════════════════
 Write-Section "12/12 PUSH TO GITHUB"
 
-if ($Fix -and $Token -and (Test-Path "$repo\.git")) {
-    Push-Location $repo
-    
-    $dirty = git status --short 2>$null
-    if ($dirty) {
-        git add .
-        git commit -m "fix: master scan auto-fixes — profile, OLLAMA_HOST, remote URL cleanup"
-        git remote set-url origin "https://piyyy314:$Token@github.com/piyyy314/Shadow313-Nexus.git"
-        git push origin master 2>&1 | Out-Null
-        git remote set-url origin "https://github.com/piyyy314/Shadow313-Nexus.git"
-        FIXED "Pushed fixes to GitHub"
-    } else {
-        OK "Nothing to push"
-    }
-    
-    Pop-Location
-} elseif ($Fix -and -not $Token) {
-    INFO "Provide -Token to auto-push fixes to GitHub"
-}
+if ($Fix -and (Test-Path "$repo\\.git")) {\n    Push-Location $repo\n    $dirty = git status --short 2>$null\n    if ($dirty) {\n        WARN "Local changes are present. They were not staged, committed, or pushed automatically."\n        INFO "Review with git diff, then publish on a feature branch using the safe sync helper."\n    } else {\n        OK "No repository changes to publish"\n    }\n    Pop-Location\n}
 
 # ════════════════════════════════════════════════════════════════
 # FINAL REPORT
@@ -570,7 +552,7 @@ Write-Host @"
   1. Run with -Fix to auto-repair issues:
      .\scripts\shadow313-master-scan.ps1 -Fix
 
-  2. Run with -Fix -Token to also push to GitHub:
+  2. Optional: supply -Token only for read-only GitHub secret inventory. No push is performed:
      .\scripts\shadow313-master-scan.ps1 -Fix -Token "github_pat_xxx"
 
   3. Generate secrets:
