@@ -170,8 +170,8 @@ def test_validation_checks_missing_reference_with_unbalanced_title_parenthesis(t
     skill = tmp_path / "skills" / "example-skill"
     _write_skill(
         skill / "SKILL.md",
-        "---\\nname: example-skill\\ndescription: test\\n---\\n"
-        '# Example\\n[guide](references/missing.md "Draft (")\\n',
+        "---\nname: example-skill\ndescription: test\n---\n"
+        '# Example\n[guide](references/missing.md "Draft (")\n',
     )
     errors = validate_skill("example-skill", tmp_path / "skills")
     assert any("Broken local reference: references/missing.md" in item for item in errors)
