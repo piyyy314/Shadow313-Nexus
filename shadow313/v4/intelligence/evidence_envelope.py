@@ -35,9 +35,10 @@ from enum import StrEnum
 
 # ── Provenance Classification ─────────────────────────────────────────────────
 
+
 class ProvenanceClass(StrEnum):
     """Mandatory provenance classification for all evidence records."""
-    REAL_OBSERVATION = "REAL_OBSERVATION"   # Live sensor data
+    REAL_OBSERVATION = "REAL_OBSERVATION"  # Live sensor data
     SYNTHETIC_TEST = "SYNTHETIC_TEST"  # Generated test data
     SIMULATION = "SIMULATION"  # Simulation output
     DEMO = "DEMO"  # Demonstration data
@@ -54,7 +55,7 @@ class Severity(StrEnum):
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
-    INFO     = "INFO"
+    INFO = "INFO"
 
 
 class ValidationStatus(StrEnum):
