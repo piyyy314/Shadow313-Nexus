@@ -559,11 +559,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ message: input })
+            body: JSON.stringify({ prompt: input })
         });
         const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.reply) throw new Error(data.error || 'AI Gateway request failed');
-        return data.reply;
+        const answer = typeof data.response === 'string' ? data.response : data.reply;
+        if (!response.ok || typeof answer !== 'string' || !answer.trim()) {
+            throw new Error(data.detail || data.message || data.error || 'AI Gateway request failed');
+        }
+        return answer;
     };
 
     const handleChatInput = () => {

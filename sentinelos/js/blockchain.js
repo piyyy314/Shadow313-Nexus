@@ -70,20 +70,32 @@
             card.id = `block-card-${block.index}`;
             card.innerHTML = `
                 <div class="block-header">
-                    <span class="block-index">BLOCK #${block.index}</span>
-                    <span class="block-badge" id="block-badge-${block.index}">SECURE</span>
+                    <span class="block-index" data-field="index"></span>
+                    <span class="block-badge" data-field="badge">SECURE</span>
                 </div>
                 <div class="block-body font-mono">
-                    <div><strong>Timestamp:</strong> ${block.timestamp}</div>
-                    <div><strong>Data:</strong> ${block.incidentData.desc}</div>
-                    <div style="margin-top: 4px; word-break: break-all;"><strong>Hash:</strong> <span class="hash-text" id="hash-text-${block.index}">${block.hash}</span></div>
-                    <div style="word-break: break-all;"><strong>Prev:</strong> <span style="opacity: 0.6;">${block.prevHash}</span></div>
+                    <div><strong>Timestamp:</strong> <span data-field="timestamp"></span></div>
+                    <div><strong>Data:</strong> <span data-field="description"></span></div>
+                    <div style="margin-top: 4px; word-break: break-all;"><strong>Hash:</strong> <span class="hash-text" data-field="hash"></span></div>
+                    <div style="word-break: break-all;"><strong>Prev:</strong> <span style="opacity: 0.6;" data-field="previous-hash"></span></div>
                     <div style="margin-top: 8px; display:flex; justify-content: space-between; align-items:center;">
-                        <span><strong>Nonce:</strong> ${block.nonce}</span>
-                        <button class="btn btn-secondary btn-sm text-red" onclick="window.tamperBlock(${block.index})" style="padding: 2px 6px; font-size: 8px;">🔨 Tamper</button>
+                        <span><strong>Nonce:</strong> <span data-field="nonce"></span></span>
+                        <button class="btn btn-secondary btn-sm text-red" type="button" data-action="tamper" style="padding: 2px 6px; font-size: 8px;">🔨 Tamper</button>
                     </div>
                 </div>
             `;
+            card.querySelector('[data-field="index"]').textContent = `BLOCK #${block.index}`;
+            card.querySelector('[data-field="badge"]').id = `block-badge-${block.index}`;
+            card.querySelector('[data-field="timestamp"]').textContent = block.timestamp;
+            card.querySelector('[data-field="description"]').textContent = block.incidentData.desc;
+            const hashText = card.querySelector('[data-field="hash"]');
+            hashText.id = `hash-text-${block.index}`;
+            hashText.textContent = block.hash;
+            card.querySelector('[data-field="previous-hash"]').textContent = block.prevHash;
+            card.querySelector('[data-field="nonce"]').textContent = String(block.nonce);
+            card.querySelector('[data-action="tamper"]').addEventListener('click', () => {
+                window.tamperBlock(block.index);
+            });
             blockListWrapper.appendChild(card);
         });
     };

@@ -20,9 +20,9 @@
   </div>
 </nav>
 <aside role="note" style="padding:16px 24px;background:#0b1329;color:#e2e8f0;border-bottom:1px solid #334155;">
-<strong>Hosting notice:</strong> The public website does not run the Python security backend.
-Backend-dependent endpoints return HTTP 200 with an explicit unavailable status,
-not scan results. Run the Python backend locally at <code>http://localhost:8313</code>.
+<strong>Hosting notice:</strong> The website is static, while the Python security API runs as a separate service.
+The Vercel gateway forwards approved <code>/api/*</code> requests when its server-side backend URL and API key are configured.
+Without that connection, backend-dependent requests return HTTP 503 and no scan results are fabricated. For local development, run the Python API at <code>http://localhost:8313</code>.
 Authentication, method, and route errors retain their appropriate HTTP error statuses.
 Never put your API key in public browser code.
 </aside>

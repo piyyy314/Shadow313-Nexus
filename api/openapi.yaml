@@ -3,9 +3,10 @@ info:
   title: Shadow313 NEXUS API
   description: >-
     Local-First AI-Powered Security Intelligence REST API. This contract describes
-    the separately hosted Python backend, not the static website. The static-site
-    adapter returns HTTP 200 with an explicit unavailable status for backend-dependent
-    routes and never fabricates scan results.
+    the separately hosted Python backend, not the static website. The Vercel website
+    gateway forwards approved routes when configured and returns HTTP 503 when the
+    backend URL is missing or the Python service cannot be reached; it never fabricates
+    successful scan results.
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team

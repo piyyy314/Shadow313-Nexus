@@ -30,15 +30,11 @@
         });
     }
 
-    const appendTermLine = (text, isHtml = false) => {
+    const appendTermLine = (text) => {
         if (!termScreen || !cursorLine) return;
         const line = document.createElement('div');
         line.className = 'term-line';
-        if (isHtml) {
-            line.innerHTML = text;
-        } else {
-            line.textContent = text;
-        }
+        line.textContent = text;
         termScreen.insertBefore(line, cursorLine);
         termScreen.scrollTop = termScreen.scrollHeight;
     };
