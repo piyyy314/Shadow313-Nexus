@@ -272,12 +272,36 @@ def test_rollback_resets_from_named_step(executor):
     assert json.loads((executor.log_dir / f"plan_{plan.id}.json").read_text()) == plan.to_dict()
 
 
-def test_missing_module_and_action(executor):
+def test_missing_module_and_action_fail_closed(executor):
     plan = executor.create_custom_plan("example.com", [{"module": "missing"}])
     executor.kernel.get_module.return_value = None
-    assert executor.run(plan)["results"][0]["result"]["status"] == "stub"
+
+    missing_module = executor.run(plan)
+    assert missing_module["success"] is False
+    assert missing_module["steps_failed"] == 1
+    assert "not loaded" in missing_module["results"][0]["error"]
+
     executor.kernel.get_module.return_value = object()
-    assert executor.run(plan)["results"][0]["result"]["status"] == "no_action"
+    missing_action = executor.run(plan)
+    assert missing_action["success"] is False
+    assert missing_action["steps_failed"] == 1
+    assert "not available" in missing_action["results"][0]["error"]
+
+
+def test_run_uses_policy_stored_in_plan(executor):
+    executor.policy = ApprovalPolicy.AUTO
+    executor.gate = ExecutorCallbackGate(lambda step, plan: False)
+    plan = AgentPlan(
+        target="example.com",
+        policy=ApprovalPolicy.FULL_HUMAN,
+        steps=[AgentStep("step1", "Recon", "recon", "run", {})],
+    )
+
+    summary = executor.run(plan)
+
+    assert summary["steps_skipped"] == 1
+    assert summary["steps_ok"] == 0
+    assert summary["success"] is False
 
 
 def test_no_plan_raises(executor):
