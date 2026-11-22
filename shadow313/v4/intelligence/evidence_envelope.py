@@ -2,9 +2,10 @@
 shadow313.v4.intelligence.evidence_envelope
 Canonical Evidence Envelope — Shadow313 NEXUS v4
 
-Implements the canonical signed evidence schema from the 90-Day Roadmap (G-02).
-Every platform observation and action is wrapped in a signed, classified,
-attributable evidence envelope.
+Implements the canonical evidence schema from the 90-Day Roadmap (G-02).
+Every observation and action is wrapped in a classified, attributable envelope.
+Hashes provide integrity checks; signatures and trusted timestamps are claimed only
+when independently verified.
 
 Provenance classes (from roadmap):
   REAL_OBSERVATION  — live sensor data from AEGIS/eBPF/honeypot
@@ -14,9 +15,6 @@ Provenance classes (from roadmap):
   REPLAY            — replayed historical event
   MODEL_GENERATED   — output from PE-7 or other ML model
   EXTERNAL_SOURCE   — third-party threat intel feed
-  ARTIFACT_INVENTORY — local file metadata and hashes, not event telemetry
-  LOCAL_OPERATIONAL_EVENT — locally recorded service activity, not sensor telemetry
-  UNCLASSIFIED       — source provenance has not been established
   ARTIFACT_INVENTORY — local file metadata and hashes, not event telemetry
   LOCAL_OPERATIONAL_EVENT — locally recorded service activity, not sensor telemetry
   UNCLASSIFIED       — source provenance has not been established
