@@ -122,7 +122,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Fail "Remote '$Remote' is not configured."
     exit 1
 }
-if ($remoteUrl -notlike "*github.com/piyyy314/Shadow313-Nexus*") {
+if (($remoteUrl -notlike "*github.com/piyyy314/Shadow313-Nexus*") -and ($remoteUrl -notlike "*github.com:piyyy314/Shadow313-Nexus*")) {
     Write-Fail "Remote must point to the canonical Shadow313-Nexus repository."
     exit 1
 }
