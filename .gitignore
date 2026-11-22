@@ -97,3 +97,6 @@ scripts/secret-fixtures.json
 
 # Generated local TLS certificates
 docker/nginx/ssl/*.crt
+
+# Workstation-specific runtime diagnostics stay local.
+logs/*.json

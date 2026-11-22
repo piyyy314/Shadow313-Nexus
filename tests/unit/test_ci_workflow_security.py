@@ -353,3 +353,78 @@ def test_publish_jobs_stage_only_distributions():
     assert publish_section.count("packages=(dist/*.whl dist/*.tar.gz)") == 2
     assert publish_section.count("No wheel or source distribution found in dist/.") == 2
 
+def test_release_workflow_uses_python_yaml_import_name():
+    workflow = (ROOT / ".github" / "workflows" / "build-release.yml").read_text(encoding="utf-8")
+    assert workflow.count("--hidden-import yaml") == 2
+    assert "--hidden-import pyyaml" not in workflow
+    dispatch = workflow.split("workflow_dispatch:", 1)[1].split("\n\npermissions:", 1)[0]
+    assert "inputs:" not in dispatch
+    assert "if: startsWith(github.ref, 'refs/tags/v')" in workflow
+
+
+def test_push_helper_recommends_github_cli_authentication():
+    script = (ROOT / "push-to-github.ps1").read_text(encoding="utf-8")
+    assert "gh auth login" in script
+    assert "gh auth setup-git" in script
+    assert "https://<TOKEN>@" not in script
+
+
+def test_legacy_direct_to_master_scripts_are_retired():
+    retired = (
+        "deploy_to_laptop.ps1",
+        "scripts/fix-and-push.ps1",
+        "scripts/push-and-fix-all.ps1",
+        "scripts/cleanup-repo.ps1",
+        "scripts/push-sandbox-fixes.ps1",
+        "scripts/shadow313-one-shot-setup.ps1",
+        "scripts/shadow313-repo-rebuild.ps1",
+        "scripts/shadow313-laptop-full-fix.ps1",
+        "scripts/shadow313-profile-audit-and-fix.ps1",
+        "scripts/apply-sandbox-fixes.ps1",
+    )
+    assert all(not (ROOT / path).exists() for path in retired)
+
+
+def test_complete_system_fix_does_not_embed_pat_in_git_remote():
+    script = (ROOT / "scripts" / "shadow313-complete-system-fix.ps1").read_text(encoding="utf-8")
+    assert "gh auth setup-git" in script
+    assert "https://piyyy314:$Token@" not in script
+
+
+def test_complete_system_fix_uses_github_cli_without_token_remote():
+    script = (ROOT / "scripts" / "shadow313-fix-all.ps1").read_text(encoding="utf-8")
+    assert "gh auth status --hostname github.com" in script
+    assert "git pull --ff-only origin master" in script
+    assert "$Token" not in script
+    assert "https://piyyy314:$Token@" not in script
+    assert "git remote set-url origin" not in script
+
+def test_repository_governance_baseline_files_exist():
+    for relative in (
+        ".github/CODEOWNERS",
+        ".github/pull_request_template.md",
+        ".github/ISSUE_TEMPLATE/feature_request.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "docs/adr/README.md",
+        "docs/adr/0001-hosting-boundaries.md",
+        "docs/ARCHITECTURE_AUDIT_2026-11-22.md",
+        "docs/LEGACY_AUTOMATION.md",
+    ):
+        assert (ROOT / relative).is_file(), relative
+
+def test_ssp_document_is_explicitly_unverified_and_not_a_compliance_claim():
+    document = (ROOT / "docs" / "S313-SSP-2026-001.md").read_text(encoding="utf-8").lower()
+    assert "not an approved system security plan" in document
+    assert "not evidence" in document
+    assert "not assessed" in document
+    assert "reference frameworks only" in document
+
+
+def test_ssp_document_contains_no_unverified_operational_or_personal_claims():
+    document = (ROOT / "docs" / "S313-SSP-2026-001.md").read_text(encoding="utf-8").lower()
+    for unsupported in (
+        "100% detection rate", "$4.2b", "zero competitors", "azure ad b2c",
+        "fips 140-2 key vault hsm", "ottawa, on", "daily automated backup",
+        "satisfies: nist", "fully implemented",
+    ):
+        assert unsupported not in document, unsupported

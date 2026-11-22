@@ -299,3 +299,35 @@ jobs:
             exit 1
           fi
           echo "VALIDATION GATE PASSED: All checks passed. Safe to deploy."
+
+  repository-completeness-audit:
+    name: Repository Completeness Audit (advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Run read-only repository audit
+        shell: bash
+        run: |
+          set +e
+          python scripts/repository_completeness_audit.py --output audit-results --quiet
+          audit_status=$?
+          if [ "$audit_status" -eq 3 ]; then
+            echo "::error::Repository audit could not complete."
+            exit 1
+          elif [ "$audit_status" -eq 2 ]; then
+            echo "::warning::Repository audit found FAIL-level findings. Inspect the uploaded report."
+          elif [ "$audit_status" -eq 1 ]; then
+            echo "::warning::Repository audit found warnings. Inspect the uploaded report."
+          fi
+          exit 0
+      - name: Upload repository audit report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: repository-completeness-audit
+          path: audit-results/
+          if-no-files-found: error
+          retention-days: 14

@@ -304,7 +304,7 @@ if (-not $DryRun) {
         Write-Host $pushOutput -ForegroundColor Red
         Write-Host ""
         Write-Warn "Common fixes:"
-        Write-Info "  1. Authentication: git remote set-url origin https://<TOKEN>@github.com/piyyy314/Shadow313-Nexus.git"
+        Write-Info "  1. Authentication: gh auth login, then gh auth setup-git"
         Write-Info "  2. SSH key:        git remote set-url origin git@github.com:piyyy314/Shadow313-Nexus.git"
         Write-Info "  3. Check access:   gh auth status"
         exit 1

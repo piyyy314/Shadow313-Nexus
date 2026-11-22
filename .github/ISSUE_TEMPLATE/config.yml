@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/piyyy314/Shadow313-Nexus/blob/master/SECURITY.md
+    about: Do not disclose vulnerabilities in public issues. Follow the private reporting instructions in SECURITY.md.

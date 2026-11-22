@@ -7,17 +7,17 @@ optional integration is enabled or every deployment target is live.
 
 ```text
 Shadow313-Nexus/
-├── .github/                 # GitHub Actions, issue templates, automation
+├── .github/                 # Workflows, CODEOWNERS, issue and PR templates
 ├── ci/                      # CI templates and reusable validation assets
 ├── api/                     # Static-site API adapters and API contracts
 ├── assets/                  # Shared public-site assets
 ├── about/                   # Public about pages
 ├── blog/                    # Public technical articles
 ├── cyber_lab/               # Lab exercises and learning materials
-├── docs/                    # Product docs, technical reports, dashboards
+├── docs/                    # Product docs, ADRs, audit reports, dashboards
 ├── infra/
 │   └── hetzner/             # Planned server setup and host automation
-├── logs/                    # Tracked diagnostic/report artifacts; review before adding logs
+├── logs/                    # Local workstation diagnostics (not committed)
 ├── marketplace/             # Public marketplace pages
 ├── migrations/              # Database migration assets
 ├── nexus_toolkit/           # NEXUS toolkit package
@@ -25,7 +25,7 @@ Shadow313-Nexus/
 ├── platform/                # Public platform pages
 ├── policies/                # Container/security policy definitions
 ├── pricing/                 # Public pricing pages
-├── scripts/                 # Build, validation, maintenance automation
+├── scripts/                 # Build, validation, reviewed local tooling
 ├── sentinelos/              # SentinelOS assets and components
 ├── shadow313/               # Primary Python application package
 ├── shadow313_platform/      # Platform Python package
@@ -107,9 +107,20 @@ historical/operational material. They are not candidates for blind deletion:
 | `sentinelos/` | SentinelOS assets and supporting components | Treat as a distinct subsystem |
 | `sigma/` | Sigma detection content | Validate rules with a Sigma-compatible tool |
 | `dist/` | Distribution manifest and receipt artifacts | Do not treat as the Python build output directory without checking its manifest |
-| `logs/` | Tracked diagnostic/report artifacts | Do not commit credentials, personal data, or unreviewed runtime logs |
+| `logs/` | Local workstation diagnostics | Keep machine-specific runtime reports local and ignored; do not commit them |
 
-Several PowerShell maintenance scripts remain at the repository root for
-backward compatibility with existing local workflows. New scripts belong in
-`scripts/`. Move old entry points only after searching for callers and updating
-documentation, workflows, and local automation.
+Historical direct-to-master scripts that embedded PATs in Git remote URLs have
+been retired. Remaining local scanners and maintenance helpers are not approved
+for direct production changes. See `docs/LEGACY_AUTOMATION.md` before running
+PowerShell tooling. New scripts belong in `scripts/` and must use branch-based
+Git workflows with the GitHub CLI or credential manager.
+
+
+## Governance and architecture decisions
+
+- `.github/CODEOWNERS` identifies the current repository owner.
+- `.github/pull_request_template.md` standardizes scope, validation, security, and deployment evidence.
+- `.github/ISSUE_TEMPLATE/` provides bug and feature-request templates; vulnerability reports remain private under `SECURITY.md`.
+- `docs/adr/` records accepted architecture decisions. Supersede decisions with a new ADR rather than silently rewriting history.
+- `docs/ARCHITECTURE_AUDIT_2026-11-22.md` records the current architecture comparison and remediation roadmap.
+- `docs/LEGACY_AUTOMATION.md` documents retired workstation scripts and safe Git authentication.
