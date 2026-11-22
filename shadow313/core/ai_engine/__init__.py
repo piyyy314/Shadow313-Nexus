@@ -41,9 +41,24 @@ class AIEngine:
     }
 
     def __init__(self, config: dict) -> None:
-        self.backend:  str = config.get("backend", "ollama")
-        self.model:    str = config.get("model", "mistral:7b")
+        self.backend: str = str(config.get("backend", "ollama")).strip().lower()
+        self.model: str = str(config.get("model", "mistral:7b")).strip()
+        if not self.model:
+            raise ValueError("AI model must be a non-empty string")
+
+        try:
+            self.timeout = int(config.get("timeout", 120))
+            self.ctx_win = int(config.get("context_window", 8192))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("AI timeout and context_window must be integers") from exc
+        if not 1 <= self.timeout <= 3600:
+            raise ValueError("AI timeout must be between 1 and 3600 seconds")
+        if not 1 <= self.ctx_win <= 1_000_000:
+            raise ValueError("AI context_window must be between 1 and 1000000 tokens")
+
         configured_endpoint = config.get("endpoint")
+        if configured_endpoint is not None and not isinstance(configured_endpoint, str):
+            raise ValueError("AI endpoint must be a string")
         local_defaults = {"http://localhost:11434", "http://ollama:11434"}
         if self.backend == "gateway":
             endpoint_default = os.environ.get(
@@ -60,8 +75,6 @@ class AIEngine:
             configured_endpoint = endpoint_default
         raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
-        self.timeout:  int = int(config.get("timeout", 120))
-        self.ctx_win:  int = int(config.get("context_window", 8192))
         if self.backend == "gateway":
             self._api_key = (
                 config.get("gateway_api_key", "")
@@ -82,11 +95,13 @@ class AIEngine:
 
         parsed = urlsplit(endpoint)
         scheme = parsed.scheme.lower()
-        host = parsed.hostname or ""
+        host = (parsed.hostname or "").lower().rstrip(".")
         if scheme not in self._ALLOWED_SCHEMES:
             raise ValueError("AI endpoint must use http or https")
         if not host or parsed.username is not None or parsed.password is not None:
             raise ValueError("AI endpoint must include a host and must not include user info")
+        if parsed.query or parsed.fragment:
+            raise ValueError("AI endpoint must not include a query string or fragment")
         # Accessing .port validates malformed port strings before any urllib.request.
         _ = parsed.port
         if host in self._BLOCKED_HOSTS:
@@ -116,6 +131,13 @@ class AIEngine:
             raise ValueError(
                 f"AI endpoint IP '{host}' is not a permitted destination"
             )
+        if self.backend in {"openai", "gateway"}:
+            if host == "localhost" or host.endswith((".localhost", ".local")):
+                raise ValueError("Cloud AI endpoints must not target local hostnames")
+            if address is not None and not address.is_global:
+                raise ValueError(
+                    f"Cloud AI endpoint IP '{host}' must be globally routable"
+                )
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
