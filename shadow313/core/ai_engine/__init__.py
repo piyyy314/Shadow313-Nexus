@@ -118,7 +118,7 @@ class AIEngine:
             try:
                 normalized_host = str(IPv4Address(socket.inet_aton(host)))
             except OSError:
-                pass
+                normalized_host = host
 
         if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
             ("169.254.", "fd00:", "fe80:", "fc00:")
