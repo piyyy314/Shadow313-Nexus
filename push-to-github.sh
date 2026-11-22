@@ -166,7 +166,7 @@ else
     ok "Created branch: $BRANCH_NAME"
     git add -A
     mapfile -t STAGED_PATHS < <(git diff --cached --name-only)
-    if printf '%s\\n' "${STAGED_PATHS[@]}" | grep -Eiq '(^|/)(\.env($|\.)|id_rsa|id_ed25519|credentials|secrets?|.*\\.(pem|p12|pfx|key|sqlite|db)|logs/.*\\.(json|log))'; then
+    if printf '%s\n' "${STAGED_PATHS[@]}" | grep -Eiq '(^|/)(\.env($|\.)|id_rsa|id_ed25519|credentials|secrets?|.*\.(pem|p12|pfx|key|sqlite|db)|logs/.*\.(json|log))'; then
         fail "Sensitive/local paths are staged. Unstage and review them before syncing."
         exit 1
     fi
