@@ -80,6 +80,7 @@ jobs:
             files+=("$path")
           done < "$changed_files"
           if (("${#files[@]}" > 0)); then
+            ruff check --select I --fix --diff "${files[@]}" || true
             ruff check --output-format=github "${files[@]}"
           else
             echo "No changed Python files to lint."
