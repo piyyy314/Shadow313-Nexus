@@ -81,6 +81,12 @@ def test_ollama_can_use_private_network_endpoints():
     assert engine.endpoint == "http://192.168.1.20:11434"
 
 
+def test_hex_looking_dns_hostname_is_not_treated_as_numeric_ipv4():
+    endpoint = "https://face.cafe/v1"
+    engine = AIEngine({"backend": "gateway", "endpoint": endpoint})
+    assert engine.endpoint == endpoint
+
+
 def test_empty_model_is_rejected():
     with pytest.raises(ValueError, match="model"):
         AIEngine({"model": "   "})
