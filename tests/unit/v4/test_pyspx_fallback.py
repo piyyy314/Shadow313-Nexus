@@ -3,7 +3,7 @@ Tests for SPHINCS+ signing and verification backends in temporal_binding.py
 
 Verifies the three-tier signing chain:
   Tier 1: pqcrypto (C-accelerated) — not available in sandbox
-  Tier 2: pyspx (pure-Python SLH-DSA) — active in sandbox
+  Tier 2: pyspx (SPHINCS+ reference implementation) — active in sandbox
   Tier 3: HMAC-SHA256 (last resort) — should NOT activate when pyspx present
 """
 from __future__ import annotations
@@ -89,7 +89,7 @@ class TestSignSLHDSA:
 
     def test_algo_mentions_pyspx(self):
         """Confirms pyspx tier (not pqcrypto) is active in this environment."""
-        _, algo = _sign_slh_dsa(b"test")
+        _, algo, _ = _sign_slh_dsa(b"test")
         assert "pyspx" in algo.lower() or "pqcrypto" in algo.lower()
 
     def test_signature_is_hex_string(self):
@@ -126,7 +126,7 @@ class TestSignSLHDSA:
     def test_large_message_works(self):
         large_msg = b"x" * 100_000
         sig, algo, _ = _sign_slh_dsa(large_msg)
-        assert "SLH-DSA" in algo
+        assert "SPHINCS+" in algo
         assert len(sig) > 0
 
 
