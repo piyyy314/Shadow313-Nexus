@@ -13,7 +13,6 @@ from pathlib import Path
 
 _SKILL_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 _REQUIRED_FRONTMATTER = ("name", "description")
-_MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 
 def find_skills_root(explicit_root: str | None = None) -> Path:
@@ -57,6 +56,44 @@ def _markdown_destination(target: str) -> str:
     return match.group(1) if match else target
 
 
+def _markdown_link_targets(content: str):
+    """Yield Markdown link destinations while respecting escaped and nested parentheses."""
+    index = 0
+    while index < len(content):
+        if content[index] != "[":
+            index += 1
+            continue
+        label_end = index + 1
+        while label_end < len(content):
+            if content[label_end] == "\\\\":
+                label_end += 2
+                continue
+            if content[label_end] == "]":
+                break
+            label_end += 1
+        if label_end >= len(content) or label_end + 1 >= len(content) or content[label_end + 1] != "(":
+            index += 1
+            continue
+        target_start = label_end + 2
+        cursor = target_start
+        depth = 1
+        while cursor < len(content) and depth:
+            char = content[cursor]
+            if char == "\\\\":
+                cursor += 2
+                continue
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            cursor += 1
+        if depth == 0:
+            yield content[target_start : cursor - 1]
+            index = cursor
+        else:
+            index = target_start
+
+
 def validate_skill(skill_id: str, root: Path) -> list[str]:
     """Return structural validation errors; an empty list means checks passed."""
     if not _SKILL_ID.fullmatch(skill_id):
@@ -97,8 +134,8 @@ def validate_skill(skill_id: str, root: Path) -> list[str]:
         errors.append("Missing a top-level Markdown heading.")
 
     # Validate relative Markdown links without following external URLs or anchors.
-    for match in _MARKDOWN_LINK.finditer(content):
-        target = _markdown_destination(match.group(1))
+    for raw_target in _markdown_link_targets(content):
+        target = _markdown_destination(raw_target)
         if not target or target.startswith(("https://", "http://", "mailto:", "#")):
             continue
         relative = target.split("#", 1)[0].split("?", 1)[0]
