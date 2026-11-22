@@ -43,7 +43,7 @@ def test_unavailable_integrations_document_200_without_503():
             assert "503" not in operation["responses"]
 
 
-def test_static_api_adapter_returns_200_with_unavailable_status():
+def test_static_api_adapter_returns_503_when_backend_is_not_configured():
     cases = [
         ("POST", "/api/scan/recon"),
         ("POST", "/api/scan/vuln"),
@@ -55,18 +55,21 @@ def test_static_api_adapter_returns_200_with_unavailable_status():
         ("GET", "/api/events"),
     ]
     script = """
-const handler = require('./api/index.js');
+const handler = require('./api/index.js').createHandler({ env: {} });
 const cases = JSON.parse(process.argv[1]);
-const results = cases.map(([method, url]) => {
-  const res = {
-    headers: {},
-    setHeader(name, value) { this.headers[name] = value; },
-    end(body) { this.body = body; },
-  };
-  handler({ method, url }, res);
-  return { statusCode: res.statusCode, body: JSON.parse(res.body) };
-});
-console.log(JSON.stringify(results));
+(async () => {
+  const results = [];
+  for (const [method, url] of cases) {
+    const res = {
+      headers: {},
+      setHeader(name, value) { this.headers[name] = value; },
+      end(body) { this.body = body; },
+    };
+    await handler({ method, url }, res);
+    results.push({ statusCode: res.statusCode, body: JSON.parse(res.body) });
+  }
+  console.log(JSON.stringify(results));
+})().catch(error => { console.error(error); process.exitCode = 1; });
 """
     result = subprocess.run(
         ["node", "-e", script, json.dumps(cases)],
@@ -77,8 +80,9 @@ console.log(JSON.stringify(results));
     )
     responses = json.loads(result.stdout)
     assert len(responses) == len(cases)
-    assert all(response["statusCode"] == 200 for response in responses)
-    assert all(response["body"]["status"] == "unavailable" for response in responses)
+    assert all(response["statusCode"] == 503 for response in responses)
+    assert all(response["body"]["status"] == "static-site-only" for response in responses)
+    assert all(response["body"]["backend_connected"] is False for response in responses)
 
 
 
