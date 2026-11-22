@@ -31,7 +31,10 @@ from pathlib import Path
 from typing import Optional
 from urllib.parse import quote
 
-from scripts.delivery.safe_paths import safe_docs_path
+try:
+    from scripts.delivery.safe_paths import safe_docs_path
+except ModuleNotFoundError:  # Direct script execution puts this directory on sys.path.
+    from safe_paths import safe_docs_path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO_ROOT   = Path(__file__).parent.parent.parent
