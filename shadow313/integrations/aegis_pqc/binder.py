@@ -123,7 +123,7 @@ class AegisPQCBinder:
         audit: PQCAuditResult,
         receipt: ReceiptLike,
         output_dir: str = "aegis_bound_reports",  # nosec S03 — default string, not credential
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Generate HTML + JSON bound report."""
         try:
             from .report import generate_bound_report
