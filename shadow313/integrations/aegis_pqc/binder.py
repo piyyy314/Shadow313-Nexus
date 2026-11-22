@@ -130,6 +130,7 @@ class AegisPQCBinder:
         """Generate HTML + JSON bound report."""
         try:
             from .report import generate_bound_report
+
             return generate_bound_report(audit, receipt, output_dir=output_dir)  # nosec S03
         except Exception as exc:
             logger.warning("Report generation failed: %s", exc)
