@@ -409,11 +409,12 @@ Start-Process "https://shadow313.dev/pricing"
 Start-Process "https://shadow313.dev/313-bind-verification-portal"</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
-      <div class="step-title">Add environment variables to Vercel <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">vercel.com → shadow313-nexus project → Settings → Environment Variables</div>
-      <div class="step-cmd">SHADOW313_ENV=production
-SHADOW313_API_URL=https://api.shadow313.dev  # Hetzner VPS URL
-SHADOW313_CORS_ORIGINS=https://shadow313.dev,https://shadow313.com</div>
+      <div class="step-title">Implement and verify public frontend API-base configuration <span class="badge-week">PREREQUISITE</span></div>
+      <div class="step-desc">The SentinelOS browser client currently reads window.SHADOW313_API_BASE and otherwise uses /api. Vercel environment variables are not automatically exposed to this static browser code, and the current static adapter does not proxy to a separately hosted Python API. Implement a reviewed public runtime/build-time configuration path before connecting a backend. Never put backend API keys or private credentials in browser configuration.</div>
+      <div class="step-cmd"># Current browser-side setting (public URL only):
+window.SHADOW313_API_BASE = "https://api.shadow313.dev/api";
+# This assignment must be delivered by an implemented, reviewed public config asset.
+# Keep API keys and service credentials server-side.</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Add custom domain shadow313.com <span class="badge-today">PLANNED</span></div>
