@@ -228,6 +228,12 @@ jobs:
 
           with open("bandit-report.json", encoding="utf-8") as report_file:
               report = json.load(report_file)
+          errors = report.get("errors") or []
+          if errors:
+              for error in errors:
+                  print(f"Bandit scan error: {error}", file=sys.stderr)
+              print("Bandit report contains scan errors; scan is incomplete.", file=sys.stderr)
+              sys.exit(1)
           high = [
               finding
               for finding in report.get("results", [])

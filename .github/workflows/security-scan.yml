@@ -250,7 +250,7 @@ jobs:
                   if severity in {"CRITICAL", "HIGH"}:
                       actionable_secrets.append({
                           "id": finding.get("RuleID", "unknown"),
-                          "target": finding.get("Target", "unknown"),
+                          "target": result.get("Target", "unknown"),
                           "title": finding.get("Title", "potential secret"),
                           "severity": severity,
                       })
