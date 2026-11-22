@@ -9,7 +9,7 @@ Features:
   - Automatic versioning with semantic bump detection
   - Local HTTP delivery server with real download buttons
   - 313-BIND receipt chain for every delivery
-  - Git auto-commit on successful delivery
+  - Optional Git auto-commit (disabled by default)
   - Offline-capable — zero external dependencies
   - Systemd/launchd service file generation
 
@@ -53,7 +53,7 @@ WATCH_DIRS      = [DOCS_DIR, REPO_ROOT / "shadow313" / "v4" / "detection"]
 POLL_INTERVAL   = 3.0   # seconds between file system polls
 DEBOUNCE_DELAY  = 1.5   # seconds to wait after last change before rebuilding
 SERVER_PORT     = 8313
-AUTO_GIT_COMMIT = True
+AUTO_GIT_COMMIT = os.getenv("SHADOW313_AUTO_GIT_COMMIT", "0").strip().lower() in {"1", "true", "yes"}
 
 
 # ── Logger ────────────────────────────────────────────────────────────────────
@@ -262,21 +262,72 @@ class DeliveryBuilder:
         return manifest, receipt
 
     def git_commit(self, delivery_id: str):
-        """Auto-commit manifest and receipts to git."""
+        """Optionally commit generated delivery artifacts on a feature branch."""
         if not AUTO_GIT_COMMIT:
             return
+
         try:
-            subprocess.run(["git", "add", "dist/manifest.json", "dist/receipts/"],
-                           cwd=REPO_ROOT, capture_output=True)
+            branch_result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            branch = branch_result.stdout.strip()
+            if branch in {"master", "main"}:
+                self.log.warn("Git auto-commit refused on protected branch.")
+                return
+
+            # These are generated delivery artifacts; force-add is scoped to this directory.
             subprocess.run(
-                ["git", "commit", "-m",
-                 f"chore(daemon): delivery {delivery_id} [skip ci]",
-                 "--no-verify"],
-                cwd=REPO_ROOT, capture_output=True
+                ["git", "add", "-f", "dist/manifest.json", "dist/receipts/"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            staged_result = subprocess.run(
+                ["git", "diff", "--cached", "--name-only"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            if not staged_result.stdout.strip():
+                self.log.info("No delivery artifact changes to commit.")
+                return
+
+            subprocess.run(
+                ["git", "diff", "--cached", "--check"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            secret_scanner = REPO_ROOT / "scripts" / "check-secrets.py"
+            if not secret_scanner.is_file():
+                raise RuntimeError("Required secret scanner scripts/check-secrets.py is missing.")
+            subprocess.run(
+                [sys.executable, str(secret_scanner)],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "commit", "-m", f"chore(daemon): delivery {delivery_id} [skip ci]"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
             )
             self.log.ok(f"Git commit: {delivery_id}")
-        except Exception as e:
-            self.log.warn(f"Git commit failed: {e}")
+        except subprocess.CalledProcessError as exc:
+            details = (exc.stderr or exc.stdout or str(exc)).strip()
+            self.log.warn(f"Git commit failed: {details}")
+        except Exception as exc:
+            self.log.warn(f"Git commit failed: {exc}")
 
 
 # ── HTTP Server ───────────────────────────────────────────────────────────────

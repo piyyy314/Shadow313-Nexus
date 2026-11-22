@@ -62,3 +62,13 @@ def test_delivery_daemons_do_not_claim_live_sensor_provenance():
         assert "ARTIFACT_INVENTORY" in source
     hardened = (ROOT / "scripts/delivery/daemon_hardened.py").read_text(encoding="utf-8")
     assert '"LOCAL_OPERATIONAL_EVENT"' in hardened
+
+
+def test_local_delivery_daemon_auto_commit_is_opt_in_and_hook_safe():
+    daemon = (ROOT / "scripts/delivery/daemon.py").read_text(encoding="utf-8")
+    assert 'SHADOW313_AUTO_GIT_COMMIT' in daemon
+    assert 'AUTO_GIT_COMMIT = True' not in daemon
+    assert '"--no-verify"' not in daemon
+    assert '"branch", "--show-current"' in daemon
+    assert 'scripts" / "check-secrets.py' in daemon
+    assert '"git", "commit"' in daemon
