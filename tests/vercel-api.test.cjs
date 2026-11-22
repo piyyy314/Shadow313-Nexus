@@ -216,3 +216,18 @@ test('PATCH case updates are allowlisted and receive the server credential', asy
   assert.equal(upstreamRequest.options.headers['X-API-Key'], 'server-only-test-key');
   assert.equal(JSON.parse(upstreamRequest.options.body.toString()).status, 'in_progress');
 });
+
+
+test('405 Allow header lists all registered methods for overlapping route patterns', async () => {
+  const handler = handlerModule.createHandler({ env: {} });
+  const response = await request(handler, '/api/shiatoali/cases/case-1', 'DELETE');
+  assert.equal(response.status, 405);
+  assert.equal(response.headers.get('allow'), 'GET, POST, PATCH, HEAD');
+});
+
+test('bind create is POST-only and is not treated as a receipt identifier', async () => {
+  const handler = handlerModule.createHandler({ env: {} });
+  const response = await request(handler, '/api/bind/create', 'GET');
+  assert.equal(response.status, 405);
+  assert.equal(response.headers.get('allow'), 'POST');
+});

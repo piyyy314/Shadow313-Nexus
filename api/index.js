@@ -4,7 +4,7 @@
 // separately and is reached only through server-side environment variables.
 const backendRoutes = [
   ['GET', /^\/api\/(modules|attck\/coverage|bind|audit|audit\/chain|stream|events|docs|openapi\.json)$/],
-  ['GET', /^\/api\/bind\/[^/]+$/],
+  ['GET', /^\/api\/bind\/(?!create$)[^/]+$/],
   ['GET', /^\/api\/mobile\/(status|alerts|findings|sessions)$/],
   ['POST', /^\/api\/(detect|webshell\/scan|bind\/create|mobile\/scan|scan\/recon|scan\/vuln|chat)$/],
   ['GET', /^\/api\/shiatoali(?:\/.*)?$/],
@@ -127,16 +127,20 @@ function createHandler(options = {}) {
     const health = path === '/api/health';
     const status = path === '/api/status';
     const matches = backendRoutes.filter(([, pattern]) => pattern.test(path));
-    const route = matches.find(([allowed]) => allowed === method) || matches[0];
+    const route = matches.find(([allowed]) => allowed === method);
 
-    if (!health && !status && !route) {
+    if (!health && !status && matches.length === 0) {
       return json(res, req, 404, { error: 'not_found' });
     }
-    const allowed = health || status ? 'GET' : route[0];
-    if (method !== allowed) {
-      return json(res, req, 405, { error: 'method_not_allowed' }, {
-        allow: allowed === 'GET' ? 'GET, HEAD' : allowed,
-      });
+    const allowedMethods = health || status
+      ? ['GET']
+      : [...new Set(matches.map(([allowed]) => allowed))];
+    if (!allowedMethods.includes(method)) {
+      const allow = [
+        ...allowedMethods,
+        ...(allowedMethods.includes('GET') ? ['HEAD'] : []),
+      ].join(', ');
+      return json(res, req, 405, { error: 'method_not_allowed' }, { allow });
     }
 
     let base;
