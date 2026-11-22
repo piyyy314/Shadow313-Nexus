@@ -169,7 +169,7 @@ def scan_with_hashes(docs_dir: Path) -> list[dict]:
                         "s313-threat-board.html",
                         "shadow313-nexus-dashboard.html",
                     ],
-                    "provenance_class": "REAL_OBSERVATION",  # P0-6
+                    "provenance_class": "ARTIFACT_INVENTORY",  # File inventory only; not sensor evidence
                 })
     files.sort(key=lambda f: (not f["priority"], f["name"]))
     return files
@@ -186,12 +186,13 @@ def create_download_receipt(filename: str, sha3: str, client_ip: str) -> dict:
         "bind_id":       f"313-DL-{secrets.token_hex(4).upper()}",
         "timestamp_ns":  ts_313,
         "timestamp_iso": datetime.now(timezone.utc).isoformat(),
+        "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
         "filename":      filename,
         "sha3_256":      sha3,
         "client_ip":     client_ip,
         "payload_hash":  "sha3_256:" + hashlib.sha3_256(payload).hexdigest(),
         "event_type":    "file.download",
-        "provenance":    "REAL_OBSERVATION",
+        "provenance":    "LOCAL_OPERATIONAL_EVENT",
     }
 
 
@@ -281,7 +282,7 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
                 # P0-2: Hash headers for client verification
                 self.send_header("X-Content-SHA3-256", sha3)
                 self.send_header("X-Delivery-Receipt", receipt["bind_id"])
-                self.send_header("X-Provenance-Class", "REAL_OBSERVATION")
+                self.send_header("X-Provenance-Class", "ARTIFACT_INVENTORY")
                 self.end_headers()
                 self.wfile.write(content)
             else:
@@ -416,9 +417,10 @@ class HardenedDaemon:
             "git_sha":           git_sha,
             "generated_at":      ts,
             "timestamp_313":     ts_313,
+            "timestamp_status":  "LOCAL_CLOCK_UNVERIFIED",
             "total_files":       len(files),
             "files":             files,
-            "provenance_class":  "REAL_OBSERVATION",
+            "provenance_class":  "ARTIFACT_INVENTORY",
             "source":            "hardened-daemon",
             "security_controls": {
                 "localhost_only":    True,

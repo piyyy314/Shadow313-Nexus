@@ -61,7 +61,7 @@ class TestEvidenceEnvelope:
 
     def test_default_provenance_class(self):
         e = EvidenceEnvelope(event_id="EVT-006")
-        assert e.provenance_class == "REAL_OBSERVATION"
+        assert e.provenance_class == "UNCLASSIFIED"
 
     def test_default_validation_status(self):
         e = EvidenceEnvelope(event_id="EVT-007")

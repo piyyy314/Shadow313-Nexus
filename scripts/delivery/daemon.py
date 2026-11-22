@@ -224,11 +224,12 @@ class DeliveryBuilder:
             "git_sha":          git_sha,
             "generated_at":     ts,
             "timestamp_313":    ts_313,
+            "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
             "total_files":      len(files),
             "total_size_kb":    round(sum(f["size_kb"] for f in files), 1),
             "files":            files,
             "source":           "local-daemon",
-            "provenance_class": "REAL_OBSERVATION",
+            "provenance_class": "ARTIFACT_INVENTORY",
         }
         content = json.dumps(
             {k: v for k, v in manifest.items() if k != "manifest_hash"},
@@ -246,6 +247,7 @@ class DeliveryBuilder:
             "bind_id":          f"313-DEL-{secrets.token_hex(4).upper()}",
             "timestamp_ns":     ts_313,
             "timestamp_iso":    ts,
+            "timestamp_status": "LOCAL_CLOCK_UNVERIFIED",
             "delivery_id":      delivery["delivery_id"],
             "delivery_count":   delivery["delivery_count"],
             "payload_hash":     payload_hash,

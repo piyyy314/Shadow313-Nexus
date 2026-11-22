@@ -44,6 +44,9 @@ class ProvenanceClass(str, Enum):
     REPLAY           = "REPLAY"             # Replayed historical event
     MODEL_GENERATED  = "MODEL_GENERATED"    # ML model output
     EXTERNAL_SOURCE  = "EXTERNAL_SOURCE"    # Third-party threat intel
+    ARTIFACT_INVENTORY = "ARTIFACT_INVENTORY"  # Local file metadata and hashes
+    LOCAL_OPERATIONAL_EVENT = "LOCAL_OPERATIONAL_EVENT"  # Local service activity
+    UNCLASSIFIED = "UNCLASSIFIED"  # Source provenance not established
 
 
 class Severity(str, Enum):
@@ -98,7 +101,7 @@ class EvidenceEnvelope:
     event_type:       str = ""
     severity:         str = Severity.INFO.value
     confidence:       float = 1.0
-    provenance_class: str = ProvenanceClass.REAL_OBSERVATION.value
+    provenance_class: str = ProvenanceClass.UNCLASSIFIED.value
 
     # ── References ────────────────────────────────────────────────────────────
     asset:            Optional[str] = None
@@ -437,6 +440,9 @@ class ProvenanceClassifier:
         ProvenanceClass.DEMO,
         ProvenanceClass.REPLAY,
         ProvenanceClass.MODEL_GENERATED,
+        ProvenanceClass.ARTIFACT_INVENTORY,
+        ProvenanceClass.LOCAL_OPERATIONAL_EVENT,
+        ProvenanceClass.UNCLASSIFIED,
     }
 
     @classmethod
@@ -465,7 +471,7 @@ class ProvenanceClassifier:
         if "model" in source_system.lower() or "pe7" in source_system.lower():
             return ProvenanceClass.MODEL_GENERATED
 
-        return ProvenanceClass.REAL_OBSERVATION
+        return ProvenanceClass.UNCLASSIFIED
 
     @classmethod
     def filter_for_production(cls, envelopes: list[EvidenceEnvelope]) -> list[EvidenceEnvelope]:
