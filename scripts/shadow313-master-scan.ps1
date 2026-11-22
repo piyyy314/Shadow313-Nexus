@@ -19,8 +19,8 @@
     To also auto-fix everything found:
         .\scripts\shadow313-master-scan.ps1 -Fix
 
-    To push fixes to GitHub too:
-        .\scripts\shadow313-master-scan.ps1 -Fix -Token "<read-only GitHub token>"
+    Optional: provide -Token only for read-only GitHub secrets inventory.
+    Repository changes remain local and must be published through a reviewed feature branch.
 #>
 
 param(
