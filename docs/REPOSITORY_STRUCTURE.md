@@ -114,3 +114,13 @@ been retired. Remaining local scanners and maintenance helpers are not approved
 for direct production changes. See `docs/LEGACY_AUTOMATION.md` before running
 PowerShell tooling. New scripts belong in `scripts/` and must use branch-based
 Git workflows with the GitHub CLI or credential manager.
+
+
+## Governance and architecture decisions
+
+- `.github/CODEOWNERS` identifies the current repository owner.
+- `.github/pull_request_template.md` standardizes scope, validation, security, and deployment evidence.
+- `.github/ISSUE_TEMPLATE/` provides bug and feature-request templates; vulnerability reports remain private under `SECURITY.md`.
+- `docs/adr/` records accepted architecture decisions. Supersede decisions with a new ADR rather than silently rewriting history.
+- `docs/ARCHITECTURE_AUDIT_2026-11-22.md` records the current architecture comparison and remediation roadmap.
+- `docs/LEGACY_AUTOMATION.md` documents retired workstation scripts and safe Git authentication.

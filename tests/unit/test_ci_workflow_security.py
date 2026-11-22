@@ -399,3 +399,16 @@ def test_complete_system_fix_uses_github_cli_without_token_remote():
     assert "https://piyyy314:$Token@" not in script
     assert "git remote set-url origin" not in script
 
+def test_repository_governance_baseline_files_exist():
+    for relative in (
+        ".github/CODEOWNERS",
+        ".github/pull_request_template.md",
+        ".github/ISSUE_TEMPLATE/feature_request.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "docs/adr/README.md",
+        "docs/adr/0001-hosting-boundaries.md",
+        "docs/ARCHITECTURE_AUDIT_2026-11-22.md",
+        "docs/LEGACY_AUTOMATION.md",
+    ):
+        assert (ROOT / relative).is_file(), relative
+
