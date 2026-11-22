@@ -243,23 +243,12 @@ if ($currentRemote -match "ghp_") {
 }
 Write-Host ""
 
-# ── STEP 6: COMMIT AND PUSH EVERYTHING ───────────────────────────────────
+# ── STEP 6: REVIEW SETUP CHANGES ───────────────────────────────────
 Write-Host "[6/6] Committing and pushing all changes..." -ForegroundColor Yellow
 
-& git add .gitattributes
-& git add docs-archive/ 2>$null
-& git add scripts/ 2>$null
-
-$gitStatus = & git status --short
-if ($gitStatus) {
-    & git add .
-    & git commit -m "chore: add .gitattributes LF enforcement + docs-archive + git hooks"
-    $pushResult = & git push origin master 2>&1
-    Write-Host $pushResult -ForegroundColor $(if($pushResult -match "error"){"Red"}else{"Green"})
-    Write-Host "  ✅ Pushed to GitHub" -ForegroundColor Green
-} else {
-    Write-Host "  ✅ Nothing new to commit" -ForegroundColor Green
-}
+Write-Host "  Setup files were generated locally; nothing was staged, committed, or pushed." -ForegroundColor Green
+Write-Host "  Review changes with: git status --short" -ForegroundColor Gray
+Write-Host "  Publish through a feature branch and reviewed pull request." -ForegroundColor Gray
 
 # ── FINAL STATUS ──────────────────────────────────────────────────────────
 Write-Host ""
@@ -288,9 +277,12 @@ Write-Host "  WHILE working:" -ForegroundColor White
 Write-Host "    git add ." -ForegroundColor Gray
 Write-Host "    git commit -m 'your message'" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  BEFORE pushing:" -ForegroundColor White
-Write-Host "    git pull origin master   (always pull first)" -ForegroundColor Gray
-Write-Host "    git push origin master" -ForegroundColor Gray
+Write-Host "  BEFORE publishing:" -ForegroundColor White
+Write-Host "    git switch -c fix/git-workflow-setup" -ForegroundColor Gray
+Write-Host "    git add .gitattributes" -ForegroundColor Gray
+Write-Host "    git commit -m 'chore: configure git workflow'" -ForegroundColor Gray
+Write-Host "    git push -u origin fix/git-workflow-setup" -ForegroundColor Gray
+Write-Host "    Open a pull request and wait for checks before merging." -ForegroundColor Gray
 Write-Host ""
 Write-Host "  The pre-push hook will BLOCK you if you forget to pull." -ForegroundColor Yellow
 Write-Host ""
