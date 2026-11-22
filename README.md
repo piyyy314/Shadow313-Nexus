@@ -118,6 +118,16 @@ The package metadata defines two console entry points: `shadow313` and
 `s313-cli`. PyPI publication is not implied by the repository name. Until an
 official release is published, install from a reviewed source checkout.
 
+For a reproducible install from this reviewed repository revision (without
+relying on an unpublished PyPI package):
+
+```bash
+python -m pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@8cc6bf9d92b2faf03470e92b8555b57f8a821500
+```
+
+Use the full commit SHA shown above when reproducing this revision; update the
+pin only after reviewing a newer commit.
+
 ## CLI usage
 
 Start with the built-in help and command registry:
