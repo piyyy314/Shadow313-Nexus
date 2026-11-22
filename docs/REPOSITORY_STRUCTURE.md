@@ -17,7 +17,7 @@ Shadow313-Nexus/
 ├── docs/                    # Product docs, technical reports, dashboards
 ├── infra/
 │   └── hetzner/             # Planned server setup and host automation
-├── logs/                    # Tracked diagnostic/report artifacts; review before adding logs
+├── logs/                    # Local workstation diagnostics (not committed)
 ├── marketplace/             # Public marketplace pages
 ├── migrations/              # Database migration assets
 ├── nexus_toolkit/           # NEXUS toolkit package
@@ -107,7 +107,7 @@ historical/operational material. They are not candidates for blind deletion:
 | `sentinelos/` | SentinelOS assets and supporting components | Treat as a distinct subsystem |
 | `sigma/` | Sigma detection content | Validate rules with a Sigma-compatible tool |
 | `dist/` | Distribution manifest and receipt artifacts | Do not treat as the Python build output directory without checking its manifest |
-| `logs/` | Tracked diagnostic/report artifacts | Do not commit credentials, personal data, or unreviewed runtime logs |
+| `logs/` | Local workstation diagnostics | Keep machine-specific runtime reports local and ignored; do not commit them |
 
 Several PowerShell maintenance scripts remain at the repository root for
 backward compatibility with existing local workflows. New scripts belong in
