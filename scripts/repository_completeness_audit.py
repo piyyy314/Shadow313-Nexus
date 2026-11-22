@@ -29,7 +29,7 @@ from typing import Any, Iterable
 TOOL_VERSION = "1.0.0"
 DEFAULT_SOURCE_ROOTS = (
     "shadow313", "nexus_toolkit", "shadow313_platform", "shadow313_sdk",
-    "sentinelos", "api", "cyber_lab",
+    "sentinelos", "api", "cyber_lab", "scripts", "tools", "ghost-watch-terminal", "migrations", "infra", "ollama",
 )
 DEFAULT_EXCLUDES = (
     ".git/*", ".venv/*", "venv/*", "env/*", "__pycache__/*", ".pytest_cache/*",
@@ -45,6 +45,7 @@ SECRET_RE = re.compile(
 )
 PLACEHOLDER_SECRET_RE = re.compile(r"(?i)^(changeme|example|placeholder|replace[_-]?me|your[_-]?.*|test|dummy|none|null|\*+)$")
 FAIL_OPEN_RE = re.compile(r"(?:\|\|\s*true|continue-on-error\s*:\s*true)", re.I)
+AUTH_HINT_RE = re.compile(r"\b(?:Depends|Security)\s*\(|@require_auth\b|\bcurrent_user\b|\bget_current_user\b", re.I)
 
 @dataclass
 class Finding:
@@ -175,14 +176,23 @@ def literal_string(node: ast.AST | None) -> str:
     return "<dynamic>"
 
 
+def route_has_auth_hint(node: ast.FunctionDef | ast.AsyncFunctionDef, source_lines: list[str]) -> bool:
+    """Heuristic auth hint scoped to this route's decorators and function body."""
+    decorator_lines = [getattr(dec, "lineno", node.lineno) for dec in node.decorator_list]
+    start_line = min([node.lineno, *decorator_lines])
+    end_line = getattr(node, "end_lineno", node.lineno) or node.lineno
+    snippet = "\n".join(source_lines[start_line - 1 : end_line])
+    return bool(AUTH_HINT_RE.search(snippet))
+
+
 def scan_ast(state: AuditState, source_roots: tuple[str, ...]) -> None:
-    test_blob = "\n".join(read_text(p) for p in state.test_files)
     test_names = {rel(p, state.root): read_text(p) for p in state.test_files}
     top_packages = {x for x in source_roots if (state.root / x).exists()}
 
     for path in state.source_files:
         rp = rel(path, state.root)
         text = read_text(path)
+        source_lines = text.splitlines()
         module = dotted_module(path, state.root)
         likely = path.stem if path.stem != "__init__" else path.parent.name
         matches = [name for name, body in test_names.items() if likely.lower() in name.lower() or module in body or likely in body]
@@ -216,7 +226,7 @@ def scan_ast(state: AuditState, source_roots: tuple[str, ...]) -> None:
                                 if kw.arg == "methods" and isinstance(kw.value, (ast.List, ast.Tuple)):
                                     vals = [literal_string(x).upper() for x in kw.value.elts]
                                     method = ",".join(vals) or "ROUTE"
-                        auth = any(x in text[max(0, node.lineno-25)*1:] for x in ("Depends(", "Security(", "@require_auth", "current_user"))
+                        auth = route_has_auth_hint(node, source_lines)
                         tokens = [node.name, route_path.strip("/").replace("/", "_")]
                         tm = [n for n, body in test_names.items() if any(t and (t in body or t in n) for t in tokens)]
                         framework = "FastAPI/Starlette" if tail in ROUTE_METHODS else "unknown"
@@ -271,7 +281,7 @@ def scan_structure(state: AuditState, source_roots: tuple[str, ...]) -> None:
                 add_finding(state, "INFO", "structure", "Python directory has no __init__.py (namespace package or omission)", rel(directory, state.root),
                             remediation="Confirm namespace-package intent; otherwise add __init__.py.")
 
-    required = ["README.md", "pyproject.toml", "LICENSE", "SECURITY.md", "CHANGELOG.md", ".gitignore"]
+    required = ["README.md", "pyproject.toml", "LICENSE", "SECURITY.md", "CHANGELOG.md", ".gitignore", ".github/CODEOWNERS", ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/feature_request.md", ".github/ISSUE_TEMPLATE/config.yml", "docs/adr/README.md", "docs/LEGACY_AUTOMATION.md"]
     for name in required:
         if not (state.root / name).exists():
             add_finding(state, "FAIL", "required-files", f"Required repository file missing: {name}", remediation="Add and maintain this project-governance file.")
@@ -300,7 +310,7 @@ def scan_text(state: AuditState) -> None:
         if rp.startswith(".github/workflows/") and FAIL_OPEN_RE.search(text):
             for idx, line in enumerate(text.splitlines(), 1):
                 if FAIL_OPEN_RE.search(line):
-                    add_finding(state, "FAIL", "ci", "Fail-open CI instruction found", rp, idx, line.strip(), "Remove fail-open behavior from release-blocking validation.")
+                    add_finding(state, "WARN", "ci", "Potential fail-open CI pattern requires manual gate review", rp, idx, line.strip(), "Confirm the command is non-blocking only when a later step explicitly validates its result.")
 
     current_versions = {v: refs for v, refs in state.versions.items() if any(not r["path"].startswith(("docs-archive/", "CHANGELOG")) for r in refs)}
     semvers = [v for v in current_versions if re.fullmatch(r"\d+\.\d+\.\d+", v)]
@@ -337,6 +347,25 @@ def scan_packaging(state: AuditState) -> None:
     pyproject = state.root / "pyproject.toml"
     text = read_text(pyproject)
     if pyproject.exists():
+        lock_files = ("uv.lock", "poetry.lock", "Pipfile.lock", "requirements.lock")
+        if not any((state.root / name).is_file() for name in lock_files):
+            add_finding(
+                state,
+                "WARN",
+                "packaging",
+                "No Python dependency lockfile found",
+                "pyproject.toml",
+                remediation="Add a reviewed lockfile or reproducible constraints file for deployment and release environments.",
+            )
+        if "fail_under" not in text:
+            add_finding(
+                state,
+                "WARN",
+                "tests",
+                "No minimum coverage threshold is configured",
+                "pyproject.toml",
+                remediation="Measure the current baseline, then introduce a realistic coverage floor and ratchet it upward.",
+            )
         if "[project.scripts]" not in text:
             add_finding(state, "WARN", "packaging", "No [project.scripts] entry found", "pyproject.toml")
         urls = re.findall(r"https://github\.com/[^\s\"']+", text)

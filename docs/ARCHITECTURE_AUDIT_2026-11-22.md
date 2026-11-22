@@ -82,7 +82,7 @@ Before production use, make unsigned, simulated, locally authenticated, and publ
 
 1. The repository contains versioned namespaces such as v2, v3, and v4; define supported, deprecated, and experimental status for each.
 2. local_bundle duplicates selected website content. A canonical synchronization/build script is needed to prevent drift.
-3. The original completeness auditor only covered a subset of Python roots and used a faulty route-auth heuristic. Fix and integrate that tool before treating its output as a complete repository audit.
+3. The completeness auditor now scans additional Python/automation roots, scopes route-auth hints to each function, treats fail-open patterns as review warnings, and reports missing lockfile/coverage baselines. Its output is published as a non-blocking CI artifact and remains a heuristic inventory, not a security certification.
 4. Coverage is collected in some workflows, but no minimum coverage threshold was found. Establish a measured baseline before adding a realistic fail_under gate.
 5. Keep workstation-specific logs, reports, tokens, and local model data out of the tracked source tree.
 6. Maintain CODEOWNERS, pull-request/feature templates, and ADRs so ownership, review, and architecture decisions remain explicit.
@@ -117,7 +117,7 @@ Before describing the project as a production SOC, define and test these service
 6. Introduce a Python lock/constraints strategy, SBOM, provenance attestation, and signed release assets.
 7. Establish a coverage baseline and a non-regressing coverage floor.
 8. Build a canonical local-bundle generator and test all copied routes/assets.
-9. Correct and integrate the repository completeness auditor.
+9. Review the advisory completeness-audit artifact on each run and convert high-confidence findings into tests or release gates.
 10. Formalize module lifecycle and service/API contracts.
 11. Provision and harden the backend before promoting simulated SOC functions to live status.
 
