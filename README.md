@@ -230,7 +230,7 @@ test fixtures, or commits.
 Install development dependencies, then run:
 
 ```bash
-python -m pytest tests/ -q --tb=short --ignore=tests/integration --timeout=120
+python -m pytest tests/ -q --tb=short
 ```
 
 Useful local checks include:
@@ -310,3 +310,13 @@ shadow313 skill validate shadow313-nexus-engineer
 ```
 
 Use `--root /path/to/Shadow313-Nexus` to inspect another checkout. Validation checks skill metadata and local Markdown references; it does not claim to execute or certify the skill's behavior.
+
+
+## Legacy automation
+
+Historical workstation scripts that pushed directly to `master` or embedded personal access tokens in Git remote URLs are being retired. Use GitHub CLI authentication and the branch-based workflow documented in [docs/LEGACY_AUTOMATION.md](docs/LEGACY_AUTOMATION.md).
+
+
+## Architecture and governance
+
+See the [architecture audit](docs/ARCHITECTURE_AUDIT_2026-11-22.md), [architecture decision records](docs/adr/), and [legacy automation policy](docs/LEGACY_AUTOMATION.md) for system boundaries, security gaps, and supported contributor workflows.

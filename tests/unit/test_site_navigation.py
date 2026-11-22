@@ -166,5 +166,230 @@ class SiteNavigationTests(unittest.TestCase):
         self.assertNotIn('display: none', css)
 
 
+    def test_install_guides_use_current_reproducible_setup(self):
+        expected = 'python -m pytest tests/ -q --tb=short'
+        for relative in (
+            'README.md',
+            'CONTRIBUTING.md',
+            'docs/install.html',
+            'local_bundle/docs-install.html',
+        ):
+            content = (ROOT / relative).read_text()
+            with self.subTest(guide=relative):
+                self.assertIn(expected, content)
+                self.assertNotIn('--ignore=tests/integration', content)
+        guide = (ROOT / 'CONTRIBUTING.md').read_text()
+        self.assertIn('python -m pip install -e ".[dev]"', guide)
+        stale_total = re.compile(
+            r"\b\d[\d,]*(?:\s*/\s*[\d,]*)?\s*\+?\s*"
+            r"tests?\s+(?:GREEN|passing|passed|included|all passing)\b",
+            re.IGNORECASE,
+        )
+        self.assertRegex("4,107+ tests GREEN", stale_total)
+        self.assertNotRegex(guide, stale_total)
+
+    def test_public_pages_disclose_demo_and_unverified_assurance_limits(self):
+        home = (ROOT / 'index.html').read_text()
+        self.assertIn('no quantum execution backend', home.lower())
+        self.assertNotIn('guaranteeing cryptographic uniqueness', home)
+        self.assertNotIn('Every quantum job receives a cryptographic proof', home)
+
+        dashboard = (ROOT / 'docs/S313-Nexus-Dashboard-v3.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', dashboard)
+        self.assertIn('No signing service connected', dashboard)
+        self.assertNotIn('Nanosecond entropy', dashboard)
+        self.assertNotIn('>PIPEDA</div>', dashboard)
+
+        ssp = (ROOT / 'docs/S313-SSP-Dashboard.html').read_text()
+        self.assertIn('not an approved SSP or compliance assessment', ssp)
+        self.assertNotIn('12/14', ssp)
+        self.assertNotIn('~20%', ssp)
+        self.assertNotIn('~65 of 323 controls', ssp)
+        for unsupported_claim in (
+            '2071/2071 tests',
+            'SDS=0',
+            'requirements.txt + Snyk SBOM',
+            'Daily automated backup, 30-day retention',
+            'MFA enforced',
+        ):
+            self.assertNotIn(unsupported_claim, ssp)
+        self.assertIn('test totals and scanner status are not assessed', ssp)
+
+        architecture = (ROOT / 'docs/shadow313-nexus-architecture.html').read_text()
+        self.assertNotIn('Live and pushed', architecture)
+        self.assertNotIn('(~1ms entropy)', architecture)
+
+        bundle_ssp = (ROOT / 'local_bundle/ssp.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', bundle_ssp)
+        self.assertIn('Not assessed; illustrative mapping only', bundle_ssp)
+        self.assertNotIn('width:NOT ASSESSED', bundle_ssp)
+        self.assertNotIn('height:NOT ASSESSED', bundle_ssp)
+        self.assertNotIn('zero cloud dependency', bundle_ssp.lower())
+        self.assertNotIn('already exceeds FedRAMP', bundle_ssp)
+
+        self.assertNotIn('CVE-2026-3392', (ROOT / 'docs/careers.html').read_text())
+        self.assertNotIn('CVE-2026-3392', (ROOT / 'blog/index.html').read_text())
+
+        command_center = (ROOT / 'docs/s313-command-center-v6.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', command_center)
+        self.assertNotIn('SLH-DSA signed', command_center)
+        self.assertNotIn('IPFS: Qm', command_center)
+        self.assertNotIn('chain intact', command_center.lower())
+
+        adversarial = (ROOT / 'docs/adversarial-pivot-dashboard.html').read_text()
+        self.assertIn('SYNTHETIC SCENARIO MODEL ONLY', adversarial)
+        analysis = (ROOT / 'docs/adversarial-pivot-analysis.html').read_text()
+        self.assertIn('SYNTHETIC SCENARIO ANALYSIS ONLY', analysis)
+
+        soc = (ROOT / 'docs/blue-team-soc.html').read_text()
+        self.assertIn('STATIC PRODUCT OVERVIEW', soc)
+        self.assertNotIn('29 active detectors', soc)
+        cognitive = (ROOT / 'docs/soc-analyst-cognitive-load.html').read_text()
+        self.assertNotIn('available on the live platform', cognitive.lower())
+
+        nvsm = (ROOT / 'docs/nvsm-chain-score-dashboard.html').read_text()
+        self.assertIn('not been validated against observed incidents', nvsm)
+        self.assertNotIn('Mathematical Proof', nvsm)
+
+        bundle_dashboard = (ROOT / 'local_bundle/dashboard-v3.html').read_text()
+        self.assertIn('SIMULATION / REFERENCE DATA ONLY', bundle_dashboard)
+        self.assertNotIn('CRIT=0 HIGH=0', bundle_dashboard)
+        self.assertNotIn('pyspx active', bundle_dashboard.lower())
+        self.assertNotIn('HybridAnchor active', bundle_dashboard)
+
+        bundle_platform = (ROOT / 'local_bundle/platform.html').read_text()
+        self.assertIn('STATIC REFERENCE / SIMULATION ONLY', bundle_platform)
+        self.assertNotIn('3,4,140 TESTS', bundle_platform)
+
+    def test_ssp_interconnections_and_provider_risk_are_not_presented_as_verified(self):
+        for relative in ("docs/S313-SSP-Dashboard.html", "local_bundle/ssp.html"):
+            page = (ROOT / relative).read_text(encoding="utf-8")
+            with self.subTest(page=relative):
+                self.assertIn("Illustrative control mappings (not assessed)", page)
+                self.assertIn("Illustrative System Interconnections (Not Connected)", page)
+                self.assertIn("no connections, data flows, identity provider, key vault, or boundary are verified", page)
+                self.assertNotIn(">Inside</span>", page)
+                self.assertNotIn(">Outside</span>", page)
+                self.assertIn("Illustrative External Service Risk Examples (Not Assessed)", page)
+                self.assertIn("Provider assurance (not verified)", page)
+                self.assertIn("Provider attestations, scope, applicability, and risk are not assessed", page)
+                self.assertNotIn("Microsoft FedRAMP High P-ATO", page)
+                self.assertNotIn("SLH-DSA signed, SHA3-256 CIDv1", page)
+                self.assertIn("No signature or IPFS anchor is generated or verified by this demo", page)
+
+    def test_dashboard_and_receipt_pages_disclose_demo_boundaries(self):
+        demo_pages = (
+            'docs/dashboards.html',
+            'docs/shadow313-nexus-dashboard.html',
+            'local_bundle/dashboard.html',
+            'docs/s313-threat-board.html',
+            'local_bundle/threat-board.html',
+            'docs/s313-command-center-v6.html',
+            'local_bundle/command-center.html',
+            'docs/S313-Nexus-Dashboard-v3.html',
+            'local_bundle/dashboard-v3.html',
+            'docs/S313-SSP-Dashboard.html',
+            'local_bundle/ssp.html',
+            'docs/aegis_nexus.html',
+            'tools/aegis-nexus.html',
+            'local_bundle/aegis-nexus.html',
+            'docs/nvsm-chain-score-dashboard.html',
+            'docs/313-bind-verification-portal.html',
+            'docs/attck-coverage-graph.html',
+            'docs/vendor-scorecard.html',
+            'local_bundle/vendor-scorecard.html',
+        )
+        for relative in demo_pages:
+            page = ROOT / relative
+            text = page.read_text()
+            with self.subTest(page=relative):
+                self.assertIn('role="note"', text)
+                self.assertNotRegex(
+                    text,
+                    r'CVE-2026-(?:3392|0001|1847)',
+                )
+                self.assertNotIn('REAL DATA', text)
+                self.assertNotIn('REAL SESSION DATA', text)
+                self.assertNotIn('LIVE DATA', text)
+
+        receipt = (ROOT / 'docs/313-bind-verification-portal.html').read_text()
+        self.assertIn('Sample Receipt — Not Verified', receipt)
+        self.assertNotIn('Receipt VALID — Chain Intact', receipt)
+        self.assertNotIn('Every receipt is signed with SLH-DSA', receipt)
+
+    def test_compliance_and_vendor_demo_scores_are_not_presented_as_assessed(self):
+        for relative in ('docs/S313-SSP-Dashboard.html', 'local_bundle/ssp.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertNotIn('~23%', text)
+                self.assertNotIn('~40%', text)
+                self.assertIn('Not assessed', text)
+        for relative in ('docs/vendor-scorecard.html', 'local_bundle/vendor-scorecard.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertNotIn('#1 of 13', text)
+                self.assertNotIn('96.2/100', text)
+                self.assertIn('No independently sourced', text)
+
+    def test_marketplace_and_cli_pages_do_not_claim_unavailable_services(self):
+        for relative in ('marketplace/index.html', 'marketplace/analytics.html',
+                         'local_bundle/marketplace.html',
+                         'local_bundle/marketplace-analytics.html',
+                         'local_bundle/marketplace-live.html'):
+            text = (ROOT / relative).read_text()
+            with self.subTest(page=relative):
+                self.assertIn('role="note"', text)
+                self.assertNotIn('247 verified plugins', text)
+                self.assertNotIn('cosign-signed', text)
+                self.assertNotIn('89.4k', text)
+                self.assertNotIn('12,400 STARS', text)
+        homepage = (ROOT / 'index.html').read_text()
+        self.assertNotIn('shadow313 verify', homepage)
+        self.assertIn('shadow313 temporal --verify', homepage)
+        cli = (ROOT / 'shadow313/cli/main.py').read_text()
+        self.assertIn('sub.add_parser("temporal"', cli)
+        self.assertIn('p_temp.add_argument("--verify"', cli)
+
+    def test_marketplace_demo_pages_do_not_claim_live_connections_or_metrics(self):
+        public_live = (ROOT / "marketplace/analytics-live.html").read_text()
+        bundle_live = (ROOT / "local_bundle/marketplace-live.html").read_text()
+        bundle_analytics = (ROOT / "local_bundle/marketplace-analytics.html").read_text()
+        marketplace = (ROOT / "marketplace/index.html").read_text()
+
+        self.assertNotIn("136/265 techniques (51.4%)", marketplace)
+        self.assertIn("not validated detection coverage", marketplace.lower())
+
+        self.assertNotIn("live-stream", public_live)
+        self.assertIn("demo-stream", public_live)
+        self.assertNotIn("live-stream", bundle_live)
+        self.assertIn("demo-stream", bundle_live)
+        self.assertIn("DEMO MODE", bundle_live)
+        self.assertNotIn(">● CONNECTED</span>", bundle_live)
+        self.assertNotIn('class="badge bc">WEBSOCKET</span>', bundle_live)
+
+        for sample_metric in (
+            "68%",
+            ">72</span>",
+            ">48</span>",
+            ">38</span>",
+            ">32</span>",
+            ">28</span>",
+            ">25</span>",
+        ):
+            self.assertNotIn(sample_metric, bundle_analytics)
+        self.assertIn("SAMPLE DATA", bundle_analytics)
+
+    def test_launch_checklist_avoids_unverified_prices_and_unsafe_install_commands(self):
+        checklist = (ROOT / "docs/launch-checklist.html").read_text()
+        self.assertNotIn("€3.29/mo", checklist)
+        self.assertNotIn("€0.66/mo", checklist)
+        self.assertNotIn("3614 GREEN", checklist)
+        self.assertNotIn("158 routes", checklist)
+        self.assertNotIn("bug bounty", checklist.lower())
+        self.assertNotIn("--break-system-packages", checklist)
+        self.assertIn("python3 -m venv .venv", checklist)
+        self.assertIn("current CI run and commit", checklist)
+
+
 if __name__ == '__main__':
     unittest.main()

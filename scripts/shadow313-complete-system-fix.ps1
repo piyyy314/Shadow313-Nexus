@@ -595,12 +595,14 @@ $repoPath = "$env:USERPROFILE\shadow313-nexus"
 if (Test-Path "$repoPath\.git") {
     Push-Location $repoPath
     if ($Token) {
-        git remote set-url origin "https://piyyy314:$Token@github.com/piyyy314/Shadow313-Nexus.git"
+        Write-Warn "The -Token parameter is ignored. Authenticate with 'gh auth login' and 'gh auth setup-git'."
+    }
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        gh auth setup-git | Out-Null
     }
     git pull origin master 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) { Write-OK "Repo synced with GitHub" }
-    else { Write-Warn "Git pull had issues — check token" }
-    git remote set-url origin "https://github.com/piyyy314/Shadow313-Nexus.git"
+    else { Write-Warn "Git pull failed — check GitHub CLI or the configured Git credential helper" }
     Pop-Location
 } else {
     Write-Warn "Repo not found at $repoPath"
