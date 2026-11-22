@@ -261,12 +261,14 @@ class AgentExecutor:
         for step in plan.steps:
             # Approval gate
             needs_gate = (
-                self.policy == ApprovalPolicy.FULL_HUMAN
-                or (self.policy == ApprovalPolicy.GATE_HIGH
-                    and step.risk_level in self.HIGH_RISK)
+                plan.policy == ApprovalPolicy.FULL_HUMAN
+                or (
+                    plan.policy == ApprovalPolicy.GATE_HIGH
+                    and step.risk_level.lower() in self.HIGH_RISK
+                )
                 or step.requires_approval
             )
-            if needs_gate and self.policy != ApprovalPolicy.AUTO:
+            if needs_gate and plan.policy != ApprovalPolicy.AUTO:
                 step.status = StepStatus.AWAITING
                 self._save_plan(plan)
                 approved = self.gate.request_approval(step, plan)
@@ -319,9 +321,9 @@ class AgentExecutor:
         """Route step to the appropriate kernel module."""
         module = self.kernel.get_module(step.module)
         if module is None:
-            # Graceful degradation — return stub
-            return {"status": "stub", "module": step.module,
-                    "note": f"Module '{step.module}' not loaded in kernel"}
+            raise RuntimeError(
+                f"Module '{step.module}' is not loaded; refusing to report a stub as success"
+            )
 
         action_map: dict[str, str] = {
             # Recon
@@ -348,9 +350,10 @@ class AgentExecutor:
         }
         method_name = action_map.get(step.action, step.action)
         method = getattr(module, method_name, None)
-        if method is None:
-            return {"status": "no_action", "module": step.module,
-                    "action": step.action}
+        if method is None or not callable(method):
+            raise RuntimeError(
+                f"Action '{step.action}' is not available on module '{step.module}'"
+            )
         return method(**step.params)
 
     # ── Context accumulation ──────────────────────────────────────────────
@@ -387,7 +390,11 @@ class AgentExecutor:
             "steps_ok":     len(completed),
             "steps_failed": len(failed),
             "steps_skipped":len(skipped),
-            "success":      len(failed) == 0,
+            "success": (
+                len(failed) == 0
+                and len(skipped) == 0
+                and len(completed) == len(plan.steps)
+            ),
             "results":      self._step_results,
         }
 
