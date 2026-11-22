@@ -299,7 +299,7 @@ class HardenedHandler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Content-Type", ctype)
                 self.send_header("Content-Length", str(len(content)))
                 self.send_header("X-Content-SHA3-256", sha3)  # P0-2
-                self.send_header("X-Provenance-Class", "REAL_OBSERVATION")  # P0-6
+                self.send_header("X-Provenance-Class", "ARTIFACT_INVENTORY")  # File inventory only
                 # Security headers
                 self.send_header("X-Frame-Options", "DENY")
                 self.send_header("X-Content-Type-Options", "nosniff")
