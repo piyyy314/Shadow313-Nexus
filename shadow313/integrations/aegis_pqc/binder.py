@@ -189,7 +189,7 @@ class _SimulatedReceipt:
         self.bind_id = f"AEGIS-PQC-{secrets.token_hex(4).upper()}"
         self.signature_algorithm = "SHA3-512 (simulated — install shadow313 core for SLH-DSA)"
         self.signature = self.chain_hash
-        self.ipfs_cid = None
+        self.ipfs_cid: str | None = None
         self.ipfs_anchored = False
         self.app_id = "aegis-pqc"
         self.app_version = "4.0.0"
