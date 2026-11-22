@@ -1,6 +1,7 @@
 [
   "404.html",
   "about/index.html",
+  "api/index.js",
   "assets/site-nav.css",
   "assets/site-theme.css",
   "blog/index.html",
