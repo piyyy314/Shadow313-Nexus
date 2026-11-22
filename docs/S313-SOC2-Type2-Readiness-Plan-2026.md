@@ -33,7 +33,7 @@ policies/
 ├── access-control-policy.md            ← Who can access what
 ├── incident-response-policy.md         ← What to do when breached
 ├── change-management-policy.md         ← How code changes are reviewed
-├── vendor-management-policy.md         ← Third-party risk (Auth0, Netlify, etc.)
+├── vendor-management-policy.md         ← Third-party risk (Auth0, Vercel, etc.)
 ├── data-classification-policy.md       ← What data you hold and how it's classified
 ├── acceptable-use-policy.md            ← Employee/contractor rules
 ├── business-continuity-policy.md       ← What happens if you go down
@@ -46,14 +46,14 @@ These don't need to be long. A 2-page policy that's actually followed beats a 20
 Month 2: Technical Controls
 Access Control (CC6)
 
- Enable MFA on ALL accounts: GitHub, Netlify, Auth0, Zoho, domain registrar
+ Enable MFA on ALL accounts: GitHub, Vercel, Auth0, Zoho, domain registrar
  Document who has access to what (even a spreadsheet counts)
  Remove any shared passwords — use 1Password or Bitwarden Teams
  Implement least-privilege: no one has more access than they need
  Document your offboarding process (what happens when someone leaves)
 Encryption (CC6.7)
 
- All data in transit: TLS 1.2+ (your landing page already does this via Netlify)
+ All data in transit: TLS 1.2+ (your landing page already does this via Vercel)
  All data at rest: encrypted (document that your hosting provider does this)
  Document your key management (the SLH-DSA chain you built counts here)
  No secrets in code repositories (run git-secrets or truffleHog)
@@ -80,7 +80,7 @@ Vendor Risk Assessment Document every third-party service you use and their secu
 
 Vendor	Data Shared	Their SOC 2?	Risk Level
 Auth0 (Okta)	User auth tokens	✅ Yes	Low
-Netlify	Static files only	✅ Yes	Low
+Vercel	Static files only	✅ Yes	Low
 Zoho Mail	Business email	✅ Yes	Low
 GitHub	Source code	✅ Yes	Medium
 Google Domains	DNS only	✅ Yes	Low
@@ -249,7 +249,7 @@ These actions cost nothing and start the clock:
 
 Day 1 (Today)
  Create security@shadow313.dev email alias in Zoho
- Enable MFA on: GitHub, domain registrar, Netlify, Auth0, Zoho
+ Enable MFA on: GitHub, domain registrar, Vercel, Auth0, Zoho
  Create a private GitHub repo: shadow313-compliance
  Create folder structure: policies/, evidence/, risk-register/
 Day 2–3

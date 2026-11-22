@@ -32,7 +32,6 @@ $conflictFiles = @(
     "docs/S313-SOC2-Type2-Readiness-Plan-2026.md",
     "docs/S313-Security-Coverage-Remediation-Roadmap.md",
     "docs/S313-ZTAS-Architecture-Spec.md",
-    "netlify.toml",
     "shadow313/v3/bridge/event_rate_tracker.py",
     "shadow313/v3/countermeasures/ebpf_self_protection.py",
     "shadow313/v4/detection/adaptive_defense_loop.py",

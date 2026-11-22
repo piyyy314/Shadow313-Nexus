@@ -67,7 +67,7 @@ $rules = @(
     @{ Match={ $_.Name -match "docker|nginx|compose" -or $_.Extension -eq ".dockerfile" }; Dest="docker"; Label="Docker Config" },
 
     # Config files → root
-    @{ Match={ $_.Name -in @("vercel.json","pyproject.toml","setup.py","requirements.txt",".gitignore","netlify.toml") }; Dest="config"; Label="Project Config" },
+    @{ Match={ $_.Name -in @("vercel.json","pyproject.toml","setup.py","requirements.txt",".gitignore") }; Dest="config"; Label="Project Config" },
 
     # PowerShell scripts → scripts/
     @{ Match={ $_.Extension -eq ".ps1" };                                   Dest="scripts"; Label="PowerShell Script" },
