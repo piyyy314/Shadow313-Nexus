@@ -46,6 +46,7 @@ class ReceiptLike(Protocol):
     def to_dict(self) -> dict[str, Any]: ...
 
 
+
 _APP_IDENTITY_KWARGS = {
     "app_id": "aegis-pqc",
     "app_name": "Aegis PQC Audit",
