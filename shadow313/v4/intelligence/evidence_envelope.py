@@ -14,6 +14,9 @@ Provenance classes (from roadmap):
   REPLAY            — replayed historical event
   MODEL_GENERATED   — output from PE-7 or other ML model
   EXTERNAL_SOURCE   — third-party threat intel feed
+  ARTIFACT_INVENTORY — local file metadata and hashes, not event telemetry
+  LOCAL_OPERATIONAL_EVENT — locally recorded service activity, not sensor telemetry
+  UNCLASSIFIED       — source provenance has not been established
 
 Minimum fields (from Governance doc):
   event_id, schema_version, source_system, source_identity
@@ -23,12 +26,13 @@ Minimum fields (from Governance doc):
   secret_redaction_status, chain_of_custody, validation_status
 """
 
-from dataclasses import dataclass, field
-from datetime import UTC, datetime
-from enum import StrEnum
 import hashlib
 import secrets
 import time
+
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import StrEnum
 
 
 # ── Provenance Classification ─────────────────────────────────────────────────
