@@ -24,7 +24,10 @@ function build() {
     }
   }
   fs.writeFileSync(path.join(output, '.nojekyll'), '');
-  console.log(`Published ${allowed.length} allowlisted static files; repository source not served.`);
+  const vercelConfig = path.join(root, 'vercel.json');
+  if (!fs.statSync(vercelConfig).isFile() || fs.lstatSync(vercelConfig).isSymbolicLink()) throw new Error('Vercel config must be a regular file');
+  fs.copyFileSync(vercelConfig, path.join(output, 'vercel.json'));
+  console.log(`Published ${allowed.length} allowlisted files plus Vercel config; repository source not served.`);
 }
 if (require.main === module) build();
 module.exports = {build};
