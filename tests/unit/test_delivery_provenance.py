@@ -132,3 +132,21 @@ def test_both_delivery_daemons_use_safe_paths_and_loopback_binding():
     assert 'BIND_HOST       = "127.0.0.1"' in hardened_source
     assert 'QuietServer(("", SERVER_PORT)' not in daemon_source
 
+
+
+def test_delivery_workflow_reuses_one_manifest_and_is_master_only():
+    workflow = (ROOT / ".github/workflows/deliver.yml").read_text(encoding="utf-8")
+    assert "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9" in workflow
+    assert "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333" in workflow
+    assert "delivery-records-${{ github.run_id }}" in workflow
+    assert workflow.count("from scripts.delivery.pipeline import") == 1
+    assert "if: github.ref == 'refs/heads/master'" in workflow
+    assert "concurrency:" in workflow
+    assert "git push origin HEAD:master" in workflow
+
+
+def test_repository_root_is_not_a_second_github_pages_publisher():
+    assert not (ROOT / ".github/workflows/github-pages.yml").exists()
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "secondary delivery-artifact portal" in readme
+    assert "Vercel remains the canonical public website host" in readme
