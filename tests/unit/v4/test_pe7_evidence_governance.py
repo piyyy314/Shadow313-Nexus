@@ -278,11 +278,10 @@ class TestEvidenceEnvelope:
         env = factory.from_honeypot_event("1.2.3.4", "SSH", "test")
         assert len(env.chain_of_custody) >= 1
 
-    def test_trusted_timestamp_ends_313(self, factory):
-        for _ in range(5):
-            env = factory.from_honeypot_event("1.2.3.4", "SSH", "test")
-            ts_part = env.trusted_timestamp.split(":")[1]
-            assert ts_part.endswith("313"), f"Timestamp {ts_part} doesn't end in 313"
+    def test_unverified_timestamp_is_not_claimed(self, factory):
+        env = factory.from_honeypot_event("1.2.3.4", "SSH", "test")
+        assert env.trusted_timestamp == ""
+        assert env.signature == ""
 
     def test_evidence_hash_deterministic_content(self, factory):
         # Same content should produce same hash structure
@@ -363,9 +362,11 @@ class TestGovernanceGaps:
             factory.from_honeypot_event(f"1.1.1.{i}", "SSH", f"test{i}")
             for i in range(20)
         ]
+        # Signature and trusted_timestamp are intentionally empty until
+        # a real signer and independent timestamp authority are configured.
         required_fields = [
             "event_id", "schema_version", "source_system", "provenance_class",
-            "evidence_hash", "signature", "trusted_timestamp", "sequence_number",
+            "evidence_hash", "sequence_number",
         ]
         conforming = 0
         for env in envelopes:
@@ -376,12 +377,16 @@ class TestGovernanceGaps:
         assert conformance_rate >= 0.95, f"Conformance {conformance_rate:.1%} below 95%"
 
     def test_te04_signed_evidence_verification(self, factory):
-        """TE-04: 100% critical forensic exports verify signature, timestamp, hash."""
-        env = factory.from_honeypot_event("185.220.101.5", "WEB", "/.env probe",
-                                           severity=Severity.CRITICAL.value)
+        """TE-04: critical evidence must not claim unimplemented signatures or trusted time."""
+        env = factory.from_honeypot_event(
+            "185.220.101.5",
+            "WEB",
+            "/.env probe",
+            severity=Severity.CRITICAL.value,
+        )
         assert env.evidence_hash.startswith("sha3_256:")
-        assert env.signature.startswith("SLH-DSA-SIM:")
-        assert env.trusted_timestamp.startswith("313-TS:")
+        assert env.signature == ""
+        assert env.trusted_timestamp == ""
         assert len(env.chain_of_custody) >= 1
 
     def test_te05_synthetic_data_segregation(self, factory):
