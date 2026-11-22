@@ -83,6 +83,12 @@ The static Vercel website is not the Python backend. Backend-dependent routes
 must report an explicit unavailable state until a real backend has been
 deployed, configured, authenticated, and health-checked.
 
+The Vercel Node.js API gateway can forward a reviewed allowlist of `/api/*`
+requests to the Python API when `SHADOW313_BACKEND_URL` and
+`SHADOW313_BACKEND_API_KEY` are configured as server-side Vercel environment
+variables. The backend is **not yet deployed**; Hetzner remains the planned
+host. Never expose the backend key in browser code or public build variables.
+
 ## Quick start
 
 ### Requirements
