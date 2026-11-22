@@ -236,24 +236,17 @@ class EvidenceFactory:
         }, sort_keys=True, default=str)
         return "sha3_256:" + hashlib.sha3_256(content.encode()).hexdigest()
 
-    def _sign(self, envelope: EvidenceEnvelope) -> str:
-        """Simulated SLH-DSA signature (real implementation uses pyspx)."""
-        ts = time.time_ns()
-        ts = int(str(ts)[:-3] + "313")
-        return f"SLH-DSA-SIM:{ts}:{envelope.evidence_hash[:16]}"
-
-    def _trusted_timestamp(self) -> str:
-        """313-BIND style trusted timestamp."""
-        ts = time.time_ns()
-        ts = int(str(ts)[:-3] + "313")
-        return f"313-TS:{ts}"
-
     def _finalize(self, envelope: EvidenceEnvelope) -> EvidenceEnvelope:
-        """Compute hash, sign, and add trusted timestamp."""
+        """Compute an integrity hash; leave signature and trusted time unclaimed.
+
+        A local hash and system clock do not provide a digital signature or
+        independently trusted timestamp. Those fields remain empty until a
+        configured cryptographic signer and timestamp authority are integrated.
+        """
         envelope.sequence_number  = self._next_seq()
         envelope.evidence_hash    = self._compute_hash(envelope)
-        envelope.signature        = self._sign(envelope)
-        envelope.trusted_timestamp = self._trusted_timestamp()
+        envelope.signature        = ""
+        envelope.trusted_timestamp = ""
         envelope.chain_of_custody.append(
             f"{self.source_system}:{datetime.now(UTC).isoformat()}"
         )
