@@ -268,6 +268,85 @@ jobs:
           path: bandit-report.json
           retention-days: 7
 
+      - name: Install Semgrep OSS
+        run: |
+          python -m venv "$RUNNER_TEMP/semgrep-venv"
+          "$RUNNER_TEMP/semgrep-venv/bin/python" -m pip install --disable-pip-version-check semgrep==1.186.0
+          echo "$RUNNER_TEMP/semgrep-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Run Semgrep OSS SAST scan
+        id: semgrep_scan
+        run: |
+          semgrep scan \
+            --config p/python \
+            --config p/javascript \
+            --config p/security-audit \
+            --metrics=off \
+            --timeout 60 \
+            --json --output semgrep-report.json \
+            --exclude tests --exclude docs --exclude local_bundle --exclude dist \
+            .
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          report_path = Path("semgrep-report.json")
+          if not report_path.is_file():
+              print("Semgrep report missing; scan is incomplete.", file=sys.stderr)
+              sys.exit(1)
+          try:
+              report = json.loads(report_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError) as exc:
+              print(f"Semgrep report unavailable or invalid: {exc}", file=sys.stderr)
+              sys.exit(1)
+
+          errors = report.get("errors") or []
+          if errors:
+              for error in errors:
+                  print(f"Semgrep scan error: {error}", file=sys.stderr)
+              print("Semgrep scan incomplete; errors are not treated as a clean result.", file=sys.stderr)
+              sys.exit(1)
+
+          findings = report.get("results")
+          if not isinstance(findings, list):
+              print("Semgrep report has no results list.", file=sys.stderr)
+              sys.exit(1)
+
+          def is_high(finding):
+              extra = finding.get("extra") or {}
+              severity = str(extra.get("severity", "")).upper()
+              metadata = extra.get("metadata") or {}
+              security_severity = str(metadata.get("security-severity", "")).upper()
+              if severity == "ERROR" or security_severity in {"HIGH", "CRITICAL"}:
+                  return True
+              try:
+                  return float(metadata.get("security-severity", 0)) >= 7.0
+              except (TypeError, ValueError):
+                  return False
+
+          high = [finding for finding in findings if is_high(finding)]
+          print(f"Semgrep findings retained: {len(findings)} total; {len(high)} high/critical.")
+          for finding in high:
+              extra = finding.get("extra") or {}
+              print(
+                  f"HIGH: {finding.get('path')}:{finding.get('start', {}).get('line')} "
+                  f"{finding.get('check_id')} — {extra.get('message', 'security finding')}"
+              )
+          if high:
+              sys.exit(1)
+          print("Semgrep OSS high/critical gate passed; full report retained.")
+          PY
+
+      - name: Upload Semgrep report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
+          retention-days: 7
+          if-no-files-found: warn
+
   # ── Secret Scan ───────────────────────────────────────────────────
   secret-scan:
     name: Secret Detection (Gitleaks)
