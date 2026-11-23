@@ -148,6 +148,7 @@
   "sentinelos/js/darkweb.js",
   "sentinelos/js/deception.js",
   "sentinelos/js/incident.js",
+  "sentinelos/js/nexus-api.js",
   "sentinelos/js/quantum.js",
   "sentinelos/js/sandbox.js",
   "sentinelos/js/shadow313.js",
