@@ -14,13 +14,10 @@ BUG FIXES vs v1:
 from __future__ import annotations
 
 import json
-import logging
 import sys
 from typing import Any
 
 from shadow313 import __version__
-
-logger = logging.getLogger(__name__)
 
 
 # ANSI color codes (fallback when rich is not installed)
@@ -166,7 +163,7 @@ class OutputFormatter:
         else:
             line = "─" * 60
             print(f"\n{self._c(_C.CYAN, line)}")
-            logger.debug("  {self._c(_C.BOLD + _C.WHITE, title)}")
+            print(self._c(_C.BOLD + _C.WHITE, f"  {title}"))
             print(self._c(_C.CYAN, line))
 
     # ── Structured output ─────────────────────────────────────────────────────
@@ -275,9 +272,11 @@ class OutputFormatter:
         else:
             label = f"[{sev.upper()}]".ljust(12)
             print(f"\n{self._c(col, label)} {self._c(_C.BOLD, title)}")
-            logger.debug("  {detail}")
+            print(f"  {detail}")
             if cve:
-                logger.debug("  CVE: {cve}  CVSS: {score}")
+                print(f"  CVE: {cve}")
+            if score:
+                print(f"  CVSS: {score}")
 
     def ai_response(self, text: str, title: str = "AI Analysis") -> None:
         if self.fmt == "json":
@@ -329,7 +328,7 @@ class OutputFormatter:
                 self._print_dict(item, "")
                 print()
             else:
-                logger.debug("  {self._c(_C.DIM, '•')} {item}")
+                print(self._c(_C.DIM, f"  • {item}"))
 
     def _print_markdown(self, data: Any, title: str) -> None:
         if title:

@@ -104,3 +104,28 @@ class TestOutputManager:
         """OutputManager should have a repr."""
         r = repr(self.out)
         assert isinstance(r, str)
+
+    def test_section_prints_title_without_rich(self, capsys):
+        self.out._has_rich = False
+        self.out.section("VISIBLE SECTION")
+        assert "VISIBLE SECTION" in capsys.readouterr().out
+
+    def test_finding_prints_detail_and_metadata_without_rich(self, capsys):
+        self.out._has_rich = False
+        self.out.finding(
+            "Visible finding",
+            "HIGH",
+            "The detail must be visible",
+            cve="CVE-2026-1234",
+            score=8.5,
+        )
+        rendered = capsys.readouterr().out
+        assert "The detail must be visible" in rendered
+        assert "CVE-2026-1234" in rendered
+        assert "8.5" in rendered
+
+    def test_list_prints_scalar_items_without_rich(self, capsys):
+        self.out._has_rich = False
+        self.out._print_list(["visible list item"], "List output")
+        rendered = capsys.readouterr().out
+        assert "visible list item" in rendered
