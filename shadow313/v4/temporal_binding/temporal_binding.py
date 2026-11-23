@@ -602,10 +602,10 @@ class TemporalBindingModule:
 
         if bind_session:
             self.out.info("Binding current session findings …")
-            receipt = self.bind_session()
-            if receipt:
-                self.out.success(f"Session bound: {receipt.receipt_id}")
-                result["receipt"] = receipt.to_dict()
+            session_receipt = self.bind_session()
+            if session_receipt:
+                self.out.success(f"Session bound: {session_receipt.receipt_id}")
+                result["receipt"] = session_receipt.to_dict()
 
         if verify:
             self.out.info(f"Verifying receipt: {verify} …")
