@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
 import json
 import logging
 import time
@@ -196,18 +197,23 @@ class NEXUSModule:
             if item["signature_verified"] and not item["signer_trusted"]
         ]
 
-        indices = sorted(
-            int(receipt.get("bind_index", 0))
-            for receipt in receipts
-            if int(receipt.get("bind_index", 0)) > 0
-        )
+        indices = []
+        for receipt in receipts:
+            try:
+                bind_index = int(receipt.get("bind_index", 0))
+            except (TypeError, ValueError):
+                continue
+            if bind_index > 0:
+                indices.append(bind_index)
+        indices.sort()
         gaps = [
             {"from": indices[index], "to": indices[index + 1]}
             for index in range(len(indices) - 1)
             if indices[index + 1] - indices[index] > 1
         ]
+        index_counts = Counter(indices)
         duplicates = sorted(
-            index for index in set(indices) if indices.count(index) > 1
+            index for index, count in index_counts.items() if count > 1
         )
 
         receipt_integrity_valid = not invalid_receipts and len(checks) == len(receipts)
@@ -229,7 +235,12 @@ class NEXUSModule:
             "audit_entries": len(entries),
             "audit_log_authenticated": False,
             "receipt_integrity_valid": receipt_integrity_valid,
-            "trusted_receipt_chain": signer_trust_complete and not gaps and not duplicates,
+            "trusted_receipt_chain": (
+                receipt_integrity_valid
+                and signer_trust_complete
+                and not gaps
+                and not duplicates
+            ),
             "tamper_evident": tamper_evident,
             "receipts_checked": len(receipts),
             "receipt_limit_reached": len(receipts) == receipt_limit,
