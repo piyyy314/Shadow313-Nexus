@@ -90,7 +90,7 @@ if (("${#PUSH_URLS[@]}" == 0)); then
     exit 1
 fi
 for PUSH_URL in "${PUSH_URLS[@]}"; do
-    if [[ ! "$PUSH_URL" =~ github\\.com[:/]piyyy314/Shadow313-Nexus(\\.git)?$ ]]; then
+    if [[ ! "$PUSH_URL" =~ (https:\/\/github\\.com\/piyyy314\/Shadow313-Nexus|ssh:\/\/git@github\\.com\/piyyy314\/Shadow313-Nexus|git@github\\.com:piyyy314\/Shadow313-Nexus)(\\.git)?$ ]]; then
         fail "Remote '$REMOTE' push URL does not point to piyyy314/Shadow313-Nexus. Refusing to push."
         exit 1
     fi
