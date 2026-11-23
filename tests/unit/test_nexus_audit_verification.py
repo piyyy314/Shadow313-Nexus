@@ -125,6 +125,25 @@ def test_invalid_receipt_is_reported(tmp_path):
     assert result["invalid_receipts"] == [receipt["receipt_id"]]
 
 
+def test_bind_index_gap_is_reported_without_claiming_tampering(tmp_path):
+    first, first_result = verified_receipt("313-v4-00000001", 1)
+    third, third_result = verified_receipt("313-v4-00000003", 3)
+    module = make_module(
+        tmp_path,
+        [first, third],
+        {
+            first["receipt_id"]: first_result,
+            third["receipt_id"]: third_result,
+        },
+    )
+
+    result = module._verify_audit_chain()
+
+    assert result["receipt_integrity_valid"] is True
+    assert result["bind_index_gaps"] == [{"from": 1, "to": 3}]
+    assert result["trusted_receipt_chain"] is False
+    assert result["tamper_evident"] is False
+
 def test_insider_demo_does_not_claim_production_detection(tmp_path):
     module = make_module(tmp_path)
 
