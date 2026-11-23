@@ -248,7 +248,7 @@ $report.AppendLine("  1. Keep ONLY shadow313-nexus\ as your working copy") | Out
 $report.AppendLine("  2. Delete duplicate HTML files from Downloads\ and Desktop\") | Out-Null
 $report.AppendLine("  3. Move any unique documents to shadow313-nexus\docs-archive\") | Out-Null
 $report.AppendLine("  4. Run: git config user.name 'piyyy314'") | Out-Null
-$report.AppendLine("  5. Run: git config user.email 'matarmohamad313@duck.com'") | Out-Null
+$report.AppendLine("  5. Run: git config user.email 'pitty313@proton.me'") | Out-Null
 $report.AppendLine("  6. Run: git add . && git commit -m 'Consolidation' && git push") | Out-Null
 $report.AppendLine("") | Out-Null
 
@@ -322,6 +322,6 @@ Write-Host "  NEXT STEPS:" -ForegroundColor Cyan
 Write-Host "  1. Review Desktop\shadow313-scan-*.txt" -ForegroundColor White
 Write-Host "  2. Fix git config:" -ForegroundColor White
 Write-Host "     git config user.name 'piyyy314'" -ForegroundColor Gray
-Write-Host "     git config user.email 'matarmohamad313@duck.com'" -ForegroundColor Gray
+Write-Host "     git config user.email 'pitty313@proton.me'" -ForegroundColor Gray
 Write-Host "  3. Push to GitHub to make files available on shadow313.dev" -ForegroundColor White
 Write-Host ""

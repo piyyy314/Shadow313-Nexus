@@ -355,7 +355,7 @@ Write-Host "  1. Review $Target to verify structure" -ForegroundColor White
 Write-Host "  2. Fix git config:" -ForegroundColor White
 Write-Host "     cd $Target" -ForegroundColor Gray
 Write-Host "     git config user.name 'piyyy314'" -ForegroundColor Gray
-Write-Host "     git config user.email 'matarmohamad313@duck.com'" -ForegroundColor Gray
+Write-Host "     git config user.email 'pitty313@proton.me'" -ForegroundColor Gray
 Write-Host "  3. Push to GitHub:" -ForegroundColor White
 Write-Host "     git add ." -ForegroundColor Gray
 Write-Host "     git commit -m 'Consolidation: all Shadow313 files'" -ForegroundColor Gray
