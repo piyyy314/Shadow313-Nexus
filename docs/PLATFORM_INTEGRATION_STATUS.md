@@ -58,7 +58,7 @@ The current relationship inventory is in [Repository Relationship Audit](REPOSIT
 
 ## Branch reconciliation
 
-There are 26 non-master branches. Several contain substantial work but have diverged from current master. Six high-impact branches were compared against master:
+There are 26 non-master branches. Fourteen feature/fix branches were compared against master; several contain overlapping work and require selective review. The detailed ahead/behind inventory is in the repository relationship audit.
 
 | Branch | Ahead | Behind | Handling |
 |---|---:|---:|---|
