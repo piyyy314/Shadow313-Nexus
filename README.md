@@ -130,15 +130,15 @@ The package metadata defines two console entry points: `shadow313` and
 `s313-cli`. PyPI publication is not implied by the repository name. Until an
 official release is published, install from a reviewed source checkout.
 
-For a reproducible install from this reviewed repository revision (without
-relying on an unpublished PyPI package):
+For exact reproduction of the source baseline audited on 2026-11-22
+(without relying on an unpublished PyPI package):
 
 ```bash
-python -m pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@8cc6bf9d92b2faf03470e92b8555b57f8a821500
+python -m pip install git+https://github.com/piyyy314/Shadow313-Nexus.git@f95c99b24613d781527f19550360987bedd362b1
 ```
 
-Use the full commit SHA shown above when reproducing this revision; update the
-pin only after reviewing a newer commit.
+This pin identifies the audited source baseline; it is intentionally not a
+floating `master` reference. Review a newer commit before updating it.
 
 ## CLI usage
 
@@ -215,7 +215,10 @@ Supporting areas also include `ci/`, `ghost-watch-terminal/`, `local_bundle/`,
 `ollama/`, `policies/`, `sentinelos/`, and `sigma/`. These are separate lab,
 legacy, offline, or policy assets; they are not interchangeable with the main
 Python package or public website. See [Repository Structure and Ownership](docs/REPOSITORY_STRUCTURE.md)
-for the expanded map and organization rules.
+for the expanded map and organization rules. The current cross-repository
+ownership and integration decisions are in
+[Platform Integration Status](docs/PLATFORM_INTEGRATION_STATUS.md) and the
+[Repository Relationship Audit](docs/REPOSITORY_RELATIONSHIP_AUDIT_2026-11-22.md).
 
 ## Configuration
 
