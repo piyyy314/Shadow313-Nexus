@@ -228,7 +228,7 @@ jobs:
           errors = []
           for f in tracked:
               # Reviewed public defaults, not private environment files.
-              if f in {".env.example", "ollama/shadow313_ollama_config.env"}:
+              if f == ".env.example":
                   continue
               for pattern, msg in FORBIDDEN:
                   if pattern in f: errors.append(f"  VIOLATION: {f}\n    FIX: {msg}"); break
