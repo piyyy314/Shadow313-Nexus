@@ -153,3 +153,36 @@ def test_insider_demo_does_not_claim_production_detection(tmp_path):
     assert result["nexus_detection_executed"] is False
     assert result["nexus_detected"] is None
     assert result["cve_candidate"] is False
+
+def test_invalid_utf8_audit_log_returns_malformed_status(tmp_path):
+    module = make_module(tmp_path)
+    (module.session.session_dir / "audit.log").write_bytes(b"\\xff")
+
+    result = module._verify_audit_chain()
+
+    assert result["valid"] is False
+    assert result["status"] == "malformed_audit_log"
+    assert result["audit_log_authenticated"] is False
+
+
+def test_legacy_presence_only_verifier_cannot_claim_receipt_integrity(tmp_path):
+    receipt = {"receipt_id": "313-v4-00000001", "bind_index": 1}
+    verification = {
+        "valid": True,
+        "checks": {
+            "sha3_512_present": True,
+            "signature_present": True,
+        },
+    }
+    module = make_module(
+        tmp_path,
+        [receipt],
+        {receipt["receipt_id"]: verification},
+    )
+
+    result = module._verify_audit_chain()
+
+    assert result["receipt_integrity_valid"] is False
+    assert result["invalid_receipts"] == [receipt["receipt_id"]]
+    assert result["tamper_evident"] is False
+
