@@ -20,8 +20,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 env:
-  DEFAULT_BRANCH:   master
-  VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+  DEFAULT_BRANCH: master
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
@@ -232,7 +232,7 @@ jobs:
       url: https://shadow313.dev
     outputs:
       deployment_url: ${{ steps.deploy.outputs.deployment_url }}
-      deployment_id:  ${{ steps.deploy.outputs.deployment_id }}
+      deployment_id: ${{ steps.deploy.outputs.deployment_id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
