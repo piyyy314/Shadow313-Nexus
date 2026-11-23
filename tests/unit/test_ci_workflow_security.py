@@ -151,12 +151,15 @@ def test_trivy_scan_archives_json_diagnostics_when_threshold_fails():
     workflow = (ROOT / ".github" / "workflows" / "security-scan.yml").read_text(
         encoding="utf-8"
     )
-    assert "Generate Trivy JSON diagnostic report" in workflow
-    assert "--scanners vuln" in workflow
-    assert "--severity CRITICAL,HIGH" in workflow
-    assert "--format json" in workflow
-    assert "--output trivy-container.json" in workflow
-    assert "--exit-code 0" in workflow
+    assert "Run Trivy container scan (single-source JSON)" in workflow
+    assert 'scanners: "vuln,secret"' in workflow
+    assert 'severity: "CRITICAL,HIGH"' in workflow
+    assert 'format: "json"' in workflow
+    assert 'output: "trivy-container.json"' in workflow
+    assert 'exit-code: "0"' in workflow
+    assert "Convert Trivy JSON to SARIF" in workflow
+    assert "--format sarif" in workflow
+    assert "--output trivy-container.sarif" in workflow
     assert "trivy-container.json" in workflow
 
 
@@ -259,7 +262,7 @@ def test_nightly_trivy_scan_preserves_findings_and_fails_closed():
     assert "::warning::" in workflow
     assert "::error::" in workflow
     assert 'version: "v0.76.2"' in workflow
-    assert 'output: "trivy-container.sarif"' in workflow
+    assert "--output trivy-container.sarif" in workflow
     archive_start = workflow.index("      - name: Archive Trivy SARIF for diagnosis")
     archive_end = workflow.index("\n      - name:", archive_start + 1)
     archive_step = workflow[archive_start:archive_end]
