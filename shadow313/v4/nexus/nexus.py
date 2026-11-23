@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import hashlib
-from collections import Counter
 import json
 import logging
 import time
+from collections import Counter
 from datetime import UTC, datetime
 from typing import Any
 
@@ -325,7 +325,7 @@ class NEXUSModule:
         """Generate a summary from the current session's available scan outputs."""
         posture: dict[str, Any] = {
             "session_id": self.session.id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "modules_run": [],
         }
 
