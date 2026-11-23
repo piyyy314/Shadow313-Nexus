@@ -1,0 +1,61 @@
+name: Public HTML and Route Audit
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-html-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Audit HTML links, fragments, rewrites and published files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Validate Vercel rewrite destinations
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          cfg = json.loads(Path("vercel.json").read_text())
+          allow = set(json.loads(Path("site/public-files.json").read_text()))
+          errors = []
+          for rule in cfg.get("rewrites", []):
+              dst = rule.get("destination", "").lstrip("/")
+              if ":" in dst:
+                  continue
+              if not Path(dst).is_file():
+                  errors.append(f'{rule.get("source")} -> missing {dst}')
+              elif dst not in allow and not dst.startswith("api/"):
+                  errors.append(f'{rule.get("source")} -> {dst} is not in site/public-files.json')
+          if errors:
+              raise SystemExit("\n".join(errors))
+          print(f"Validated {len(cfg.get('rewrites', []))} rewrite rules against the public output allowlist.")
+          PY
+      - name: Audit every tracked HTML page
+        run: python scripts/audit_html_links.py
+      - name: Audit the exact production HTML allowlist
+        run: python scripts/audit_html_links.py --public-only
+      - name: Build the public output
+        run: |
+          node scripts/build-public-site.cjs
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          allow = json.loads(Path("site/public-files.json").read_text())
+          missing = [p for p in allow if not (Path("public-site") / p).is_file()]
+          if missing:
+              raise SystemExit("Missing from build: " + ", ".join(missing))
+          print(f"Public build contains all {len(allow)} allowlisted files.")
+          PY

@@ -142,6 +142,7 @@
   "sentinelos/index.html",
   "sentinelos/js/advanced-tools.js",
   "sentinelos/js/app.js",
+  "sentinelos/js/nexus-api.js",
   "sentinelos/js/blockchain.js",
   "sentinelos/js/chaos.js",
   "sentinelos/js/darkweb.js",
