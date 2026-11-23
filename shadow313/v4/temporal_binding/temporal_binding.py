@@ -254,9 +254,7 @@ def _verify_slh_dsa(
                 return False
             # pqcrypto versions may return False for invalid signatures and
             # None for success; never convert an explicit False into success.
-            verification_result = verify(
-                bytes.fromhex(public_key_hex), message, signature
-            )
+            verification_result = verify(bytes.fromhex(public_key_hex), message, signature)
             return verification_result is not False
         if algorithm.startswith("SPHINCS+-SHAKE-128f"):
             import pyspx.shake_128f as sphincs
@@ -329,7 +327,6 @@ def _anchor_ipfs(content: str) -> str:
 # ── 313 Receipt ───────────────────────────────────────────────────────────────
 
 
-
 class Bind313Receipt:
     """A 313 Temporal Binding receipt."""
 
@@ -389,7 +386,6 @@ class Bind313Receipt:
 
 
 # ── Temporal Binding Engine ───────────────────────────────────────────────────
-
 
 
 class TemporalBindingEngine:
@@ -558,7 +554,6 @@ class TemporalBindingEngine:
 
 
 # ── TemporalBindingModule ─────────────────────────────────────────────────────
-
 
 
 class TemporalBindingModule:
