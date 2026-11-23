@@ -225,7 +225,7 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> dict[str, Any] | None:
         base_anomaly = min(1.0, base_anomaly + 0.2)
 
     return {
-        "timestamp":     log_dict.get("timestamp", datetime.now(UTC).isoformat()),
+        "timestamp": log_dict.get("timestamp", datetime.now(UTC).isoformat()),
         "event_type":    event_type,
         "token_id":      token_id,
         "host":          log_dict.get("host", log_dict.get("source_host", "localhost")),
@@ -361,7 +361,7 @@ def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
                        f"Review process tree and network connections.",
         "mitre_technique": technique,
         "source":      "v3_lstm_detector",
-        "timestamp":   datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -512,7 +512,7 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
         def on_alert(alert):
             mon.alerts.append({
                 "type":      getattr(alert, "alert_type", str(alert)),
-                "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 "token":     getattr(alert, "token", "kernel_tamper"),
             })
 
@@ -662,7 +662,7 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
         source_ip      = kwargs.get("ip", os.environ.get("SHADOW313_BIND_HOST", "127.0.0.1")),
         source_user    = kwargs.get("user", "unknown"),
         event_sequence = [],
-        timestamp      = datetime.now(UTC).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         session_uuid   = ctx.session.session_id,
         raw_features   = [],
     )
