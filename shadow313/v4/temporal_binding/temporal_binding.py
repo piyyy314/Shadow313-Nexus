@@ -31,7 +31,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import logging
 import os
 import time
 from datetime import datetime, timezone
@@ -229,8 +228,6 @@ def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     if key:
         signature = hmac.new(key, message, hashlib.sha256).hexdigest()
         return signature, "HMAC-SHA256 (shared-secret)", ""
-
-    import logging
     logging.getLogger("shadow313.temporal_binding").warning(
         "No verifiable signing backend or SHADOW313_BIND_KEY is configured; "
         "creating an explicitly unsigned receipt."
@@ -313,9 +310,9 @@ def _anchor_ipfs(content: str) -> str:
             headers={"Content-Type": "application/octet-stream"},
             method="POST",
         )
-        with urlreq.urlopen(
+        with urlreq.urlopen(  # noqa: S310 - fixed localhost IPFS daemon endpoint
             req, timeout=15
-        ) as resp:  # noqa: S310 - fixed localhost IPFS daemon endpoint
+        ) as resp:
             result = json.loads(resp.read())
             return result.get("Hash", "")
     except Exception:
