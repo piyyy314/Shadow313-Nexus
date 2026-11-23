@@ -596,34 +596,36 @@ class TestEventBusTopicRouting:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# RISK-15: Temporal binding fallback chain signature length
+# RISK-15: Temporal binding signature verification and fail-closed fallback
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestTemporalBindingFallbackChain:
 
-    def test_pyspx_tier_produces_correct_sig_length(self):
-        """pyspx SLH-DSA-SHAKE-128f signature must be exactly 17088 bytes when available."""
+    def test_signing_backend_returns_signature_and_public_key_or_unsigned(self):
         from shadow313.v4.temporal_binding.temporal_binding import _sign_slh_dsa
-        sig, algo = _sign_slh_dsa(b"test message")
-        if "pyspx" in algo.lower():
-            assert len(sig) == 34176, f"Expected 34176 hex chars (pyspx), got {len(sig)}"
-        elif "pqcrypto" in algo.lower():
-            assert len(sig) == 34176, f"Expected 34176 hex chars (pqcrypto), got {len(sig)}"
-        elif "HMAC" in algo:
-            # Fallback when neither pyspx nor pqcrypto installed
-            assert len(sig) == 64, f"Expected 64 hex chars (HMAC fallback), got {len(sig)}"
-        else:
-            pytest.fail(f"Unknown algorithm tier: {algo}")
 
-    def test_algo_string_identifies_tier(self):
-        """Algorithm string must clearly identify which tier is active."""
+        signature, algorithm, public_key = _sign_slh_dsa(b"test message")
+        if "SPHINCS+" in algorithm:
+            assert len(signature) == 34176
+            assert public_key
+        elif "HMAC-SHA256" in algorithm:
+            assert len(signature) == 64
+            assert not public_key
+        elif algorithm.startswith("UNSIGNED"):
+            assert signature == ""
+            assert public_key == ""
+        else:
+            pytest.fail(f"Unknown signing algorithm: {algorithm}")
+
+    def test_algo_string_identifies_backend_without_fips_overclaim(self):
         from shadow313.v4.temporal_binding.temporal_binding import _sign_slh_dsa
-        _, algo = _sign_slh_dsa(b"test")
-        # Must be one of the three tiers
-        is_tier1 = "pqcrypto" in algo.lower() or "FIPS 205" in algo
-        is_tier2 = "pyspx" in algo.lower()
-        is_tier3 = "HMAC-SHA256" in algo
-        assert is_tier1 or is_tier2 or is_tier3, f"Unknown tier: {algo}"
+
+        _, algorithm, _ = _sign_slh_dsa(b"test")
+        assert any(
+            name in algorithm
+            for name in ("pqcrypto", "pyspx", "HMAC-SHA256", "UNSIGNED")
+        )
+        assert "FIPS 205" not in algorithm
 
     def test_hmac_fallback_sig_is_64_hex_chars(self):
         """HMAC-SHA256 fallback must produce exactly 64 hex chars."""
