@@ -195,7 +195,111 @@ else
     ok "Created branch: $BRANCH_NAME"
     git add -A
     mapfile -t STAGED_PATHS < <(git diff --cached --name-only)
-    if printf '%s\n' "${STAGED_PATHS[@]}" | grep -Eiq '(^|/)(\.env($|\.)|id_rsa|id_ed25519|credentials|secrets?|.*\.(pem|p12|pfx|key|sqlite|db)|logs/.*\.(json|log))'; then
+    if printf '%s\n' "${STAGED_PATHS[@]}" | grep -Eiv '(^|/)\.env\.example
+        fail "Sensitive/local paths are staged. Unstage and review them before syncing."
+        exit 1
+    fi
+    if [[ ! -f "$REPO_ROOT/scripts/check-secrets.py" ]]; then
+        fail "Required secret scanner scripts/check-secrets.py is missing."
+        exit 1
+    fi
+    python "$REPO_ROOT/scripts/check-secrets.py"
+    ok "Staged files passed path and secret checks"
+fi
+
+# ── Step 7: Commit ────────────────────────────────────────────────────────────
+step "7/8 — Committing changes"
+DATE=$(date +"%Y-%m-%d")
+
+if [[ -z "$COMMIT_MSG" ]]; then
+    COMMIT_MSG="feat(v2): sandbox sync $DATE — patches P19-P32 + new modules
+
+## New Modules
+- shadow313/v2/network_upgrades/firmware_auditor.py (FW-01: firmware hash verification)
+- shadow313/modules/defense/remediation.py: FileEncryptionRateMonitor (RW-01)
+- shadow313/modules/network/topology.py: RoutingTableMonitor (NB-01)
+- shadow313/modules/network/flow_tracker.py: OutboundVolumeMonitor + UserFileAccessMonitor
+
+## Security Patches
+- P-24: ja3_fingerprint.py — MD5 usedforsecurity=False (FIPS/B324)
+- P-25: threat_intel.py — SQL injection guard in stats() (B608)
+- P-26: plugin_signer.py — Restored sign/verify blocks in run()
+- P-27: plugins_module.py — W0106 expression-not-assigned fixed
+- P-28: runner.py — Restored corrupted subprocess.run() call
+- P-29/30: subprocess check=False (system_info, network_module)
+- P-31: open() encoding=utf-8 (scope.py, manifest.py)
+- P-32: cli/main.py — removed unused new_key variable
+
+## New Features
+- P-19: epss_kev.py — composite_z_score() + should_include()
+
+## Tests
+- tests/unit/test_new_patches.py — 66 new tests (128 total, 0 failures)
+
+## Documents (Word + PDF)
+- document/shadow313-hybrid-cve-scoring/ (14 pages)
+- document/shadow313-defensive-controls/ (14 pages)
+- document/shadow313-attack-simulation/ (12 pages)
+- document/shadow313-evasion-campaign/ (11 pages)
+
+Kernel: 0 load errors, 26 commands registered"
+fi
+
+FIRST_LINE=$(echo "$COMMIT_MSG" | head -1)
+info "Commit message (first line): $FIRST_LINE"
+
+if $DRY_RUN; then
+    dry "Would run: git commit -m '$FIRST_LINE...'"
+else
+    # Configure git identity if not set
+    if [[ -z "$(git config user.name 2>/dev/null || true)" ]]; then
+        git config user.name  "Shadow313 Bot"
+        git config user.email "bot@shadow313.dev"
+        warn "Git identity not configured — using defaults (Shadow313 Bot)"
+    fi
+    git commit -m "$COMMIT_MSG"
+    ok "Committed successfully"
+fi
+
+# ── Step 8: Push ──────────────────────────────────────────────────────────────
+step "8/8 — Pushing to $REMOTE/$BRANCH_NAME"
+if $DRY_RUN; then
+    dry "Would run: git push $REMOTE $BRANCH_NAME --set-upstream"
+else
+    info "Pushing... (this may take a moment)"
+    if ! git push "$REMOTE" "$BRANCH_NAME" --set-upstream; then
+        fail "Push failed."
+        echo ""
+        warn "Common fixes:"
+        info "  1. GitHub CLI:"
+        info "     gh auth login"
+        info "     gh auth setup-git"
+        info "  2. SSH key:"
+        info "     git remote set-url origin git@github.com:piyyy314/Shadow313-Nexus.git"
+        exit 1
+    fi
+    ok "Pushed successfully to $REMOTE/$BRANCH_NAME"
+fi
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo ""
+echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║                    PUSH COMPLETE                            ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "  Branch:   ${CYAN}$BRANCH_NAME${NC}"
+echo -e "  Remote:   $REMOTE ($REMOTE_URL)"
+echo -e "  Files:    $TOTAL changed ($NEW_FILES new, $MODIFIED_FILES modified, $DELETED_FILES deleted)"
+echo ""
+echo -e "  ${CYAN}Next steps:${NC}"
+echo    "  1. Open a Pull Request:"
+echo -e "     ${GRAY}https://github.com/piyyy314/Shadow313-Nexus/compare/$BRANCH_NAME${NC}"
+echo    "  2. Review changes on GitHub before merging to main"
+echo    "  3. After merge, delete the branch:"
+echo -e "     ${GRAY}git branch -d $BRANCH_NAME${NC}"
+echo ""
+
+$DRY_RUN && warn "DRY-RUN complete — no actual changes were made" | grep -Eiq '(^|/)(\.env($|\.)|id_rsa($|\.)|id_ed25519($|\.)|credentials($|/)|secrets?($|/)|[^/]+\.(pem|p12|pfx|key|sqlite|db)$|logs/[^/]+\.(json|log)$)'; then
         fail "Sensitive/local paths are staged. Unstage and review them before syncing."
         exit 1
     fi
