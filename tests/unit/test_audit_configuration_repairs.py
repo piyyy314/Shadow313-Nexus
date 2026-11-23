@@ -60,6 +60,8 @@ def test_public_output_is_exact_explicit_allowlist():
     expected = set(json.loads((ROOT / "site/public-files.json").read_text())) | {".nojekyll"}
     actual = {p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()}
     assert actual == expected
+    api_files = {p.relative_to(out / "api").as_posix() for p in (out / "api").rglob("*") if p.is_file()}
+    assert api_files == {"index.js"}, "only the public Vercel serverless entry point may be shipped"
     for excluded in (
         "README.md",
         "requirements.txt",
@@ -67,7 +69,6 @@ def test_public_output_is_exact_explicit_allowlist():
         "local_bundle",
         "shadow313",
         "notes",
-        "api",
         "server",
         "docs/session-exports",
     ):

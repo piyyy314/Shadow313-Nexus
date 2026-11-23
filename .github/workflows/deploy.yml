@@ -20,8 +20,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 env:
-  DEFAULT_BRANCH:   master
-  VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+  DEFAULT_BRANCH: master
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
@@ -42,6 +42,9 @@ jobs:
 
       - name: Test website API
         run: node --test tests/vercel-api.test.cjs
+
+      - name: Build and verify allowlisted deployment artifact
+        run: node --test tests/public-site-build.test.cjs
 
       - name: Setup Python for deployment safety tests
         uses: actions/setup-python@v7
@@ -189,17 +192,21 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: '20'
+      - name: Build allowlisted deployment root
+        run: node scripts/build-public-site.cjs
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
       - name: Pull Vercel environment
+        working-directory: public-site
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Preview
         id: deploy
+        working-directory: public-site
         run: |
-          output=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
+          output=$(vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
           echo "$output"
           url=$(printf '%s\n' "$output" | grep -Eo 'https?://[a-zA-Z0-9.-]+\.vercel\.(app|dev)' | tail -1 || true)
           if [ -z "$url" ]; then
@@ -225,7 +232,7 @@ jobs:
       url: https://shadow313.dev
     outputs:
       deployment_url: ${{ steps.deploy.outputs.deployment_url }}
-      deployment_id:  ${{ steps.deploy.outputs.deployment_id }}
+      deployment_id: ${{ steps.deploy.outputs.deployment_id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -234,17 +241,21 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: '20'
+      - name: Build allowlisted deployment root
+        run: node scripts/build-public-site.cjs
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
       - name: Pull Vercel environment
+        working-directory: public-site
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Production
         id: deploy
+        working-directory: public-site
         run: |
-          output=$(vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
+          output=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
           echo "$output"
           url=$(echo "$output" | grep -E "^https://" | tail -1)
           # Extract deployment ID from URL
