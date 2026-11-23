@@ -1,6 +1,7 @@
 [
   "404.html",
   "about/index.html",
+  "api/index.js",
   "assets/site-nav.css",
   "assets/site-theme.css",
   "blog/index.html",
@@ -142,7 +143,6 @@
   "sentinelos/index.html",
   "sentinelos/js/advanced-tools.js",
   "sentinelos/js/app.js",
-  "sentinelos/js/nexus-api.js",
   "sentinelos/js/blockchain.js",
   "sentinelos/js/chaos.js",
   "sentinelos/js/darkweb.js",
@@ -169,5 +169,6 @@
   "tools/soar-builder.html",
   "tools/sovereign-shield.html",
   "tools/threat-predictor.html",
-  "tools/vsat-tactical-suite.html"
+  "tools/vsat-tactical-suite.html",
+  "vercel.json"
 ]
