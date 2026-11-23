@@ -17,7 +17,7 @@ class Links(HTMLParser):
     def __init__(self, source: str):
         super().__init__(convert_charrefs=True)
         self.refs: list[tuple[str, str]] = []
-        self.ids: set[str] = set()
+        self.ids: set[str] = set()\n        self.views: set[str] = set()
         self.feed(source)
 
     def handle_starttag(self, tag, attrs):
@@ -109,7 +109,7 @@ def main() -> int:
             checked += 1
             if parsed.fragment and target.lower().endswith((".html", ".htm")):
                 target_page = page(target)
-                if target_page is not None and parsed.fragment not in target_page.ids:
+                if target_page is not None and parsed.fragment not in target_page.ids and not (parsed.fragment in target_page.views and "view-" + parsed.fragment in target_page.ids):
                     errors.append(f"BROKEN FRAGMENT: {source} -> {raw} (#{parsed.fragment} absent in {target})")
 
     print(f"HTML files scanned: {len(tracked)}")
