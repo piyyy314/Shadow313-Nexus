@@ -79,7 +79,7 @@ if ! REMOTE_URL=$(git remote get-url "$REMOTE" 2>/dev/null); then
     info "Or with SSH: git remote add origin git@github.com:piyyy314/Shadow313-Nexus.git"
     exit 1
 fi
-ok "Remote '$REMOTE': $REMOTE_URL"
+ok "Remote '$REMOTE' points to the canonical Shadow313-Nexus repository"
 
 is_expected_remote() {
     case "$1" in
