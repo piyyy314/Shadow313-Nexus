@@ -25,6 +25,7 @@ BUG FIXES:
   - IPFS anchor used requests library without timeout — switched to urllib
     with 15s timeout.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -40,7 +41,7 @@ from typing import Any
 _RECEIPTS_DIR = Path("~/.shadow313/receipts").expanduser()
 _BIND_COUNTER_FILE = Path("~/.shadow313/bind_counter.json").expanduser()
 _IPFS_GATEWAY = "https://ipfs.io"
-_IPFS_API     = "http://localhost:5001"
+_IPFS_API = "http://localhost:5001"
 
 
 def _now_ns() -> int:
@@ -63,9 +64,7 @@ def _wait_for_313(max_wait_ms: int = 5000) -> int:
         if ts % 1000 == 313:
             return ts
         time.sleep(0.0001)  # FIX: 0.1ms sleep
-    raise TimeoutError(
-        f"No timestamp ending in 313 observed within {max_wait_ms} ms"
-    )
+    raise TimeoutError(f"No timestamp ending in 313 observed within {max_wait_ms} ms")
 
 
 def _sha3_512(data: bytes) -> str:
@@ -89,6 +88,7 @@ def _save_bind_counter(counter: int) -> None:
 
 
 # ── SLH-DSA signing ──────────────────────────────────────────────────────────
+
 
 def _load_or_create_pqc_keypair(
     key_name: str,
@@ -204,7 +204,6 @@ def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     except ImportError:
         pass
     except Exception as exc:
-        import logging
         logging.getLogger("shadow313.temporal_binding").warning(
             "pqcrypto signing failed; trying pyspx: %s", exc
         )
@@ -224,10 +223,7 @@ def _sign_slh_dsa(message: bytes) -> tuple[str, str, str]:
     except ImportError:
         pass
     except Exception as exc:
-        import logging
-        logging.getLogger("shadow313.temporal_binding").warning(
-            "pyspx signing failed: %s", exc
-        )
+        logging.getLogger("shadow313.temporal_binding").warning("pyspx signing failed: %s", exc)
 
     key = os.environ.get("SHADOW313_BIND_KEY", "").encode()
     if key:
@@ -317,7 +313,9 @@ def _anchor_ipfs(content: str) -> str:
             headers={"Content-Type": "application/octet-stream"},
             method="POST",
         )
-        with urlreq.urlopen(req, timeout=15) as resp:  # noqa: S310 - fixed localhost IPFS daemon endpoint
+        with urlreq.urlopen(
+            req, timeout=15
+        ) as resp:  # noqa: S310 - fixed localhost IPFS daemon endpoint
             result = json.loads(resp.read())
             return result.get("Hash", "")
     except Exception:
@@ -333,46 +331,46 @@ class Bind313Receipt:
     def __init__(
         self,
         bind_index: int,
-        timestamp:  int,
-        sha3_512:   str,
-        slh_sig:    str,
-        algorithm:  str,
-        ipfs_cid:   str,
+        timestamp: int,
+        sha3_512: str,
+        slh_sig: str,
+        algorithm: str,
+        ipfs_cid: str,
         content_hash: str,
         session_id: str = "",
-        module:     str = "",
+        module: str = "",
         public_key: str = "",
     ) -> None:
-        self.bind_index   = bind_index
-        self.timestamp    = timestamp
-        self.sha3_512     = sha3_512
-        self.slh_sig      = slh_sig
-        self.algorithm    = algorithm
-        self.ipfs_cid     = ipfs_cid
+        self.bind_index = bind_index
+        self.timestamp = timestamp
+        self.sha3_512 = sha3_512
+        self.slh_sig = slh_sig
+        self.algorithm = algorithm
+        self.ipfs_cid = ipfs_cid
         self.content_hash = content_hash
-        self.session_id   = session_id
-        self.module       = module
-        self.public_key   = public_key
-        self.receipt_id   = f"313-v4-{bind_index:08d}"
+        self.session_id = session_id
+        self.module = module
+        self.public_key = public_key
+        self.receipt_id = f"313-v4-{bind_index:08d}"
 
     def to_dict(self) -> dict:
         return {
             "schema_version": 2,
-            "receipt_id":   self.receipt_id,
-            "bind_index":   self.bind_index,
-            "timestamp":    self.timestamp,
+            "receipt_id": self.receipt_id,
+            "bind_index": self.bind_index,
+            "timestamp": self.timestamp,
             "timestamp_iso": datetime.fromtimestamp(
                 self.timestamp / 1e9, tz=timezone.utc  # noqa: UP017 - Python 3.10 compatibility
             ).isoformat(),
-            "sha3_512":     self.sha3_512,
-            "slh_sig":      self.slh_sig[:64] + "…" if len(self.slh_sig) > 64 else self.slh_sig,
+            "sha3_512": self.sha3_512,
+            "slh_sig": self.slh_sig[:64] + "…" if len(self.slh_sig) > 64 else self.slh_sig,
             "slh_sig_full": self.slh_sig,
-            "algorithm":    self.algorithm,
-            "public_key":   self.public_key,
-            "ipfs_cid":     self.ipfs_cid,
+            "algorithm": self.algorithm,
+            "public_key": self.public_key,
+            "ipfs_cid": self.ipfs_cid,
             "content_hash": self.content_hash,
-            "session_id":   self.session_id,
-            "module":       self.module,
+            "session_id": self.session_id,
+            "module": self.module,
         }
 
     def __str__(self) -> str:
@@ -399,11 +397,11 @@ class TemporalBindingEngine:
         ipfs_enabled: bool = True,
         signing_enabled: bool = True,
     ) -> None:
-        self._dir          = receipts_dir
+        self._dir = receipts_dir
         self._dir.mkdir(parents=True, exist_ok=True)
         self._ipfs_enabled = ipfs_enabled
         self._signing_enabled = signing_enabled
-        self._counter      = _load_bind_counter()
+        self._counter = _load_bind_counter()
 
     def bind(
         self,
@@ -494,8 +492,7 @@ class TemporalBindingEngine:
             ipfs_anchor_recorded = bool(cid) and cid != "disabled" and not cid.startswith("local:")
 
             key_id = (
-                hashlib.sha3_256(bytes.fromhex(public_key)).hexdigest()[:16]
-                if public_key else ""
+                hashlib.sha3_256(bytes.fromhex(public_key)).hexdigest()[:16] if public_key else ""
             )
             trusted_key_ids = {
                 value.strip()
@@ -537,8 +534,9 @@ class TemporalBindingEngine:
 
     def list_receipts(self, limit: int = 20) -> list[dict]:
         receipts = []
-        for f in sorted(self._dir.glob("313-v4-*.json"),
-                        key=lambda p: p.stat().st_mtime, reverse=True)[:limit]:
+        for f in sorted(
+            self._dir.glob("313-v4-*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+        )[:limit]:
             try:
                 receipts.append(json.loads(f.read_text()))
             except Exception as exc:
@@ -558,12 +556,12 @@ class TemporalBindingModule:
     """shadow313.v4.temporal_binding — 313 Temporal Binding. Registered: temporal"""
 
     def __init__(self, kernel) -> None:
-        self.kernel  = kernel
-        self.out     = kernel.out
+        self.kernel = kernel
+        self.out = kernel.out
         self.session = kernel.session
-        cfg          = kernel.config.get("temporal_binding", default={})
-        enabled      = cfg.get("enabled", True)
-        self.engine  = TemporalBindingEngine(
+        cfg = kernel.config.get("temporal_binding", default={})
+        enabled = cfg.get("enabled", True)
+        self.engine = TemporalBindingEngine(
             ipfs_enabled=cfg.get("ipfs_enabled", True) and enabled,
             signing_enabled=cfg.get("sign_receipts", True) and enabled,
         )
@@ -575,12 +573,10 @@ class TemporalBindingModule:
         """Called by other modules to bind their output."""
         try:
             findings = self.session.read("findings.json") or {}
-            receipt  = self.engine.bind(findings, self.session.id, module)
+            receipt = self.engine.bind(findings, self.session.id, module)
             return receipt
         except Exception as exc:  # S01-fixed
-            logging.getLogger(__name__).debug(
-                "Unable to bind session findings: %s", exc
-            )
+            logging.getLogger(__name__).debug("Unable to bind session findings: %s", exc)
             return None
 
     def run(
