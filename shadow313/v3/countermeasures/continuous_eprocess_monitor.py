@@ -3,10 +3,13 @@ Shadow313 v3 — Continuous EProcess Monitor
 Full stub implementation with DKOM detection internals.
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any
+
+import logging
 import time
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -14,7 +17,7 @@ class EProcessEvent:
     pid:        int
     name:       str
     action:     str
-    timestamp:  str  = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:  str  = field(default_factory=lambda: datetime.now(UTC).isoformat())
     metadata:   dict = field(default_factory=dict)
 
 
@@ -38,7 +41,7 @@ class ProcessRecord:
     ppid:         int
     name:         str
     create_time:  float = field(default_factory=time.time)
-    token_id:     str   = "TOKEN_USER"
+    token_id: str = "TOKEN_USER"  # noqa: S105
     handle_count: int   = 0
     hidden:       bool  = False
     injected:     bool  = False
@@ -50,7 +53,7 @@ def _take_snapshot(
 ) -> dict[int, ProcessRecord]:
     """Take a snapshot of processes. Returns dict of pid -> ProcessRecord."""
     if process_dict is not None:
-        return {pid: rec for pid, rec in process_dict.items()}
+        return dict(process_dict)
     # Real snapshot from /proc
     import os
     records = {}
@@ -71,8 +74,8 @@ def _take_snapshot(
                 records[pid] = ProcessRecord(pid=pid, ppid=ppid, name=name)
             except (PermissionError, FileNotFoundError):
                 pass
-    except Exception:
-        pass
+    except OSError:
+        logger.debug("Unable to enumerate /proc for EPROCESS snapshot", exc_info=True)
     return records
 
 
@@ -114,8 +117,10 @@ class ContinuousEProcessMonitor:
                           confidence=0.90, token="")
         self.alerts.append(alert)
         if self._callback:
-            try: self._callback(alert)
-            except Exception: pass
+            try:
+                self._callback(alert)
+            except Exception:
+                logger.exception("EProcess alert callback failed")
 
     def inject_event(self, event: EProcessEvent) -> None:
         self.events.append(event)
