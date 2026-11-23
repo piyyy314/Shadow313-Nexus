@@ -30,7 +30,7 @@ class DKOMAlert:
     severity:    str   = "HIGH"
     confidence:  float = 0.90
     token:       str   = ""
-    timestamp:   str   = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp:   str   = field(default_factory=lambda: datetime.now(UTC).isoformat())
     details:     dict  = field(default_factory=dict)
 
 
@@ -128,8 +128,10 @@ class ContinuousEProcessMonitor:
                           alert_type=event.action, confidence=0.90)
         self.alerts.append(alert)
         if self._callback:
-            try: self._callback(alert)
-            except Exception: pass
+            try:
+                self._callback(alert)
+            except Exception:
+                logger.exception("EProcess alert callback failed")
 
     def get_composite_score(self) -> float:
         """Compute composite DKOM detection score."""
