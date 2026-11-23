@@ -6,7 +6,7 @@ import hashlib
 import json
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -70,7 +70,7 @@ class NEXUSModule:
             "receipts_issued": len(receipts),
             "latest_receipt": receipts[0].get("receipt_id") if receipts else None,
             "temporal_binding": temporal_module is not None,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def _bind_all_session_outputs(self) -> list[dict]:
