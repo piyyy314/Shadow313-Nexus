@@ -6,9 +6,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_automatic_git_deployments_disabled():
+def test_automatic_git_deployments_are_enabled():
     config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
-    assert config["git"]["deploymentEnabled"] is False
+    assert "git" not in config or config["git"].get("deploymentEnabled") is not False
 
 
 def test_api_nested_paths_reach_the_handler():
