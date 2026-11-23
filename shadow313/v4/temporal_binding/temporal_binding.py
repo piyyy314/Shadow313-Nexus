@@ -300,12 +300,14 @@ def _canonical_bind_payload(
 
 # ── IPFS anchoring ────────────────────────────────────────────────────────────
 
+
 def _anchor_ipfs(content: str) -> str:
     """
     Anchor content to IPFS. Returns CID or local hash fallback.
     FIX: uses urllib with 15s timeout instead of requests.
     """
     from urllib import request as urlreq
+
     try:
         data = content.encode()
         req = urlreq.Request(  # noqa: S310 - fixed localhost IPFS daemon endpoint
@@ -325,6 +327,7 @@ def _anchor_ipfs(content: str) -> str:
 
 
 # ── 313 Receipt ───────────────────────────────────────────────────────────────
+
 
 
 class Bind313Receipt:
@@ -386,6 +389,7 @@ class Bind313Receipt:
 
 
 # ── Temporal Binding Engine ───────────────────────────────────────────────────
+
 
 
 class TemporalBindingEngine:
@@ -554,6 +558,7 @@ class TemporalBindingEngine:
 
 
 # ── TemporalBindingModule ─────────────────────────────────────────────────────
+
 
 
 class TemporalBindingModule:
