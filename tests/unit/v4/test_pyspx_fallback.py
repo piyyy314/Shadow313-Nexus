@@ -21,7 +21,6 @@ PYSPX_AVAILABLE = _pyspx_available()
 
 
 import importlib
-import sys
 import pytest
 
 from shadow313.v4.temporal_binding.temporal_binding import (
@@ -219,7 +218,6 @@ class TestHMACFallbackBehavior:
 
 def test_pqcrypto_verify_none_return_means_success(monkeypatch):
     """pqcrypto verify raises on failure and returns None on success."""
-    import sys
     import types
 
     from shadow313.v4.temporal_binding import temporal_binding as tb
@@ -238,7 +236,6 @@ def test_pqcrypto_verify_none_return_means_success(monkeypatch):
 
 
 def test_pqcrypto_verify_rejection_is_false(monkeypatch):
-    import sys
     import types
 
     from shadow313.v4.temporal_binding import temporal_binding as tb
