@@ -31,6 +31,68 @@ def test_reserved_endpoints_and_non_http_schemes_are_rejected(endpoint):
         AIEngine({"endpoint": endpoint})
 
 
+@pytest.mark.parametrize("backend", ["openai", "gateway"])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "http://10.0.0.8/v1",
+        "http://127.0.0.1:8080/v1",
+        "http://2130706433/v1",
+        "http://4294967296/v1",
+        "http://0177.0.0.1/v1",
+        "http://0x7f000001/v1",
+        "http://127.1/v1",
+        "http://192.168.1.20/v1",
+        "http://[::1]/v1",
+        "http://localhost:8080/v1",
+        "http://gateway.local/v1",
+    ],
+)
+def test_cloud_backends_reject_private_or_local_endpoints(backend, endpoint):
+    with pytest.raises(ValueError):
+        AIEngine({"backend": backend, "endpoint": endpoint})
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("timeout", 0),
+        ("timeout", -1),
+        ("timeout", 3601),
+        ("timeout", "not-a-number"),
+        ("context_window", 0),
+        ("context_window", -1),
+        ("context_window", 1_000_001),
+        ("context_window", "not-a-number"),
+    ],
+)
+def test_invalid_inference_limits_are_rejected(key, value):
+    with pytest.raises(ValueError):
+        AIEngine({key: value})
+
+
+@pytest.mark.parametrize("endpoint", ["https://gateway.example/v1?token=x", "https://gateway.example/v1#fragment"])
+def test_endpoint_query_and_fragment_are_rejected(endpoint):
+    with pytest.raises(ValueError, match="query string or fragment"):
+        AIEngine({"backend": "gateway", "endpoint": endpoint})
+
+
+def test_ollama_can_use_private_network_endpoints():
+    engine = AIEngine({"backend": "ollama", "endpoint": "http://192.168.1.20:11434"})
+    assert engine.endpoint == "http://192.168.1.20:11434"
+
+
+def test_hex_looking_dns_hostname_is_not_treated_as_numeric_ipv4():
+    endpoint = "https://face.cafe/v1"
+    engine = AIEngine({"backend": "gateway", "endpoint": endpoint})
+    assert engine.endpoint == endpoint
+
+
+def test_empty_model_is_rejected():
+    with pytest.raises(ValueError, match="model"):
+        AIEngine({"model": "   "})
+
+
 def test_ollama_chat_serializes_system_context_and_options(monkeypatch):
     fetch = Mock(return_value=BytesIO(b'{"message":{"content":"  answer  "}}'))
     monkeypatch.setattr(urlrequest, "urlopen", fetch)

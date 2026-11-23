@@ -6,6 +6,7 @@ from __future__ import annotations
 import collections.abc
 import json
 import os
+import socket
 import urllib.error
 import urllib.request
 
@@ -33,17 +34,32 @@ class AIEngine:
     # Restrict schemes and known metadata destinations.
     # Endpoint values are administrator-controlled.
     _ALLOWED_SCHEMES = {"http", "https"}
-    _BLOCKED_HOSTS   = {
-        "169.254.169.254",       # AWS/GCP/Azure instance metadata
+    _BLOCKED_HOSTS = {
+        "169.254.169.254",  # AWS/GCP/Azure instance metadata
         "metadata.google.internal",
-        "169.254.170.2",         # ECS task metadata
-        "100.100.100.200",       # Alibaba Cloud metadata
+        "169.254.170.2",  # ECS task metadata
+        "100.100.100.200",  # Alibaba Cloud metadata
     }
 
     def __init__(self, config: dict) -> None:
-        self.backend:  str = config.get("backend", "ollama")
-        self.model:    str = config.get("model", "mistral:7b")
+        self.backend: str = str(config.get("backend", "ollama")).strip().lower()
+        self.model: str = str(config.get("model", "mistral:7b")).strip()
+        if not self.model:
+            raise ValueError("AI model must be a non-empty string")
+
+        try:
+            self.timeout = int(config.get("timeout", 120))
+            self.ctx_win = int(config.get("context_window", 8192))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("AI timeout and context_window must be integers") from exc
+        if not 1 <= self.timeout <= 3600:
+            raise ValueError("AI timeout must be between 1 and 3600 seconds")
+        if not 1 <= self.ctx_win <= 1_000_000:
+            raise ValueError("AI context_window must be between 1 and 1000000 tokens")
+
         configured_endpoint = config.get("endpoint")
+        if configured_endpoint is not None and not isinstance(configured_endpoint, str):
+            raise ValueError("AI endpoint must be a string")
         local_defaults = {"http://localhost:11434", "http://ollama:11434"}
         if self.backend == "gateway":
             endpoint_default = os.environ.get(
@@ -60,33 +76,29 @@ class AIEngine:
             configured_endpoint = endpoint_default
         raw_endpoint = configured_endpoint.rstrip("/")
         self.endpoint: str = self._validate_endpoint(raw_endpoint)
-        self.timeout:  int = int(config.get("timeout", 120))
-        self.ctx_win:  int = int(config.get("context_window", 8192))
         if self.backend == "gateway":
-            self._api_key = (
-                config.get("gateway_api_key", "")
-                or os.environ.get("AI_GATEWAY_API_KEY", "")
+            self._api_key = config.get("gateway_api_key", "") or os.environ.get(
+                "AI_GATEWAY_API_KEY", ""
             )
         elif self.backend == "openai":
-            self._api_key = (
-                config.get("openai_api_key", "")
-                or os.environ.get("OPENAI_API_KEY", "")
-            )
+            self._api_key = config.get("openai_api_key", "") or os.environ.get("OPENAI_API_KEY", "")
         else:
             self._api_key = ""
 
     def _validate_endpoint(self, endpoint: str) -> str:
         """Validate an administrator-configured HTTP(S) AI endpoint."""
-        from ipaddress import IPv6Address, ip_address
+        from ipaddress import IPv4Address, IPv6Address, ip_address
         from urllib.parse import urlsplit
 
         parsed = urlsplit(endpoint)
         scheme = parsed.scheme.lower()
-        host = parsed.hostname or ""
+        host = (parsed.hostname or "").lower().rstrip(".")
         if scheme not in self._ALLOWED_SCHEMES:
             raise ValueError("AI endpoint must use http or https")
         if not host or parsed.username is not None or parsed.password is not None:
             raise ValueError("AI endpoint must include a host and must not include user info")
+        if parsed.query or parsed.fragment:
+            raise ValueError("AI endpoint must not include a query string or fragment")
         # Accessing .port validates malformed port strings before any urllib.request.
         _ = parsed.port
         if host in self._BLOCKED_HOSTS:
@@ -100,9 +112,29 @@ class AIEngine:
         if ipv6 and ipv6.ipv4_mapped:
             normalized_host = str(ipv6.ipv4_mapped)
 
-        if (
-            normalized_host in self._BLOCKED_HOSTS
-            or normalized_host.startswith(("169.254.", "fd00:", "fe80:", "fc00:"))
+        # urllib/libc accept legacy IPv4 forms such as 2130706433, 0177.0.0.1,
+        # and 0x7f000001. Normalize numeric address components before policy checks.
+        parts = host.split(".")
+        numeric_ipv4_candidate = len(parts) <= 4 and all(
+            part
+            and (
+                all(char in "0123456789" for char in part)
+                or (
+                    part.lower().startswith("0x")
+                    and len(part) > 2
+                    and all(char in "0123456789abcdef" for char in part[2:])
+                )
+            )
+            for part in parts
+        )
+        if numeric_ipv4_candidate:
+            try:
+                normalized_host = str(IPv4Address(socket.inet_aton(host)))
+            except OSError as exc:
+                raise ValueError("AI endpoint contains an invalid numeric IPv4 host") from exc
+
+        if normalized_host in self._BLOCKED_HOSTS or normalized_host.startswith(
+            ("169.254.", "fd00:", "fe80:", "fc00:")
         ):
             raise ValueError(
                 f"AI endpoint host '{host}' is in a blocked link-local or metadata range"
@@ -113,9 +145,12 @@ class AIEngine:
         except ValueError:
             address = None
         if address and (address.is_link_local or address.is_unspecified or address.is_multicast):
-            raise ValueError(
-                f"AI endpoint IP '{host}' is not a permitted destination"
-            )
+            raise ValueError(f"AI endpoint IP '{host}' is not a permitted destination")
+        if self.backend in {"openai", "gateway"}:
+            if host == "localhost" or host.endswith((".localhost", ".local")):
+                raise ValueError("Cloud AI endpoints must not target local hostnames")
+            if address is not None and not address.is_global:
+                raise ValueError(f"Cloud AI endpoint IP '{host}' must be globally routable")
         return endpoint
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -198,13 +233,13 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "stream": False,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
@@ -219,20 +254,18 @@ class AIEngine:
         except Exception as exc:
             return f"[AI error: {exc}]"
 
-    def _ollama_stream(
-        self, system: str, user: str
-    ) -> collections.abc.Generator[str, None, None]:
+    def _ollama_stream(self, system: str, user: str) -> collections.abc.Generator[str, None, None]:
         payload = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "stream": True,
             "options": {"num_ctx": self.ctx_win},
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             f"{self.endpoint}/api/chat",
             data=body,
             headers={"Content-Type": "application/json"},
@@ -271,12 +304,12 @@ class AIEngine:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             "max_tokens": self.ctx_win,
         }
         body = json.dumps(payload).encode()
-        req  = urllib.request.Request(
+        req = urllib.request.Request(
             (
                 f"{self.endpoint}/chat/completions"
                 if self.endpoint.endswith("/v1")
@@ -284,7 +317,7 @@ class AIEngine:
             ),
             data=body,
             headers={
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._api_key}",
             },
             method="POST",
