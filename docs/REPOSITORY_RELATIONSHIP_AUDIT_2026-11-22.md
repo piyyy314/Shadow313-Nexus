@@ -54,18 +54,27 @@ No evidence in this audit supports moving the website to another provider or tre
 
 ## Branch divergence requiring follow-up
 
-There are 26 non-master branches. The following six high-impact branches were compared to current master:
+There are 26 non-master branches. Fourteen ordinary feature/fix branches were compared against current master; the delivery-artifacts branch was also checked and has no common ancestor, which is expected for its orphaned artifact-publishing role.
 
-| Branch | Ahead of master | Behind master | Finding |
+| Branch | Ahead | Behind | Finding |
 |---|---:|---:|---|
 | `fix/agent-dispatch-fail-closed-20261122` | 43 | 23 | Diverged; inspect unique agent/delivery/evidence changes |
-| `fix/hosted-python-backend-proxy` | 33 | 29 | PR #141 already merged by squash; branch is historical |
-| `fix/temporal-signature-verification-20261122` | 9 | 22 | Diverged; inspect signature implementation and fallback tests |
-| `fix/vercel-public-site-boundary-20261122` | 7 | 23 | Diverged; compare allowlist and deploy workflow against current master |
-| `feat/omni-shadow313-engineering-skill` | 21 | 92 | Diverged; inspect unique skill improvements |
-| `fix/ci-audit-blockers` | 450 | 27 | PR #116 already merged; branch is not a fresh merge candidate |
+| `fix/hosted-python-backend-proxy` | 33 | 29 | PR #141 already merged by squash; historical branch |
+| `fix/temporal-signature-verification-20261122` | 9 | 22 | Inspect signature implementation and fallback tests |
+| `fix/vercel-public-site-boundary-20261122` | 7 | 23 | Compare allowlist and deploy workflow with current master |
+| `feat/omni-shadow313-engineering-skill` | 21 | 92 | Inspect unique skill improvements |
+| `fix/ci-audit-blockers` | 450 | 27 | PR #116 already merged; not a fresh merge candidate |
+| `fix/git-sync-safety-20261122` | 11 | 23 | Inspect safer Git push scripts and policy tests |
+| `fix/legacy-git-sync-followup-20261122` | 4 | 22 | Overlaps Git sync safety work; compare before reuse |
+| `fix/legacy-git-sync-hardening-20261122` | 16 | 25 | Overlaps Git sync safety work; compare before reuse |
+| `fix/master-security-scanner-hardening-20261120` | 70 | 141 | Old security/workflow snapshot; compare with current scanner |
+| `fix/pages-deployment-ownership-20261122` | 3 | 22 | Review Pages publisher ownership tests and workflow |
+| `fix/pr129-resolve` | 73 | 29 | Overlaps old security workflow/Dockerfile changes; review selectively |
+| `fix/publication-and-submissions` | 0 | 272 | Fully behind; no unique commits relative to master |
+| `fix/repo-restructure` | 0 | 236 | Fully behind; no unique commits relative to master |
+| `delivery-artifacts` | — | — | No common ancestor; retain as separate artifact-publishing branch |
 
-These are not safe candidates for blind merging or deletion. Squash merges can make an already-merged branch appear ahead/diverged. Recover unique changes through new branches from current master, with tests, rather than merging old branch histories wholesale.
+Several branches overlap in the same files (especially Git sync scripts and security workflows). Squash merges can make an already-merged branch appear ahead/diverged. Recover unique changes through fresh branches from current master, with tests, rather than merging old branch histories wholesale. The two fully-behind branches have no unique commits according to GitHub's compare result, but were not deleted during this audit.
 
 ## Audit limitations and next steps
 
