@@ -16,11 +16,12 @@ def test_nightly_security_scanners_fail_closed_and_preserve_diagnostics():
     assert "Enforce dependency and SAST results" in workflow
     assert "SAFETY_OUTCOME" in workflow
     assert "docker build --target production -t shadow313-scan:nightly . || true" not in workflow
-    assert "Generate Trivy JSON diagnostic report" in workflow
+    assert "Run Trivy container scan (single-source JSON)" in workflow
+    assert "Convert Trivy JSON to SARIF" in workflow
     assert "trivy-container.json" in workflow
     assert "checkov -f Dockerfile" in workflow
     assert "--framework dockerfile" in workflow
-    assert "--scanners vuln,secret" in workflow
+    assert 'scanners: "vuln,secret"' in workflow
     assert 'result.get("Secrets", [])' in workflow
     assert 'report.get("errors")' in workflow
     assert "github.event.pull_request.head.repo.full_name == github.repository" in workflow

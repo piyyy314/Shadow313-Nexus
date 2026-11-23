@@ -189,28 +189,25 @@ jobs:
         run: |
           docker build --pull --target production -t shadow313-scan:nightly .
 
-      - name: Run Trivy container scan
+      - name: Run Trivy container scan (single-source JSON)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: "shadow313-scan:nightly"
           severity: "CRITICAL,HIGH"
           version: "v0.76.2"
-          format: "sarif"
-          limit-severities-for-sarif: true
-          output: "trivy-container.sarif"
+          scanners: "vuln,secret"
+          format: "json"
+          output: "trivy-container.json"
           exit-code: "0"
 
-      - name: Generate Trivy JSON diagnostic report
+      - name: Convert Trivy JSON to SARIF
         if: always()
-        continue-on-error: true
         run: |
-          trivy image \
-            --scanners vuln,secret \
+          trivy convert \
+            --format sarif \
             --severity CRITICAL,HIGH \
-            --format json \
-            --output trivy-container.json \
-            --exit-code 0 \
-            shadow313-scan:nightly
+            --output trivy-container.sarif \
+            trivy-container.json
 
       - name: Enforce actionable Trivy findings
         if: always()
