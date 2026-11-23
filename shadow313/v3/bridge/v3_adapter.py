@@ -251,6 +251,8 @@ class ModelRegistry:
     """Singleton model registry with lazy loading."""
 
     _instance: ModelRegistry | None = None
+    _models: dict[str, Any]
+    _model_dir: Path
     _lock = threading.Lock()
 
     def __new__(cls) -> ModelRegistry:

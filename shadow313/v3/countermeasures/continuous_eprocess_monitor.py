@@ -45,7 +45,9 @@ class ProcessRecord:
     metadata:     dict  = field(default_factory=dict)
 
 
-def _take_snapshot(process_dict: dict = None) -> dict:
+def _take_snapshot(
+    process_dict: dict[int, ProcessRecord] | None = None,
+) -> dict[int, ProcessRecord]:
     """Take a snapshot of processes. Returns dict of pid -> ProcessRecord."""
     if process_dict is not None:
         return {pid: rec for pid, rec in process_dict.items()}
