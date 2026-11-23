@@ -323,6 +323,7 @@ def _anchor_ipfs(content: str) -> str:
 
 # ── 313 Receipt ───────────────────────────────────────────────────────────────
 
+
 class Bind313Receipt:
     """A 313 Temporal Binding receipt."""
 
@@ -382,6 +383,7 @@ class Bind313Receipt:
 
 
 # ── Temporal Binding Engine ───────────────────────────────────────────────────
+
 
 class TemporalBindingEngine:
     """
@@ -549,6 +551,7 @@ class TemporalBindingEngine:
 
 
 # ── TemporalBindingModule ─────────────────────────────────────────────────────
+
 
 class TemporalBindingModule:
     """shadow313.v4.temporal_binding — 313 Temporal Binding. Registered: temporal"""
