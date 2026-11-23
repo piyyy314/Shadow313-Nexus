@@ -30,6 +30,11 @@ class NEXUSModule:
         insider_attack_demo: bool = False,
         posture_report: bool = False,
     ) -> dict:
+        if not any(
+            (status, bind_all, verify_chain, insider_attack_demo, posture_report)
+        ):
+            status = True
+
         self.out.section("SHADOW313 NEXUS — VERIFIABLE SECURITY INTELLIGENCE")
         result: dict[str, Any] = {}
 
