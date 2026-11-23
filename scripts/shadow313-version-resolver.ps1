@@ -335,7 +335,7 @@ Add "     - GitHub token (ghp_xxx)"
 Add "     - Ollama API keys"
 Add "     - Vercel tokens"
 Add "     - Docker Hub credentials"
-Add "     - matarmohamad313@duck.com passwords"
+Add "     - pitty313@proton.me passwords"
 Add ""
 Add "  Enable browser integration:"
 Add "  KeePassXC → Tools → Settings → Browser Integration → Enable"
@@ -466,6 +466,6 @@ Write-Host ""
 Write-Host "  4. FIX GIT + PUSH:" -ForegroundColor White
 Write-Host "     cd C:\Users\shiatoali\shadow313-nexus" -ForegroundColor Gray
 Write-Host "     git config user.name 'piyyy314'" -ForegroundColor Gray
-Write-Host "     git config user.email 'matarmohamad313@duck.com'" -ForegroundColor Gray
+Write-Host "     git config user.email 'pitty313@proton.me'" -ForegroundColor Gray
 Write-Host "     git add . && git commit -m 'Consolidation' && git push" -ForegroundColor Gray
 Write-Host ""
