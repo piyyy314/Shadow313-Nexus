@@ -1,251 +1,127 @@
 # Shadow313 Platform Integration Status
 
-Last reviewed: 2026-11-18
+Last reviewed: 2026-11-22  
+Audited master revision: `f95c99b24613d781527f19550360987bedd362b1`
 
-This document is the integration control sheet for the Shadow313 repositories.
-It separates implemented code, work in review, and work that still requires
-integration or runtime evidence. A feature described in a README or branch is
-not considered production-ready until its tests, deployment, permissions, and
-operational behavior have been verified.
+This is the current integration control sheet. It supersedes older status notes in this file that referred to PRs #115/#116 as open or described earlier infrastructure and CI states. For the repository relationship inventory and branch reconciliation findings, see [Repository Relationship Audit](REPOSITORY_RELATIONSHIP_AUDIT_2026-11-22.md).
 
-## System-of-record decision
+## System of record
 
-- **Shadow313-Nexus** is the primary product repository and canonical Python
-  package/API: `shadow313-nexus`, imported as `shadow313`.
-- **ShiatoAli SOC** is being added as a versioned module within that package
-  through [draft PR #115](https://github.com/piyyy314/Shadow313-Nexus/pull/115).
-  Keep it additive; do not create a second SOC API or duplicate its event/case
-  database in another module.
-- **NEXUS-OmniSec-Unified** is a separate monorepo with its own React client,
-  Python core, deployment stack, and a separate event-feed implementation.
-  Treat it as an integration candidate, not as a dependency or a production
-  extension of Shadow313-Nexus until API, identity, event schema, and release
-  ownership are agreed.
-- **NEXUS-COMMAND-CORE** is a separate React/TypeScript command-center UI using
-  Firebase and Google AI services according to its README. Treat it as a
-  possible UI client, not as a trusted backend or shared identity provider.
+- **Shadow313-Nexus** is the canonical repository for the Shadow313 Python package, CLI, API, SDK, platform modules, static website, and delivery workflows.
+- **SentinelOS** is retained under `sentinelos/` in this repository. It is a dashboard/UI subsystem with an in-repository NEXUS API bridge; it is not a separate repository or independent backend.
+- **ShiatoAli SOC** is an embedded subsystem under `shadow313/v4/shiatoali/`, with API routing and migration assets in this repository. Do not create a second SOC service or duplicate its event/case data stores without an architecture decision.
+- The Python API is the authoritative service boundary. The Vercel-hosted website and Node API gateway are not the Python backend.
 
-## Repository boundaries
+## Verified repository state
 
-| Repository | Current role | Integration decision |
+At the audited master revision:
+
+- 1,262 tracked paths were present: 647 Python files, 190 HTML files, and 77 Markdown files, plus configuration, workflows, assets, scripts, and deployment resources.
+- No open pull requests were returned by GitHub.
+- PRs #115, #116, #140, #141, and #147–#151 are closed and merged.
+- The latest observed master runs completed successfully:
+  - [Full Pre-Deploy Validation #45101043265](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/45101043265)
+  - [API Endpoint Validation #45101043259](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/45101043259)
+  - [CI/CD #45101043412](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/45101043412)
+  - [Vercel workflow #45101043364](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/45101043364)
+  - [Nightly Security Scan #45098876581](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/45098876581)
+- The pre-deploy run passed file integrity and route validation, repository completeness audit, Git hygiene, Python/API validation, HTML validation, configuration validation, shell validation, the Python test suite, and the final validation gate.
+- CI/CD passed Python 3.11 and 3.12 tests, lint/format, Docker build, distribution build, and security scan. PyPI/TestPyPI publication jobs were skipped because no release publication was requested.
+- The nightly scan's four jobs (Trivy, Dockerfile/Compose audit, full-history secret scan, and dependency audit) completed successfully.
+- Snyk quota errors are tracked as provider/quota limitations, not as successful scans and not as a reason to disable the other security controls.
+
+A successful workflow run is evidence for that exact commit and job set. It does not prove that every optional service is configured, that a production backend is running, or that every third-party integration is connected.
+
+## Hosting and runtime boundaries
+
+| Component | Current responsibility | Verified state |
 |---|---|---|
-| [Shadow313-Nexus](https://github.com/piyyy314/Shadow313-Nexus) | Primary Python CLI, API, V1–V4 modules, docs and deployment | Canonical backend and package |
-| [NEXUS-OmniSec-Unified](https://github.com/piyyy314/NEXUS-OmniSec-Unified) | Separate React/Python platform and security-event implementation | Reuse only after capability and API comparison; avoid duplicate event stores |
-| [NEXUS-COMMAND-CORE](https://github.com/piyyy314/NEXUS-COMMAND-CORE) | React 19 / TypeScript operator workstation | Candidate frontend; connect through documented APIs |
-| [personal-ai-agent](https://github.com/piyyy314/personal-ai-agent) | Separate AI-agent and analytics project | Candidate for bounded agent integrations; no shared secrets or implicit trust |
+| GitHub | Source control, reviews, CI | In use |
+| Vercel | Public static website and Node API gateway | Workflow checks passing |
+| Cloudflare | DNS for `shadow313.com` | User-designated DNS provider |
+| Vercel DNS | Existing `shadow313.dev` DNS configuration | Retained |
+| GitHub Pages | Secondary delivery portal for generated `dist/` artifacts | Separate from the website |
+| Hetzner | Planned Python API/backend host | Not yet provisioned/deployed |
 
-## ShiatoAli SOC: implementation and review status
+The Python backend is not yet deployed as a hosted service. The Vercel gateway forwards only its reviewed route allowlist and requires server-side `SHADOW313_BACKEND_URL` and `SHADOW313_BACKEND_API_KEY` configuration. Do not expose backend credentials to browser code or public build variables. Do not describe website availability as proof that backend-dependent features are online.
 
-Draft PR #115 currently adds:
+Render, Netlify, and Railway are not part of the approved hosting topology. Do not add another host without an explicit architecture decision.
 
-- SQLite-backed normalized event ingestion with duplicate-event handling.
-- Initial defensive detections for suspicious PowerShell, potential web shells,
-  network discovery utilities, and repeated authentication failures.
-- Authenticated health, event, alert, and case-management routes.
-- Case-to-alert links and a case activity timeline.
-- A PostgreSQL/Alembic schema foundation and tests for offline migration SQL.
+## Repository relationships
 
-The PR's own limitations are important:
+The current relationship inventory is in [Repository Relationship Audit](REPOSITORY_RELATIONSHIP_AUDIT_2026-11-22.md). In brief:
 
-- The running service still uses SQLite; the PostgreSQL adapter and runtime
-  configuration are not implemented by the migration files alone.
-- SQLite is a single-instance foundation, not the multi-worker production
-  database.
-- The case activity history is append-oriented but not a tamper-proof ledger.
-- The starter detections are triage signals, not proof of compromise.
-- No endpoint agent, automated host isolation, or external reputation
-  enrichment is included.
+- `NEXUS-OmniSec-Unified`, `NEXUS-COMMAND-CORE`, and `personal-ai-agent` are separate repositories and potential integration candidates, not established runtime dependencies of this repository.
+- The similarly named `Shiatoali-` repository is a Blockscout-based blockchain explorer, not the embedded ShiatoAli SOC subsystem.
+- No standalone `SentinelOS-Shadow313` repository was found in the repository search; SentinelOS currently exists as the `sentinelos/` directory here.
+- This repository is not a GitHub fork and has no `.gitmodules` file. Do not infer a live connection from a name, README link, or copied source tree.
 
-### Latest observed PR checks
+## Branch reconciliation
 
-For PR #115 head `7c962bd5aee6116cbf090cd64f9068b796937c77`:
+There are 26 non-master branches. Several contain substantial work but have diverged from current master. Six high-impact branches were compared against master:
 
-- PR Checks, full pre-deploy validation, API endpoint validation, and the CI/CD workflow completed successfully.
-- Python 3.11 and 3.12 unit-test jobs, SAST, secret detection, dependency scanning, Dockerfile lint, HTML validation, shell/config checks, file-integrity checks, and Python/API validation completed successfully in the observed runs.
-- The CI/CD workflow's Docker build and security scan completed successfully. PyPI and TestPyPI publication jobs were skipped.
-- The Vercel workflow's quality checks passed, but both production and preview deployment jobs were skipped. Do not describe this run as a deployment.
-- All 14 currently listed inline review threads on PR #115 are resolved. No human approval is recorded; the PR remains open, draft, and unmerged.
+| Branch | Ahead | Behind | Handling |
+|---|---:|---:|---|
+| `fix/agent-dispatch-fail-closed-20261122` | 43 | 23 | Review unique changes; do not merge wholesale |
+| `fix/hosted-python-backend-proxy` | 33 | 29 | PR #141 is already merged; treat branch as historical/squash-diverged |
+| `fix/temporal-signature-verification-20261122` | 9 | 22 | Review signature changes and tests selectively |
+| `fix/vercel-public-site-boundary-20261122` | 7 | 23 | Compare with current Vercel allowlist and workflow before reuse |
+| `feat/omni-shadow313-engineering-skill` | 21 | 92 | Review for unique skill improvements; do not merge wholesale |
+| `fix/ci-audit-blockers` | 450 | 27 | PR #116 is already merged; historical branch, not a merge candidate |
 
-- External Snyk contexts are still not green on this head: both `code/snyk` contexts report `error`, and `security/snyk` reports `failure`. The earlier Snyk Code response was a provider test-quota limit; the security failure requires provider-side finding review. These external checks are unresolved and must not be described as passed.
-
-Relevant runs: [PR checks](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831166), [pre-deploy validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831301), [CI/CD](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831258), [API validation](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/43528831226).
-
-### PR #103 — cross-platform wheel verification
-
-The updated head `fec9e2415807562509f64ecd98c30ca8a911cdd9` completed its GitHub Actions checks successfully: Python 3.11/3.12 tests, lint, Bandit/Semgrep, Gitleaks, dependency audit, Docker build, distribution build, PR Checks, and full pre-deploy validation. PyPI/TestPyPI publication jobs and Vercel preview/production deployment jobs were skipped. The branch remains open and unmerged; platform-specific Windows/macOS coverage is not established by these Linux runner results.
-
-### Master nightly container and dependency security scan
-
-The latest master run, [Nightly Security Scan #44221496259](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44221496259), ran on 2026-11-18 at master SHA `38471258650dce774d7521831e3dda909517117c` and failed.
-
-- Gitleaks completed its full-history scan; the uploaded SARIF artifact contains zero results.
-- pip-audit 2.7.3 reported no known vulnerabilities in the audited environment.
-- Safety 3.1.0 failed to start with `AttributeError: module 'typer' has no attribute 'rich_utils'`; `nightly-safety.json` is empty. The master workflow masks this failure with `|| true`, so the green Full Dependency Audit job conclusion is not evidence of a completed Safety scan.
-- Bandit 1.7.8 produced 8 HIGH B324, 69 MEDIUM, and 312 LOW findings. The eight HIGH findings are weak-MD5 warnings in `pipeline.py`, `ghosthttp.py`, `adaptive_defense_loop.py`, and `advanced_detection_layer.py`. These are static-analysis findings requiring review, not proof of exploit.
-- Trivy completed the container scan at the configured `CRITICAL,HIGH` threshold and exited 1. SARIF upload to GitHub Code Scanning completed, but the SARIF payload and individual alerts were not retrievable through this connection; the CVE list therefore remains unverified.
-- The Docker Compose Security Audit job concluded success, but Checkov logged `There are no runners to run` because it was invoked with `--framework dockerfile` against `docker-compose.yml`. The seven custom Compose hardening assertions passed; Checkov did not perform a meaningful scan.
-
-PR #116 now corrects the Checkov target to the repository `Dockerfile` while retaining the separate Compose hardening assertions, with a regression test for the prior mismatched invocation. The nightly workflow is schedule/workflow-dispatch only, so the corrected Checkov command must be verified by a subsequent security-scan run; no successful Checkov result is claimed yet.
-
-### PR #116 — latest validated code state
-
-The latest code changes are on head `eedf4715601f38efad4c33813078a04ebafd78e8` ([commit](https://github.com/piyyy314/Shadow313-Nexus/commit/eedf4715601f38efad4c33813078a04ebafd78e8)). All five internal workflows completed successfully on 2026-11-18: [PR Checks #44332317172](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317172), [Full Pre-Deploy #44332317365](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317365), [CI/CD #44332317243](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317243), [API validation #44332317211](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317211), and [Vercel workflow #44332317179](https://github.com/piyyy314/Shadow313-Nexus/actions/runs/44332317179).
-
-Full Pre-Deploy reported 4,911 passed, 51 skipped, and one Starlette/httpx deprecation warning. Each Python PR-check matrix reported 4,854 passed, 51 skipped, and one warning. The CI/CD security job retained 171 Bandit findings with zero high-severity findings; pip-audit reported no known vulnerabilities. Gitleaks completed and reported no leaks. The HTML, route, API, configuration, shell, and Git hygiene checks all passed.
-
-All 10 inline review threads are resolved, but no human approval is recorded. GitGuardian is neutral, CodeRabbit is skipped, both `code/snyk` contexts are errors, and `security/snyk` is success. Ten other third-party check suites remain queued. Copilot's review was not completed because the requesting user had insufficient remaining quota. The Vercel workflow's quality job passed, but both preview and production deployment jobs were skipped; no deployment is claimed.
-
-The Checkov target correction is covered by a regression test, but the nightly security workflow is schedule/workflow-dispatch only and has not executed on this PR branch. Its successful scanner execution remains unverified.
-
-Do not merge either PR solely because an earlier head passed. Recheck the latest head SHA, required checks, review threads, and deployment status immediately before merge.
-
-## Repository hygiene and deployment follow-up
-
-The following historical maintenance PRs are closed and merged:
-
-1. [PR #107 — remove committed TLS private key](https://github.com/piyyy314/Shadow313-Nexus/pull/107). The removal change is merged. Key/certificate rotation and any required Git-history cleanup are external follow-up actions and are **not verified by merge status alone**.
-2. [PR #108 — Debian and Python packaging security updates](https://github.com/piyyy314/Shadow313-Nexus/pull/108). The change is merged. Confirm the actual deployed image has been rebuilt and scanned before treating runtime exposure as resolved.
-3. [PR #109 — Open WebUI URL and Nginx memory limit](https://github.com/piyyy314/Shadow313-Nexus/pull/109). The change is merged. Validate the Compose stack and upload path in the target environment before asserting operational readiness.
-
-PR #115 (ShiatoAli SOC foundation) and PR #116 (CI repairs and site consistency) remain open. This document is a handoff, not a live deployment dashboard; recheck GitHub before acting.
+GitHub reports these branches as divergent because the PRs were squash-merged or the branches contain additional history. Do not merge or delete them solely from ahead/behind counts. Inspect their unique commits and file changes first. Backups should be retained until the relevant work is either recovered or explicitly retired.
 
 ## Shared integration contracts
 
-All future modules and clients should converge on these contracts:
+All future clients and modules should use these rules:
 
 ### Identity and authorization
-
-- One identity authority and documented token/API-key lifecycle.
-- Explicit roles and per-action permissions; authentication alone is not
-  authorization.
-- Service-to-service identities must be separate from human user identities.
-- Secrets are injected at runtime, rotated, and never committed to Git.
-- High-impact response actions require explicit approval and a recorded actor.
+- The Python API is the authoritative enforcement point.
+- Authentication is not authorization; define roles and per-action scopes.
+- Service identities must be distinct from human identities.
+- Inject secrets at runtime, rotate them, and never commit them.
+- High-impact response actions require explicit approval and an auditable actor.
 
 ### Security event envelope
-
-Use a versioned event envelope with at least:
-
-- `schema_version`, `event_id`, `occurred_at`, `ingested_at`
-- `source`, `sensor_id`, `host`, `event_type`
-- `severity`, `message`, `user`, `source_ip`, `destination_ip`
-- `raw` or a protected reference to raw evidence
-- `tenant_id` where multi-tenant operation is enabled
-
-Require idempotent ingestion, bounded payload sizes, UTC timestamps, stable
-pagination cursors, retention rules, and explicit handling of sensitive data.
-Do not silently merge the distinct SQLite stores in the two repositories.
+Use a versioned envelope with stable event IDs, UTC occurrence/ingestion times, source and sensor identifiers, host, event type, severity, actor/network context, protected raw evidence, and tenant ID when multi-tenancy is enabled. Require idempotent ingestion, bounded payloads, stable pagination, retention, and explicit sensitive-data handling.
 
 ### API and UI
+- Publish one versioned OpenAPI contract and validate clients against it.
+- Browser clients must not access databases or receive service secrets.
+- Keep CORS origins explicit; never combine wildcard origins with credentials.
+- UI health indicators must reflect actual API/dependency health.
+- Do not duplicate event, alert, case, or identity stores across repositories.
 
-- The Python API remains the authoritative enforcement point.
-- Browser clients use documented, versioned endpoints and never receive
-  database credentials or service secrets.
-- CORS origins are explicit; do not use wildcard origins with credentials.
-- UI status indicators must reflect real API and dependency health, not
-  hard-coded success labels.
-- Use one API contract/OpenAPI source and generate or validate clients against
-  it.
-
-### Data and audit
-
-- SQLite may be used for local single-instance development.
-- Production multi-worker operation requires PostgreSQL integration, migrations,
-  transaction/concurrency tests, backup/restore tests, and operational
-  monitoring.
-- Case history and security audit records need tamper-evident integrity
-  protection, access controls, retention, and export procedures.
-- Keep security events, alert state, analyst cases, and immutable audit records
-  as distinct concepts with explicit relationships.
+### Production data and audit
+- SQLite is suitable for local single-instance use.
+- Multi-worker production requires PostgreSQL runtime wiring, migrations, concurrency/transaction tests, backup/restore tests, and monitoring.
+- Case history and privileged actions need access controls, retention, export, and tamper-evident audit protection.
 
 ## Ordered integration backlog
 
-### P0 — Security and release blockers
+### P0 — production boundary and security evidence
+- [ ] Provision and harden the planned Hetzner backend host before enabling backend-dependent production routes.
+- [ ] Configure backend URL/key as server-side secrets only, then verify TLS, auth, health checks, backups, restore, and external exposure.
+- [ ] Reconcile the remaining divergent branches; salvage unique fixes through fresh branches based on current master.
+- [ ] Recheck the historical TLS-key rotation/history-remediation follow-up before claiming the old exposure is fully remediated.
 
-- [ ] Revoke and rotate the exposed TLS private key; verify it is absent from
-  current artifacts and handle Git history exposure.
-- [ ] Verify external post-merge follow-up for PRs #107, #108, and #109: key rotation/history exposure, rebuilt and scanned images, and the Compose upload path. Merge status alone is not runtime evidence.
-- [ ] Obtain human review and complete provider-side Snyk triage for PR #115. Internal GitHub Actions are green on its current head, but the PR remains draft and its two code/snyk contexts are errors while security/snyk is failure.
-- [ ] Ensure all API startup paths fail closed when required credentials are
-  absent.
-- [ ] Verify backups, restore, TLS termination, and external exposure boundaries.
+### P1 — ShiatoAli production readiness
+- [ ] Verify PostgreSQL adapter runtime selection and migration execution in the deployment path.
+- [ ] Add PostgreSQL transaction, concurrent-ingestion, duplicate-event, retention, and restore tests to the release gate.
+- [ ] Add stable cursor pagination, analyst RBAC, case ownership, and workflow transition validation.
+- [ ] Protect case activity and privileged actions with a tamper-evident audit chain.
 
-### P1 — Make ShiatoAli production-capable
-
-- [ ] Implement a PostgreSQL repository adapter; wire it to the running service.
-- [ ] Add schema migrations to deployment startup/release procedure with a
-  least-privileged migration role.
-- [ ] Add transaction, concurrent-ingestion, duplicate-event, retention, and
-  restore tests against PostgreSQL.
-- [ ] Add stable cursor pagination and event retention/archival.
-- [ ] Add a tamper-evident audit chain for case activity and privileged actions.
-- [ ] Add analyst RBAC, case ownership, and workflow transition validation.
-
-### P2 — Unify platform integration
-
-- [ ] Compare the event, alert, case, identity, and API implementations in
-  NEXUS-OmniSec-Unified against ShiatoAli before choosing what to reuse.
-- [ ] Publish the canonical versioned event schema and OpenAPI contract.
-- [ ] Connect NEXUS-COMMAND-CORE as a UI client through authenticated API
-  endpoints; do not couple it directly to databases.
-- [ ] Define service identities, authorization scopes, and audit attribution.
-- [ ] Add end-to-end tests across UI, API, event ingestion, alert creation, and
-  case workflow.
-- [ ] Add a single deployment manifest and release/rollback procedure only
-  after component boundaries are stable.
+### P2 — bounded cross-repository integration
+- [ ] Compare event, alert, case, identity, and API contracts in NEXUS-OmniSec-Unified before reusing components.
+- [ ] Publish the canonical event schema and OpenAPI contract.
+- [ ] Connect NEXUS-COMMAND-CORE only as an authenticated UI client; never couple it directly to databases.
+- [ ] Evaluate personal-ai-agent as a bounded tool/agent integration with explicit permissions, isolation, and data-sharing controls.
+- [ ] Add end-to-end tests across UI, API, ingestion, alerting, and case workflows.
 
 ### P3 — SOC capability expansion
-
-- [ ] Sigma-compatible detection rule format and rule test harness.
-- [ ] Threat-intelligence enrichment with source provenance and expiry.
-- [ ] Alert deduplication, correlation, suppression, and analyst feedback.
-- [ ] SIEM source connectors and endpoint telemetry ingestion.
-- [ ] SOAR playbooks with dry-run mode, approval gates, least privilege, and
-  rollback.
-- [ ] Live dashboard, investigation timeline, and operational health metrics.
-
-## README, API contract, and website consistency review (2026-11-13)
-
-PR #116 also updates the project README, OpenAPI contract, and public HTML
-content to remove unsupported operational and assurance claims. The reviewed
-changes distinguish source-implemented features from browser demonstrations,
-static snapshots, optional integrations, and unavailable remote services.
-
-Key corrections include:
-
-- The OpenAPI contract now identifies the MIT license and matches the Python
-  API request schemas and authentication requirements for detection, web-shell
-  scanning, receipt creation, ATT&CK coverage, and receipt retrieval.
-- The API receipt endpoint is documented as unsigned
-  `UNSIGNED-SHA3-512-DEMO`, process-local, capped, and not IPFS-anchored or
-  SLH-DSA-signed.
-- Reconnaissance, vulnerability, mobile, event-stream, and persisted-audit API
-  routes return explicit unavailable responses until their workers/backends
-  exist.
-- ATT&CK coverage is a static code-defined snapshot, not live SOC telemetry.
-- Public dashboards, marketplace analytics, case studies, ROI calculators,
-  and architecture pages are identified as illustrative unless backed by
-  current connected-service evidence.
-- Unsupported FIPS validation, FedRAMP/CMMC/SOC 2/PIPEDA compliance,
-  production-readiness, zero-PII, and subscription claims are withdrawn.
-- The public-site builder injects a general reference/demo notice into each
-  allowlisted HTML output. This notice supplements, but does not replace,
-  page-specific accuracy and source review.
-
-The latest validated PR #116 code head is `eedf4715601f38efad4c33813078a04ebafd78e8`; the five internal workflow runs above passed on that exact SHA. Both Snyk Code contexts remain `error` with no cause exposed in the status payload, while Snyk Security is `success`. GitGuardian is `neutral`, CodeRabbit is `skipped`, and no human approval is recorded. Vercel preview and production deployment jobs were skipped.
-
-## Definition of done
-
-A module is integrated only when all of the following are true:
-
-1. It has an owner, repository boundary, and supported version.
-2. Its API and data contracts are documented and validated.
-3. Authentication, authorization, secrets, and audit behavior are tested.
-4. Unit, integration, and relevant security checks pass on the exact commit.
-5. Deployment, health checks, backups, and rollback are verified in a test
-   environment.
-6. The production UI reports its actual state and does not imply unverified
-   capabilities.
-
-This is a working status document, not a certification or a claim that the
-platform is production-ready.
+- [ ] Sigma-compatible rule format and test harness.
+- [ ] Threat-intelligence enrichment with provenance and expiry.
+- [ ] Alert correlation, deduplication, suppression, and analyst feedback.
+- [ ] SIEM/endpoint telemetry connectors.
+- [ ] SOAR playbooks with dry-run, approval, least privilege, and rollback.
+- [ ] Operational dashboards backed by real service telemetry.
