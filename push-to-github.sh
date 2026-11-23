@@ -79,7 +79,40 @@ if ! REMOTE_URL=$(git remote get-url "$REMOTE" 2>/dev/null); then
     info "Or with SSH: git remote add origin git@github.com:piyyy314/Shadow313-Nexus.git"
     exit 1
 fi
-ok "Remote '$REMOTE': $REMOTE_URL"
+ok "Remote '$REMOTE' points to the canonical Shadow313-Nexus repository"
+
+is_expected_remote() {
+    case "$1" in
+        https://github.com/piyyy314/Shadow313-Nexus|https://github.com/piyyy314/Shadow313-Nexus.git)
+            return 0
+            ;;
+        ssh://git@github.com/piyyy314/Shadow313-Nexus|ssh://git@github.com/piyyy314/Shadow313-Nexus.git)
+            return 0
+            ;;
+        git@github.com:piyyy314/Shadow313-Nexus|git@github.com:piyyy314/Shadow313-Nexus.git)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+if ! is_expected_remote "$REMOTE_URL"; then
+    fail "Remote does not point to piyyy314/Shadow313-Nexus. Refusing to push."
+    exit 1
+fi
+
+mapfile -t PUSH_URLS < <(git remote get-url --push --all "$REMOTE" 2>/dev/null)
+if (("${#PUSH_URLS[@]}" == 0)); then
+    fail "Remote '$REMOTE' has no configured push URL. Refusing to push."
+    exit 1
+fi
+for PUSH_URL in "${PUSH_URLS[@]}"; do
+    if ! is_expected_remote "$PUSH_URL"; then
+        fail "Remote '$REMOTE' push URL does not point to piyyy314/Shadow313-Nexus. Refusing to push."
+        exit 1
+    fi
+done
 
 # ── Step 3: Check status ──────────────────────────────────────────────────────
 step "3/8 — Checking current branch and status"
@@ -142,6 +175,14 @@ if git branch --list "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
     BRANCH_NAME="${BRANCH_NAME}-${SUFFIX}"
     warn "Branch already exists locally. Using: $BRANCH_NAME"
 fi
+if [[ "$BRANCH_NAME" =~ ^(master|main)$ ]]; then
+    fail "Direct pushes to protected branches are disabled. Use a feature branch."
+    exit 1
+fi
+if [[ ! "$BRANCH_NAME" =~ ^[A-Za-z0-9._/-]+$ || "$BRANCH_NAME" == *..* || "$BRANCH_NAME" == *//* || "$BRANCH_NAME" == /* || "$BRANCH_NAME" == */ ]]; then
+    fail "Invalid branch name: $BRANCH_NAME"
+    exit 1
+fi
 info "Branch name: $BRANCH_NAME"
 
 # ── Step 6: Create branch and stage ──────────────────────────────────────────
@@ -153,7 +194,17 @@ else
     git checkout -b "$BRANCH_NAME"
     ok "Created branch: $BRANCH_NAME"
     git add -A
-    ok "Staged all changes"
+    mapfile -t STAGED_PATHS < <(git diff --cached --name-only)
+    if printf '%s\n' "${STAGED_PATHS[@]}" | grep -Eiv '(^|/)\.env\.example$' | grep -Eiq '(^|/)(\.env($|\.)|id_rsa($|\.)|id_ed25519($|\.)|credentials($|/)|secrets?($|/)|[^/]+\.(pem|p12|pfx|key|sqlite|db)$|logs/[^/]+\.(json|log)$)'; then
+        fail "Sensitive/local paths are staged. Unstage and review them before syncing."
+        exit 1
+    fi
+    if [[ ! -f "$REPO_ROOT/scripts/check-secrets.py" ]]; then
+        fail "Required secret scanner scripts/check-secrets.py is missing."
+        exit 1
+    fi
+    python "$REPO_ROOT/scripts/check-secrets.py"
+    ok "Staged files passed path and secret checks"
 fi
 
 # ── Step 7: Commit ────────────────────────────────────────────────────────────
@@ -248,4 +299,6 @@ echo    "  3. After merge, delete the branch:"
 echo -e "     ${GRAY}git branch -d $BRANCH_NAME${NC}"
 echo ""
 
-$DRY_RUN && warn "DRY-RUN complete — no actual changes were made"
+if $DRY_RUN; then
+    warn "DRY-RUN complete — no actual changes were made"
+fi
