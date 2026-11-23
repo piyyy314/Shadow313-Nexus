@@ -1,6 +1,7 @@
 """Guardrails for the remaining legacy repository synchronization scripts."""
 
 from pathlib import Path
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -33,3 +34,13 @@ def test_master_scan_never_embeds_a_token_or_pushes_to_master():
     assert "piyyy314:$Token@" not in source
     assert "auto-push fixes" not in source.lower()
     assert "read-only GitHub secrets inventory" in source
+
+
+
+def test_bash_sync_helper_has_valid_shell_syntax():
+    subprocess.run(
+        ["bash", "-n", str(ROOT / "push-to-github.sh")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
