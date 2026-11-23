@@ -30,9 +30,7 @@ class NEXUSModule:
         insider_attack_demo: bool = False,
         posture_report: bool = False,
     ) -> dict:
-        if not any(
-            (status, bind_all, verify_chain, insider_attack_demo, posture_report)
-        ):
+        if not any((status, bind_all, verify_chain, insider_attack_demo, posture_report)):
             status = True
 
         self.out.section("SHADOW313 NEXUS — VERIFIABLE SECURITY INTELLIGENCE")
@@ -190,9 +188,7 @@ class NEXUSModule:
             signature_verified = verification_checks.get("signature_verified") is True
             sha3_512_matches = verification_checks.get("sha3_512_matches") is True
             cryptographically_verified = (
-                verification.get("valid") is True
-                and signature_verified
-                and sha3_512_matches
+                verification.get("valid") is True and signature_verified and sha3_512_matches
             )
             checks.append(
                 {
@@ -205,9 +201,7 @@ class NEXUSModule:
                 }
             )
 
-        invalid_receipts = [
-            item["receipt_id"] for item in checks if not item["valid"]
-        ]
+        invalid_receipts = [item["receipt_id"] for item in checks if not item["valid"]]
         untrusted_signers = [
             item["receipt_id"]
             for item in checks
@@ -229,9 +223,7 @@ class NEXUSModule:
             if indices[index + 1] - indices[index] > 1
         ]
         index_counts = Counter(indices)
-        duplicates = sorted(
-            index for index, count in index_counts.items() if count > 1
-        )
+        duplicates = sorted(index for index, count in index_counts.items() if count > 1)
 
         receipt_integrity_valid = not invalid_receipts and len(checks) == len(receipts)
         signer_trust_complete = all(
@@ -253,10 +245,7 @@ class NEXUSModule:
             "audit_log_authenticated": False,
             "receipt_integrity_valid": receipt_integrity_valid,
             "trusted_receipt_chain": (
-                receipt_integrity_valid
-                and signer_trust_complete
-                and not gaps
-                and not duplicates
+                receipt_integrity_valid and signer_trust_complete and not gaps and not duplicates
             ),
             "tamper_evident": tamper_evident,
             "receipts_checked": len(receipts),
@@ -281,13 +270,10 @@ class NEXUSModule:
         SLH-DSA receipt verifier and is not evidence of a vulnerability in a SIEM.
         """
         self.out.warn("DEMO: self-consistent SHA-3 hash-chain rewrite (illustrative)")
-        self.out.info(
-            "A chain can be recomputed if an attacker can rewrite every entry and hash."
-        )
+        self.out.info("A chain can be recomputed if an attacker can rewrite every entry and hash.")
 
         entries = [
-            {"id": index, "action": f"action_{index}", "user": "admin"}
-            for index in range(1, 13)
+            {"id": index, "action": f"action_{index}", "user": "admin"} for index in range(1, 13)
         ]
 
         def compute_chain(items: list[dict]) -> list[str]:
@@ -306,14 +292,10 @@ class NEXUSModule:
         tampered_entries = [entry for entry in entries if entry["id"] != 7]
         tampered_chain = compute_chain(tampered_entries)
         elapsed_ms = (time.perf_counter() - started) * 1000
-        recomputed = len(tampered_chain) == len(tampered_entries) and bool(
-            tampered_chain[-1]
-        )
+        recomputed = len(tampered_chain) == len(tampered_entries) and bool(tampered_chain[-1])
 
         self.out.warn(f"Recomputed a modified chain in {elapsed_ms:.3f} ms")
-        self.out.info(
-            "This toy example has no independently trusted checkpoint or signature."
-        )
+        self.out.info("This toy example has no independently trusted checkpoint or signature.")
 
         return {
             "attack": "Self-consistent SHA-3 hash-chain rewrite",
@@ -362,9 +344,7 @@ class NEXUSModule:
                         if finding.get("severity", "").upper() == "CRITICAL"
                     )
                     posture["high"] = sum(
-                        1
-                        for finding in findings
-                        if finding.get("severity", "").upper() == "HIGH"
+                        1 for finding in findings if finding.get("severity", "").upper() == "HIGH"
                     )
                 elif json_file.stem == "compliance":
                     posture["compliance_score"] = data.get("compliance_score", "N/A")
