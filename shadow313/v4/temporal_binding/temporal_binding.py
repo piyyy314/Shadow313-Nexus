@@ -252,9 +252,12 @@ def _verify_slh_dsa(
 
             if not public_key_hex:
                 return False
-            # pqcrypto returns None on success and raises on invalid signatures.
-            verify(bytes.fromhex(public_key_hex), message, signature)
-            return True
+            # pqcrypto versions may return False for invalid signatures and
+            # None for success; never convert an explicit False into success.
+            verification_result = verify(
+                bytes.fromhex(public_key_hex), message, signature
+            )
+            return verification_result is not False
         if algorithm.startswith("SPHINCS+-SHAKE-128f"):
             import pyspx.shake_128f as sphincs
 
