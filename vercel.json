@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "git": {
-    "deploymentEnabled": false
-  },
   "name": "shadow313-nexus",
   "rewrites": [
     {

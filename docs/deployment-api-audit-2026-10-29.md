@@ -1,5 +1,30 @@
 # Deployment, homepage and API audit — 2026-10-29
 
+## Deployment integration update — 2026-11-23
+
+The Vercel project is connected to `piyyy314/Shadow313-Nexus`. Its latest observed
+production deployment was commit `7b80a4129df92be2e665dee4c632ab1d011c3bf9`, while
+GitHub `master` had advanced to `8496d9d01ad46a79e2d3a8ed798b00f88d7ba746`.
+The root `vercel.json` had `git.deploymentEnabled: false`, which disabled the native
+Vercel Git deployment path. The GitHub Actions workflow retained quality checks on pushes
+and pull requests, but its actual preview and production deploy jobs were manual-only.
+
+The deployment configuration is being corrected by removing that global Git-deployment
+disable. Vercel's connected Git integration will then create preview deployments for
+pull requests/branches and production deployments from `master`. The GitHub Actions
+workflow remains the quality gate and retains its explicit manual deployment option;
+it is not made a second automatic deployment publisher, avoiding duplicate deployments.
+
+### DNS and proxy status
+
+`shadow313.com` is authoritative on Cloudflare and its apex, wildcard and `www` records
+point to Vercel. All Vercel web records remain DNS-only (gray cloud). This is intentional:
+Vercel's Cloudflare guidance requires the proxy to be disabled for this custom-domain
+setup unless the account has completed Vercel Verified Proxy onboarding. Do not turn on
+the orange cloud for these Vercel origin records as a generic fix. The Domain Connect
+record and CAA records also remain DNS-only. `shadow313.dev` remains on Vercel DNS.
+All four custom domains were verified on the Vercel project at audit time.
+
 ## Scope and limits
 
 Source review of production branch `master` at `c9d9486`, including deployment workflows,
