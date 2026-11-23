@@ -1,5 +1,3 @@
-from __future__ import annotations
-import os
 """
 Shadow313 v3 → v1 Bridge Adapter
 ==================================
@@ -38,19 +36,43 @@ GAP 6 — Thread safety
   Bridge: asyncio.run_in_executor wraps blocking v3 calls
 """
 
+from __future__ import annotations
 
 import asyncio
 import hashlib
 import json
+import os
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Optional, Protocol
 
-# ── v1 imports ─────────────────────────────────────────────────────────────────
-from shadow313.core.kernel import KernelContext, register_command
+
+class KernelContext(Protocol):
+    """Minimum context required by the legacy V3 bridge handlers."""
+
+    session: Any
+    output: Any
+
+
+_REGISTERED_COMMANDS: dict[tuple[str, str], Callable[..., Any]] = {}
+
+
+def register_command(
+    namespace: str,
+    command: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """Keep legacy V3 command handlers discoverable without a v1 kernel import."""
+
+    def decorator(handler: Callable[..., Any]) -> Callable[..., Any]:
+        _REGISTERED_COMMANDS[(namespace, command)] = handler
+        return handler
+
+    return decorator
+
 
 # ── v3 imports (lazy — only loaded when bridge commands are called) ────────────
 _v3_loaded = False
@@ -196,13 +218,14 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> Optional[dict[str, Any]]
     features[0] = severity_score
 
     # Anomaly score from severity + token sensitivity
-    sensitive_tokens = {18, 10, 2, 22, 29, 30}  # lsass, priv_esc, lateral, hollow, tamper, hypervisor
+    # lsass, priv_esc, lateral, hollow, tamper, and hypervisor tokens.
+    sensitive_tokens = {18, 10, 2, 22, 29, 30}
     base_anomaly = severity_score * 0.7
     if token_id in sensitive_tokens:
         base_anomaly = min(1.0, base_anomaly + 0.2)
 
     return {
-        "timestamp":     log_dict.get("timestamp", datetime.now(timezone.utc).isoformat()),
+        "timestamp":     log_dict.get("timestamp", datetime.now(UTC).isoformat()),
         "event_type":    event_type,
         "token_id":      token_id,
         "host":          log_dict.get("host", log_dict.get("source_host", "localhost")),
@@ -220,10 +243,10 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> Optional[dict[str, Any]]
 
 class ModelRegistry:
     """Singleton model registry with lazy loading."""
-    _instance: Optional["ModelRegistry"] = None
+    _instance: Optional[ModelRegistry] = None
     _lock = threading.Lock()
 
-    def __new__(cls) -> "ModelRegistry":
+    def __new__(cls) -> ModelRegistry:
         with cls._lock:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
@@ -283,8 +306,14 @@ class MonitorSession:
             if monitor and hasattr(monitor, "stop"):
                 try:
                     monitor.stop()
-                except Exception:  # nosec
-                    pass  # intentional — monitor stop failure is non-critical
+                except Exception as exc:  # nosec
+                    self.alerts.append(
+                        {
+                            "type": "monitor_stop_error",
+                            "monitor": type(monitor).__name__,
+                            "error": type(exc).__name__,
+                        }
+                    )
         self.is_running = False
 
 
@@ -315,7 +344,10 @@ def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
                "MEDIUM"   if score >= 0.45 else "LOW"))
 
     return {
-        "id":          f"V3-{head.upper()[:8]}-{hashlib.sha3_256(str(detection).encode()).hexdigest()[:6]}",
+        "id": (
+            f"V3-{head.upper()[:8]}-"
+            f"{hashlib.sha3_256(str(detection).encode()).hexdigest()[:6]}"
+        ),
         "tool":        "shadow313_v3_lstm",
         "title":       f"LSTM Detection: {head} (score={score:.3f})",
         "severity":    severity,
@@ -329,7 +361,7 @@ def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
                        f"Review process tree and network connections.",
         "mitre_technique": technique,
         "source":      "v3_lstm_detector",
-        "timestamp":   datetime.now(timezone.utc).isoformat(),
+        "timestamp":   datetime.now(UTC).isoformat(),
     }
 
 
@@ -463,23 +495,32 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     ctx.output.info("Starting v3 ZTAS countermeasure layer...")
 
     def _start_monitors():
+        from shadow313.v3.countermeasures.continuous_eprocess_monitor import (
+            ContinuousEProcessMonitor,
+        )
         from shadow313.v3.countermeasures.ebpf_self_protection import EBPFSelfProtection
-        from shadow313.v3.countermeasures.continuous_eprocess_monitor import ContinuousEProcessMonitor
+
         try:
-            from shadow313.v3.ztas.hypervisor_attestation_bridge import HypervisorAttestationBridge
+            from shadow313.v3.ztas.hypervisor_attestation_bridge import (
+                HypervisorAttestationBridge,
+            )
         except ModuleNotFoundError:
-            HypervisorAttestationBridge = None
+            hypervisor_bridge_class = None
+        else:
+            hypervisor_bridge_class = HypervisorAttestationBridge
 
         def on_alert(alert):
             mon.alerts.append({
                 "type":      getattr(alert, "alert_type", str(alert)),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "token":     getattr(alert, "token", "kernel_tamper"),
             })
 
         mon.ebpf      = EBPFSelfProtection()
         mon.eprocess  = ContinuousEProcessMonitor(on_alert)
-        mon.hypervisor = HypervisorAttestationBridge() if HypervisorAttestationBridge else None
+        mon.hypervisor = (
+            hypervisor_bridge_class() if hypervisor_bridge_class else None
+        )
 
         mon.ebpf.start()
         mon.eprocess.start()
@@ -587,7 +628,10 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
     score     = float(kwargs.get("score", 0.75))
     technique = kwargs.get("technique", "T1055")
     host      = kwargs.get("host", "localhost")
-    dry_run   = kwargs.get("dry_run", True)
+    if not kwargs.get("dry_run", True):
+        ctx.output.warning(
+            "Live containment is disabled; V3 incident response always runs in dry-run mode."
+        )
 
     ctx.output.info(f"v3 Incident Response — score={score:.3f} technique={technique} host={host}")
 
@@ -618,7 +662,7 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
         source_ip      = kwargs.get("ip", os.environ.get("SHADOW313_BIND_HOST", "127.0.0.1")),
         source_user    = kwargs.get("user", "unknown"),
         event_sequence = [],
-        timestamp      = datetime.now(timezone.utc).isoformat(),
+        timestamp      = datetime.now(UTC).isoformat(),
         session_uuid   = ctx.session.session_id,
         raw_features   = [],
     )
@@ -658,7 +702,7 @@ async def v3_attest(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
             SimulatedTPM2,
             TPMSealedAttestationEngine,
         )
-    except ModuleNotFoundError as exc:
+    except ModuleNotFoundError:
         message = (
             "V3 TPM attestation is unavailable: "
             "shadow313.v3.ztas.tpm_sealed_attestation is not included in this checkout."
@@ -691,7 +735,7 @@ async def v3_attest(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     # Full report
     report = await run_blocking(engine.get_full_attestation_report)
 
-    ctx.output.success(f"TPM attestation complete:")
+    ctx.output.success("TPM attestation complete:")
     ctx.output.info(f"  Probe sealed:    {att.probe_id}")
     ctx.output.info(f"  PCR verified:    {result_att.pcr_match}")
     ctx.output.info(f"  Bytecode match:  {result_att.bytecode_match}")
@@ -720,7 +764,10 @@ async def v3_status(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
 
     ctx.output.info("v3 Integration Status:")
     if detector:
-        ctx.output.info(f"  LSTM detector:    loaded ({stats.get('total_sequences_analyzed', 0)} sequences analyzed)")
+        ctx.output.info(
+            "  LSTM detector:    loaded "
+            f"({stats.get('total_sequences_analyzed', 0)} sequences analyzed)"
+        )
     else:
         ctx.output.warning(f"  LSTM detector:    unavailable ({detector_message})")
     ctx.output.info(f"  Active monitors:  {'YES' if mon and mon.is_running else 'NO'}")
