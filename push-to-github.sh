@@ -83,8 +83,12 @@ ok "Remote '$REMOTE': $REMOTE_URL"
 
 is_expected_remote() {
     case "$1" in
-        https://github.com/piyyy314/Shadow313-Nexus|https://github.com/piyyy314/Shadow313-Nexus.git|\\
-        ssh://git@github.com/piyyy314/Shadow313-Nexus|ssh://git@github.com/piyyy314/Shadow313-Nexus.git|\\
+        https://github.com/piyyy314/Shadow313-Nexus|https://github.com/piyyy314/Shadow313-Nexus.git)
+            return 0
+            ;;
+        ssh://git@github.com/piyyy314/Shadow313-Nexus|ssh://git@github.com/piyyy314/Shadow313-Nexus.git)
+            return 0
+            ;;
         git@github.com:piyyy314/Shadow313-Nexus|git@github.com:piyyy314/Shadow313-Nexus.git)
             return 0
             ;;
@@ -93,7 +97,6 @@ is_expected_remote() {
             ;;
     esac
 }
-
 if ! is_expected_remote "$REMOTE_URL"; then
     fail "Remote does not point to piyyy314/Shadow313-Nexus. Refusing to push."
     exit 1
