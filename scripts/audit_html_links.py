@@ -84,7 +84,7 @@ def main() -> int:
             errors.append(f"UNREADABLE HTML: {source}")
             continue
         for attr, raw in source_page.refs:
-            if not raw or raw.startswith("#") or re.match(r"^(?:[a-z][a-z0-9+.-]*:|//)", raw, re.I):
+            if not raw or re.match(r"^(?:[a-z][a-z0-9+.-]*:|//)", raw, re.I):
                 continue
             parsed = urlsplit(raw)
             path = parsed.path
