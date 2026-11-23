@@ -30,5 +30,5 @@ const CNT={install:0,download:0,review:0,publish:0};let idx=0;
 function add(){const e=EVS[idx%EVS.length];idx++;CNT[e.t]=(CNT[e.t]||0)+1;const b=document.getElementById('tb');const ts=new Date().toISOString().slice(11,19);const d=document.createElement('div');d.style.color=e.c;d.textContent=`[${ts}] [${e.t.toUpperCase()}] ${e.m}`;b.appendChild(d);while(b.children.length>100)b.removeChild(b.firstChild);b.scrollTop=b.scrollHeight;document.getElementById('c1').textContent=CNT.install;document.getElementById('c2').textContent=CNT.download;document.getElementById('c3').textContent=CNT.review;document.getElementById('c4').textContent=CNT.publish;}
 setInterval(add,1800);add();
 </script>
-<footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; matarmohamad313@duck.com &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
+<footer class="footer">SHADOW313 NEXUS v4.0.0 &nbsp;·&nbsp; Ottawa, ON, Canada &nbsp;·&nbsp; pitty313@proton.me &nbsp;·&nbsp; <a href="https://github.com/piyyy314/Shadow313-Nexus" style="color:var(--green)">github.com/piyyy314/Shadow313-Nexus</a> &nbsp;·&nbsp; MIT License</footer>
 </body></html>

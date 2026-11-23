@@ -300,7 +300,7 @@ def build_index(manifest: dict, port: int) -> str:
   </div>
 </div>
 <div class="footer">
-  S313 NEXUS v{manifest['platform_version']} · Delivery Portal · Ottawa, ON, Canada · matarmohamad313@duck.com<br>
+  S313 NEXUS v{manifest['platform_version']} · Delivery Portal · Ottawa, ON, Canada · pitty313@proton.me<br>
   Delivery ID: {manifest['delivery_id']} · Git: {manifest['git_sha']} · {manifest['generated_at'][:10]}
 </div>
 <script>
