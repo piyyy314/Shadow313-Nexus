@@ -662,7 +662,6 @@ class TestCrossVersionDataFlow:
     def test_v1_session_id_attribute_exists(self):
         """v1 Session must have .id attribute (GAP-1 from stress_test)."""
         from shadow313.core.session import Session
-        import tempfile
         with tempfile.TemporaryDirectory() as d:
             s = Session(sessions_dir=d)
             assert hasattr(s, "id"), "Session.id attribute missing — breaks stress_test GAP-1"
