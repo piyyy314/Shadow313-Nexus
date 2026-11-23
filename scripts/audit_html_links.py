@@ -17,13 +17,16 @@ class Links(HTMLParser):
     def __init__(self, source: str):
         super().__init__(convert_charrefs=True)
         self.refs: list[tuple[str, str]] = []
-        self.ids: set[str] = set()\n        self.views: set[str] = set()
+        self.ids: set[str] = set()
+        self.views: set[str] = set()
         self.feed(source)
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if attrs.get("id"):
             self.ids.add(attrs["id"])
+        if attrs.get("data-view"):
+            self.views.add(attrs["data-view"])
         for key in ("href", "src", "action", "poster"):
             value = attrs.get(key)
             if value:
@@ -32,7 +35,7 @@ class Links(HTMLParser):
 
 def normalize(path: str) -> str:
     parts: list[str] = []
-    for part in path.replace("\\", "/").split("/"):
+    for part in path.split("/"):
         if part in ("", "."):
             continue
         if part == "..":
@@ -88,8 +91,12 @@ def main() -> int:
                 continue
             parsed = urlsplit(raw)
             path = parsed.path
+            if path.startswith("/_vercel/"):
+                continue  # Vercel injects these managed analytics endpoints at deploy time.
             if not path:
                 target = source
+            elif path.startswith("/api/"):
+                target = "api/index.js"
             elif path.startswith("/"):
                 target = rewrites.get(path, path.lstrip("/"))
                 if target == path.lstrip("/") and path.endswith("/"):
@@ -109,7 +116,12 @@ def main() -> int:
             checked += 1
             if parsed.fragment and target.lower().endswith((".html", ".htm")):
                 target_page = page(target)
-                if target_page is not None and parsed.fragment not in target_page.ids and not (parsed.fragment in target_page.views and "view-" + parsed.fragment in target_page.ids):
+                valid_spa_view = (
+                    target_page is not None
+                    and parsed.fragment in target_page.views
+                    and "view-" + parsed.fragment in target_page.ids
+                )
+                if target_page is not None and parsed.fragment not in target_page.ids and not valid_spa_view:
                     errors.append(f"BROKEN FRAGMENT: {source} -> {raw} (#{parsed.fragment} absent in {target})")
 
     print(f"HTML files scanned: {len(tracked)}")
