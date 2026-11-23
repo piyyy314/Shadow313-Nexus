@@ -28,7 +28,7 @@ Run Python tests with `python -m pytest tests/ -q --tb=short` and lint with `ruf
 - No hardcoded credentials
 
 ## Security Vulnerabilities
-Report privately: matarmohamad313@duck.com — see SECURITY.md
+Report privately: pitty313@proton.me — see SECURITY.md
 
 ## License
 Contributions licensed under MIT.
