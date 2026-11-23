@@ -77,12 +77,12 @@ def register_command(
 # ── v3 imports (lazy — only loaded when bridge commands are called) ────────────
 _v3_loaded = False
 _lstm_detector = None
-_ir_engine     = None
-_ebpf_system   = None
-_eprocess_mon  = None
-_hypervisor    = None
-_tpm_engine    = None
-_bridge_lock   = threading.Lock()
+_ir_engine = None
+_ebpf_system = None
+_eprocess_mon = None
+_hypervisor = None
+_tpm_engine = None
+_bridge_lock = threading.Lock()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -93,83 +93,83 @@ _bridge_lock   = threading.Lock()
 # v3 EVENT_TOKENS has 20 tokens (IDs 0-19) + extended tokens up to 32
 _TOKEN_MAP: dict[str, int] = {
     # Process events
-    "process_creation":      0,
-    "process_create":        0,
-    "new_process":           0,
+    "process_creation": 0,
+    "process_create": 0,
+    "new_process": 0,
     # Network
-    "network_outbound":      1,
-    "outbound_connection":   1,
-    "tcp_connect":           1,
-    "network_lateral":       2,
-    "lateral_movement":      2,
-    "smb_connect":           2,
-    "dns_query":             3,
-    "dns_request":           3,
+    "network_outbound": 1,
+    "outbound_connection": 1,
+    "tcp_connect": 1,
+    "network_lateral": 2,
+    "lateral_movement": 2,
+    "smb_connect": 2,
+    "dns_query": 3,
+    "dns_request": 3,
     # Registry
-    "registry_write":        4,
-    "reg_set_value":         4,
+    "registry_write": 4,
+    "reg_set_value": 4,
     # Image/DLL load
-    "image_load":            5,
-    "dll_load":              5,
-    "module_load":           5,
+    "image_load": 5,
+    "dll_load": 5,
+    "module_load": 5,
     # File
-    "file_create":           6,
-    "file_write":            6,
-    "file_delete":           7,
-    "file_deletion":         7,
+    "file_create": 6,
+    "file_write": 6,
+    "file_delete": 7,
+    "file_deletion": 7,
     # Auth
-    "logon_success":         8,
-    "authentication":        8,
-    "logon_failure":         9,
-    "auth_failure":          9,
-    "brute_force":           9,
+    "logon_success": 8,
+    "authentication": 8,
+    "logon_failure": 9,
+    "auth_failure": 9,
+    "brute_force": 9,
     # Privilege
-    "privilege_escalation":  10,
-    "priv_esc":              10,
-    "setuid":                10,
+    "privilege_escalation": 10,
+    "priv_esc": 10,
+    "setuid": 10,
     # Script
-    "script_execution":      11,
-    "powershell":            11,
-    "cmd_execution":         11,
+    "script_execution": 11,
+    "powershell": 11,
+    "cmd_execution": 11,
     # Service
-    "service_install":       12,
-    "service_create":        12,
+    "service_install": 12,
+    "service_create": 12,
     # Scheduled task
-    "scheduled_task":        13,
-    "cron_job":              13,
+    "scheduled_task": 13,
+    "cron_job": 13,
     # WMI
-    "wmi_event":             14,
-    "wmi_subscription":      14,
+    "wmi_event": 14,
+    "wmi_subscription": 14,
     # Named pipe
-    "named_pipe":            15,
-    "pipe_create":           15,
+    "named_pipe": 15,
+    "pipe_create": 15,
     # Network share
-    "network_share":         16,
-    "share_access":          16,
+    "network_share": 16,
+    "share_access": 16,
     # Kerberos
-    "kerberos_ticket":       17,
-    "kerberoasting":         17,
+    "kerberos_ticket": 17,
+    "kerberoasting": 17,
     # LSASS
-    "lsass_access":          18,
-    "credential_dump":       18,
-    "memory_read":           18,
+    "lsass_access": 18,
+    "credential_dump": 18,
+    "memory_read": 18,
     # Network events
-    "network_event":         19,
-    "packet_capture":        19,
+    "network_event": 19,
+    "packet_capture": 19,
     # Extended tokens (v3 hardware_head)
-    "memory_access":         20,
-    "memory_write":          21,
-    "memory_hollow":         22,
-    "rf_telemetry":          23,
-    "gps_anomaly":           24,
-    "firmware_write":        25,
-    "kernel_hook":           26,
-    "etw_syscall":           27,
-    "ebpf_syscall":          28,
-    "kernel_tamper":         29,
-    "hypervisor_alert":      30,
-    "process_anomaly":       31,
-    "memory_rate_burst":     32,
+    "memory_access": 20,
+    "memory_write": 21,
+    "memory_hollow": 22,
+    "rf_telemetry": 23,
+    "gps_anomaly": 24,
+    "firmware_write": 25,
+    "kernel_hook": 26,
+    "etw_syscall": 27,
+    "ebpf_syscall": 28,
+    "kernel_tamper": 29,
+    "hypervisor_alert": 30,
+    "process_anomaly": 31,
+    "memory_rate_burst": 32,
 }
 
 _DEFAULT_FEATURES = [0.0] * 20  # 20-dim baseline feature vector
@@ -193,12 +193,17 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> dict[str, Any] | None:
 
     # Determine token from event_type field
     event_type = (
-        log_dict.get("event_type") or
-        log_dict.get("type") or
-        log_dict.get("alert_type") or
-        log_dict.get("category") or
-        "network_event"
-    ).lower().replace(" ", "_").replace("-", "_")
+        (
+            log_dict.get("event_type")
+            or log_dict.get("type")
+            or log_dict.get("alert_type")
+            or log_dict.get("category")
+            or "network_event"
+        )
+        .lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+    )
 
     # Find best token match
     token_id = None
@@ -226,14 +231,14 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> dict[str, Any] | None:
 
     return {
         "timestamp": log_dict.get("timestamp", datetime.now(UTC).isoformat()),
-        "event_type":    event_type,
-        "token_id":      token_id,
-        "host":          log_dict.get("host", log_dict.get("source_host", "localhost")),
-        "process":       log_dict.get("process", log_dict.get("comm", "unknown")),
-        "severity":      severity,
+        "event_type": event_type,
+        "token_id": token_id,
+        "host": log_dict.get("host", log_dict.get("source_host", "localhost")),
+        "process": log_dict.get("process", log_dict.get("comm", "unknown")),
+        "severity": severity,
         "anomaly_score": base_anomaly,
-        "features":      features,
-        "raw":           log_dict,
+        "features": features,
+        "raw": log_dict,
     }
 
 
@@ -241,8 +246,10 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> dict[str, Any] | None:
 # GAP 5 FIX: Model Registry — lazy loading per session
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 class ModelRegistry:
     """Singleton model registry with lazy loading."""
+
     _instance: ModelRegistry | None = None
     _lock = threading.Lock()
 
@@ -289,17 +296,19 @@ class ModelRegistry:
 # GAP 3 FIX: Session Monitor — manages v3 lifecycle per v1 session
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @dataclass
 class MonitorSession:
     """Tracks active v3 monitors for a v1 session."""
-    session_id:   str
-    ebpf:         Any = None
-    eprocess:     Any = None
-    hypervisor:   Any = None
-    tpm:          Any = None
-    started_at:   float = field(default_factory=time.time)
-    alerts:       list = field(default_factory=list)
-    is_running:   bool = False
+
+    session_id: str
+    ebpf: Any = None
+    eprocess: Any = None
+    hypervisor: Any = None
+    tpm: Any = None
+    started_at: float = field(default_factory=time.time)
+    alerts: list = field(default_factory=list)
+    is_running: bool = False
 
     def stop_all(self) -> None:
         for monitor in [self.ebpf, self.eprocess, self.hypervisor]:
@@ -332,35 +341,37 @@ def get_or_create_monitor(session_id: str) -> MonitorSession:
 # GAP 4 FIX: Result Adapter — v3 dict → v1 Finding format
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
     """Convert a v3 detection result to a v1 Finding object."""
-    score     = detection.get("score", detection.get("ensemble_score", 0.0))
-    head      = detection.get("head_name", detection.get("chain_name", "unknown"))
+    score = detection.get("score", detection.get("ensemble_score", 0.0))
+    head = detection.get("head_name", detection.get("chain_name", "unknown"))
     technique = detection.get("technique", "T0000")
-    host      = detection.get("source_host", detection.get("host", "unknown"))
+    host = detection.get("source_host", detection.get("host", "unknown"))
 
-    severity = "CRITICAL" if score >= 0.85 else (
-               "HIGH"     if score >= 0.65 else (
-               "MEDIUM"   if score >= 0.45 else "LOW"))
+    severity = (
+        "CRITICAL"
+        if score >= 0.85
+        else ("HIGH" if score >= 0.65 else ("MEDIUM" if score >= 0.45 else "LOW"))
+    )
 
     return {
         "id": (
-            f"V3-{head.upper()[:8]}-"
-            f"{hashlib.sha3_256(str(detection).encode()).hexdigest()[:6]}"
+            f"V3-{head.upper()[:8]}-" f"{hashlib.sha3_256(str(detection).encode()).hexdigest()[:6]}"
         ),
-        "tool":        "shadow313_v3_lstm",
-        "title":       f"LSTM Detection: {head} (score={score:.3f})",
-        "severity":    severity,
+        "tool": "shadow313_v3_lstm",
+        "title": f"LSTM Detection: {head} (score={score:.3f})",
+        "severity": severity,
         "description": (
             f"v3 LSTM ensemble detected {head} pattern on {host}. "
             f"Score: {score:.4f}. Technique: {technique}. "
             f"Chain: {detection.get('chain_name', 'unknown')}."
         ),
-        "data":        detection,
+        "data": detection,
         "remediation": f"Investigate {technique} activity on {host}. "
-                       f"Review process tree and network connections.",
+        f"Review process tree and network connections.",
         "mitre_technique": technique,
-        "source":      "v3_lstm_detector",
+        "source": "v3_lstm_detector",
         "timestamp": datetime.now(UTC).isoformat(),
     }
 
@@ -368,6 +379,7 @@ def adapt_detection_to_finding(detection: dict[str, Any]) -> dict[str, Any]:
 # ══════════════════════════════════════════════════════════════════════════════
 # GAP 6 FIX: Async wrapper for blocking v3 calls
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 async def run_blocking(fn: Callable, *args, **kwargs) -> Any:
     """Run a blocking v3 function in a thread pool executor."""
@@ -379,6 +391,7 @@ async def run_blocking(fn: Callable, *args, **kwargs) -> Any:
 # V1 COMMAND HANDLERS — registered on the v1 command bus
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @register_command("v3", "detect")
 async def v3_detect(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     """
@@ -387,9 +400,9 @@ async def v3_detect(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     Usage: shadow313 v3 detect --log-file /var/log/syslog
            shadow313 v3 detect --events '[{"event_type":"lsass_access",...}]'
     """
-    log_file   = kwargs.get("log_file")
+    log_file = kwargs.get("log_file")
     events_raw = kwargs.get("events", [])
-    host       = kwargs.get("host", "localhost")
+    host = kwargs.get("host", "localhost")
 
     ctx.output.info("Initializing v3 LSTM detection engine...")
 
@@ -418,12 +431,14 @@ async def v3_detect(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
                     events.append(json.loads(line))
                 except json.JSONDecodeError:
                     # Plain text log line — wrap as generic event
-                    events.append({
-                        "event_type": "network_event",
-                        "host": host,
-                        "raw_line": line,
-                        "severity": "LOW",
-                    })
+                    events.append(
+                        {
+                            "event_type": "network_event",
+                            "host": host,
+                            "raw_line": line,
+                            "severity": "LOW",
+                        }
+                    )
     elif isinstance(events_raw, list):
         events = events_raw
     elif isinstance(events_raw, str):
@@ -468,10 +483,10 @@ async def v3_detect(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
 
     # Persist to session
     result = {
-        "success":    True,
+        "success": True,
         "events_analyzed": len(events),
         "detections": detections,
-        "stats":      detector.get_stats(),
+        "stats": detector.get_stats(),
     }
     ctx.session.write("v3_detections.json", result)
     return result
@@ -510,17 +525,17 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
             hypervisor_bridge_class = HypervisorAttestationBridge
 
         def on_alert(alert):
-            mon.alerts.append({
-                "type":      getattr(alert, "alert_type", str(alert)),
+            mon.alerts.append(
+                {
+                    "type": getattr(alert, "alert_type", str(alert)),
                     "timestamp": datetime.now(UTC).isoformat(),
-                "token":     getattr(alert, "token", "kernel_tamper"),
-            })
+                    "token": getattr(alert, "token", "kernel_tamper"),
+                }
+            )
 
-        mon.ebpf      = EBPFSelfProtection()
-        mon.eprocess  = ContinuousEProcessMonitor(on_alert)
-        mon.hypervisor = (
-            hypervisor_bridge_class() if hypervisor_bridge_class else None
-        )
+        mon.ebpf = EBPFSelfProtection()
+        mon.eprocess = ContinuousEProcessMonitor(on_alert)
+        mon.hypervisor = hypervisor_bridge_class() if hypervisor_bridge_class else None
 
         mon.ebpf.start()
         mon.eprocess.start()
@@ -539,12 +554,12 @@ async def v3_monitor_start(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
         ctx.output.warning("  ! Hypervisor attestation bridge unavailable in this checkout")
 
     return {
-        "success":    True,
-        "available":  True,
+        "success": True,
+        "available": True,
         "session_id": session_id,
-        "monitors":   active_monitors,
+        "monitors": active_monitors,
         "unavailable_monitors": [] if mon.hypervisor else ["hypervisor"],
-        "message":    "Available v3 ZTAS monitors started",
+        "message": "Available v3 ZTAS monitors started",
     }
 
 
@@ -565,11 +580,11 @@ async def v3_monitor_status(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]
     # Collect scores from each monitor
     scores = {}
     if mon.ebpf:
-        scores["ebpf"]      = mon.ebpf.get_composite_score()
+        scores["ebpf"] = mon.ebpf.get_composite_score()
     if mon.eprocess:
-        scores["eprocess"]  = mon.eprocess.get_composite_score()
+        scores["eprocess"] = mon.eprocess.get_composite_score()
     if mon.hypervisor:
-        scores["hypervisor"]= mon.hypervisor.get_composite_score()
+        scores["hypervisor"] = mon.hypervisor.get_composite_score()
 
     composite = max(scores.values()) if scores else 0.0
 
@@ -581,12 +596,12 @@ async def v3_monitor_status(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]
     ctx.output.info(f"  Composite score: {composite:.4f}")
 
     return {
-        "success":         True,
-        "running":         True,
-        "layer_scores":    scores,
+        "success": True,
+        "running": True,
+        "layer_scores": scores,
         "composite_score": composite,
-        "alerts":          mon.alerts[-10:],  # Last 10 alerts
-        "uptime_s":        time.time() - mon.started_at,
+        "alerts": mon.alerts[-10:],  # Last 10 alerts
+        "uptime_s": time.time() - mon.started_at,
     }
 
 
@@ -607,10 +622,10 @@ async def v3_monitor_stop(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     await run_blocking(mon.stop_all)
 
     report = {
-        "session_id":  session_id,
-        "uptime_s":    time.time() - mon.started_at,
-        "total_alerts":len(mon.alerts),
-        "alerts":      mon.alerts,
+        "session_id": session_id,
+        "uptime_s": time.time() - mon.started_at,
+        "total_alerts": len(mon.alerts),
+        "alerts": mon.alerts,
     }
     ctx.session.write("v3_monitor_report.json", report)
 
@@ -625,9 +640,9 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
 
     Usage: shadow313 v3 ir --score 0.92 --technique T1003.001 --host 192.168.1.10
     """
-    score     = float(kwargs.get("score", 0.75))
+    score = float(kwargs.get("score", 0.75))
     technique = kwargs.get("technique", "T1055")
-    host      = kwargs.get("host", "localhost")
+    host = kwargs.get("host", "localhost")
     if not kwargs.get("dry_run", True):
         ctx.output.warning(
             "Live containment is disabled; V3 incident response always runs in dry-run mode."
@@ -652,19 +667,19 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
     import uuid
 
     alert = ThreatAlert(
-        alert_id       = str(uuid.uuid4())[:8],
-        head_name      = kwargs.get("head", "c2_head"),
-        score          = score,
-        threshold      = 0.65,
-        technique      = technique,
-        technique_name = kwargs.get("technique_name", technique),
-        source_host    = host,
-        source_ip      = kwargs.get("ip", os.environ.get("SHADOW313_BIND_HOST", "127.0.0.1")),
-        source_user    = kwargs.get("user", "unknown"),
-        event_sequence = [],
+        alert_id=str(uuid.uuid4())[:8],
+        head_name=kwargs.get("head", "c2_head"),
+        score=score,
+        threshold=0.65,
+        technique=technique,
+        technique_name=kwargs.get("technique_name", technique),
+        source_host=host,
+        source_ip=kwargs.get("ip", os.environ.get("SHADOW313_BIND_HOST", "127.0.0.1")),
+        source_user=kwargs.get("user", "unknown"),
+        event_sequence=[],
         timestamp=datetime.now(UTC).isoformat(),
-        session_uuid   = ctx.session.session_id,
-        raw_features   = [],
+        session_uuid=ctx.session.session_id,
+        raw_features=[],
     )
 
     # GAP 6: process_alert is synchronous
@@ -675,10 +690,10 @@ async def v3_incident_response(ctx: KernelContext, **kwargs: Any) -> dict[str, A
         ctx.output.info(f"  Tier:     {incident.response_tier}")
         ctx.output.info(f"  Actions:  {len(incident.containment_actions)}")
         result = {
-            "success":     True,
+            "success": True,
             "incident_id": incident.incident_id,
-            "tier":        str(incident.response_tier),
-            "actions":     len(incident.containment_actions),
+            "tier": str(incident.response_tier),
+            "actions": len(incident.containment_actions),
         }
     else:
         ctx.output.info("IR: Score below threshold — monitoring only")
@@ -716,21 +731,17 @@ async def v3_attest(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
         }
     import hashlib
 
-    tpm    = SimulatedTPM2()
+    tpm = SimulatedTPM2()
     engine = TPMSealedAttestationEngine(tpm)
 
     # Seal a probe
     bytecode = hashlib.sha512(b"shadow313_kprobe_NtReadVirtualMemory_v3").digest()
     att = await run_blocking(
-        engine.load_and_seal_probe,
-        "probe_lsass", "NtReadVirtualMemory", bytecode
+        engine.load_and_seal_probe, "probe_lsass", "NtReadVirtualMemory", bytecode
     )
 
     # Verify
-    result_att = await run_blocking(
-        engine.verify_probe_integrity,
-        "probe_lsass", bytecode
-    )
+    result_att = await run_blocking(engine.verify_probe_integrity, "probe_lsass", bytecode)
 
     # Full report
     report = await run_blocking(engine.get_full_attestation_report)
@@ -774,10 +785,10 @@ async def v3_status(ctx: KernelContext, **kwargs: Any) -> dict[str, Any]:
     ctx.output.info(f"  Model registry:   {len(registry._models)} models loaded")
 
     return {
-        "success":         True,
-        "lstm_loaded":     detector is not None,
-        "lstm_available":  detector is not None,
-        "lstm_message":    detector_message,
+        "success": True,
+        "lstm_loaded": detector is not None,
+        "lstm_available": detector is not None,
+        "lstm_message": detector_message,
         "monitors_active": bool(mon and mon.is_running),
-        "lstm_stats":      stats,
+        "lstm_stats": stats,
     }
