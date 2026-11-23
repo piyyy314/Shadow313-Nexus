@@ -84,6 +84,17 @@ if [[ ! "$REMOTE_URL" =~ github\.com[:/]piyyy314/Shadow313-Nexus(\.git)?$ ]]; th
     fail "Remote does not point to piyyy314/Shadow313-Nexus. Refusing to push."
     exit 1
 fi
+mapfile -t PUSH_URLS < <(git remote get-url --push --all "$REMOTE" 2>/dev/null)
+if (("${#PUSH_URLS[@]}" == 0)); then
+    fail "Remote '$REMOTE' has no configured push URL. Refusing to push."
+    exit 1
+fi
+for PUSH_URL in "${PUSH_URLS[@]}"; do
+    if [[ ! "$PUSH_URL" =~ github\\.com[:/]piyyy314/Shadow313-Nexus(\\.git)?$ ]]; then
+        fail "Remote '$REMOTE' push URL does not point to piyyy314/Shadow313-Nexus. Refusing to push."
+        exit 1
+    fi
+done
 
 # ── Step 3: Check status ──────────────────────────────────────────────────────
 step "3/8 — Checking current branch and status"
