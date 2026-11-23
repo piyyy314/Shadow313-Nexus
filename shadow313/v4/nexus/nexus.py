@@ -127,7 +127,7 @@ class NEXUSModule:
                 for line in audit_path.read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             return {
                 "valid": False,
                 "status": "malformed_audit_log",
@@ -172,18 +172,30 @@ class NEXUSModule:
             except Exception as exc:
                 verification = {"valid": False, "error": str(exc)}
 
+            if not isinstance(verification, dict):
+                verification = {
+                    "valid": False,
+                    "error": "Receipt verifier returned an invalid result",
+                }
+
             verification_checks = verification.get("checks", {})
+            if not isinstance(verification_checks, dict):
+                verification_checks = {}
+
+            signature_verified = verification_checks.get("signature_verified") is True
+            sha3_512_matches = verification_checks.get("sha3_512_matches") is True
+            cryptographically_verified = (
+                verification.get("valid") is True
+                and signature_verified
+                and sha3_512_matches
+            )
             checks.append(
                 {
                     "receipt_id": receipt_id or None,
-                    "valid": verification.get("valid") is True,
-                    "signature_verified": (
-                        verification_checks.get("signature_verified") is True
-                    ),
+                    "valid": cryptographically_verified,
+                    "signature_verified": signature_verified,
                     "signer_trusted": verification_checks.get("signer_trusted") is True,
-                    "sha3_512_matches": (
-                        verification_checks.get("sha3_512_matches") is True
-                    ),
+                    "sha3_512_matches": sha3_512_matches,
                     "error": verification.get("error"),
                 }
             )
