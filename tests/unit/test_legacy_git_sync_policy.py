@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_bash_sync_helper_rejects_protected_branches_and_scans_secrets():
     source = (ROOT / "push-to-github.sh").read_text(encoding="utf-8")
     assert '"$BRANCH_NAME" =~ ^(master|main)$' in source
-    assert "REMOTE_PATTERN" in source
+    assert "is_expected_remote" in source
     assert "https://github\\.com/piyyy314/Shadow313-Nexus" in source
     assert "git@github\\.com:piyyy314/Shadow313-Nexus" in source
     assert 'git remote get-url --push --all "$REMOTE"' in source
