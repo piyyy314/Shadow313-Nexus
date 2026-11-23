@@ -1,4 +1,3 @@
-from __future__ import annotations
 """
 shadow313.v4.temporal_binding.temporal_binding  — v4 NEXUS
 313 Temporal Binding Protocol — the core NEXUS differentiator.
@@ -26,9 +25,12 @@ BUG FIXES:
   - IPFS anchor used requests library without timeout — switched to urllib
     with 15s timeout.
 """
+from __future__ import annotations
+
 import hashlib
 import hmac
 import json
+import logging
 import os
 import time
 from datetime import datetime, timezone
@@ -75,8 +77,10 @@ def _load_bind_counter() -> int:
     if _BIND_COUNTER_FILE.exists():
         try:
             return json.loads(_BIND_COUNTER_FILE.read_text()).get("counter", 0)
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.getLogger(__name__).warning(
+                "Unable to read temporal binding counter; starting at zero: %s", exc
+            )
     return 0
 
 
@@ -131,7 +135,7 @@ def _load_or_create_pqc_keypair(
     while lock_fd is None:
         try:
             lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-        except FileExistsError:
+        except FileExistsError as lock_error:
             if key_path.exists():
                 return read_keypair()
             try:
@@ -141,7 +145,9 @@ def _load_or_create_pqc_keypair(
             except FileNotFoundError:
                 continue
             if time.monotonic() >= deadline:
-                raise TimeoutError(f"Timed out waiting for signing-key lock: {lock_path}")
+                raise TimeoutError(
+                    f"Timed out waiting for signing-key lock: {lock_path}"
+                ) from lock_error
             time.sleep(0.05)
 
     try:
@@ -305,13 +311,13 @@ def _anchor_ipfs(content: str) -> str:
     from urllib import request as urlreq
     try:
         data = content.encode()
-        req  = urlreq.Request(
+        req = urlreq.Request(  # noqa: S310 - fixed localhost IPFS daemon endpoint
             f"{_IPFS_API}/api/v0/add",
             data=data,
             headers={"Content-Type": "application/octet-stream"},
             method="POST",
         )
-        with urlreq.urlopen(req, timeout=15) as resp:
+        with urlreq.urlopen(req, timeout=15) as resp:  # noqa: S310 - fixed localhost IPFS daemon endpoint
             result = json.loads(resp.read())
             return result.get("Hash", "")
     except Exception:
@@ -355,7 +361,9 @@ class Bind313Receipt:
             "receipt_id":   self.receipt_id,
             "bind_index":   self.bind_index,
             "timestamp":    self.timestamp,
-            "timestamp_iso":datetime.fromtimestamp(self.timestamp / 1e9, tz=timezone.utc).isoformat(),
+            "timestamp_iso": datetime.fromtimestamp(
+                self.timestamp / 1e9, tz=timezone.utc  # noqa: UP017 - Python 3.10 compatibility
+            ).isoformat(),
             "sha3_512":     self.sha3_512,
             "slh_sig":      self.slh_sig[:64] + "…" if len(self.slh_sig) > 64 else self.slh_sig,
             "slh_sig_full": self.slh_sig,
@@ -533,8 +541,10 @@ class TemporalBindingEngine:
                         key=lambda p: p.stat().st_mtime, reverse=True)[:limit]:
             try:
                 receipts.append(json.loads(f.read_text()))
-            except Exception:
-                pass
+            except Exception as exc:
+                logging.getLogger(__name__).warning(
+                    "Skipping unreadable temporal receipt %s: %s", f, exc
+                )
         return receipts
 
     def _save_receipt(self, receipt: Bind313Receipt) -> None:
@@ -567,8 +577,10 @@ class TemporalBindingModule:
             findings = self.session.read("findings.json") or {}
             receipt  = self.engine.bind(findings, self.session.id, module)
             return receipt
-        except Exception as _exc:  # S01-fixed
-            import logging as _log; _log.getLogger(__name__).debug("suppressed: %s", _exc)
+        except Exception as exc:  # S01-fixed
+            logging.getLogger(__name__).debug(
+                "Unable to bind session findings: %s", exc
+            )
             return None
 
     def run(
@@ -607,10 +619,20 @@ class TemporalBindingModule:
 
         if list_receipts:
             receipts = self.engine.list_receipts()
-            rows = [[r.get("receipt_id",""), r.get("timestamp_iso","")[:19],
-                     r.get("module",""), r.get("ipfs_cid","")[:20]+"…"]
-                    for r in receipts]
-            self.out.table(["Receipt ID","Timestamp","Module","IPFS CID"], rows, "313-BIND Receipts")
+            rows = [
+                [
+                    receipt.get("receipt_id", ""),
+                    receipt.get("timestamp_iso", "")[:19],
+                    receipt.get("module", ""),
+                    receipt.get("ipfs_cid", "")[:20] + "…",
+                ]
+                for receipt in receipts
+            ]
+            self.out.table(
+                ["Receipt ID", "Timestamp", "Module", "IPFS CID"],
+                rows,
+                "313-BIND Receipts",
+            )
             result["receipts"] = receipts
 
         return result
