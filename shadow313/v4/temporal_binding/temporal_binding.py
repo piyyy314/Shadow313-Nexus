@@ -298,6 +298,7 @@ def _canonical_bind_payload(
 
 # ── IPFS anchoring ────────────────────────────────────────────────────────────
 
+
 def _anchor_ipfs(content: str) -> str:
     """
     Anchor content to IPFS. Returns CID or local hash fallback.
@@ -385,7 +386,6 @@ class Bind313Receipt:
 
 
 # ── Temporal Binding Engine ───────────────────────────────────────────────────
-
 
 
 class TemporalBindingEngine:
@@ -554,7 +554,6 @@ class TemporalBindingEngine:
 
 
 # ── TemporalBindingModule ─────────────────────────────────────────────────────
-
 
 
 class TemporalBindingModule:
