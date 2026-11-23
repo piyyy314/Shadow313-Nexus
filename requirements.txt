@@ -34,5 +34,5 @@ click>=8.2.1
 python-dotenv>=1.2.4
 pyyaml>=6.0.3
 toml>=0.10.2
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=4.1.2 # not directly required, pinned by Snyk to avoid a vulnerability
 pygments>=2.20.0 # not directly required, pinned by Snyk to avoid a vulnerability
