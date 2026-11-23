@@ -21,7 +21,14 @@ def test_delivery_forces_tracking_of_ignored_artifacts():
         / "workflows"
         / "deliver.yml"
     )
-    assert "git add -f dist/manifest.json dist/receipts/" in workflow.read_text()
+    content = workflow.read_text()
+    assert "delivery-records-${{ github.run_id }}" in content
+    assert "retention-days: 30" in content
+    assert "actions/upload-pages-artifact@v5" in content
+    assert "actions/deploy-pages@v5" in content
+    assert "git push origin HEAD:master" not in content
+    assert "contents: write" not in content
+    assert "commit-manifest:" not in content
 
 
 def test_receipts_round_trip_metadata_sequence_and_full_signature():

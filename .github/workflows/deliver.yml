@@ -1,5 +1,6 @@
 # Shadow313 NEXUS — Automated Delivery Pipeline
-# Publishes the versioned dist/ delivery portal and commits the exact same records.
+# Publishes the versioned dist/ delivery portal and preserves exact records as CI artifacts.
+# Generated delivery metadata must not be pushed back to master: Vercel requires verified Git commits.
 
 name: Delivery Pipeline
 
@@ -97,7 +98,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload exact manifest and receipt records for repository commit
+      - name: Preserve exact manifest and receipt records for audit
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: delivery-records-${{ github.run_id }}
@@ -105,7 +106,7 @@ jobs:
             dist/manifest.json
             dist/receipts/
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 30
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -126,38 +127,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy GitHub Pages delivery portal
+      - name: Deploy delivery portal to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-
-  commit-manifest:
-    name: Commit the same manifest and receipts
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-24.04
-    needs: build
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          token: ${{ github.token }}
-
-      - name: Download the exact records used by the Pages artifact
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: delivery-records-${{ github.run_id }}
-          path: dist/
-
-      - name: Commit generated records without rewriting history
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f dist/manifest.json dist/receipts/
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo "No delivery-record changes to commit."
-          else
-            git commit -m "chore(delivery): record ${{ needs.build.outputs.delivery_id }} [skip ci]"
-            git push origin HEAD:master
-          fi
