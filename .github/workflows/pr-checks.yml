@@ -41,14 +41,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve current PR base SHA
+      - name: Resolve comparison base SHA
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
-          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
-          GH_TOKEN: ${{ github.token }}
+          EVENT_BEFORE: ${{ github.event.before || '' }}
         run: |
-          git fetch origin "$BASE_REF" --depth=1
-          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
+          if [[ "$GITHUB_EVENT_NAME" == "push" && -n "$EVENT_BEFORE" && "$EVENT_BEFORE" != "0000000000000000000000000000000000000000" ]]; then
+            BASE_SHA="$EVENT_BEFORE"
+          else
+            git fetch origin "$BASE_REF" --depth=1
+            BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          fi
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -176,14 +180,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve current PR base SHA
+      - name: Resolve comparison base SHA
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
-          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
-          GH_TOKEN: ${{ github.token }}
+          EVENT_BEFORE: ${{ github.event.before || '' }}
         run: |
-          git fetch origin "$BASE_REF" --depth=1
-          echo "BASE_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
+          if [[ "$GITHUB_EVENT_NAME" == "push" && -n "$EVENT_BEFORE" && "$EVENT_BEFORE" != "0000000000000000000000000000000000000000" ]]; then
+            BASE_SHA="$EVENT_BEFORE"
+          else
+            git fetch origin "$BASE_REF" --depth=1
+            BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          fi
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}

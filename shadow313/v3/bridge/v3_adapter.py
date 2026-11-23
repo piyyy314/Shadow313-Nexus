@@ -48,7 +48,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 
 class KernelContext(Protocol):
@@ -175,7 +175,7 @@ _TOKEN_MAP: dict[str, int] = {
 _DEFAULT_FEATURES = [0.0] * 20  # 20-dim baseline feature vector
 
 
-def normalize_log_to_event(log_dict: dict[str, Any]) -> Optional[dict[str, Any]]:
+def normalize_log_to_event(log_dict: dict[str, Any]) -> dict[str, Any] | None:
     """
     Convert a v1 log dict to a v3-compatible event dict.
 
@@ -243,7 +243,7 @@ def normalize_log_to_event(log_dict: dict[str, Any]) -> Optional[dict[str, Any]]
 
 class ModelRegistry:
     """Singleton model registry with lazy loading."""
-    _instance: Optional[ModelRegistry] = None
+    _instance: ModelRegistry | None = None
     _lock = threading.Lock()
 
     def __new__(cls) -> ModelRegistry:
