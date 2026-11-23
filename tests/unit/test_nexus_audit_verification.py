@@ -21,6 +21,12 @@ class FakeOutput:
     def __init__(self):
         self.messages = []
 
+    def section(self, message):
+        self.messages.append(message)
+
+    def result(self, data, title=""):
+        self.messages.append((title, data))
+
     def warn(self, message):
         self.messages.append(message)
 
@@ -186,3 +192,25 @@ def test_legacy_presence_only_verifier_cannot_claim_receipt_integrity(tmp_path):
     assert result["invalid_receipts"] == [receipt["receipt_id"]]
     assert result["tamper_evident"] is False
 
+
+
+def test_bare_nexus_command_defaults_to_status():
+    class FakeKernel:
+        _modules = {}
+
+        def __init__(self):
+            self.out = FakeOutput()
+            self.session = SimpleNamespace(id="test-session")
+
+        def get_module(self, _name):
+            return None
+
+        def ai_status(self):
+            return {"backend": "disabled", "available": False}
+
+    module = NEXUSModule(FakeKernel())
+
+    result = module.run()
+
+    assert result["status"]["version"] == "4.0.0-NEXUS"
+    assert result["status"]["ai_available"] is False
