@@ -13,7 +13,7 @@ def build_junit_xml(findings: list[dict], suite_name: str = "shadow313") -> str:
 
     Only high and critical severities count as failures, ignoring case.
     """
-    from defusedxml.ElementTree import Element, SubElement, tostring
+    from xml.etree.ElementTree import Element, SubElement, tostring
 
     failures = sum(f.get("severity", "").lower() in ("critical", "high") for f in findings)
     root = Element("testsuite", name=str(suite_name), tests=str(len(findings)),
