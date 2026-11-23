@@ -1,6 +1,11 @@
 """Unit tests — shadow313.v4.temporal_binding v4"""
+import hashlib
+import hmac
+import json
 import time
+
 import pytest
+from shadow313.v4.temporal_binding import temporal_binding as tb
 from shadow313.v4.temporal_binding.temporal_binding import (
     _wait_for_313,
     _sha3_512,
@@ -21,31 +26,33 @@ def _shannon_entropy_check(s: str) -> float:
 
 
 class TestWaitFor313:
-    def test_returns_timestamp_ending_in_313(self):
-        ts = _wait_for_313(max_wait_ms=5000)
-        assert ts % 1000 == 313
+    def test_returns_timestamp_ending_in_313(self, monkeypatch):
+        now = time.time_ns()
+        base = now - (now % 1000)
+        samples = iter((base + 312, base + 313))
+        monkeypatch.setattr(tb, "_now_ns", lambda: next(samples))
+        monkeypatch.setattr(tb.time, "sleep", lambda _delay: None)
+        assert _wait_for_313(max_wait_ms=100) == base + 313
 
-    def test_returns_integer(self):
-        ts = _wait_for_313(max_wait_ms=5000)
-        assert isinstance(ts, int)
+    def test_returns_integer(self, monkeypatch):
+        now = time.time_ns()
+        timestamp = now - (now % 1000) + 313
+        monkeypatch.setattr(tb, "_now_ns", lambda: timestamp)
+        assert isinstance(_wait_for_313(max_wait_ms=100), int)
 
-    def test_timestamp_is_recent(self):
-        ts = _wait_for_313(max_wait_ms=5000)
-        now_ns = time.time_ns()
-        # Should be within 10 seconds of now
-        assert abs(now_ns - ts) < 10_000_000_000
+    def test_timestamp_is_recent(self, monkeypatch):
+        now = time.time_ns()
+        timestamp = now - (now % 1000) + 313
+        monkeypatch.setattr(tb, "_now_ns", lambda: timestamp)
+        observed = _wait_for_313(max_wait_ms=100)
+        assert abs(time.time_ns() - observed) < 10_000_000
 
-    def test_no_busy_loop_cpu_spike(self):
-        """FIX: _wait_for_313() should not cause 100% CPU (has sleep)."""
-        import threading
-        import os
-        start = time.time()
-        ts = _wait_for_313(max_wait_ms=100)
-        elapsed = time.time() - start
-        # Should complete quickly but not instantly (has sleep)
-        assert elapsed < 1.0
-        assert ts % 1000 == 313
-
+    def test_timeout_never_fabricates_timestamp(self, monkeypatch):
+        monkeypatch.setattr(tb, "_now_ns", lambda: 1_000_000)
+        start = time.monotonic()
+        with pytest.raises(TimeoutError, match="No timestamp ending in 313"):
+            _wait_for_313(max_wait_ms=5)
+        assert time.monotonic() - start < 1.0
 
 class TestSHA3512:
     def test_returns_hex_string(self):
@@ -88,13 +95,56 @@ class TestTemporalBindingEngine:
         receipt_file = tmp_path / f"{receipt.receipt_id}.json"
         assert receipt_file.exists()
 
-    def test_verify_valid_receipt(self, tmp_path):
+    def test_verify_valid_receipt(self, tmp_path, monkeypatch):
+        key = b"temporal-binding-test-key"
+        monkeypatch.setenv("SHADOW313_BIND_KEY", key.decode())
+
+        def test_signer(message):
+            signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+            return signature, "HMAC-SHA256 (shared-secret)", ""
+
+        monkeypatch.setattr(tb, "_sign_slh_dsa", test_signer)
         engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
         receipt = engine.bind({"verify": "me"})
-        result  = engine.verify(receipt.receipt_id)
+        result = engine.verify(receipt.receipt_id)
+
         assert result["valid"] is True
         assert result["checks"]["timestamp_ends_313"] is True
-        assert result["checks"]["sha3_512_present"] is True
+        assert result["checks"]["sha3_512_matches"] is True
+        assert result["checks"]["signature_verified"] is True
+        assert result["checks"]["ipfs_anchor_recorded"] is False
+
+    def test_verify_rejects_tampered_receipt(self, tmp_path, monkeypatch):
+        key = b"temporal-binding-test-key"
+        monkeypatch.setenv("SHADOW313_BIND_KEY", key.decode())
+
+        def test_signer(message):
+            return hmac.new(key, message, hashlib.sha256).hexdigest(), "HMAC-SHA256 (shared-secret)", ""
+
+        monkeypatch.setattr(tb, "_sign_slh_dsa", test_signer)
+        engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
+        receipt = engine.bind({"verify": "me"})
+        receipt_file = tmp_path / f"{receipt.receipt_id}.json"
+        data = json.loads(receipt_file.read_text())
+        data["content_hash"] = "0" * 64
+        receipt_file.write_text(json.dumps(data))
+
+        result = engine.verify(receipt.receipt_id)
+        assert result["valid"] is False
+        assert result["checks"]["sha3_512_matches"] is False
+        assert result["checks"]["signature_verified"] is False
+
+    def test_unsigned_receipt_is_not_valid(self, tmp_path):
+        engine = TemporalBindingEngine(
+            receipts_dir=tmp_path,
+            ipfs_enabled=False,
+            signing_enabled=False,
+        )
+        receipt = engine.bind({"unsigned": True})
+        result = engine.verify(receipt.receipt_id)
+        assert result["valid"] is False
+        assert result["checks"]["signature_verified"] is False
+        assert receipt.algorithm.startswith("UNSIGNED")
 
     def test_verify_nonexistent_receipt(self, tmp_path):
         engine = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)
@@ -118,7 +168,9 @@ class TestTemporalBindingEngine:
         assert "sha3_512"     in d
         assert "algorithm"    in d
         assert "ipfs_cid"     in d
-        assert "timestamp_iso"in d
+        assert "timestamp_iso" in d
+        assert d["schema_version"] == 2
+        assert "public_key" in d
 
     def test_receipt_id_format(self, tmp_path):
         engine  = TemporalBindingEngine(receipts_dir=tmp_path, ipfs_enabled=False)

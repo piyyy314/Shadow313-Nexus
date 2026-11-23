@@ -138,8 +138,9 @@ python3 - << 'EOF'
 from shadow313.v4.temporal_binding.temporal_binding import TemporalBindingEngine, _sign_slh_dsa
 
 # Test SLH-DSA signing
-sig, algo = _sign_slh_dsa(b"shadow313 activation test")
+sig, algo, public_key = _sign_slh_dsa(b"shadow313 activation test")
 print(f"Signing algorithm: {algo}")
+print(f"Public key available: {bool(public_key)}")
 print(f"Signature length: {len(sig)//2} bytes")
 
 # Test 313-BIND receipt
