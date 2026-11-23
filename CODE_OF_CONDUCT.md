@@ -15,7 +15,7 @@ We pledge to make participation in Shadow313 NEXUS a harassment-free experience 
 ❌ Publishing others private information
 
 ## Enforcement
-Report violations to: matarmohamad313@duck.com
+Report violations to: pitty313@proton.me
 
 ## Attribution
 Adapted from the Contributor Covenant, version 2.1.
