@@ -107,7 +107,9 @@ class SOAREngine:
         self.dry_run = dry_run
         self._log: list[dict[str, Any]] = []
         self._adapters: dict[PlaybookAction, Adapter] = {}
-        self._handlers: dict[PlaybookAction, Callable[[dict[str, Any]], dict[str, Any]]] = {}
+        self._handlers: dict[
+            PlaybookAction, Callable[[dict[str, Any]], dict[str, Any]]
+        ] = {}
         for action, adapter in (adapters or {}).items():
             self.register_adapter(action, adapter)
         self._register_handlers()
@@ -128,7 +130,9 @@ class SOAREngine:
                 lambda alert, selected=action: self._execute_action(selected, alert)
             )
 
-    def _execute_action(self, action: PlaybookAction, alert: dict[str, Any]) -> dict[str, Any]:
+    def _execute_action(
+        self, action: PlaybookAction, alert: dict[str, Any]
+    ) -> dict[str, Any]:
         if self.dry_run:
             return {
                 "action": action.value,
@@ -173,7 +177,11 @@ class SOAREngine:
         started = time.monotonic()
         playbook_id = self._match_playbook(alert)
         if not playbook_id:
-            return {"triggered": False, "status": "not_matched", "reason": "No matching playbook"}
+            return {
+                "triggered": False,
+                "status": "not_matched",
+                "reason": "No matching playbook",
+            }
 
         playbook = PLAYBOOKS[playbook_id]
         results = []
