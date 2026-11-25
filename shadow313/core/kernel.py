@@ -123,7 +123,7 @@ class Kernel:
         ("graph", "shadow313.v2.graph.intel_graph.GraphModule"),
         ("dashboard", "shadow313.v2.dashboard.app.DashboardModule"),
         ("report", "shadow313.v2.reports.pdf_report.ReportModule"),
-        ("plugin_sign", "shadow313.v2.plugin_signing.plugin_signer.PluginSignerModule"),
+        ("plugin_sign", "shadow313.modules.plugins.signing.PluginSignerModule"),
         ("threat_intel", "shadow313.v2.threat_intel.threat_intel.ThreatIntelModule"),
         ("sandbox", "shadow313.v2.docker_sandbox.docker_sandbox.SandboxModule"),
         ("cloud", "shadow313.v2.cloud_hardening.cloud_hardening.CloudModule"),
