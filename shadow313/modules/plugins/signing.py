@@ -64,8 +64,11 @@ class PluginArtifactSigner:
 
     @staticmethod
     def _artifact_digest(plugin_dir: Path) -> str:
-        root = plugin_dir.expanduser().resolve()
-        if not root.is_dir() or plugin_dir.is_symlink():
+        requested_root = plugin_dir.expanduser()
+        if requested_root.is_symlink():
+            raise ValueError("Plugin artifact root must not be a symlink")
+        root = requested_root.resolve()
+        if not root.is_dir():
             raise ValueError("Plugin artifact must be a real directory")
 
         digest = hashlib.sha256()
