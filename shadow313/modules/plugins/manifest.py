@@ -77,7 +77,8 @@ class PluginManifest:
                     or not manifest_file.resolve().is_relative_to(self.path)
                 ):
                     raise ValueError(
-                        "Plugin manifest must be a regular file inside its plugin directory"
+                        "Plugin manifest must be a regular file inside "
+                        "its plugin directory"
                     )
                 if manifest_file.stat().st_size > 64 * 1024:
                     raise ValueError("Plugin manifest exceeds the 64 KiB size limit")
@@ -149,7 +150,11 @@ class PluginManifest:
         if not ENTRY_RE.fullmatch(entry):
             raise ValueError("Plugin entry must be a relative plugin-local path")
         parts = PurePosixPath(entry).parts
-        if any(part in {"", ".", ".."} for part in parts) or ":" in entry or "\\" in entry:
+        if (
+            any(part in {"", ".", ".."} for part in parts)
+            or ":" in entry
+            or "\\" in entry
+        ):
             raise ValueError("Plugin entry contains an unsafe path component")
         candidate = (self.path.joinpath(*parts)).resolve()
         if not candidate.is_relative_to(self.path):
@@ -174,7 +179,10 @@ class PluginManifest:
                     errors.append(f"Invalid hook {hook!r}")
         if not isinstance(self._data.get("requires", []), list):
             errors.append("Plugin requirements must be a list")
-        elif any(not isinstance(item, str) or not item.strip() for item in self.requires):
+        elif any(
+            not isinstance(item, str) or not item.strip()
+            for item in self.requires
+        ):
             errors.append("Plugin requirements must contain non-empty strings")
         return errors
 
