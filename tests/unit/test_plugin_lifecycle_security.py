@@ -179,9 +179,15 @@ def test_plugin_scaffold_quotes_yaml_author_value(tmp_path):
 
 
 
-def test_plugin_runner_rejects_unsigned_artifact_before_execution(tmp_path, monkeypatch):
+def test_plugin_runner_rejects_unsigned_artifact_before_execution(
+    tmp_path,
+    monkeypatch,
+):
     plugin = PluginManifest(_plugin(tmp_path / "plugin"))
-    monkeypatch.setattr("shadow313.modules.plugins.runner.shutil.which", lambda _: "bwrap")
+    monkeypatch.setattr(
+        "shadow313.modules.plugins.runner.shutil.which",
+        lambda _: "bwrap",
+    )
 
     result = PluginRunner(plugin).execute({"session_id": "test"})
 
