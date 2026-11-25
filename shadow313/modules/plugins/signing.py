@@ -218,7 +218,7 @@ class PluginSignerModule:
         self.session = kernel.session
         self.registry = PluginRegistry(
             config.get("dir", "~/.shadow313/plugins"),
-            require_signed=bool(config.get("require_signed", False)),
+            require_signed=bool(config.get("require_signed", True)),
         )
 
     def register(self, kernel: Any) -> None:
