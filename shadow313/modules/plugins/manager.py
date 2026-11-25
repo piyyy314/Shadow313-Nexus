@@ -63,7 +63,9 @@ class PluginRegistry:
             try:
                 manifest = PluginManifest(entry)
                 if self.require_signed and not self.signer.verify(entry).get("valid"):
-                    logger.warning("Ignoring unsigned or modified plugin %s", entry.name)
+                    logger.warning(
+                        "Ignoring unsigned or modified plugin %s", entry.name
+                    )
                     continue
                 errors = manifest.validate()
                 if errors:
@@ -248,7 +250,9 @@ class HookDispatcher:
                     {
                         "plugin": plugin.name,
                         "status": "signature_invalid",
-                        "reason": "Plugin artifact signature is missing or no longer valid",
+                        "reason": (
+                            "Plugin artifact signature is missing or no longer valid"
+                        ),
                     }
                 )
                 continue
