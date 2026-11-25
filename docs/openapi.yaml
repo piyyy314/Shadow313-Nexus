@@ -133,11 +133,15 @@ paths:
 
   /api/attck/coverage:
     get:
-      summary: ATT&CK coverage matrix
+      summary: ATT&CK coverage availability
       operationId: attckCoverage
+      security:
+        - ApiKeyAuth: []
       responses:
         "200":
-          description: Coverage data
+          description: Unavailable until derived from the active detector registry; static estimates are disabled
+        "401":
+          description: Unauthorized
 
   /api/bind/create:
     post:
