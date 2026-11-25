@@ -1,4 +1,4 @@
-// --- SENTINELOS Heuristic Malware Sandbox & AI Disassembler ---
+// --- SENTINELOS Browser-Only Heuristic Demo & Opcode Viewer ---
 
 document.addEventListener('DOMContentLoaded', () => {
     const presetButtons = document.querySelectorAll('.btn-preset');
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnScan.addEventListener('click', () => {
         const hexInput = txtBinary.value.trim().toUpperCase();
         if (!hexInput) {
-            window.showStatusOverlay("Scan Failed", "No executable hex payload detected.", 1200);
+            window.showStatusOverlay("Demo Input Rejected", "No sample hex input was supplied; no malware scan was performed.", 1200);
             return;
         }
 
