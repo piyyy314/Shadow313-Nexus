@@ -326,12 +326,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [event_type, source, severity, payload]
               properties:
-                event_type: {type: string, maxLength: 128}
-                source: {type: string, maxLength: 128}
-                severity: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL]}
-                payload: {type: object}
+                event_type: {type: string, maxLength: 128, default: generic}
+                source: {type: string, maxLength: 128, default: api}
+                severity: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL], default: INFO}
+                payload: {type: object, default: {}}
                 bind_id: {type: string, maxLength: 128}
       responses:
         "200": {description: Event persisted to the SQLite event store}
