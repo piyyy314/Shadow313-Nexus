@@ -9,12 +9,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
-from .event_bus import (
-    FASTAPI_AVAILABLE,
-    EventPublisher,
-    PlatformEvent,
-    logger,
-)
+from .event_bus import FASTAPI_AVAILABLE, EventPublisher, PlatformEvent
 
 DEFAULT_DB_PATH = Path("~/.shadow313/platform-events.sqlite3").expanduser()
 VALID_SEVERITIES = {"INFO", "MEDIUM", "HIGH", "CRITICAL"}
@@ -181,7 +176,7 @@ class SecureEventPublisher(EventPublisher):
         if not FASTAPI_AVAILABLE:
             raise RuntimeError("FastAPI not installed. Install fastapi and uvicorn")
 
-        from fastapi import FastAPI, HTTPException, Query, Request
+        from fastapi import Depends, FastAPI, HTTPException, Query, Request
 
         app = FastAPI(
             title="Shadow313 NEXUS Persistent Event Bus",
@@ -205,7 +200,7 @@ class SecureEventPublisher(EventPublisher):
             event_type: str | None = None,
             severity: str | None = None,
             limit: int = Query(default=100, ge=1, le=1000),
-            _: None = __import__("fastapi").Depends(require_api_key),
+            _: None = Depends(require_api_key),
         ):
             events = self.get_events(event_type, severity, limit)
             return {"events": [event.to_dict() for event in events], "count": len(events)}
