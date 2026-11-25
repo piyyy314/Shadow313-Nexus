@@ -14,6 +14,7 @@ from .manifest import (
     VALID_HOOKS,
     PluginManifest,
 )
+from .signing import PluginArtifactSigner
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +30,19 @@ def _safe_name(name: str) -> bool:
 class PluginRegistry:
     """Manage plugin directories without allowing manifest-controlled path escapes."""
 
-    def __init__(self, plugins_dir: str = "~/.shadow313/plugins") -> None:
+    def __init__(
+        self,
+        plugins_dir: str = "~/.shadow313/plugins",
+        require_signed: bool = False,
+        signer: PluginArtifactSigner | None = None,
+    ) -> None:
         configured = Path(plugins_dir).expanduser()
         configured.mkdir(parents=True, exist_ok=True)
         self.plugins_dir = configured.resolve()
         self._loaded: dict[str, PluginManifest] = {}
         self._enabled: set[str] = set()
+        self.require_signed = require_signed
+        self.signer = signer or PluginArtifactSigner()
 
     def _plugin_dir(self, name: str) -> Path | None:
         if not _safe_name(name):
@@ -54,6 +62,9 @@ class PluginRegistry:
                 continue
             try:
                 manifest = PluginManifest(entry)
+                if self.require_signed and not self.signer.verify(entry).get("valid"):
+                    logger.warning("Ignoring unsigned or modified plugin %s", entry.name)
+                    continue
                 errors = manifest.validate()
                 if errors:
                     logger.warning(
@@ -100,6 +111,9 @@ class PluginRegistry:
         if errors:
             return False, f"Validation errors: {'; '.join(errors)}"
 
+        if self.require_signed and not self.signer.verify(source).get("valid"):
+            return False, "Plugin signature is missing or invalid; signing is required"
+
         for item in source.rglob("*"):
             if item.is_symlink():
                 relative_path = item.relative_to(source)
@@ -128,6 +142,9 @@ class PluginRegistry:
                 )
             installed = PluginManifest(destination)
             installed_errors = installed.validate()
+            if self.require_signed and not self.signer.verify(destination).get("valid"):
+                shutil.rmtree(destination)
+                return False, "Installed plugin signature verification failed"
             if installed_errors:
                 shutil.rmtree(destination)
                 return False, (
@@ -141,6 +158,41 @@ class PluginRegistry:
 
         self._loaded[installed.name] = installed
         return True, f"Plugin '{installed.name}' installed → {destination}"
+
+    def sign(self, plugin_path: str) -> tuple[bool, str]:
+        """Sign the complete validated plugin artifact."""
+        source = Path(plugin_path).expanduser()
+        try:
+            manifest = PluginManifest(source)
+        except (OSError, ValueError, TypeError) as exc:
+            return False, f"Invalid plugin manifest: {exc}"
+        errors = manifest.validate()
+        if errors:
+            return False, f"Validation errors: {'; '.join(errors)}"
+        try:
+            result = self.signer.sign(source)
+        except (OSError, ValueError, TypeError) as exc:
+            return False, f"Plugin signing failed: {exc}"
+        return True, f"Plugin '{manifest.name}' signed ({result['algorithm']})"
+
+    def verify(self, plugin_path: str) -> dict[str, Any]:
+        """Verify the complete plugin artifact signature."""
+        return self.signer.verify(Path(plugin_path).expanduser())
+
+    def is_trusted(self, plugin_path: Path) -> bool:
+        """Re-verify signed artifacts immediately before dispatch when required."""
+        return not self.require_signed or bool(
+            self.signer.verify(plugin_path).get("valid")
+        )
+
+    def verify_all(self) -> list[dict[str, Any]]:
+        """Verify each installed plugin directory without enabling or executing it."""
+        results = []
+        for entry in sorted(self.plugins_dir.iterdir()):
+            if entry.is_symlink() or not entry.is_dir():
+                continue
+            results.append(self.signer.verify(entry))
+        return results
 
     def remove(self, name: str) -> tuple[bool, str]:
         """Remove only a validated, direct child directory of the plugin root."""
@@ -189,10 +241,19 @@ class HookDispatcher:
             "module_output": module_output,
             "timestamp": _now(),
         }
-        return [
-            PluginRunner(plugin).execute(context)
-            for plugin in self.registry.get_hooks(hook)
-        ]
+        results = []
+        for plugin in self.registry.get_hooks(hook):
+            if not self.registry.is_trusted(plugin.path):
+                results.append(
+                    {
+                        "plugin": plugin.name,
+                        "status": "signature_invalid",
+                        "reason": "Plugin artifact signature is missing or no longer valid",
+                    }
+                )
+                continue
+            results.append(PluginRunner(plugin).execute(context))
+        return results
 
 
 class PluginScaffolder:
