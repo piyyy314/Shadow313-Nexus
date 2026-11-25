@@ -33,7 +33,9 @@ class PluginArtifactSigner:
         if configured:
             key = configured.encode("utf-8")
             if len(key) < 32:
-                raise ValueError("SHADOW313_PLUGIN_SIGNING_KEY must be at least 32 bytes")
+                raise ValueError(
+                    "SHADOW313_PLUGIN_SIGNING_KEY must be at least 32 bytes"
+                )
             return key
 
         if self.key_path.is_symlink():
@@ -75,13 +77,17 @@ class PluginArtifactSigner:
         total_bytes = 0
         for item in sorted(root.rglob("*")):
             if item.is_symlink():
-                raise ValueError(f"Plugin artifact contains a symlink: {item.relative_to(root)}")
+                raise ValueError(
+                    f"Plugin artifact contains a symlink: {item.relative_to(root)}"
+                )
             if not item.is_file() or item == root / SIGNATURE_NAME:
                 continue
 
             size = item.stat().st_size
             if size > MAX_FILE_BYTES:
-                raise ValueError(f"Plugin file exceeds 10 MiB: {item.relative_to(root)}")
+                raise ValueError(
+                    f"Plugin file exceeds 10 MiB: {item.relative_to(root)}"
+                )
             total_bytes += size
             if total_bytes > MAX_ARTIFACT_BYTES:
                 raise ValueError("Plugin artifact exceeds 100 MiB")
@@ -134,7 +140,10 @@ class PluginArtifactSigner:
 
         key = self._load_key(create=False)
         if key is None:
-            return {"valid": False, "reason": "Plugin signing trust key is not configured"}
+            return {
+                "valid": False,
+                "reason": "Plugin signing trust key is not configured",
+            }
 
         try:
             record = json.loads(signature_path.read_text(encoding="utf-8"))
@@ -150,12 +159,18 @@ class PluginArtifactSigner:
                 str(record.get("artifact_sha256", "")),
                 artifact_digest,
             ):
-                return {"valid": False, "reason": "Plugin artifact content hash mismatch"}
+                return {
+                    "valid": False,
+                    "reason": "Plugin artifact content hash mismatch",
+                }
 
             message = f"shadow313-plugin-artifact-v1:{artifact_digest}".encode("ascii")
             expected = hmac.new(key, message, hashlib.sha256).hexdigest()
             if not hmac.compare_digest(record["signature"], expected):
-                return {"valid": False, "reason": "Plugin artifact signature is invalid"}
+                return {
+                    "valid": False,
+                    "reason": "Plugin artifact signature is invalid",
+                }
 
             return {
                 "valid": True,
@@ -166,7 +181,10 @@ class PluginArtifactSigner:
                 "artifact_sha256": artifact_digest,
             }
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
-            return {"valid": False, "reason": f"Plugin signature verification failed: {exc}"}
+            return {
+                "valid": False,
+                "reason": f"Plugin signature verification failed: {exc}",
+            }
 
 
 class PluginSignerModule:
@@ -215,7 +233,8 @@ class PluginSignerModule:
             for verification in verifications:
                 if verification.get("valid"):
                     self.out.success(
-                        f"Verified plugin artifact: {verification.get('plugin', 'unknown')}"
+                        "Verified plugin artifact: "
+                        f"{verification.get('plugin', 'unknown')}"
                     )
                 else:
                     self.out.error(
