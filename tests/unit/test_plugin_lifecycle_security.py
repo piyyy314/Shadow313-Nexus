@@ -75,7 +75,7 @@ def test_install_does_not_overwrite_existing_plugin(tmp_path):
 
 def test_remove_rejects_traversal_and_preserves_outside_files(tmp_path):
     root = tmp_path / "installed"
-    registry = PluginRegistry(str(root))
+    registry = PluginRegistry(str(root), require_signed=False)
     outside = tmp_path / "important.txt"
     outside.write_text("preserve", encoding="utf-8")
 
