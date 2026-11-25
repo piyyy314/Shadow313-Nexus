@@ -230,9 +230,17 @@ class SecureEventPublisher(EventPublisher):
             source = body.get("source", "api")
             severity = str(body.get("severity", "INFO")).upper()
             payload = body.get("payload", {})
-            if not isinstance(event_type, str) or not 1 <= len(event_type) <= 128:
+            if (
+                not isinstance(event_type, str)
+                or not 1 <= len(event_type) <= 128
+                or any(ord(character) < 32 for character in event_type)
+            ):
                 raise HTTPException(status_code=422, detail="Invalid event_type")
-            if not isinstance(source, str) or not 1 <= len(source) <= 128:
+            if (
+                not isinstance(source, str)
+                or not 1 <= len(source) <= 128
+                or any(ord(character) < 32 for character in source)
+            ):
                 raise HTTPException(status_code=422, detail="Invalid source")
             if severity not in VALID_SEVERITIES:
                 raise HTTPException(status_code=422, detail="Invalid severity")
@@ -242,12 +250,18 @@ class SecureEventPublisher(EventPublisher):
                     detail="Event payload must be an object",
                 )
 
+            bind_id = body.get("bind_id")
+            if bind_id is not None and (
+                not isinstance(bind_id, str) or len(bind_id) > 128
+            ):
+                raise HTTPException(status_code=422, detail="Invalid bind_id")
+
             event = PlatformEvent(
                 event_type=event_type,
                 source=source,
                 severity=severity,
                 payload=payload,
-                bind_id=body.get("bind_id"),
+                bind_id=bind_id,
             )
             self.publish(event)
             return {
