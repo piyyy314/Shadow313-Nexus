@@ -87,9 +87,11 @@ def test_remove_rejects_traversal_and_preserves_outside_files(tmp_path):
 
 def test_plugin_runner_fails_closed_without_bubblewrap(tmp_path, monkeypatch):
     plugin = PluginManifest(_plugin(tmp_path / "plugin"))
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+    signer.sign(plugin.path)
     monkeypatch.setattr("shadow313.modules.plugins.runner.shutil.which", lambda _: None)
 
-    result = PluginRunner(plugin).execute({"session_id": "test"})
+    result = PluginRunner(plugin, signer=signer).execute({"session_id": "test"})
 
     assert result["status"] == "sandbox_unavailable"
     assert "not executed" in result["reason"]
@@ -174,3 +176,13 @@ def test_plugin_scaffold_quotes_yaml_author_value(tmp_path):
 
     manifest = (path / "plugin.yaml").read_text(encoding="utf-8")
     assert 'author: "Research: Team \\"NEXUS\\""' in manifest
+
+
+
+def test_plugin_runner_rejects_unsigned_artifact_before_execution(tmp_path, monkeypatch):
+    plugin = PluginManifest(_plugin(tmp_path / "plugin"))
+    monkeypatch.setattr("shadow313.modules.plugins.runner.shutil.which", lambda _: "bwrap")
+
+    result = PluginRunner(plugin).execute({"session_id": "test"})
+
+    assert result["status"] == "signature_invalid"
