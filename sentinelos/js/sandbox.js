@@ -58,14 +58,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Initial State: Clear output and trigger logs
         screen.innerHTML = '';
-        window.showStatusOverlay("Analyzing Payload", "Executing heuristics opcode tracing...", 1200);
-        window.addTimelineLog("SANDBOX INIT: Analyzing pasted binary hex structures inside enclave sandbox.");
+        window.showStatusOverlay("Demo Payload View", "Displaying illustrative opcode patterns in the browser; no executable is run.", 1200);
+        window.addTimelineLog("DEMO: Displaying a local opcode-pattern illustration; no enclave or executable sandbox is started.");
 
         // Print initial scanner indicators
         const diagLines = [
-            "[SANDBOX] Creating zero-knowledge hypervisor isolation box...",
-            "[SANDBOX] Indexing payload signature parameters...",
-            "[SANDBOX] Parsing opcode registers control flow..."
+            "[DEMO] No hypervisor or isolation box is created.",
+            "[DEMO] Showing sample signature parameters.",
+            "[DEMO] Rendering illustrative opcode/control-flow rows."
         ];
 
         diagLines.forEach((line, idx) => {
@@ -103,26 +103,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Update Risk Scorecard metrics
             if (isWorm) {
-                sbGrade.textContent = "CRITICAL RISK";
+                sbGrade.textContent = "DEMO FLAG";
                 sbGrade.className = "val danger";
                 sbScore.textContent = `${90 + Math.floor(Math.random() * 8)} / 100`;
                 
-                window.addTimelineLog("MALWARE CRITICAL ALERT: Heuristic Sandbox detected severe buffer overflow shellcode!");
-                window.showStatusOverlay("Malware Detected", "Instruction scan indicates executive shell hijack exploits.", 1800);
+                window.addTimelineLog("DEMO: Simple string heuristics matched a sample pattern; no malware was executed or confirmed.");
+                window.showStatusOverlay("Demo Pattern Match", "Illustrative opcode pattern only; no malware analysis or execution occurred.", 1800);
                 
                 // Add threat alert to the global dashboard if configured
                 if (window.updateActiveThreatsCount) {
                     window.updateActiveThreatsCount(1);
                 }
             } else {
-                sbGrade.textContent = "SAFE UTILITY";
+                sbGrade.textContent = "DEMO: NO FLAG";
                 sbGrade.className = "val";
                 sbGrade.style.color = "var(--success)";
                 sbGrade.style.textShadow = "0 0 8px rgba(29, 209, 161, 0.4)";
                 sbScore.textContent = `${2 + Math.floor(Math.random() * 3)} / 100`;
                 
-                window.addTimelineLog("SANDBOX COMPLETED: Heuristic scan reports clean binary signature. No threat detected.");
-                window.showStatusOverlay("Payload Secure", "Assembly instruction mappings verified healthy.", 1500);
+                window.addTimelineLog("DEMO: The sample pattern did not match this simple heuristic; the input is not certified safe.");
+                window.showStatusOverlay("Demo Result", "No match in the illustrative heuristic; no security verdict was produced.", 1500);
             }
 
         }, 1500);
