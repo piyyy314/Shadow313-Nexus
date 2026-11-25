@@ -36,6 +36,8 @@ class PluginArtifactSigner:
                 raise ValueError("SHADOW313_PLUGIN_SIGNING_KEY must be at least 32 bytes")
             return key
 
+        if self.key_path.is_symlink():
+            raise ValueError("Plugin signing key must not be a symlink")
         if self.key_path.is_file():
             key = self.key_path.read_bytes()
             if len(key) < 32:
@@ -71,7 +73,7 @@ class PluginArtifactSigner:
         for item in sorted(root.rglob("*")):
             if item.is_symlink():
                 raise ValueError(f"Plugin artifact contains a symlink: {item.relative_to(root)}")
-            if not item.is_file() or item.name == SIGNATURE_NAME:
+            if not item.is_file() or item == root / SIGNATURE_NAME:
                 continue
 
             size = item.stat().st_size
