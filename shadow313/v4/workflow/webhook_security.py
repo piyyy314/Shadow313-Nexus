@@ -86,13 +86,17 @@ class HTTPWebhookDelivery:
         if parts.scheme.lower() != "https" or not parts.hostname:
             raise ValueError("Webhook targets must use HTTPS and include a hostname")
         if parts.username or parts.password or parts.fragment:
-            raise ValueError("Webhook target credentials and fragments are not permitted")
+            raise ValueError(
+                "Webhook target credentials and fragments are not permitted"
+            )
         if parts.port not in (None, 443):
             raise ValueError("Webhook targets are restricted to TCP port 443")
 
         host = parts.hostname.rstrip(".").encode("idna").decode("ascii").lower()
         if host not in self._allowed_hosts:
-            raise ValueError("Webhook hostname is not in SHADOW313_WEBHOOK_ALLOWED_HOSTS")
+            raise ValueError(
+                "Webhook hostname is not in SHADOW313_WEBHOOK_ALLOWED_HOSTS"
+            )
 
         try:
             literal_ip = ipaddress.ip_address(host)
