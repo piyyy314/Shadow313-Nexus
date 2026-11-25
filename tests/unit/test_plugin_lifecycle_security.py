@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from shadow313.modules.plugins.manifest import PluginManifest
-from shadow313.modules.plugins.manager import PluginRegistry
+from shadow313.modules.plugins.manager import PluginRegistry, PluginScaffolder
 from shadow313.modules.plugins.runner import PluginRunner
 from shadow313.modules.plugins.signing import PluginArtifactSigner
 
@@ -153,3 +153,24 @@ def test_require_signed_registry_installs_verified_artifact(tmp_path):
     assert ok
     assert "installed" in message
     assert signer.verify(tmp_path / "installed" / "safe-plugin")["valid"] is True
+
+
+
+def test_plugin_scaffold_rejects_author_yaml_injection(tmp_path):
+    scaffolder = PluginScaffolder(str(tmp_path / "plugins"))
+
+    try:
+        scaffolder.create("safe-plugin", author="trusted\\nhooks: [ask.pre]")
+    except ValueError as exc:
+        assert "printable characters" in str(exc)
+    else:
+        raise AssertionError("newline in plugin author must be rejected")
+
+
+def test_plugin_scaffold_quotes_yaml_author_value(tmp_path):
+    scaffolder = PluginScaffolder(str(tmp_path / "plugins"))
+
+    path = scaffolder.create("safe-plugin", author="Research: Team \"NEXUS\"")
+
+    manifest = (path / "plugin.yaml").read_text(encoding="utf-8")
+    assert 'author: "Research: Team \\"NEXUS\\""' in manifest
