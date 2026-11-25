@@ -167,3 +167,59 @@ class PluginArtifactSigner:
             }
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
             return {"valid": False, "reason": f"Plugin signature verification failed: {exc}"}
+
+
+class PluginSignerModule:
+    """CLI adapter for signing and verifying canonical plugin artifacts."""
+
+    def __init__(self, kernel: Any) -> None:
+        from .manager import PluginRegistry
+
+        config = kernel.config.get("plugins", default={})
+        self.out = kernel.out
+        self.session = kernel.session
+        self.registry = PluginRegistry(
+            config.get("dir", "~/.shadow313/plugins"),
+            require_signed=bool(config.get("require_signed", False)),
+        )
+
+    def register(self, kernel: Any) -> None:
+        kernel.register("plugin_sign", self.run)
+
+    def run(
+        self,
+        sign: str = "",
+        verify: str = "",
+        verify_all: bool = False,
+    ) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        if sign:
+            ok, message = self.registry.sign(sign)
+            result["sign"] = {
+                "status": "signed" if ok else "error",
+                "message": message,
+            }
+            self.out.success(message) if ok else self.out.error(message)
+        if verify:
+            verification = self.registry.verify(verify)
+            result["verify"] = verification
+            if verification.get("valid"):
+                self.out.success("Plugin artifact signature verified.")
+            else:
+                self.out.error(
+                    verification.get("reason", "Plugin artifact signature invalid")
+                )
+        if verify_all:
+            verifications = self.registry.verify_all()
+            result["verify_all"] = verifications
+            for verification in verifications:
+                if verification.get("valid"):
+                    self.out.success(
+                        f"Verified plugin artifact: {verification.get('plugin', 'unknown')}"
+                    )
+                else:
+                    self.out.error(
+                        verification.get("reason", "Plugin artifact signature invalid")
+                    )
+        self.session.audit("plugin_sign", "run")
+        return result
