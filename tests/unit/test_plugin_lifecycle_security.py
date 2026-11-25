@@ -59,7 +59,7 @@ def test_manifest_rejects_entry_symlink_escape(tmp_path):
 
 def test_install_does_not_overwrite_existing_plugin(tmp_path):
     root = tmp_path / "installed"
-    registry = PluginRegistry(str(root))
+    registry = PluginRegistry(str(root), require_signed=False)
     source = _plugin(tmp_path / "source")
     existing = root / "safe-plugin"
     existing.mkdir()
