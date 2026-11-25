@@ -67,7 +67,7 @@ def test_manifest_fallback_parser_preserves_lists_and_quoted_values(tmp_path, mo
 
 
 def test_registry_install_replace_enable_filter_and_remove(plugin, tmp_path):
-    registry = PluginRegistry(str(tmp_path / "installed"))
+    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=False)
     assert registry.enable("missing") is False
     assert registry.install(str(plugin.path))[0] is True
     assert registry.get_enabled() == []
@@ -90,7 +90,7 @@ def test_registry_install_replace_enable_filter_and_remove(plugin, tmp_path):
 
 
 def test_registry_rejects_missing_invalid_and_incomplete_plugins(tmp_path):
-    registry = PluginRegistry(str(tmp_path / "installed"))
+    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=False)
     assert registry.install(str(tmp_path / "missing"))[0] is False
     source = tmp_path / "source"
     source.mkdir()
@@ -109,7 +109,7 @@ def test_discover_skips_nonplugins_and_broken_yaml(plugin, tmp_path):
     (invalid / "plugin.yaml").write_text("name: [unterminated")
     empty = plugin.path.parent / "empty"
     empty.mkdir()
-    registry = PluginRegistry(str(plugin.path.parent))
+    registry = PluginRegistry(str(plugin.path.parent), require_signed=False)
     assert [p.name for p in registry.discover()] == ["sample"]
 
 
@@ -213,7 +213,7 @@ def test_requirement_installation_is_optional_and_handles_failure(plugin, monkey
 
 
 def test_dispatcher_fires_only_enabled_matching_hooks(plugin, tmp_path, monkeypatch):
-    registry = PluginRegistry(str(tmp_path / "installed"))
+    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=False)
     registry.install(str(plugin.path))
     dispatcher = HookDispatcher(registry, "session-test")
     execute = Mock(return_value={"status": "ok"})
