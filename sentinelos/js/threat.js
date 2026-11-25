@@ -219,7 +219,7 @@
         // Add notification alert
         addPredictiveAlert("HIGH", `DEMO: Sample Event — ${randVector}`, `Illustrative source ${randIp}; no network packet was observed and no mitigation was performed.`);
         
-        // Automatically mitigate after 3.5 seconds
+        // Complete the illustrative alert lifecycle; no containment action is performed.
         setTimeout(() => {
             window.updateActiveThreatsCount(-1);
             addPredictiveAlert("LOW", `DEMO: Sample Scenario Complete`, `No threat vector was isolated and IP ${randIp} was not blocked.`);
@@ -234,7 +234,7 @@
             card.className = `threat-notif ${level.toLowerCase()}`;
             
             card.innerHTML = `
-                <div class="notif-badge">AI ALERT</div>
+                <div class="notif-badge">DEMO ALERT</div>
                 <div class="notif-body">
                     <strong>${title} [${level}]</strong>
                     <p>${text}</p>
