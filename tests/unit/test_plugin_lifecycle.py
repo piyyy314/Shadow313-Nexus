@@ -75,9 +75,12 @@ def test_registry_install_replace_enable_filter_and_remove(plugin, tmp_path):
     assert [p.name for p in registry.get_hooks("recon.post")] == ["sample"]
     assert registry.get_hooks("vuln.post") == []
     assert registry.list_all()[0]["enabled"] is True
+    original_entry = (registry.plugins_dir / "sample/plugin.py").read_text()
     plugin.entry_path.write_text("# replacement\n")
-    assert registry.install(str(plugin.path))[0] is True
-    assert (registry.plugins_dir / "sample/plugin.py").read_text() == "# replacement\n"
+    ok, message = registry.install(str(plugin.path))
+    assert ok is False
+    assert "already exists" in message
+    assert (registry.plugins_dir / "sample/plugin.py").read_text() == original_entry
     registry.disable("sample")
     assert registry.get_enabled() == []
     assert registry.remove("sample")[0] is True
@@ -113,6 +116,10 @@ def test_discover_skips_nonplugins_and_broken_yaml(plugin, tmp_path):
 def test_runner_passes_only_scoped_context_and_configures_process(plugin, monkeypatch):
     run = Mock(return_value=SimpleNamespace(returncode=0, stdout='{"status":"ok"}', stderr=""))
     monkeypatch.setattr("shadow313.modules.plugins.runner.subprocess.run", run)
+    monkeypatch.setattr(
+        "shadow313.modules.plugins.runner.shutil.which",
+        lambda _: "/usr/bin/bwrap",
+    )
     context = {
         "session_id": "session-test",
         "hook": "recon.post",
@@ -124,15 +131,19 @@ def test_runner_passes_only_scoped_context_and_configures_process(plugin, monkey
         "internal_credentials": "must-not-cross-boundary",
     }
     original = context.copy()
-    assert PluginRunner(plugin).execute(context) == {"status": "ok"}
+    assert PluginRunner(plugin, require_signed=False).execute(context) == {
+        "status": "ok"
+    }
     args, kwargs = run.call_args
-    assert args[0] == [sys.executable, str(plugin.entry_path)]
+    assert args[0][0] == "/usr/bin/bwrap"
+    assert args[0][-3:] == ["--", sys.executable, f"/plugin/{plugin.entry}"]
     expected = {k: v for k, v in context.items() if k != "internal_credentials"}
     assert json.loads(kwargs["input"]) == expected
     assert context == original
-    assert kwargs["cwd"] == str(plugin.path)
+    assert "cwd" not in kwargs
     assert kwargs["env"]["SHADOW313_PLUGIN_MODE"] == "1"
-    assert kwargs["env"]["PYTHONPATH"] == str(plugin.path)
+    assert kwargs["env"]["PYTHONPATH"] == "/plugin"
+    assert kwargs["preexec_fn"] is not None
     assert kwargs["timeout"] == 30
     assert kwargs["check"] is False
 
@@ -160,7 +171,11 @@ def test_runner_handles_failed_empty_and_invalid_output(
             return_value=SimpleNamespace(returncode=returncode, stdout=stdout, stderr=stderr),
         ),
     )
-    result = PluginRunner(plugin).execute({})
+    monkeypatch.setattr(
+        "shadow313.modules.plugins.runner.shutil.which",
+        lambda _: "/usr/bin/bwrap",
+    )
+    result = PluginRunner(plugin, require_signed=False).execute({})
     assert result["plugin"] == "sample"
     assert result["status"] == status
     if field:
@@ -169,8 +184,15 @@ def test_runner_handles_failed_empty_and_invalid_output(
 
 @pytest.mark.parametrize("error", [subprocess.TimeoutExpired("plugin", 30), OSError("failed")])
 def test_runner_contains_process_exceptions(plugin, monkeypatch, error):
-    monkeypatch.setattr("shadow313.modules.plugins.runner.subprocess.run", Mock(side_effect=error))
-    result = PluginRunner(plugin).execute({})
+    monkeypatch.setattr(
+        "shadow313.modules.plugins.runner.subprocess.run",
+        Mock(side_effect=error),
+    )
+    monkeypatch.setattr(
+        "shadow313.modules.plugins.runner.shutil.which",
+        lambda _: "/usr/bin/bwrap",
+    )
+    result = PluginRunner(plugin, require_signed=False).execute({})
     assert result["status"] == (
         "timeout" if isinstance(error, subprocess.TimeoutExpired) else "error"
     )
@@ -180,12 +202,14 @@ def test_runner_contains_process_exceptions(plugin, monkeypatch, error):
 def test_requirement_installation_is_optional_and_handles_failure(plugin, monkeypatch):
     run = Mock(return_value=SimpleNamespace(returncode=1, stderr="dependency failed"))
     monkeypatch.setattr("shadow313.modules.plugins.runner.subprocess.run", run)
-    runner = PluginRunner(plugin)
+    runner = PluginRunner(plugin, require_signed=False)
     assert runner.install_requirements() == (True, "No requirements")
     run.assert_not_called()
     plugin._data["requires"] = ["synthetic-package==1.0"]
-    assert runner.install_requirements() == (False, "dependency failed")
-    assert run.call_args.args[0][-1] == "synthetic-package==1.0"
+    ok, message = runner.install_requirements()
+    assert ok is False
+    assert "isolated plugin image" in message
+    run.assert_not_called()
 
 
 def test_dispatcher_fires_only_enabled_matching_hooks(plugin, tmp_path, monkeypatch):
