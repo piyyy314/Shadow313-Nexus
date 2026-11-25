@@ -8,7 +8,7 @@ The repository package version is **4.0.0**. This identifies the source/package 
 
 Please report suspected vulnerabilities privately before publishing exploit details.
 
-- **Email:** security@shadow313.dev or pitty313@proton.me
+- **Email:** pitty313@proton.me
 - **Subject:** `[SECURITY] Brief description`
 - Include the affected repository/component and version, reproduction steps, impact, and a safe way to contact you.
 - Do not include secrets, personal data, or live customer information in an initial report.
