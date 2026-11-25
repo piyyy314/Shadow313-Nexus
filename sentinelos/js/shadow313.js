@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         find: {
             category: 'search/grover',
-            respond: () => `⬡ [Grover Demo] Amplitude amplification search:\n  Target found in √N iterations (2 iterations for 4-item space)\n  Probability of correct result: 97.2%\n  Circuit profiled: 2 qubits, depth 8, 6 1Q gates, 2 2Q gates.`
+            respond: () => `⬡ [Grover Demo] Amplitude amplification search:\n  Target found in √N iterations (2 iterations for 4-item space)\n  No circuit was executed and no success probability was measured.\n  The displayed circuit description is illustrative only.`
         },
         random: {
             category: 'random/qrng',
@@ -499,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         entanglement: {
             category: 'quantum/explain',
-            respond: () => `⬡ [Quantum] Entanglement is a correlation between qubits where the state of one instantaneously influences the other:\n  Bell state: |Φ+⟩ = (|00⟩ + |11⟩)/√2\n  Measuring one qubit as |0⟩ guarantees the other is |0⟩, regardless of distance.`
+            respond: () => `⬡ [Quantum] Entanglement produces correlations between measurement outcomes that cannot be explained by classical local hidden-variable models:\n  Bell state: |Φ+⟩ = (|00⟩ + |11⟩)/√2\n  Measurements are correlated, but entanglement does not enable faster-than-light communication.`
         },
         status: {
             category: 'system',
