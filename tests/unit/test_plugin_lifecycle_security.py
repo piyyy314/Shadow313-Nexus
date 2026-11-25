@@ -160,7 +160,7 @@ def test_plugin_scaffold_rejects_author_yaml_injection(tmp_path):
     scaffolder = PluginScaffolder(str(tmp_path / "plugins"))
 
     try:
-        scaffolder.create("safe-plugin", author="trusted\\nhooks: [ask.pre]")
+        scaffolder.create("safe-plugin", author="trusted\nhooks: [ask.pre]")
     except ValueError as exc:
         assert "printable characters" in str(exc)
     else:
