@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const node = document.createElement('div');
             node.className = "topo-node";
             node.textContent = nodeVal;
-            node.title = `Host Node-${nodeVal} (Healthy)`;
+            node.title = `Sample Node-${nodeVal} (Demo State)`;
             
             // Allow interactive manual node infection toggles!
             node.addEventListener('click', () => {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Reset logs
-        logScreen.innerHTML = '<div class="log-line text-green">[Engine] All platform subnodes running healthy. Waiting for incident payloads...</div>';
+        logScreen.innerHTML = '<div class="log-line text-green">[DEMO] Sample topology initialized. No platform nodes are connected.</div>';
         updateHealthIndicator();
     };
 
@@ -49,20 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (node.classList.contains('down')) {
             // Heal node manually
             node.className = "topo-node rebuilding";
-            node.title = `Host Node-${nodeVal} (Rebuilding...)`;
-            writeLogLine(`[Manual] Rebuilding Node-${nodeVal}... deploying encryption patch.`, 'text-orange');
+            node.title = `Sample Node-${nodeVal} (Demo Animation...)`;
+            writeLogLine(`[DEMO] Animating a sample rebuild for Node-${nodeVal}; no patch is deployed.`, 'text-orange');
             
             setTimeout(() => {
                 node.className = "topo-node";
                 node.title = `Host Node-${nodeVal} (Healthy)`;
-                writeLogLine(`[Manual] Node-${nodeVal} fully restored to secure cluster.`, 'text-green');
+                writeLogLine(`[DEMO] Sample Node-${nodeVal} animation reset; no host was restored.`, 'text-green');
                 updateHealthIndicator();
             }, 1000);
         } else {
             // Infect node manually
             node.className = "topo-node down";
-            node.title = `Host Node-${nodeVal} (CRITICAL OUTAGE)`;
-            writeLogLine(`[Manual Alert] Critical communications disruption forced on Node-${nodeVal}!`, 'text-red');
+            node.title = `Sample Node-${nodeVal} (Demo Outage State)`;
+            writeLogLine(`[DEMO] Sample outage state toggled for Node-${nodeVal}; no communications link changed.`, 'text-red');
             updateHealthIndicator();
             
             if (window.updateActiveThreatsCount) {
@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (healthPercent >= 90) {
             healFill.className = "heal-bar";
             healText.className = "heal-percent";
-            healText.textContent = `${healthPercent}% HEALTHY`;
+            healText.textContent = `DEMO: ${healthPercent}% SAMPLE STATE`;
         } else if (healthPercent >= 60) {
             healFill.className = "heal-bar warning";
             healText.className = "heal-percent warning";
-            healText.textContent = `${healthPercent}% STRESSED`;
+            healText.textContent = `DEMO: ${healthPercent}% SAMPLE WARNING`;
         } else {
             healFill.className = "heal-bar critical";
             healText.className = "heal-percent critical";
-            healText.textContent = `${healthPercent}% CRITICAL OUTAGE`;
+            healText.textContent = `DEMO: ${healthPercent}% SAMPLE OUTAGE`;
         }
     };
 
@@ -119,16 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Define targets index mapping for different campaigns
         if (vector === 'outage') {
             targets = [2, 3, 6, 7, 8, 11]; // Nodes: 03, 04, 07, 08, 09, 12
-            writeLogLine("RED-TEAM: Injecting Cascade Network Partition Outage payload...", "text-red");
+            writeLogLine("DEMO: Animating a sample network-partition scenario.", "text-red");
         } else if (vector === 'hijack') {
             targets = [0, 4, 9, 13, 14]; // Nodes: 01, 05, 10, 14, 15
-            writeLogLine("RED-TEAM: Injecting Hostile AI Node Telemetry Hijack script...", "text-red");
+            writeLogLine("DEMO: Animating a sample telemetry-hijack scenario.", "text-red");
         } else if (vector === 'ransom') {
             targets = [1, 5, 7, 10, 15, 16]; // Nodes: 02, 06, 08, 11, 16, 17
-            writeLogLine("RED-TEAM: Executing Ransomware Database Crypt simulator...", "text-red");
+            writeLogLine("DEMO: Animating a sample ransomware scenario; no database is accessed.", "text-red");
         }
 
-        window.showStatusOverlay("Injecting Chaos", "Executing host partitions telemetry breach...", 1200);
+        window.showStatusOverlay("Running Demo Scenario", "Updating sample node states in the browser only.", 1200);
         window.addTimelineLog(`CHAOS EVENT: Red Team simulated intrusion injected: ${selectVector.options[selectVector.selectedIndex].text}`);
 
         if (window.updateActiveThreatsCount) {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Initiate automatic AI self-healing cycle
             setTimeout(() => {
-                writeLogLine("[ORCHESTRATOR] SentinelOS AI self-healing system triggered. Quarantining infected sectors...", "text-orange");
+                writeLogLine("[DEMO] Displaying a scripted repair animation; no quarantine action occurred.", "text-orange");
                 
                 let repairStep = 0;
                 const repairInterval = setInterval(() => {
@@ -162,14 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Phase A: Rebuild
                             node.className = "topo-node rebuilding";
                             node.title = `Host Node-${nodeNum} (Rebuilding...)`;
-                            writeLogLine(`[HEAL] Securing sandbox containment & rotating keys on Node-${nodeNum}.`, 'text-orange');
+                            writeLogLine(`[DEMO] Sample containment/key-rotation step shown for Node-${nodeNum}; no action occurred.`, 'text-orange');
                             updateHealthIndicator();
 
                             // Phase B: Restore (staggered slightly)
                             setTimeout(() => {
                                 node.className = "topo-node";
                                 node.title = `Host Node-${nodeNum} (Healthy)`;
-                                writeLogLine(`[HEAL] Node-${nodeNum} fully restored and synced to active cluster.`, 'text-green');
+                                writeLogLine(`[DEMO] Sample Node-${nodeNum} visual state reset; no host was restored or synced.`, 'text-green');
                                 updateHealthIndicator();
                             }, 500);
                         }
@@ -184,11 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             btnInject.disabled = false;
                             selectVector.disabled = false;
                             
-                            writeLogLine("[Engine] Auto-healing routine completed. Subnet infrastructure fully synchronized.", "text-green");
+                            writeLogLine("[DEMO] Browser scenario complete; no infrastructure was repaired or synchronized.", "text-green");
                             updateHealthIndicator();
 
-                            window.addTimelineLog("CHAOS MITIGATION: AI Self-Healing finished. All partitioned subnodes repaired.");
-                            window.showStatusOverlay("Self-Healing Completed", "All network nodes successfully recovered to 100% health.", 1800);
+                            window.addTimelineLog("DEMO: Sample node animations finished; no network containment or repair was performed.");
+                            window.showStatusOverlay("Demo Scenario Complete", "Sample node states reset in the browser; no infrastructure action occurred.", 1800);
                             
                             if (window.updateActiveThreatsCount) {
                                 window.updateActiveThreatsCount(-1);
