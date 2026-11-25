@@ -56,7 +56,11 @@ class PluginRegistry:
                 manifest = PluginManifest(entry)
                 errors = manifest.validate()
                 if errors:
-                    logger.warning("Ignoring invalid plugin %s: %s", entry.name, "; ".join(errors))
+                    logger.warning(
+                        "Ignoring invalid plugin %s: %s",
+                        entry.name,
+                        "; ".join(errors),
+                    )
                     continue
                 manifests.append(manifest)
                 self._loaded[manifest.name] = manifest
@@ -106,7 +110,9 @@ class PluginRegistry:
 
         destination = self._plugin_dir(manifest.name)
         if destination is None:
-            return False, "Plugin name does not resolve to a safe plugin-local directory"
+            return False, (
+                "Plugin name does not resolve to a safe plugin-local directory"
+            )
         if destination.exists():
             return False, (
                 f"Plugin '{manifest.name}' already exists; "
@@ -117,12 +123,17 @@ class PluginRegistry:
             shutil.copytree(source, destination, symlinks=True)
             if any(item.is_symlink() for item in destination.rglob("*")):
                 shutil.rmtree(destination)
-                return False, "Plugin copy contains a symlink; installation was rolled back"
+                return False, (
+                    "Plugin copy contains a symlink; installation was rolled back"
+                )
             installed = PluginManifest(destination)
             installed_errors = installed.validate()
             if installed_errors:
                 shutil.rmtree(destination)
-                return False, f"Installed plugin failed validation: {'; '.join(installed_errors)}"
+                return False, (
+                    "Installed plugin failed validation: "
+                    f"{'; '.join(installed_errors)}"
+                )
         except Exception as exc:
             if destination.exists() and destination.parent == self.plugins_dir:
                 shutil.rmtree(destination, ignore_errors=True)
