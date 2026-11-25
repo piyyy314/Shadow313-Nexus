@@ -98,13 +98,20 @@ class PluginRegistry:
 
         for item in source.rglob("*"):
             if item.is_symlink():
-                return False, f"Plugin contains a symlink and cannot be installed: {item.relative_to(source)}"
+                relative_path = item.relative_to(source)
+                return False, (
+                    "Plugin contains a symlink and cannot be installed: "
+                    f"{relative_path}"
+                )
 
         destination = self._plugin_dir(manifest.name)
         if destination is None:
             return False, "Plugin name does not resolve to a safe plugin-local directory"
         if destination.exists():
-            return False, f"Plugin '{manifest.name}' already exists; remove it explicitly before reinstalling"
+            return False, (
+                f"Plugin '{manifest.name}' already exists; "
+                "remove it explicitly before reinstalling"
+            )
 
         try:
             shutil.copytree(source, destination, symlinks=True)
