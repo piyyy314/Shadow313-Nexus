@@ -127,17 +127,32 @@ class Kernel:
         ("threat_intel", "shadow313.v2.threat_intel.threat_intel.ThreatIntelModule"),
         ("sandbox", "shadow313.v2.docker_sandbox.docker_sandbox.SandboxModule"),
         ("cloud", "shadow313.v2.cloud_hardening.cloud_hardening.CloudModule"),
-        ("crypto_agility", "shadow313.v2.crypto_agility.crypto_agility.CryptoAgilityModule"),
+        (
+            "crypto_agility",
+            "shadow313.v2.crypto_agility.crypto_agility.CryptoAgilityModule",
+        ),
         # V3 modules
-        ("browser_recon", "shadow313.v3.browser_recon.browser_recon.BrowserReconModule"),
-        ("container_scan", "shadow313.v3.container_scan.container_scan.ContainerScanModule"),
+        (
+            "browser_recon",
+            "shadow313.v3.browser_recon.browser_recon.BrowserReconModule",
+        ),
+        (
+            "container_scan",
+            "shadow313.v3.container_scan.container_scan.ContainerScanModule",
+        ),
         ("ad_audit", "shadow313.v3.ad_auditor.ad_auditor.ADAuditModule"),
         ("siem", "shadow313.v3.siem.siem.SIEMModule"),
         ("collab", "shadow313.v3.collab.collab.CollabModule"),
-        ("malware", "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule"),
+        (
+            "malware",
+            "shadow313.v3.malware_sandbox.malware_sandbox.MalwareSandboxModule",
+        ),
         # V4 platform command modules (CLI-dispatched namespaces)
         ("nexus", "shadow313.v4.nexus.nexus.NEXUSModule"),
-        ("temporal", "shadow313.v4.temporal_binding.temporal_binding.TemporalBindingModule"),
+        (
+            "temporal",
+            "shadow313.v4.temporal_binding.temporal_binding.TemporalBindingModule",
+        ),
         ("stix", "shadow313.v4.stix.stix_handler.STIXModule"),
         ("mobile_api", "shadow313.v4.mobile_api.mobile_api.MobileAPIModule"),
         ("finetune", "shadow313.v4.finetune_ui.finetune_ui.FineTuneModule"),
@@ -154,7 +169,10 @@ class Kernel:
         ("vanguard", "shadow313.v4.vanguard.vanguard.VanguardModule"),
         ("aegis", "shadow313.v4.aegis.aegis.AegisModule"),
         ("ghost_watch", "shadow313.v4.ghost_watch.ghost_watch.GhostWatchModule"),
-        ("quantum_nexus", "shadow313.v4.quantum_nexus.quantum_nexus.QuantumNEXUSModule"),
+        (
+            "quantum_nexus",
+            "shadow313.v4.quantum_nexus.quantum_nexus.QuantumNEXUSModule",
+        ),
         ("satellite", "shadow313.v4.satellite.satellite.SatelliteModule"),
         ("threat_actor", "shadow313.v4.threat_actor.threat_actor.ThreatActorModule"),
         # V4 Aegis sub-modules
