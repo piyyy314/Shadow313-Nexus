@@ -101,7 +101,10 @@ class PluginArtifactSigner:
         return digest.hexdigest()
 
     def sign(self, plugin_dir: str | Path) -> dict[str, Any]:
-        root = Path(plugin_dir).expanduser().resolve()
+        requested_root = Path(plugin_dir).expanduser()
+        if requested_root.is_symlink():
+            raise ValueError("Plugin artifact root must not be a symlink")
+        root = requested_root.resolve()
         key = self._load_key(create=True)
         if key is None:
             raise ValueError("Plugin signing key is unavailable")
@@ -133,11 +136,16 @@ class PluginArtifactSigner:
         return {"valid": True, "plugin": root.name, **record}
 
     def verify(self, plugin_dir: str | Path) -> dict[str, Any]:
-        root = Path(plugin_dir).expanduser().resolve()
+        requested_root = Path(plugin_dir).expanduser()
+        if requested_root.is_symlink():
+            return {"valid": False, "reason": "Plugin artifact root must not be a symlink"}
+        root = requested_root.resolve()
         signature_path = root / SIGNATURE_NAME
         if not signature_path.is_file() or signature_path.is_symlink():
             return {"valid": False, "reason": "Plugin artifact signature is missing"}
 
+        if signature_path.stat().st_size > 64 * 1024:
+            return {"valid": False, "reason": "Plugin signature file exceeds 64 KiB"}
         key = self._load_key(create=False)
         if key is None:
             return {
