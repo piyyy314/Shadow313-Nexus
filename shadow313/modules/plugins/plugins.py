@@ -95,7 +95,10 @@ class PluginManager:
         if verify:
             verification = self.registry.verify(verify)
             result["verification"] = verification
-            self.out.success("Plugin artifact signature verified.") if verification.get("valid") else self.out.error(
+            if verification.get("valid"):
+                self.out.success("Plugin artifact signature verified.")
+            else:
+                self.out.error(
                 verification.get("reason", "Plugin artifact signature invalid")
             )
 
@@ -105,7 +108,8 @@ class PluginManager:
             for verification in verifications:
                 if verification.get("valid"):
                     self.out.success(
-                        f"Verified plugin artifact: {verification.get('plugin', 'unknown')}"
+                        "Verified plugin artifact: "
+                        f"{verification.get('plugin', 'unknown')}"
                     )
                 else:
                     self.out.error(
