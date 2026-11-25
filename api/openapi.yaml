@@ -294,12 +294,55 @@ paths:
 
   /api/events:
     get:
-      summary: List API events
+      summary: List persisted platform events
       operationId: listEvents
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: event_type
+          in: query
+          schema: {type: string, maxLength: 128}
+        - name: severity
+          in: query
+          schema: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL]}
+        - name: limit
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 1000, default: 100}
       responses:
-        "200": {description: Event data status; unavailable when no event backend is connected}
+        "200": {description: Persisted SQLite event records}
+        "401": {description: Unauthorized}
+    post:
+      summary: Publish a platform event
+      operationId: publishPlatformEvent
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event_type, source, severity, payload]
+              properties:
+                event_type: {type: string, maxLength: 128}
+                source: {type: string, maxLength: 128}
+                severity: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL]}
+                payload: {type: object}
+                bind_id: {type: string, maxLength: 128}
+      responses:
+        "200": {description: Event persisted to the SQLite event store}
+        "401": {description: Unauthorized}
+        "413": {description: Event payload exceeds 64 KiB}
+        "422": {description: Invalid event metadata}
+
+  /api/events/stats:
+    get:
+      summary: Get persistent event-bus statistics
+      operationId: getEventBusStats
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Persisted event counts by severity and type}
         "401": {description: Unauthorized}
 
   /api/shiatoali/health:
