@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!decoySelect || !baitArea || !btnDeploy || !activeCounter || !subnetGrid || !logBox) return;
 
     const totalGridSlots = 24;
-    let deployedDecoys = [
+    let sampleDecoys = [
         { index: 2, label: "DEC-01", type: "SCADA", bait: "Modbus PLC v3.1" },
         { index: 9, label: "DEC-02", type: "SQL", bait: "MySQL Fin Records" },
         { index: 17, label: "DEC-03", type: "SSH", bait: "Admin Terminal" }
@@ -32,22 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize Subgrid View
     window.initDeceptionView = () => {
         subnetGrid.innerHTML = '';
-        activeCounter.textContent = deployedDecoys.length;
+        activeCounter.textContent = sampleDecoys.length;
 
         for (let i = 0; i < totalGridSlots; i++) {
             const slot = document.createElement('div');
             slot.className = "subnet-block";
             
             // Check if there is a decoy deployed on this slot index
-            const decoy = deployedDecoys.find(d => d.index === i);
+            const decoy = sampleDecoys.find(d => d.index === i);
             if (decoy) {
                 slot.className = "subnet-block decoy";
                 slot.textContent = `${decoy.label}`;
-                slot.title = `Active Honeypot (${decoy.type}) - ${decoy.bait}`;
+                slot.title = `Sample Honeypot (${decoy.type}) - ${decoy.bait}`;
                 
                 // Allow tripping preloaded honeypots manually!
                 slot.addEventListener('click', () => {
-                    tripHoneypotIntrusion(slot, decoy);
+                    simulateHoneypotEvent(slot, decoy);
                 });
             } else {
                 const gridLetter = String.fromCharCode(65 + Math.floor(i / 8)); // A, B, C
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let prefix = "[INFO]";
         if (type === 'warn') { colorClass = "text-orange"; prefix = "[WARN]"; }
         if (type === 'alert') { colorClass = "text-red"; prefix = "[ALERT]"; }
-        if (type === 'success') { colorClass = "text-green"; prefix = "[SUCCESS]"; }
+        if (type === 'success') { colorClass = "text-green"; prefix = "[DEMO]"; }
         
         line.className = `log-line ${colorClass}`;
         line.textContent = `[${new Date().toLocaleTimeString('en-US', {hour12:false})}] ${prefix} ${text}`;
@@ -98,19 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Find next empty index in grid
         let emptyIndex = -1;
         for (let i = 0; i < totalGridSlots; i++) {
-            if (!deployedDecoys.some(d => d.index === i)) {
+            if (!sampleDecoys.some(d => d.index === i)) {
                 emptyIndex = i;
                 break;
             }
         }
 
         if (emptyIndex === -1) {
-            window.showStatusOverlay("Grid Overloaded", "No empty network slots available to deploy honey decoy.", 1500);
+            window.showStatusOverlay("Demo Grid Full", "No sample slots remain in this browser demonstration.", 1500);
             return;
         }
 
-        // Deploy new decoy node configuration
-        const nextIdNum = deployedDecoys.length + 1;
+        // Add a browser-only sample decoy configuration
+        const nextIdNum = sampleDecoys.length + 1;
         const newDecoy = {
             index: emptyIndex,
             label: nextIdNum < 10 ? `DEC-0${nextIdNum}` : `DEC-${nextIdNum}`,
@@ -118,20 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
             bait: parsedBait.decoy_db || parsedBait.controller || parsedBait.host || "Bait Pack"
         };
 
-        deployedDecoys.push(newDecoy);
-        window.showStatusOverlay("Deploying Decoy", `Configuring dynamic ${newDecoy.type} honeypot...`, 1200);
-        window.addTimelineLog(`DECEPTION DEPLOYED: Honeypot Decoy ${newDecoy.label} (${newDecoy.type}) online on subgrid block.`);
+        sampleDecoys.push(newDecoy);
+        window.showStatusOverlay("Adding Sample Decoy", `Updating the illustrative ${newDecoy.type} scenario...`, 1200);
+        window.addTimelineLog(`DEMO: Sample decoy ${newDecoy.label} (${newDecoy.type}) added in the browser; no honeypot or listening port was deployed.`);
 
         setTimeout(() => {
             window.initDeceptionView();
-            writeLogLine(`Dynamic ${newDecoy.type} Honeypot Decoy (${newDecoy.label}) deployed successfully. Bait registered. Listening on active ports.`, 'success');
+            writeLogLine(`DEMO: Sample ${newDecoy.type} decoy (${newDecoy.label}) displayed. No bait service was started and no port was opened.`, 'info');
 
             // 3. Stagger simulated intrusion on the newly deployed trap (after 3 seconds)
             setTimeout(() => {
                 const blocks = subnetGrid.children;
                 const newSlotNode = blocks[newDecoy.index];
                 if (newSlotNode) {
-                    tripHoneypotIntrusion(newSlotNode, newDecoy);
+                    simulateHoneypotEvent(newSlotNode, newDecoy);
                 }
             }, 3000);
 
@@ -139,12 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. Intrusion Entrapment Simulation Sequence
-    const tripHoneypotIntrusion = (slotNode, decoy) => {
+    const simulateHoneypotEvent = (slotNode, decoy) => {
         if (slotNode.classList.contains('tripped')) return; // Already tripped
         
         slotNode.className = "subnet-block decoy tripped";
-        writeLogLine(`ATTACK DETECTED on ${decoy.label} (${decoy.type})! Perimeter alarm tripped!`, 'alert');
-        window.addTimelineLog(`INTRUSION WARNING: Attacker locked onto Deception Honeypot ${decoy.label}!`);
+        writeLogLine(`DEMO: Synthetic intrusion scenario triggered for sample ${decoy.label} (${decoy.type}). No attacker was observed.`, 'warn');
+        window.addTimelineLog(`DEMO: Synthetic event sequence started for sample decoy ${decoy.label}; no network traffic was received.`);
         
         if (window.updateActiveThreatsCount) {
             window.updateActiveThreatsCount(1);
@@ -152,14 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Trigger step-by-step scrolling diagnostic hacker shell telemetry logs
         const traceLogs = [
-            `Inbound network handshake established from Tor Gateway exit [185.220.101.55]`,
-            `Hostile agent initiated aggressive TCP/UDP port mapping probe.`,
-            `Accessing decoy interface banner: '${decoy.bait}'...`,
-            `Hacker attempted brute-force password guessing dictionary attack (24 accounts scanned)...`,
-            `Credential authorization succeeded for guest account. Spawning honeypot shell.`,
-            `Attacker executed diagnostic query: 'SELECT * FROM information_schema.tables;'`,
-            `Bait data extracted. Canary Token signature recorded!`,
-            `Attacker isolated! Footprint hashes logged to blockchain ledger block.`
+            `DEMO: Sample source address 185.220.101.55 displayed; no inbound handshake occurred.`,
+            `DEMO: Illustrative TCP/UDP discovery step; no probe was sent.`,
+            `DEMO: Sample decoy banner displayed: '${decoy.bait}'.`,
+            `DEMO: Sample password-guessing step displayed; no accounts were contacted.`,
+            `DEMO: Scripted guest-login step; no authentication or shell was created.`,
+            `DEMO: Sample SQL query displayed; no database connection was made.`,
+            `DEMO: Sample canary event displayed; no token was observed or recorded.`,
+            `DEMO: Sample containment step displayed; no host was isolated and no ledger was written.`
         ];
 
         let logIdx = 0;
@@ -169,8 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 logIdx++;
             } else {
                 clearInterval(logTimer);
-                writeLogLine(`Intrusion successfully contained. Attacker routing trapped in endless loop. Sandbox metrics synced.`, 'success');
-                window.addTimelineLog(`DECEPTION SUCCESS: Intrusion footprint on Honeypot ${decoy.label} captured and neutralized.`);
+                writeLogLine(`DEMO: Browser scenario complete. No intrusion was detected, contained, or recorded.`, 'info');
+                window.addTimelineLog(`DEMO: Sample sequence for ${decoy.label} ended; no forensic evidence was collected.`);
 
                 if (window.updateActiveThreatsCount) {
                     window.updateActiveThreatsCount(-1);
