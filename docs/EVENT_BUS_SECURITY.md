@@ -26,3 +26,15 @@ The service binds to loopback by default. If it must be exposed remotely, use
 TLS termination, network access controls, key rotation, and a managed durable
 volume. SQLite persistence is a local durable store, not a distributed event
 stream or a replacement for a replicated message broker.
+
+## Main API integration
+
+The main FastAPI application now reads and writes the same SQLite event store:
+
+- `GET /api/events` lists persisted events with optional type, severity, and limit filters.
+- `POST /api/events` ingests a validated event.
+- `GET /api/events/stats` returns persistent counts by severity and event type.
+
+These main API routes use the main API's existing API-key authorization dependency.
+The standalone event-bus service uses `SHADOW313_EVENT_BUS_API_KEY` for its own
+HTTP routes. Both paths share `SHADOW313_EVENT_STORE_PATH`.
