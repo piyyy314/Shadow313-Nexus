@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 2; i <= Math.sqrt(num); i++) {
                     if (num % i === 0) factors.push([i, num / i]);
                 }
-                if (factors.length === 0) return `⬡ [Shor Demo] ${num} appears to be prime. No non-trivial factors found via quantum period-finding.`;
+                if (factors.length === 0) return `⬡ [Classical Demo] ${num} appears prime under this simple trial-division example; no quantum period-finding was performed.`;
                 const [a, b] = factors[0];
                 return `⬡ [Classical Demo] Example factorization of N=${num}:\n  Factors: ${a} × ${b} = ${num}\n  No quantum hardware, quantum period-finding, or cryptographic signature was used.`;
             }
