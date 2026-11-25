@@ -18,7 +18,7 @@ This Incident Response Plan defines procedures for detecting, containing, eradic
 
 | Role | Individual | Contact | Backup |
 |------|-----------|---------|--------|
-| Incident Commander | mohamad | baalbek.313@gmail.com | N/A (sole operator) |
+| Incident Commander | mohamad | pitty313@proton.me | N/A (sole operator) |
 | Technical Lead | mohamad | baalbek.313@gmail.com | N/A |
 | Communications Lead | mohamad | baalbek.313@gmail.com | N/A |
 
