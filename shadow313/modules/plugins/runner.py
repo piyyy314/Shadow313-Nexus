@@ -52,7 +52,10 @@ class PluginRunner:
                 mounted_roots.append(runtime_path.resolve())
 
         prefix = Path(sys.prefix).resolve()
-        if not any(prefix == root or prefix.is_relative_to(root) for root in mounted_roots):
+        if not any(
+            prefix == root or prefix.is_relative_to(root)
+            for root in mounted_roots
+        ):
             command.extend(["--ro-bind", str(prefix), str(prefix)])
 
         command.extend(["--dir", "/etc"])
