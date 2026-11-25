@@ -35,3 +35,18 @@ def test_docker_buildx_uses_supported_no_cache_filters_input():
     assert "no-cache-filters:" in workflow
     assert "production-base,production" in workflow
     assert "no-cache-filter:" not in workflow
+
+
+def test_pr_checks_include_independent_semgrep_sast_fallback():
+    workflow = (ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "Install Semgrep OSS" in workflow
+    assert "semgrep==1.186.0" in workflow
+    assert "semgrep scan" in workflow
+    assert "--config p/python" in workflow
+    assert "--config p/javascript" in workflow
+    assert "--config p/security-audit" in workflow
+    assert "Semgrep report unavailable or invalid" in workflow
+    assert "Upload Semgrep report" in workflow
+    assert "SEMGREP_APP_TOKEN" not in workflow
