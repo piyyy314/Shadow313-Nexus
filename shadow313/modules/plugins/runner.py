@@ -46,10 +46,22 @@ class PluginRunner:
         ]
 
         mounted_roots: list[Path] = []
-        for runtime_path in (Path("/usr"), Path("/bin"), Path("/lib"), Path("/lib64")):
-            if runtime_path.exists():
-                command.extend(["--ro-bind", str(runtime_path), str(runtime_path)])
-                mounted_roots.append(runtime_path.resolve())
+        for runtime_path in (
+            Path("/usr"),
+            Path("/bin"),
+            Path("/lib"),
+            Path("/lib64"),
+        ):
+            if not runtime_path.exists():
+                continue
+            source_path = runtime_path.resolve()
+            if any(
+                source_path == root or source_path.is_relative_to(root)
+                for root in mounted_roots
+            ):
+                continue
+            command.extend(["--ro-bind", str(source_path), str(runtime_path)])
+            mounted_roots.append(source_path)
 
         prefix = Path(sys.prefix).resolve()
         if not any(
@@ -201,6 +213,8 @@ class PluginRunner:
         resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
         resource.setrlimit(resource.RLIMIT_FSIZE, (10 * 1024 * 1024, 10 * 1024 * 1024))
         resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
+        if hasattr(resource, "RLIMIT_NPROC"):
+            resource.setrlimit(resource.RLIMIT_NPROC, (16, 16))
 
     @staticmethod
     def _build_scoped_context(context: dict) -> dict:
