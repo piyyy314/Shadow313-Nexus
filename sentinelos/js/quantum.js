@@ -149,7 +149,7 @@
         });
     }
 
-    // Data Encryption trigger
+    // Browser-only reversible demo transform
     const btnEncrypt = document.getElementById('btn-quantum-encrypt');
     const btnDecrypt = document.getElementById('btn-quantum-decrypt');
     const plainText = document.getElementById('txt-quantum-plain');
@@ -159,7 +159,7 @@
         btnEncrypt.addEventListener('click', () => {
             const rawInput = plainText.value.trim();
             if (!rawInput) {
-                alert("Please enter a cleartext payload to encrypt.");
+                alert("Enter non-sensitive sample text for the demo transform.");
                 return;
             }
             if (!generatedKeys) {
@@ -190,7 +190,7 @@
         btnDecrypt.addEventListener('click', () => {
             const cipherData = cipherText.value.trim();
             if (!cipherData) {
-                alert("No encrypted matrix packet found to solve.");
+                alert("No demo output is available to reverse.");
                 return;
             }
 
