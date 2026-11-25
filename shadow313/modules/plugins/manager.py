@@ -1,6 +1,7 @@
 """Canonical plugin registry and lifecycle manager with path-safe installation."""
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from datetime import UTC, datetime
@@ -281,7 +282,12 @@ class PluginScaffolder:
         destination.mkdir()
         manifest = MANIFEST_TEMPLATE.replace("my-plugin", name)
         if author:
-            manifest = manifest.replace("author: handle", f"author: {author}")
+            if len(author) > 128 or any(ord(character) < 32 for character in author):
+                raise ValueError("Plugin author must be at most 128 printable characters")
+            manifest = manifest.replace(
+                "author: handle",
+                f"author: {json.dumps(author)}",
+            )
         (destination / "plugin.yaml").write_text(manifest, encoding="utf-8")
         (destination / "plugin.py").write_text(
             PLUGIN_ENTRY_TEMPLATE.format(name=name, hook=hook),
