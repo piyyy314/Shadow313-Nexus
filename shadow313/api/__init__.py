@@ -11,8 +11,8 @@ from typing import Any
 
 from fastapi import Depends, HTTPException, Query, Request
 
-from .access import authorize
 from . import server as _server
+from .access import authorize
 from shadow313_platform.event_bus import PlatformEvent, get_event_bus
 
 _original_create_app = _server.create_app
