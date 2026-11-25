@@ -257,7 +257,13 @@ class HookDispatcher:
                     }
                 )
                 continue
-            results.append(PluginRunner(plugin).execute(context))
+            results.append(
+                PluginRunner(
+                    plugin,
+                    require_signed=self.registry.require_signed,
+                    signer=self.registry.signer,
+                ).execute(context)
+            )
         return results
 
 
