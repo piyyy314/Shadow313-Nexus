@@ -47,8 +47,11 @@ class HTTPWebhookDelivery:
     RESERVED_HEADERS = {
         "host",
         "content-length",
+        "content-type",
         "transfer-encoding",
         "connection",
+        "authorization",
+        "cookie",
         "proxy-authorization",
         "x-nexus-signature",
         "x-nexus-timestamp",
