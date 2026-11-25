@@ -25,10 +25,19 @@ MAX_ARTIFACT_BYTES = 100 * 1024 * 1024
 class PluginArtifactSigner:
     """Sign and verify the complete content tree of a plugin directory."""
 
-    def __init__(self, key_path: Path | None = None) -> None:
+    def __init__(
+        self,
+        key_path: Path | None = None,
+        key: bytes | str | None = None,
+    ) -> None:
         self.key_path = key_path or KEY_PATH
+        self._configured_key = key.encode("utf-8") if isinstance(key, str) else key
 
     def _load_key(self, *, create: bool) -> bytes | None:
+        if self._configured_key is not None:
+            if len(self._configured_key) < 32:
+                raise ValueError("Plugin signing key must be at least 32 bytes")
+            return self._configured_key
         configured = os.environ.get("SHADOW313_PLUGIN_SIGNING_KEY")
         if configured:
             key = configured.encode("utf-8")
