@@ -8,7 +8,11 @@ from unittest.mock import Mock
 
 import pytest
 
-from shadow313.modules.plugins.manager import HookDispatcher, PluginRegistry, PluginScaffolder
+from shadow313.modules.plugins.manager import (
+    HookDispatcher,
+    PluginRegistry,
+    PluginScaffolder,
+)
 from shadow313.modules.plugins.manifest import PluginManifest
 from shadow313.modules.plugins.runner import PluginRunner
 
@@ -53,7 +57,10 @@ def test_manifest_reports_empty_name_and_invalid_hook(tmp_path):
     ]
 
 
-def test_manifest_fallback_parser_preserves_lists_and_quoted_values(tmp_path, monkeypatch):
+def test_manifest_fallback_parser_preserves_lists_and_quoted_values(
+    tmp_path,
+    monkeypatch,
+):
     (tmp_path / "plugin.yaml").write_text(
         '# comment\nname: "fallback"\nversion: 2\nhooks:\n  - recon.post\n'
         "  - vuln.post\nrequires:\n  - sample-dependency\n"
@@ -114,7 +121,13 @@ def test_discover_skips_nonplugins_and_broken_yaml(plugin, tmp_path):
 
 
 def test_runner_passes_only_scoped_context_and_configures_process(plugin, monkeypatch):
-    run = Mock(return_value=SimpleNamespace(returncode=0, stdout='{"status":"ok"}', stderr=""))
+    run = Mock(
+        return_value=SimpleNamespace(
+            returncode=0,
+            stdout='{"status":"ok"}',
+            stderr="",
+        )
+    )
     monkeypatch.setattr("shadow313.modules.plugins.runner.subprocess.run", run)
     monkeypatch.setattr(
         "shadow313.modules.plugins.runner.shutil.which",
@@ -168,7 +181,11 @@ def test_runner_handles_failed_empty_and_invalid_output(
     monkeypatch.setattr(
         "shadow313.modules.plugins.runner.subprocess.run",
         Mock(
-            return_value=SimpleNamespace(returncode=returncode, stdout=stdout, stderr=stderr),
+            return_value=SimpleNamespace(
+                returncode=returncode,
+                stdout=stdout,
+                stderr=stderr,
+            ),
         ),
     )
     monkeypatch.setattr(
@@ -182,7 +199,10 @@ def test_runner_handles_failed_empty_and_invalid_output(
         assert len(result[field]) == 500
 
 
-@pytest.mark.parametrize("error", [subprocess.TimeoutExpired("plugin", 30), OSError("failed")])
+@pytest.mark.parametrize(
+    "error",
+    [subprocess.TimeoutExpired("plugin", 30), OSError("failed")],
+)
 def test_runner_contains_process_exceptions(plugin, monkeypatch, error):
     monkeypatch.setattr(
         "shadow313.modules.plugins.runner.subprocess.run",
@@ -221,7 +241,12 @@ def test_dispatcher_fires_only_enabled_matching_hooks(plugin, tmp_path, monkeypa
     assert dispatcher.fire("recon.post", "recon") == []
     registry.enable("sample")
     assert dispatcher.fire("vuln.post", "vuln") == []
-    assert dispatcher.fire("recon.post", "recon", {"ports": [443]}, "example.invalid") == [
+    assert dispatcher.fire(
+        "recon.post",
+        "recon",
+        {"ports": [443]},
+        "example.invalid",
+    ) == [
         {"status": "ok"},
     ]
     context = execute.call_args.args[0]
