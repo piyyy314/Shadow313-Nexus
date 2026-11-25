@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             setTimeout(() => {
                 node.className = "topo-node";
-                node.title = `Host Node-${nodeVal} (Healthy)`;
+                node.title = `Sample Node-${nodeVal} (Demo State)`;
                 writeLogLine(`[DEMO] Sample Node-${nodeVal} animation reset; no host was restored.`, 'text-green');
                 updateHealthIndicator();
             }, 1000);
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             updateHealthIndicator();
 
-            // 3. Initiate automatic AI self-healing cycle
+            // 3. Animate the sample recovery sequence
             setTimeout(() => {
                 writeLogLine("[DEMO] Displaying a scripted repair animation; no quarantine action occurred.", "text-orange");
                 
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Phase B: Restore (staggered slightly)
                             setTimeout(() => {
                                 node.className = "topo-node";
-                                node.title = `Host Node-${nodeNum} (Healthy)`;
+                                node.title = `Sample Node-${nodeNum} (Demo State)`;
                                 writeLogLine(`[DEMO] Sample Node-${nodeNum} visual state reset; no host was restored or synced.`, 'text-green');
                                 updateHealthIndicator();
                             }, 500);
