@@ -2,8 +2,6 @@
 
 import json
 
-import pytest
-
 from shadow313.core.plugin_manager import PluginManager
 from shadow313.modules.plugins.signing import PluginArtifactSigner
 
@@ -47,7 +45,10 @@ def test_plugin_manager_rejects_unsigned_and_tampered_manifests(tmp_path):
     assert fresh_manager.load("sample") is False
 
 
-def test_plugin_manager_dispatches_each_hook_once_with_correct_name(tmp_path, monkeypatch):
+def test_plugin_manager_dispatches_each_hook_once_with_correct_name(
+    tmp_path,
+    monkeypatch,
+):
     _plugin(tmp_path, hooks=["recon.post", "vuln.post"])
     manager = PluginManager(str(tmp_path), secret=KEY)
     manager.sign_plugin("sample")
