@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-import re
 import shutil
 from datetime import UTC, datetime
 from pathlib import Path
@@ -109,6 +108,9 @@ class PluginRegistry:
 
         try:
             shutil.copytree(source, destination, symlinks=True)
+            if any(item.is_symlink() for item in destination.rglob("*")):
+                shutil.rmtree(destination)
+                return False, "Plugin copy contains a symlink; installation was rolled back"
             installed = PluginManifest(destination)
             installed_errors = installed.validate()
             if installed_errors:
