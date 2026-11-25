@@ -375,7 +375,9 @@ def _hmac_verify_directory(self, directory: str, signature: str = None) -> bool:
     canonical = _json.dumps(file_hashes, sort_keys=True).encode()
     if signature is None:
         return False
-    key = getattr(self, '_key', getattr(self, 'key', b'shadow313-default-key'))
+    key = getattr(self, "_key", None) or getattr(self, "key", None)
+    if not key:
+        raise ValueError("A configured plugin signing key is required")
     if isinstance(key, str):
         key = key.encode()
     expected = _hmac_mod.new(key, canonical, _hashlib.sha256).hexdigest()
