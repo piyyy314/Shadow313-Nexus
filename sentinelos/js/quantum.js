@@ -1,4 +1,4 @@
-// --- SENTINELOS Quantum-Resistant Encryption Module ---
+// --- SENTINELOS Browser-Only PQC Concept Demo (Not Cryptographic) ---
 
 (() => {
     let generatedKeys = false;
@@ -124,8 +124,8 @@
 
     if (btnGenKeys) {
         btnGenKeys.addEventListener('click', () => {
-            pubKeyText.placeholder = "Generating secure MLWE lattice matrices...";
-            privKeyText.placeholder = "Computing high entropy secret parameters...";
+            pubKeyText.placeholder = "Generating illustrative sample text only...";
+            privKeyText.placeholder = "Generating illustrative sample text only...";
             
             let progress = 0;
             const progressInterval = setInterval(() => {
@@ -135,21 +135,21 @@
                     
                     // Synthesize robust hex key strings
                     const entropySeed = seedSlider ? seedSlider.value : 512;
-                    const mockPub = generateMockHexBytes(160) + `\n[Kyber-MLWE-k=4-t_A_seed=${entropySeed}]`;
-                    const mockPriv = generateMockHexBytes(120) + `\n[Kyber-Secret_Key-s]`;
+                    const mockPub = generateMockHexBytes(160) + `\n[DEMO-STRING-NOT-A-KYBER-KEY-seed=${entropySeed}]`;
+                    const mockPriv = generateMockHexBytes(120) + `\n[DEMO-STRING-NOT-A-PRIVATE-KEY]`;
                     
                     pubKeyText.value = mockPub;
                     privKeyText.value = mockPriv;
                     generatedKeys = true;
                     
-                    window.addTimelineLog(`MLWE Quantum Keypair generated with ${entropySeed}-bit seed entropy. Coefficients committed.`);
-                    window.showStatusOverlay("Entropy Sync", "Quantum seed matrices synced successfully", 1000);
+                    window.addTimelineLog(`DEMO: Illustrative random strings generated with Math.random and parameter ${entropySeed}; no Kyber keypair or entropy source was used.`);
+                    window.showStatusOverlay("Demo Strings Ready", "No cryptographic keypair or entropy source was generated.", 1000);
                 }
             }, 100);
         });
     }
 
-    // Data Encryption trigger
+    // Browser-only reversible demo transform
     const btnEncrypt = document.getElementById('btn-quantum-encrypt');
     const btnDecrypt = document.getElementById('btn-quantum-decrypt');
     const plainText = document.getElementById('txt-quantum-plain');
@@ -159,11 +159,11 @@
         btnEncrypt.addEventListener('click', () => {
             const rawInput = plainText.value.trim();
             if (!rawInput) {
-                alert("Please enter a cleartext payload to encrypt.");
+                alert("Enter non-sensitive sample text for the demo transform.");
                 return;
             }
             if (!generatedKeys) {
-                alert("Please generate MLWE Quantum Keypair before encryption.");
+                alert("Generate the illustrative demo strings before running the reversible demo transform.");
                 return;
             }
 
@@ -171,7 +171,7 @@
             pulseWave = 0;
             isPulsing = true;
 
-            // Encapsulation matrix calculations representation
+            // Illustrative reversible transform; this is not encryption.
             let cipherHex = "";
             for (let i = 0; i < rawInput.length; i++) {
                 const asciiVal = rawInput.charCodeAt(i);
@@ -180,9 +180,9 @@
                 cipherHex += scrambled.toString(16).padStart(4, '0').toUpperCase();
             }
 
-            const header = `[SENTINEL-KYBER1024-MATRIX-ENCRYPTED]\n`;
+            const header = `[SENTINEL-DEMO-NOT-SECURE]\n`;
             cipherText.value = header + chunkString(cipherHex, 8).join('-');
-            window.addTimelineLog(`Protected data packet encapsulated inside Kyber secure vectors. Payload encrypted.`);
+            window.addTimelineLog("DEMO: Reversible browser-only string transform; this is not encryption and must not be used to protect data.");
         });
     }
 
@@ -190,26 +190,26 @@
         btnDecrypt.addEventListener('click', () => {
             const cipherData = cipherText.value.trim();
             if (!cipherData) {
-                alert("No encrypted matrix packet found to solve.");
+                alert("No demo output is available to reverse.");
                 return;
             }
 
-            let hexPayload = cipherData.replace('[SENTINEL-KYBER1024-MATRIX-ENCRYPTED]\n', '').replace(/-/g, '');
+            let hexPayload = cipherData.replace('[SENTINEL-DEMO-NOT-SECURE]\n', '').replace(/-/g, '');
             let decryptedStr = "";
             
             try {
                 for (let i = 0; i < hexPayload.length; i += 4) {
                     const chunk = hexPayload.substring(i, i + 4);
                     const scrambledVal = parseInt(chunk, 16);
-                    // Solve polynomial coefficients equations
+                    // Reverse the illustrative arithmetic transform; no lattice operation occurs.
                     const unscrambled = (scrambledVal ^ 0xA5);
                     const asciiVal = Math.round((unscrambled - 23) / 17);
                     decryptedStr += String.fromCharCode(asciiVal);
                 }
                 
                 plainText.value = decryptedStr;
-                window.addTimelineLog(`Solved Kyber lattice vector matrix matching secret parameters. Cleartext extracted.`);
-                window.showStatusOverlay("Cipher Solved", "Cleartext payload successfully decrypted", 1000);
+                window.addTimelineLog("DEMO: Reversed the illustrative string transform; no Kyber or lattice operation was performed.");
+                window.showStatusOverlay("Demo Transform Reversed", "No cryptographic decryption was performed.", 1000);
             } catch (err) {
                 alert("Failed to solve lattice vector. Cipher packet corrupted.");
             }

@@ -312,10 +312,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (uplinkStatus) uplinkStatus.textContent = 'PINGING CONSTELLATION...';
             if (uplinkDot) uplinkDot.classList.add('pinging');
 
-            addChatMsg('system', '⬡ Transmitting ping to satellite constellation via middleware bridge...');
+            addChatMsg('system', '[DEMO] Generating illustrative satellite-ping output. No network request is sent.');
 
             if (window.showStatusOverlay) {
-                window.showStatusOverlay('Ping Constellation', 'Sending QKD-TLS handshake to 7 orbital nodes...', 2000);
+                window.showStatusOverlay('Demo Ping', 'Displaying sample responses only; no satellite or QKD-TLS connection is attempted.', 2000);
             }
 
             // Simulate sequential ping responses
@@ -323,17 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const pingInterval = setInterval(() => {
                 if (pinged < 7) {
                     const latency = (30 + Math.random() * 25).toFixed(1);
-                    addChatMsg('system', `  ↳ SAT-${String(pinged + 1).padStart(2, '0')} responded: ${latency}ms RTT | Signal OK`);
+                    addChatMsg('system', `[DEMO SAMPLE] SAT-${String(pinged + 1).padStart(2, '0')}: illustrative ${latency}ms RTT | not a measured response`);
                     pinged++;
                 } else {
                     clearInterval(pingInterval);
-                    if (uplinkStatus) uplinkStatus.textContent = 'UPLINK ACTIVE';
+                    if (uplinkStatus) uplinkStatus.textContent = 'DEMO UPLINK — NOT CONNECTED';
                     if (uplinkDot) uplinkDot.classList.remove('pinging');
                     btnPing.disabled = false;
-                    addChatMsg('system', '⬡ Constellation ping complete. All 7 nodes responding normally.');
+                    addChatMsg('system', '[DEMO] Sample ping sequence complete. No satellite nodes were contacted.');
 
                     if (window.addTimelineLog) {
-                        window.addTimelineLog('SHADOW313: Satellite constellation ping completed — all nodes healthy.');
+                        window.addTimelineLog('DEMO: illustrative satellite ping sequence displayed; no live nodes were contacted.');
                     }
                 }
             }, 400);
@@ -343,10 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnRecalibrate) {
         btnRecalibrate.addEventListener('click', () => {
             btnRecalibrate.disabled = true;
-            addChatMsg('system', '⬡ Recalibrating orbital tracking parameters...');
+            addChatMsg('system', '[DEMO] Generating illustrative coordinates; no orbital tracking is connected.');
 
             if (window.showStatusOverlay) {
-                window.showStatusOverlay('Recalibrating', 'Adjusting antenna gain and Doppler compensation...', 1800);
+                window.showStatusOverlay('Demo Coordinates', 'Generating sample coordinates; no antenna or receiver is controlled.', 1800);
             }
 
             // Refresh satellite positions
@@ -359,11 +359,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const alt = (500 + Math.random() * 100).toFixed(0);
                 if (coordEl) coordEl.textContent = `LAT ${lat} · LON ${lon} · ALT ${alt}km`;
 
-                addChatMsg('system', `⬡ Recalibration complete. New tracking: LAT ${lat}, LON ${lon}, ALT ${alt}km`);
+                addChatMsg('system', `[DEMO] Sample coordinates: LAT ${lat}, LON ${lon}, ALT ${alt}km. Not measured or verified.`);
                 btnRecalibrate.disabled = false;
 
                 if (window.addTimelineLog) {
-                    window.addTimelineLog(`SHADOW313: Orbital recalibration done. Updated ephemeris data for constellation.`);
+                    window.addTimelineLog('DEMO: illustrative coordinates generated; no ephemeris or orbital data was retrieved.');
                 }
             }, 2000);
         });
@@ -476,21 +476,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 2; i <= Math.sqrt(num); i++) {
                     if (num % i === 0) factors.push([i, num / i]);
                 }
-                if (factors.length === 0) return `⬡ [Shor Demo] ${num} appears to be prime. No non-trivial factors found via quantum period-finding.`;
+                if (factors.length === 0) return `⬡ [Classical Demo] ${num} appears prime under this simple trial-division example; no quantum period-finding was performed.`;
                 const [a, b] = factors[0];
-                return `⬡ [Shor Demo] Quantum period-finding on N=${num}:\n  Factors discovered: ${a} × ${b} = ${num}\n  Circuit: 4 qubits, depth 12 | 313-bound signature attached.`;
+                return `⬡ [Classical Demo] Example factorization of N=${num}:\n  Factors: ${a} × ${b} = ${num}\n  No quantum hardware, quantum period-finding, or cryptographic signature was used.`;
             }
         },
         find: {
             category: 'search/grover',
-            respond: () => `⬡ [Grover Demo] Amplitude amplification search:\n  Target found in √N iterations (2 iterations for 4-item space)\n  Probability of correct result: 97.2%\n  Circuit profiled: 2 qubits, depth 8, 6 1Q gates, 2 2Q gates.`
+            respond: () => `⬡ [Grover Demo] Amplitude amplification search:\n  Target found in √N iterations (2 iterations for 4-item space)\n  No circuit was executed and no success probability was measured.\n  The displayed circuit description is illustrative only.`
         },
         random: {
             category: 'random/qrng',
             respond: () => {
                 const bits = Array.from({length: 16}, () => Math.random() > 0.5 ? '1' : '0').join('');
                 const hex = parseInt(bits, 2).toString(16).padStart(4, '0');
-                return `⬡ [QRNG] Quantum random bits generated:\n  Binary: ${bits}\n  Hex: 0x${hex}\n  Source: Hadamard + measurement on 16-qubit register.`;
+                return `⬡ [PRNG Demo] Illustrative pseudo-random bits:\n  Binary: ${bits}\n  Hex: 0x${hex}\n  Source: browser Math.random(); this is not a quantum random-number generator.`;
             }
         },
         superposition: {
@@ -499,17 +499,17 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         entanglement: {
             category: 'quantum/explain',
-            respond: () => `⬡ [Quantum] Entanglement is a correlation between qubits where the state of one instantaneously influences the other:\n  Bell state: |Φ+⟩ = (|00⟩ + |11⟩)/√2\n  Measuring one qubit as |0⟩ guarantees the other is |0⟩, regardless of distance.`
+            respond: () => `⬡ [Quantum] Entanglement produces correlations between measurement outcomes that cannot be explained by classical local hidden-variable models:\n  Bell state: |Φ+⟩ = (|00⟩ + |11⟩)/√2\n  Measurements are correlated, but entanglement does not enable faster-than-light communication.`
         },
         status: {
             category: 'system',
-            respond: () => `⬡ [Shadow313 Status]\n  Temporal Binds: ${bindCount} | Q-Runs: ${Math.floor(bindCount * 0.3)} | Backend: ${backendSelect?.value || 'local_sim'}\n  Satellites: 7/7 ONLINE | Middleware: ROUTING | Kernel: ACTIVE`
+            respond: () => `⬡ [Shadow313 Demo Status]\n  Local demo counters: ${bindCount} | Sample runs: ${Math.floor(bindCount * 0.3)} | Demo backend: ${backendSelect?.value || 'local_sim'}\n  Satellites: not connected | Middleware: not verified | Kernel: application demo only`
         },
         satellite: {
             category: 'system/uplink',
             respond: () => {
                 const sats = satellites.filter(s => s.active).length;
-                return `⬡ [Constellation Report]\n  Active satellites: ${sats}/7\n  Avg latency: ${(35 + Math.random() * 15).toFixed(1)}ms\n  Signal strength: ${(-60 - Math.random() * 10).toFixed(0)} dBm\n  Uplink encrypted via QKD-TLS through middleware bridge.`;
+                return `⬡ [Constellation Demo]\n  Sample satellites: ${sats}/7 (illustrative)\n  Sample latency: ${(35 + Math.random() * 15).toFixed(1)}ms\n  Sample signal: ${(-60 - Math.random() * 10).toFixed(0)} dBm\n  No satellite, middleware, or QKD-TLS connection is active.`;
             }
         }
     };

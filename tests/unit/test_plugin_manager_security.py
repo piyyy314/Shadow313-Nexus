@@ -2,9 +2,8 @@
 
 import json
 
-import pytest
-
 from shadow313.core.plugin_manager import PluginManager
+from shadow313.modules.plugins.signing import PluginArtifactSigner
 
 
 KEY = "unit-test-signing-key-" + ("x" * 40)
@@ -20,10 +19,17 @@ def _plugin(root, name="sample", hooks=None):
     return path
 
 
-def test_plugin_manager_requires_explicit_strong_key(tmp_path, monkeypatch):
-    monkeypatch.delenv("SHADOW313_PLUGIN_SIGNING_KEY", raising=False)
-    with pytest.raises(ValueError, match="at least 32 characters"):
-        PluginManager(str(tmp_path))
+def test_plugin_manager_creates_local_key_when_signing(tmp_path):
+    path = _plugin(tmp_path)
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+    manager = PluginManager(str(tmp_path), signer=signer)
+
+    assert not signer.key_path.exists()
+    assert manager.load("sample") is False
+    manager.sign_plugin("sample")
+
+    assert signer.key_path.exists()
+    assert signer.verify(path)["valid"] is True
 
 
 def test_plugin_manager_rejects_unsigned_and_tampered_manifests(tmp_path):
@@ -39,7 +45,10 @@ def test_plugin_manager_rejects_unsigned_and_tampered_manifests(tmp_path):
     assert fresh_manager.load("sample") is False
 
 
-def test_plugin_manager_dispatches_each_hook_once_with_correct_name(tmp_path, monkeypatch):
+def test_plugin_manager_dispatches_each_hook_once_with_correct_name(
+    tmp_path,
+    monkeypatch,
+):
     _plugin(tmp_path, hooks=["recon.post", "vuln.post"])
     manager = PluginManager(str(tmp_path), secret=KEY)
     manager.sign_plugin("sample")

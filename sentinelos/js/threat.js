@@ -217,12 +217,12 @@
         const randIp = ips[Math.floor(Math.random() * ips.length)];
         
         // Add notification alert
-        addPredictiveAlert("HIGH", `Hostile Intrusion: ${randVector}`, `Decoy asset trapped intrusion vector from ${randIp}. Mitigation automated.`);
+        addPredictiveAlert("HIGH", `DEMO: Sample Event — ${randVector}`, `Illustrative source ${randIp}; no network packet was observed and no mitigation was performed.`);
         
-        // Automatically mitigate after 3.5 seconds
+        // Complete the illustrative alert lifecycle; no containment action is performed.
         setTimeout(() => {
             window.updateActiveThreatsCount(-1);
-            addPredictiveAlert("LOW", `Intrusion Mitigated`, `Threat vector isolated. IP ${randIp} blocked on all active subnets.`);
+            addPredictiveAlert("LOW", `DEMO: Sample Scenario Complete`, `No threat vector was isolated and IP ${randIp} was not blocked.`);
         }, 4000);
     };
 
@@ -234,7 +234,7 @@
             card.className = `threat-notif ${level.toLowerCase()}`;
             
             card.innerHTML = `
-                <div class="notif-badge">AI ALERT</div>
+                <div class="notif-badge">DEMO ALERT</div>
                 <div class="notif-body">
                     <strong>${title} [${level}]</strong>
                     <p>${text}</p>
@@ -258,8 +258,8 @@
                 spawnAttackNode();
             }
             
-            addPredictiveAlert("HIGH", "AI Prediction Breach Wave [Confidence: 99.4%]", "Simulated large-scale Red Team penetration campaign injected. Automated playbooks armed.");
-            window.showStatusOverlay("Hostile Infiltration", "Warning: High volume intrusion vectors detected. Triggering Playbook...", 1500);
+            addPredictiveAlert("HIGH", "DEMO: Synthetic Breach Wave", "Illustrative Red Team scenario only; no penetration campaign ran and no automated playbook was armed.");
+            window.showStatusOverlay("Demo Scenario", "Synthetic threat events are being animated; no live intrusion was detected.", 1500);
         });
     }
 
@@ -268,8 +268,8 @@
     if (btnRecalibrate) {
         btnRecalibrate.addEventListener('click', () => {
             initMockMapLandmasses();
-            window.showStatusOverlay("Recalibrating...", "Tuning neural map geolocated threat receivers...", 1000);
-            window.addTimelineLog("Threat map reception frequencies recalibrated.");
+            window.showStatusOverlay("Refreshing Demo Map", "Updating illustrative map elements; no receiver was tuned.", 1000);
+            window.addTimelineLog("DEMO: Illustrative threat map refreshed; no live receiver was recalibrated.");
         });
     }
 

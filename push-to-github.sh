@@ -254,7 +254,7 @@ else
     # Configure git identity if not set
     if [[ -z "$(git config user.name 2>/dev/null || true)" ]]; then
         git config user.name  "Shadow313 Bot"
-        git config user.email "bot@shadow313.dev"
+        git config user.email "pitty313@proton.me"
         warn "Git identity not configured — using defaults (Shadow313 Bot)"
     fi
     git commit -m "$COMMIT_MSG"

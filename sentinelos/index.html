@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/sentinelos/styles.css">
 </head>
 <body>
-    <aside id="nexus-backend-status" class="nexus-backend-status" role="status" aria-live="polite" data-state="checking">CHECKING NEXUS BACKEND…</aside>
+    <aside id="nexus-backend-status" class="nexus-backend-status" role="status" aria-live="polite" data-state="checking">CHECKING NEXUS BACKEND…</aside>\n    <aside id="nexus-demo-notice" role="note" style="margin:8px 16px;padding:12px 16px;border:1px solid #b88b32;background:rgba(184,139,50,.12);color:#f2d58c;font:600 12px/1.5 Inter, sans-serif;letter-spacing:.04em;border-radius:6px;">DEMONSTRATION MODE — Dashboard metrics, telemetry, maps, biometric values, node states, logs, and assistant responses are illustrative samples. No monitoring, scanning, containment, biometric verification, satellite connection, honeypot deployment, or cryptographic proof is performed by this page unless a live backend response explicitly confirms it.</aside>
     <!-- 1. LOADING SCREEN -->
     <div class="loading-screen" id="loading-screen">
         <div class="loading-logo"></div>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="brand-text">
                     <h1>SENTINEL<span>OS</span></h1>
-                    <p>QUANTUM SECURED</p>
+                    <p>SECURITY CONSOLE DEMO</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@
                 <a href="/dashboards" class="nav-item">NEXUS Dashboards</a>
                 <div class="nav-section-title">Core Systems</div>
                 <a href="#quantum" class="nav-item" data-view="quantum">
-                    <span class="nav-icon"><i class="fa-solid fa-atom"></i></span> Quantum Encryption
+                    <span class="nav-icon"><i class="fa-solid fa-atom"></i></span> PQC Concept Demo
                 </a>
                 <a href="#threat" class="nav-item" data-view="threat">
                     <span class="nav-icon"><i class="fa-solid fa-satellite-dish"></i></span> Neural Threat Intel
@@ -95,12 +95,12 @@
                     <span class="nav-icon"><i class="fa-solid fa-spider"></i></span> Honeypot Deception
                 </a>
                 <a href="#sandbox" class="nav-item" data-view="sandbox">
-                    <span class="nav-icon"><i class="fa-solid fa-flask"></i></span> Malware Sandbox
+                    <span class="nav-icon"><i class="fa-solid fa-flask"></i></span> Opcode Demo
                 </a>
 
                 <div class="nav-section-title">Next-Gen Experimental</div>
                 <a href="#pqc" class="nav-item" data-view="pqc">
-                    <span class="nav-icon"><i class="fa-solid fa-unlock-keyhole"></i></span> PQC Scanner
+                    <span class="nav-icon"><i class="fa-solid fa-unlock-keyhole"></i></span> PQC Migration Demo
                 </a>
                 <a href="#swarm" class="nav-item" data-view="swarm">
                     <span class="nav-icon"><i class="fa-solid fa-disease"></i></span> Autonomous Swarm
@@ -115,7 +115,7 @@
                     <span class="nav-icon"><i class="fa-solid fa-network-wired"></i></span> Zero-Trust Matrix
                 </a>
 
-                <div class="nav-section-title">Quantum Kernel</div>
+                <div class="nav-section-title">Quantum Concept Demos</div>
                 <a href="#shadow313" class="nav-item" data-view="shadow313">
                     <span class="nav-icon"><i class="fa-solid fa-satellite"></i></span> Shadow313 Uplink
                 </a>
@@ -125,8 +125,8 @@
                 <div class="security-level">
                     <div class="level-indicator"></div>
                     <div class="level-text">
-                        <span>CLEARANCE: LEVEL 5</span>
-                        <span class="auth-status">DECRYPTED</span>
+                        <span>DEMO ACCESS — NOT AUTHENTICATED</span>
+                        <span class="auth-status">NO AUTH SESSION</span>
                     </div>
                 </div>
             </div>
@@ -145,36 +145,36 @@
                     <div class="metric-card">
                         <span class="metric-label">AI PREDICTION CORRELATION</span>
                         <div class="metric-value-container">
-                            <span class="metric-val" id="metric-ai">98.4%</span>
-                            <span class="metric-trend up">▲ 0.2%</span>
+                            <span class="metric-val" id="metric-ai">DEMO 98.4%</span>
+                            <span class="metric-trend">SAMPLE</span>
                         </div>
                     </div>
                     <div class="metric-card">
-                        <span class="metric-label">QUANTUM ENTROPY FREQ</span>
+                        <span class="metric-label">QUANTUM ENTROPY SAMPLE</span>
                         <div class="metric-value-container">
-                            <span class="metric-val" id="metric-entropy">4.89 GHz</span>
-                            <span class="metric-trend text-glow">ACTIVE</span>
+                            <span class="metric-val" id="metric-entropy">NOT MEASURED</span>
+                            <span class="metric-trend">DEMO ONLY</span>
                         </div>
                     </div>
                     <div class="metric-card font-mono">
-                        <span class="metric-label">SECURE LEDGER INDEX</span>
+                        <span class="metric-label">LEDGER SAMPLE</span>
                         <div class="metric-value-container">
-                            <span class="metric-val" id="metric-blocks">#74,902</span>
-                            <span class="metric-trend up" id="mining-status">MINING</span>
+                            <span class="metric-val" id="metric-blocks">DEMO DATA</span>
+                            <span class="metric-trend" id="mining-status">NOT CONNECTED</span>
                         </div>
                     </div>
                     <div class="metric-card font-mono">
                         <span class="metric-label">NETWORK THROUGHPUT</span>
                         <div class="metric-value-container">
-                            <span class="metric-val" id="metric-network">1.20 Gbps</span>
-                            <span class="metric-trend up">LIVE</span>
+                            <span class="metric-val" id="metric-network">NOT MEASURED</span>
+                            <span class="metric-trend">NO TELEMETRY</span>
                         </div>
                     </div>
                     <div class="user-profile">
                         <div class="user-avatar" title="Sentinel Administrator">A</div>
                         <div class="level-text">
-                            <span style="font-size: 11px; font-weight: 600;">Root Admin</span>
-                            <span style="font-size: 8px; color: var(--accent);">SECURE WORKSPACE</span>
+                            <span style="font-size: 11px; font-weight: 600;">Demo User</span>
+                            <span style="font-size: 8px; color: var(--accent);">DEMO WORKSPACE</span>
                         </div>
                     </div>
                 </div>
@@ -184,7 +184,7 @@
             <div class="action-banner">
                 <div class="banner-title"><i class="fa-solid fa-bell"></i> SYSTEM ACTION:</div>
                 <div class="banner-ticker-container">
-                    <div class="banner-ticker" id="global-ticker">Initializing quantum entropy keys... platform nodes fully synchronized. Standing by for administrative tasks.</div>
+                    <div class="banner-ticker" id="global-ticker">Demonstration interface loaded. No live telemetry or automated response actions are active.</div>
                 </div>
             </div>
 
@@ -197,19 +197,19 @@
                         <div class="hero-card">
                             <div class="hero-content">
                                 <h2>Welcome to SentinelOS</h2>
-                                <p>You are logged into the next-generation ethical security node. All telemetry and threat metrics are synced via AI predictive models, sealed with quantum-resistant keys, and committed to the immutable hyperledger.</p>
+                                <p>This is an interactive security-console demonstration. The displayed charts, metrics, maps, and workflows use illustrative data and do not represent live monitoring, verified quantum protection, or a connected evidence ledger.</p>
                                 <div class="hero-stats">
                                     <div class="h-stat">
                                         <span class="h-stat-num text-red" id="stat-threats">0</span>
-                                        <span class="h-stat-label">Active Threats</span>
+                                        <span class="h-stat-label">Sample Threat Count</span>
                                     </div>
                                     <div class="h-stat">
-                                        <span class="h-stat-num">100%</span>
-                                        <span class="h-stat-label">Quantum Immune</span>
+                                        <span class="h-stat-num">N/A</span>
+                                        <span class="h-stat-label">Quantum Assurance (Unverified)</span>
                                     </div>
                                     <div class="h-stat">
                                         <span class="h-stat-num text-glow" id="stat-honeypots">3</span>
-                                        <span class="h-stat-label">Active Decoys</span>
+                                        <span class="h-stat-label">Sample Decoys (Not Deployed)</span>
                                     </div>
                                 </div>
                             </div>
@@ -222,10 +222,10 @@
                         <!-- Integrated Biometric Panel -->
                         <div class="biometric-panel glass-card">
                             <div class="biometric-header">
-                                <div class="biometric-title"><i class="fa-solid fa-fingerprint"></i> Biometric Scanner</div>
+                                <div class="biometric-title"><i class="fa-solid fa-fingerprint"></i> Biometric Demo Panel</div>
                                 <div class="biometric-status">
                                     <span class="biometric-indicator" id="bio-indicator"></span>
-                                    <span id="bio-status-text">SYSTEM SECURE</span>
+                                    <span id="bio-status-text">DEMO MODE</span>
                                 </div>
                             </div>
                             <div class="biometric-scanner">
@@ -246,24 +246,24 @@
                             <div class="biometric-data">
                                 <div class="biometric-metric">
                                     <span class="biometric-metric-name">Heart Rate</span>
-                                    <span class="biometric-metric-value" id="bio-metric-pulse">72 bpm</span>
+                                    <span class="biometric-metric-value" id="bio-metric-pulse">—</span>
                                 </div>
                                 <div class="biometric-metric">
                                     <span class="biometric-metric-name">Match Score</span>
-                                    <span class="biometric-metric-value" id="bio-metric-match">99.8%</span>
+                                    <span class="biometric-metric-value" id="bio-metric-match">NOT MEASURED</span>
                                 </div>
                                 <div class="biometric-metric">
                                     <span class="biometric-metric-name">Temp</span>
-                                    <span class="biometric-metric-value" id="bio-metric-temp">36.6 °C</span>
+                                    <span class="biometric-metric-value" id="bio-metric-temp">—</span>
                                 </div>
                                 <div class="biometric-metric">
                                     <span class="biometric-metric-name">Auth Status</span>
-                                    <span class="biometric-metric-value" id="bio-metric-status">VERIFIED</span>
+                                    <span class="biometric-metric-value" id="bio-metric-status">NOT CONNECTED</span>
                                 </div>
                             </div>
                             <div class="scanner-controls">
-                                <button class="btn btn-primary" id="btn-biometric-scan">Scan Fingerprint</button>
-                                <button class="btn btn-secondary" id="btn-biometric-reset">Reset Key</button>
+                                <button class="btn btn-primary" id="btn-biometric-scan">View Demo Scan</button>
+                                <button class="btn btn-secondary" id="btn-biometric-reset">Reset Demo View</button>
                             </div>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                                 <div class="neural-title"><i class="fa-solid fa-brain"></i> Neural Threat Prediction</div>
                                 <div class="neural-status">
                                     <span class="neural-indicator"></span>
-                                    <span>AI PREDICT RUNNING</span>
+                                    <span>STATIC SAMPLE DATA</span>
                                 </div>
                             </div>
                             <div class="neural-visualization">
@@ -313,18 +313,18 @@
                                 <div class="zkp-title"><i class="fa-solid fa-lock-open"></i> Zero-Knowledge Proof System</div>
                                 <div class="zkp-status">
                                     <span class="zkp-indicator"></span>
-                                    <span>ZK-ENG SYNCED</span>
+                                    <span>DEMO ONLY — NOT VERIFIED</span>
                                 </div>
                             </div>
                             <div class="zkp-tabs">
-                                <button class="zkp-tab active" data-tab="active-proofs">Active Proofs</button>
+                                <button class="zkp-tab active" data-tab="active-proofs">Sample Proofs</button>
                                 <button class="zkp-tab" data-tab="zkp-parameters">Parameters</button>
                             </div>
                             <div class="zkp-content" id="zkp-panel-content">
                                 <div class="zkp-proof">
                                     <div class="zkp-proof-header">
                                         <span class="zkp-proof-title">Auth Token: ZK-AUTH-7412</span>
-                                        <span class="zkp-proof-status status-verified">VERIFIED</span>
+                                        <span class="zkp-proof-status">DEMO SAMPLE — NOT VERIFIED</span>
                                     </div>
                                     <div class="zkp-proof-details">
                                         <div class="zkp-detail">
@@ -371,19 +371,19 @@
 
                     <!-- Platform timeline logs -->
                     <div class="timeline-log-panel glass-card">
-                        <h3><i class="fa-solid fa-list-check"></i> Live SentinelOS Action Logs</h3>
+                        <h3><i class="fa-solid fa-list-check"></i> Demonstration Action Log</h3>
                         <div class="timeline-container">
                             <div class="timeline-item">
                                 <div class="timeline-time">01:54:10</div>
-                                <div class="timeline-content">Quantum entropy key rotation successfully committed to blockchain block #74902.</div>
+                                <div class="timeline-content">DEMO: Sample key-rotation event; no key was rotated and no blockchain record was written.</div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-time">01:51:22</div>
-                                <div class="timeline-content">AI Threat Engine predicted suspicious CVE matching network scan vectors. Dynamic Honeypot deployed to subgrid E-4.</div>
+                                <div class="timeline-content">DEMO: Sample threat prediction displayed. No network scan ran and no honeypot was deployed.</div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-time">01:40:05</div>
-                                <div class="timeline-content">Platform administrator initialized clearance verification via secure ZK Handshake.</div>
+                                <div class="timeline-content">DEMO: Sample clearance event. No identity check or ZK proof was performed.</div>
                             </div>
                         </div>
                     </div>
@@ -392,59 +392,59 @@
                 <!-- 2. QUANTUM ENCRYPTION -->
                 <section id="view-quantum" class="view-pane">
                     <div class="view-header">
-                        <h2>🧬 Quantum-Resistant Encryption Suite</h2>
-                        <p>Generate high-entropy key pairs and encrypt sensitive data using lattice-based parameters resilient to Shor's algorithm attacks.</p>
+                        <h2>🧬 Post-Quantum Cryptography Concept Demo</h2>
+                        <p>Browser-only demonstration of PQC terminology and a reversible toy string transform. No Kyber, NTRU, McEliece, secure entropy, or cryptographic protection is implemented; do not enter sensitive data.</p>
                     </div>
                     <div class="quantum-split-layout">
                         <div class="quantum-controls glass-card">
                             <h3>Key Parameters</h3>
                             <div class="form-group">
-                                <label for="quantum-algo">Cryptographic Engine</label>
+                                <label for="quantum-algo">Demo Profile (Algorithms Not Implemented)</label>
                                 <select id="quantum-algo" class="form-control">
-                                    <option value="kyber">Kyber-1024 (Lattice-MLWE Key Encapsulation)</option>
-                                    <option value="ntru">NTRU-HPS-4096 (Polynomial Lattice Cipher)</option>
-                                    <option value="mceliece">Classic McEliece-8192 (Goppa-Code Matrix)</option>
+                                    <option value="kyber">Kyber-1024 label only (not implemented)</option>
+                                    <option value="ntru">NTRU label only (not implemented)</option>
+                                    <option value="mceliece">Classic McEliece label only (not implemented)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Seed Quantum Entropy</label>
+                                <label>Sample Parameter (Not Entropy)</label>
                                 <div class="entropy-slider-container">
                                     <input type="range" min="128" max="1024" step="128" value="512" class="slider" id="quantum-seed-slider">
                                     <span class="slider-val" id="seed-slider-val">512 bits</span>
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-quantum-genkeys"><i class="fa-solid fa-key"></i> Generate Quantum Keypair</button>
+                            <button class="btn btn-primary btn-full" id="btn-quantum-genkeys"><i class="fa-solid fa-key"></i> Generate Demo Strings</button>
 
                             <div class="keypair-display">
                                 <div class="key-block">
-                                    <label>PUBLIC KEY (Apx)</label>
-                                    <textarea readonly id="txt-public-key" placeholder="Generate keypair to display..."></textarea>
+                                    <label>SAMPLE STRING (NOT A PUBLIC KEY)</label>
+                                    <textarea readonly id="txt-public-key" placeholder="Generate demo strings to display..."></textarea>
                                 </div>
                                 <div class="key-block">
-                                    <label>PRIVATE KEY (S)</label>
+                                    <label>SAMPLE STRING (NOT A PRIVATE KEY)</label>
                                     <textarea readonly id="txt-private-key" placeholder="Generate keypair to display..."></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <div class="quantum-payload-panel glass-card">
-                            <h3>Data Encapsulation</h3>
+                            <h3>Reversible Demo Transform</h3>
                             <div class="form-group">
-                                <label for="txt-quantum-plain">Cleartext Payload</label>
-                                <textarea id="txt-quantum-plain" class="form-control" placeholder="Enter sensitive intelligence to protect..."></textarea>
+                                <label for="txt-quantum-plain">Sample Input (Do Not Use Sensitive Data)</label>
+                                <textarea id="txt-quantum-plain" class="form-control" placeholder="Enter non-sensitive sample text for the demo transform..."></textarea>
                             </div>
                             <div class="payload-actions">
-                                <button class="btn btn-primary" id="btn-quantum-encrypt"><i class="fa-solid fa-lock"></i> Encrypt (Lattice Scramble)</button>
-                                <button class="btn btn-secondary" id="btn-quantum-decrypt"><i class="fa-solid fa-lock-open"></i> Decrypt (Lattice Solve)</button>
+                                <button class="btn btn-primary" id="btn-quantum-encrypt"><i class="fa-solid fa-lock"></i> Run Demo Transform (Not Secure)</button>
+                                <button class="btn btn-secondary" id="btn-quantum-decrypt"><i class="fa-solid fa-lock-open"></i> Reverse Demo Transform</button>
                             </div>
 
                             <div class="form-group margin-top-15">
-                                <label for="txt-quantum-cipher">Ciphertext Packet (Hex Encoded Matrix)</label>
-                                <textarea id="txt-quantum-cipher" class="form-control font-mono" placeholder="Scrambled quantum payload will appear here..."></textarea>
+                                <label for="txt-quantum-cipher">Demo Output (Not Secure Ciphertext)</label>
+                                <textarea id="txt-quantum-cipher" class="form-control font-mono" placeholder="Illustrative transformed string will appear here..."></textarea>
                             </div>
 
                             <div class="lattice-vis-box">
-                                <div class="lattice-title">Lattice Scramble Vector Grid</div>
+                                <div class="lattice-title">Illustrative Lattice Animation (Not Cryptographic)</div>
                                 <div class="lattice-canvas-container">
                                     <canvas id="lattice-canvas"></canvas>
                                 </div>
@@ -452,15 +452,15 @@
                         </div>
                     </div>
 
-                    <!-- Quantum Signal Interception Panel -->
+                    <!-- Browser-only signal animation; no real signal is intercepted. -->
                     <div class="quantum-interception-panel glass-card">
                         <div class="quantum-interception-header">
                             <div class="quantum-interception-title">
-                                <i class="fa-solid fa-microchip"></i> Quantum Signal Interceptor
+                                <i class="fa-solid fa-microchip"></i> Signal Animation (Not Connected)
                             </div>
                             <div class="quantum-interception-status">
                                 <div class="quantum-interception-indicator"></div>
-                                <span id="quantum-intercept-status-text">DECODING SIGNAL</span>
+                                <span id="quantum-intercept-status-text">DEMO SIGNAL</span>
                             </div>
                         </div>
                         <div class="quantum-signal-visualization" id="quantum-signal-viz">
@@ -469,38 +469,38 @@
                         </div>
                         <div class="quantum-controls">
                             <div class="quantum-control">
-                                <div class="quantum-control-label">Interception Rate</div>
+                                <div class="quantum-control-label">Sample Throughput (Not Measured)</div>
                                 <div class="quantum-control-value">
-                                    <span class="quantum-control-number" id="quantum-ctrl-rate">84.2</span>
-                                    <span class="quantum-control-unit">Gb/s</span>
+                                    <span class="quantum-control-number" id="quantum-ctrl-rate">N/A</span>
+                                    <span class="quantum-control-unit">Not Measured</span>
                                 </div>
                                 <div class="quantum-control-slider" id="quantum-slider-rate">
-                                    <div class="quantum-control-progress" style="width: 84.2%"></div>
+                                    <div class="quantum-control-progress" style="width: 0%"></div>
                                 </div>
                             </div>
                             <div class="quantum-control">
-                                <div class="quantum-control-label">Coherence Level</div>
+                                <div class="quantum-control-label">Sample Coherence (Not Measured)</div>
                                 <div class="quantum-control-value">
-                                    <span class="quantum-control-number" id="quantum-ctrl-coherence">99.9</span>
-                                    <span class="quantum-control-unit">%</span>
+                                    <span class="quantum-control-number" id="quantum-ctrl-coherence">N/A</span>
+                                    <span class="quantum-control-unit">Not Measured</span>
                                 </div>
                                 <div class="quantum-control-slider" id="quantum-slider-coherence">
-                                    <div class="quantum-control-progress" style="width: 99.9%"></div>
+                                    <div class="quantum-control-progress" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="quantum-interception-data">
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-scrambled">1,208,409</div>
-                                <div class="quantum-data-label">Packets Scrambled</div>
+                                <div class="quantum-data-value" id="quantum-data-scrambled">N/A</div>
+                                <div class="quantum-data-label">Packet Processing (Not Connected)</div>
                             </div>
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-keys">12,408</div>
-                                <div class="quantum-data-label">Quantum Keys Cycled</div>
+                                <div class="quantum-data-value" id="quantum-data-keys">N/A</div>
+                                <div class="quantum-data-label">Key Rotation (Not Connected)</div>
                             </div>
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-immunity">100%</div>
-                                <div class="quantum-data-label">Shor's Immunity</div>
+                                <div class="quantum-data-value" id="quantum-data-immunity">N/A</div>
+                                <div class="quantum-data-label">Shor Resistance (Not Verified)</div>
                             </div>
                         </div>
                     </div>
@@ -510,17 +510,17 @@
                 <section id="view-threat" class="view-pane">
                     <div class="view-header">
                         <h2>📡 Predictive Threat Intelligence Engine</h2>
-                        <p>Dynamic monitoring of network vector telemetry, generating real-time predictions and mapping attack sources before breaches occur.</p>
+                        <p>Illustrative map and sample predictions only. No network telemetry is collected and no attack sources are being tracked.</p>
                     </div>
                     <div class="threat-layout">
                         <div class="threat-left glass-card">
-                            <h3>Live Cyber-Attack Threat Map</h3>
+                            <h3>Illustrative Threat Map (Demo)</h3>
                             <div class="map-wrapper">
                                 <canvas id="threat-map-canvas"></canvas>
                                 <div class="map-overlay-coordinates" id="map-coords">NODE RECEPTOR: 0.0, 0.0</div>
                             </div>
                             <div class="map-controls">
-                                <button class="btn btn-secondary" id="btn-recalibrate-threats"><i class="fa-solid fa-arrows-rotate"></i> Recalibrate Receivers</button>
+                                <button class="btn btn-secondary" id="btn-recalibrate-threats"><i class="fa-solid fa-arrows-rotate"></i> Generate Demo Coordinates</button>
                                 <button class="btn btn-danger" id="btn-sim-alert"><i class="fa-solid fa-triangle-exclamation"></i> Force Simulated Breach</button>
                             </div>
                         </div>
@@ -555,7 +555,7 @@
                                 <h3>🔮 Predictive Alert Feed</h3>
                                 <div class="notifications-scroller" id="threat-intel-notifications">
                                     <div class="threat-notif medium">
-                                        <div class="notif-badge">AI ALERT</div>
+                                        <div class="notif-badge">DEMO ALERT</div>
                                         <div class="notif-body">
                                             <strong>DDoS Target Prediction [Confidence: 89%]</strong>
                                             <p>Suspicious botnet coordination mapped on Node 14. Deploying SCADA deception node.</p>
@@ -704,7 +704,7 @@
                 <section id="view-blockchain" class="view-pane">
                     <div class="view-header">
                         <h2>⛓️ Blockchain Evidence Verification System</h2>
-                        <p>Seal security incidents, credentials, and scan audits into blocks. Calculate cryptographic proofs to secure evidence chains.</p>
+                        <p>Demo-only hash-chain illustration. No cryptographic signature, HSM signing, or external evidence anchoring is performed.</p>
                     </div>
                     <div class="blockchain-layout">
                         <div class="bc-entry-panel glass-card">
@@ -737,7 +737,7 @@
                                 <div class="block-card verified" data-index="0">
                                     <div class="block-header">
                                         <span class="block-index">BLOCK #0 (GENESIS)</span>
-                                        <span class="block-badge">SECURE</span>
+                                        <span class="block-badge">SAMPLE</span>
                                     </div>
                                     <div class="block-body font-mono">
                                         <div><strong>Timestamp:</strong> 2026-05-21T01:10:00</div>
@@ -798,7 +798,7 @@
                             </div>
                             <div class="zkp-verification-result" id="zkp-verif-badge" style="display:none;">
                                 <div class="badge-title">VERIFICATION STATUS</div>
-                                <div class="badge-body verified" id="zkp-verif-badge-text">PROOF ACCEPTED</div>
+                                <div class="badge-body" id="zkp-verif-badge-text">DEMO SAMPLE — NO PROOF VERIFIED</div>
                             </div>
                         </div>
                     </div>
@@ -818,7 +818,7 @@
                                 <span class="term-status pulsing">CONNECTED</span>
                             </div>
                             <div class="terminal-container" id="terminal-screen">
-                                <div class="term-line">SentinelOS v5.01 Security Shell - Nodes Active</div>
+                                <div class="term-line">SentinelOS v5.01 Security Shell — DEMO MODE (No live nodes)</div>
                                 <div class="term-line">Type 'help' to review available administrative routines.</div>
                                 <div class="term-line" id="terminal-cursor-line">
                                     <span class="prompt">sentinel@core:~$</span>
@@ -831,7 +831,7 @@
                         <div class="workspace-chat-panel glass-card">
                             <div class="panel-header">
                                 <h3>💬 Security Operations Chat</h3>
-                                <span class="chat-members-count">2 Agents Active</span>
+                                <span class="chat-members-count">2 Sample Agents</span>
                             </div>
                             <div class="chat-messages-container" id="chat-messages">
                                 <div class="chat-message system">
@@ -841,7 +841,7 @@
                                     <span class="avatar">🤖</span>
                                     <div class="msg-bubble">
                                         <div class="msg-author">Nova-AI</div>
-                                        <div class="msg-text">Scanning telemetry outputs. Let me know if you would like me to compile security patches for Node-12 or deploy a Deception Honeypot.</div>
+                                        <div class="msg-text">DEMO ASSISTANT: No telemetry is being scanned. This interface cannot compile patches or deploy a honeypot.</div>
                                     </div>
                                 </div>
                             </div>
@@ -874,7 +874,7 @@
                                     <option value="aggressive">Aggressive Injection Probe (Dynamic Deception Test)</option>
                                 </select>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-vuln-scan"><i class="fa-solid fa-radar"></i> Run Assessment Routine</button>
+                            <button class="btn btn-primary btn-full" id="btn-vuln-scan"><i class="fa-solid fa-radar"></i> Run Demo Assessment</button>
 
                             <div class="scan-visuals-panel margin-top-20" id="scan-progress-box" style="display:none;">
                                 <div class="radial-scan-container">
@@ -891,7 +891,7 @@
                         <div class="vuln-scorecard-panel glass-card">
                             <h3>Audit Performance Scorecard</h3>
                             <div class="empty-scorecard" id="vuln-scorecard-empty">
-                                <span>No active audits run yet. Configure target node and start sweep.</span>
+                                <span>No live audits are connected. Use demo inputs only.</span>
                             </div>
                             <div class="scorecard-report" id="vuln-scorecard-report" style="display:none;">
                                 <div class="scorecard-header-row">
@@ -932,7 +932,7 @@
                 <section id="view-darkweb" class="view-pane">
                     <div class="view-header">
                         <h2>🧅 Dark Web Monitoring & Threat Intelligence</h2>
-                        <p>Scan tor repositories, leaked directories, Paste bins, and hacker chat rooms for database compromised entries.</p>
+                        <p>Demo search interface only; no external repositories, paste sites, or breach sources are queried.</p>
                     </div>
                     <div class="darkweb-layout">
                         <div class="dw-controls glass-card">
@@ -957,7 +957,7 @@
                             <h3>Threat Intel Breach Database</h3>
                             <div class="dw-results-scroller" id="dw-results-list">
                                 <div class="dw-empty-state" id="dw-empty">
-                                    <span>Configure query parameters above to scan decentralized dump indexes.</span>
+                                    <span>Demo interface only; no decentralized dump indexes are queried.</span>
                                 </div>
                             </div>
                         </div>
@@ -968,13 +968,13 @@
                 <section id="view-incident" class="view-pane">
                     <div class="view-header">
                         <h2>⚡ Advanced Incident Response Automation</h2>
-                        <p>Orchestrate automated containment strategies using visual playbook flowcharts that link mitigation sequences.</p>
+                        <p>Preview response-playbook designs. Actions require configured, authenticated, and independently verified response adapters before execution.</p>
                     </div>
                     <div class="incident-layout">
                         <div class="inc-configs glass-card">
                             <h3>Automation Orchestration</h3>
                             <div class="form-group">
-                                <label for="inc-playbook-select">Active Mitigation Playbook</label>
+                                <label for="inc-playbook-select">Sample Mitigation Scenario (No Execution)</label>
                                 <select id="inc-playbook-select" class="form-control">
                                     <option value="ransomware">Ransomware Containment & Memory Forensic Sweep</option>
                                     <option value="ddos">DDoS Mitigation & Honey-decoy Reroute</option>
@@ -1042,28 +1042,28 @@
                 <section id="view-chaos" class="view-pane">
                     <div class="view-header">
                         <h2>☄️ Red Team Chaos Engineering Simulator</h2>
-                        <p>Simulate hostile breach scenarios to trigger SentinelOS self-healing infrastructure protocols in real-time.</p>
+                        <p>Browser-only chaos scenario animation. No live infrastructure, self-healing, containment, or telemetry actions are performed.</p>
                     </div>
                     <div class="chaos-layout">
                         <div class="chaos-controls glass-card">
                             <h3>Chaos Intrusion Vector</h3>
                             <div class="form-group">
-                                <label for="chaos-vector">Hostile Incident Profile</label>
+                                <label for="chaos-vector">Sample Scenario Profile</label>
                                 <select id="chaos-vector" class="form-control">
                                     <option value="outage">Cascade Network Partition Outage</option>
                                     <option value="hijack">AI Node Telemetry Hijack Probe</option>
                                     <option value="ransom">Ransomware Database Crypt Encryption</option>
                                 </select>
                             </div>
-                            <button class="btn btn-danger btn-full" id="btn-chaos-inject"><i class="fa-solid fa-burst"></i> Inject Chaos Event</button>
+                            <button class="btn btn-danger btn-full" id="btn-chaos-inject"><i class="fa-solid fa-burst"></i> Run Demo Chaos Scenario</button>
 
                             <div class="self-healing-stats margin-top-20">
-                                <h4>Self-Healing State</h4>
+                                <h4>Browser Demo State</h4>
                                 <div class="heal-bar-wrapper">
                                     <div class="heal-bar-container">
                                         <div class="heal-bar" id="chaos-heal-fill" style="width: 100%"></div>
                                     </div>
-                                    <span class="heal-percent" id="chaos-heal-text">100% HEALTHY</span>
+                                    <span class="heal-percent" id="chaos-heal-text">DEMO STATE</span>
                                 </div>
                             </div>
                         </div>
@@ -1078,7 +1078,7 @@
                             <div class="topology-logs-panel">
                                 <h4>Infrastructure Healing Log Output</h4>
                                 <div class="topology-log font-mono" id="chaos-log-screen">
-                                    <div class="log-line text-green">[Engine] All platform subnodes running healthy. Waiting for incident payloads...</div>
+                                    <div class="log-line text-green">[DEMO] No platform subnodes are connected. No incident payloads are being processed.</div>
                                 </div>
                             </div>
                         </div>
@@ -1089,7 +1089,7 @@
                 <section id="view-deception" class="view-pane">
                     <div class="view-header">
                         <h2>🕸️ Deception Network & Honey-Decoy Deployer</h2>
-                        <p>Set trap environments to ensnare active attackers and collect analytical telemetry profiles safely.</p>
+                        <p>Illustrative trap scenarios only; no network honeypots are created and no telemetry is collected.</p>
                     </div>
                     <div class="deception-layout">
                         <div class="dec-controls glass-card">
@@ -1110,13 +1110,13 @@
   "canary_token": "TOK-5582f"
 }</textarea>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-deploy-decoy"><i class="fa-solid fa-spider"></i> Deploy Honeypot to Subnet</button>
+                            <button class="btn btn-primary btn-full" id="btn-deploy-decoy"><i class="fa-solid fa-spider"></i> Add Sample Decoy (Demo)</button>
                         </div>
 
                         <div class="dec-monitor glass-card">
                             <div class="dec-monitor-header">
-                                <h3>📡 Active Trap Telemetry</h3>
-                                <div class="honeypots-active-counter"><span id="active-honeypots-count">3</span> Honeypots Deployed</div>
+                                <h3>📡 Sample Trap Events (Demo)</h3>
+                                <div class="honeypots-active-counter"><span id="active-honeypots-count">3</span> Sample Honeypots (Not Deployed)</div>
                             </div>
                             <div class="deception-subnet-visualizer">
                                 <div class="subnet-row" id="subnet-decoy-grid">
@@ -1126,7 +1126,7 @@
                             <div class="deception-traps-log font-mono">
                                 <h4>Entrapment Diagnostic Shell</h4>
                                 <div class="traps-log-screen" id="dec-log-box">
-                                    <div class="log-line">[Trap Engine] Listening on SCADA ports. Honeypot decoy active...</div>
+                                    <div class="log-line">[DEMO] No SCADA ports are listening; no honeypot process is running.</div>
                                 </div>
                             </div>
                         </div>
@@ -1136,22 +1136,22 @@
                 <!-- 12. MALWARE SANDBOX -->
                 <section id="view-sandbox" class="view-pane">
                     <div class="view-header">
-                        <h2>🧪 Heuristic Malware Sandbox & AI Disassembler</h2>
-                        <p>Safely dissemble hostile payloads, trace assembly vectors, and compute threat severity indexes within zero-knowledge boxes.</p>
+                        <h2>🧪 Browser-Only Opcode Pattern Demo</h2>
+                        <p>Displays sample opcode patterns and simple string heuristics in the browser. No executable is run, no malware sandbox is created, and no security verdict is produced.</p>
                     </div>
                     <div class="sandbox-layout">
                         <div class="sb-controls glass-card">
-                            <h3>Malicious Payload Upload</h3>
+                            <h3>Sample Input (No Execution)</h3>
                             <div class="payload-presets">
-                                <label>Select Test Incident Payloads</label>
-                                <button class="btn btn-secondary btn-preset active" data-preset="worm">worm.bin (Suspicious Socket API)</button>
-                                <button class="btn btn-secondary btn-preset" data-preset="safe">clean_utility.exe (Safe Payload)</button>
+                                <label>Select Illustrative Pattern</label>
+                                <button class="btn btn-secondary btn-preset active" data-preset="worm">worm.bin (sample pattern only)</button>
+                                <button class="btn btn-secondary btn-preset" data-preset="safe">clean_utility.exe (sample pattern only; not verified safe)</button>
                             </div>
                             <div class="payload-manual-upload margin-top-15">
                                 <label>Or paste custom hexadecimal opcode arrays</label>
                                 <textarea id="txt-sb-binary" class="form-control font-mono" rows="5">89 E5 31 C0 50 68 2F 2F 73 68 68 2F 62 69 6E 89 E3 50 89 E2 53 89 E1 B0 0B CD 80</textarea>
                             </div>
-                            <button class="btn btn-danger btn-full" id="btn-sb-disassemble"><i class="fa-solid fa-flask"></i> Execute Heuristic Assembly Scan</button>
+                            <button class="btn btn-danger btn-full" id="btn-sb-disassemble"><i class="fa-solid fa-flask"></i> Run Heuristic Demo</button>
                         </div>
 
                         <div class="sb-analysis glass-card">
@@ -1180,21 +1180,21 @@
                 <!-- 13. NEXT-GEN EXPERIMENTAL TOOLS -->
                 <section id="view-pqc" class="view-pane">
                     <div class="view-header">
-                        <h2>⬡ PQC Scanner</h2>
-                        <p>Review vulnerable cryptographic surfaces and simulate migration to post-quantum Kyber profiles.</p>
+                        <h2>⬡ PQC Migration Concept Demo</h2>
+                        <p>Illustrative interface only. No repository, host, application, or cryptographic inventory is scanned; migration buttons do not modify configuration.</p>
                     </div>
                     <div class="glass-card" style="padding:20px; min-height:340px;">
                         <canvas id="pqc-matrix-canvas" style="width:100%; height:220px; display:block; margin-bottom:20px;"></canvas>
                         <div class="tool-grid">
                             <div class="glass-card" style="padding:16px;">
-                                <strong>RSA-2048 Gateway</strong>
-                                <p>Estimated quantum crack window: <span class="crack-val text-red">8 HOURS</span></p>
-                                <button class="btn btn-primary btn-migrate">MIGRATE</button>
+                                <strong>Sample RSA-2048 Profile (Demo)</strong>
+                                <p>Unverified illustrative estimate: <span class="crack-val text-red">NOT MEASURED</span></p>
+                                <button class="btn btn-primary btn-migrate">Preview Demo</button>
                             </div>
                             <div class="glass-card" style="padding:16px;">
-                                <strong>ECC-P256 API Node</strong>
-                                <p>Estimated quantum crack window: <span class="crack-val text-red">3 HOURS</span></p>
-                                <button class="btn btn-primary btn-migrate">MIGRATE</button>
+                                <strong>Sample ECC-P256 Profile (Demo)</strong>
+                                <p>Unverified illustrative estimate: <span class="crack-val text-red">NOT MEASURED</span></p>
+                                <button class="btn btn-primary btn-migrate">Preview Demo</button>
                             </div>
                         </div>
                     </div>
@@ -1263,8 +1263,8 @@
                 <!-- 14. SHADOW313 QUANTUM KERNEL -->
                 <section id="view-shadow313" class="view-pane">
                     <div class="view-header">
-                        <h2>⬡ Shadow313 — Quantum Kernel & Satellite Uplink</h2>
-                        <p>Your proprietary quantum kernel communicating through middleware to satellite constellation nodes. 313 temporal binding secures every transmission.</p>
+                        <h2>⬡ Shadow313 — Quantum Concept Demo & Simulated Link</h2>
+                        <p>Browser-only concept visualization. No QPU, satellite link, or hardware temporal-binding service is connected; no real transmission is secured.</p>
                     </div>
 
                     <div class="shadow313-layout">
@@ -1273,10 +1273,10 @@
                             <!-- Satellite Uplink Visualization -->
                             <div class="glass-card s313-uplink-panel">
                                 <div class="s313-panel-header">
-                                    <div class="s313-panel-title"><i class="fa-solid fa-satellite-dish"></i> Satellite Constellation Uplink</div>
+                                    <div class="s313-panel-title"><i class="fa-solid fa-satellite-dish"></i> Simulated Satellite Diagram</div>
                                     <div class="s313-panel-status">
                                         <span class="s313-status-dot" id="s313-uplink-dot"></span>
-                                        <span id="s313-uplink-status">UPLINK ACTIVE</span>
+                                        <span id="s313-uplink-status">DEMO UPLINK — NOT CONNECTED</span>
                                     </div>
                                 </div>
                                 <div class="s313-canvas-wrap">
@@ -1287,19 +1287,19 @@
                                 </div>
                                 <div class="s313-sat-metrics">
                                     <div class="s313-metric">
-                                        <span class="s313-metric-label">Active Sats</span>
+                                        <span class="s313-metric-label">Sample Satellites</span>
                                         <span class="s313-metric-value" id="s313-active-sats">7</span>
                                     </div>
                                     <div class="s313-metric">
-                                        <span class="s313-metric-label">Latency</span>
+                                        <span class="s313-metric-label">Sample Latency</span>
                                         <span class="s313-metric-value" id="s313-latency">42ms</span>
                                     </div>
                                     <div class="s313-metric">
-                                        <span class="s313-metric-label">Signal Str</span>
+                                        <span class="s313-metric-label">Sample Signal Strength</span>
                                         <span class="s313-metric-value" id="s313-signal">-67 dBm</span>
                                     </div>
                                     <div class="s313-metric">
-                                        <span class="s313-metric-label">Bandwidth</span>
+                                        <span class="s313-metric-label">Sample Bandwidth</span>
                                         <span class="s313-metric-value" id="s313-bandwidth">2.4 Gbps</span>
                                     </div>
                                 </div>
@@ -1315,7 +1315,7 @@
                                     <div class="s313-panel-title"><i class="fa-solid fa-hourglass-half"></i> 313 Temporal Binding Protocol</div>
                                     <div class="s313-panel-status">
                                         <span class="s313-status-dot active"></span>
-                                        <span>BINDING ACTIVE</span>
+                                        <span>DEMO BINDING — NOT VERIFIED</span>
                                     </div>
                                 </div>
                                 <div class="s313-temporal-display">
@@ -1358,16 +1358,16 @@
                                     <div class="s313-mw-node">
                                         <div class="s313-mw-icon kernel"><i class="fa-solid fa-microchip"></i></div>
                                         <div class="s313-mw-label">Shadow313<br>Kernel</div>
-                                        <div class="s313-mw-status online">ONLINE</div>
+                                        <div class="s313-mw-status">DEMO ONLY</div>
                                     </div>
                                     <div class="s313-mw-connector">
                                         <div class="s313-mw-beam" id="s313-beam-1"></div>
-                                        <span class="s313-mw-proto">QKD-TLS</span>
+                                        <span class="s313-mw-proto">DEMO-LINK</span>
                                     </div>
                                     <div class="s313-mw-node">
                                         <div class="s313-mw-icon middleware"><i class="fa-solid fa-code"></i></div>
                                         <div class="s313-mw-label">Middleware<br>Bridge</div>
-                                        <div class="s313-mw-status online">ROUTING</div>
+                                        <div class="s313-mw-status">SIMULATED</div>
                                     </div>
                                     <div class="s313-mw-connector">
                                         <div class="s313-mw-beam" id="s313-beam-2"></div>
@@ -1376,22 +1376,22 @@
                                     <div class="s313-mw-node">
                                         <div class="s313-mw-icon satellite"><i class="fa-solid fa-satellite"></i></div>
                                         <div class="s313-mw-label">Satellite<br>Constellation</div>
-                                        <div class="s313-mw-status online" id="s313-sat-status">7 NODES</div>
+                                        <div class="s313-mw-status" id="s313-sat-status">SAMPLE NODES</div>
                                     </div>
                                 </div>
                                 <div class="s313-mw-throughput">
-                                    <span class="s313-mw-tp-label">Middleware Throughput</span>
+                                    <span class="s313-mw-tp-label">Sample Throughput (Not Measured)</span>
                                     <div class="s313-mw-tp-bar">
                                         <div class="s313-mw-tp-fill" id="s313-tp-fill" style="width: 78%"></div>
                                     </div>
-                                    <span class="s313-mw-tp-val" id="s313-tp-val">78%</span>
+                                    <span class="s313-mw-tp-val" id="s313-tp-val">N/A</span>
                                 </div>
                             </div>
 
                             <!-- Circuit Profiler -->
                             <div class="glass-card s313-profiler-panel">
                                 <div class="s313-panel-header">
-                                    <div class="s313-panel-title"><i class="fa-solid fa-chart-bar"></i> Circuit Profiler</div>
+                                    <div class="s313-panel-title"><i class="fa-solid fa-chart-bar"></i> Circuit Profiler (Simulated)</div>
                                     <div class="s313-backend-badge">
                                         <select id="s313-backend-select" class="form-control" style="width: auto; padding: 4px 8px; font-size: 11px;">
                                             <option value="local_sim">local_sim</option>
@@ -1448,7 +1448,7 @@
                                     </div>
                                 </div>
                                 <div class="s313-chat-screen" id="s313-chat-screen">
-                                    <div class="s313-chat-msg system">⬡ Shadow313 Quantum Chat active. Type your question...</div>
+                                    <div class="s313-chat-msg system">⬡ Shadow313 Quantum Chat demo. Responses are illustrative unless the API returns a live result.</div>
                                 </div>
                                 <div class="s313-chat-input-row">
                                     <input type="text" id="s313-chat-input" class="form-control" placeholder="Ask the quantum thought engine..." autocomplete="off">

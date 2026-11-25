@@ -10,7 +10,7 @@ info:
   version: "4.0.0"
   contact:
     name: Shadow313 Core Team
-    email: ops@shadow313.dev
+    email: pitty313@proton.me
     url: https://shadow313.dev
   license:
     name: MIT
@@ -133,11 +133,15 @@ paths:
 
   /api/attck/coverage:
     get:
-      summary: ATT&CK coverage matrix
+      summary: ATT&CK coverage availability
       operationId: attckCoverage
+      security:
+        - ApiKeyAuth: []
       responses:
         "200":
-          description: Coverage data
+          description: Unavailable until derived from the active detector registry; static estimates are disabled
+        "401":
+          description: Unauthorized
 
   /api/bind/create:
     post:
@@ -294,12 +298,54 @@ paths:
 
   /api/events:
     get:
-      summary: List API events
+      summary: List persisted platform events
       operationId: listEvents
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: event_type
+          in: query
+          schema: {type: string, maxLength: 128}
+        - name: severity
+          in: query
+          schema: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL]}
+        - name: limit
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 1000, default: 100}
       responses:
-        "200": {description: Event data status; unavailable when no event backend is connected}
+        "200": {description: Persisted SQLite event records}
+        "401": {description: Unauthorized}
+    post:
+      summary: Publish a platform event
+      operationId: publishPlatformEvent
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type: {type: string, maxLength: 128, default: generic}
+                source: {type: string, maxLength: 128, default: api}
+                severity: {type: string, enum: [INFO, MEDIUM, HIGH, CRITICAL], default: INFO}
+                payload: {type: object, default: {}}
+                bind_id: {type: string, maxLength: 128}
+      responses:
+        "200": {description: Event persisted to the SQLite event store}
+        "401": {description: Unauthorized}
+        "413": {description: Event payload exceeds 64 KiB}
+        "422": {description: Invalid event metadata}
+
+  /api/events/stats:
+    get:
+      summary: Get persistent event-bus statistics
+      operationId: getEventBusStats
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200": {description: Persisted event counts by severity and type}
         "401": {description: Unauthorized}
 
   /api/shiatoali/health:

@@ -66,7 +66,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "plugins": {
             "dir":            "~/.shadow313/plugins",
             "enabled":        [],
-            "require_signed": False,
+            "require_signed": True,
         },
         "rag": {
             "vector_store":    "tfidf",

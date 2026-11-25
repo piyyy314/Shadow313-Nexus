@@ -1,16 +1,16 @@
-"""Legacy HMAC-signed plugin loader with explicit signing-key configuration."""
+"""Legacy plugin metadata loader with execution disabled.
 
+Use shadow313.modules.plugins.PluginManager for sandboxed plugin execution.
+This compatibility loader only discovers and verifies signed metadata.
+"""
 from __future__ import annotations
 
-import hashlib
-import hmac
-import importlib
 import json
-import os
 import re
-from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+
+from shadow313.modules.plugins.signing import PluginArtifactSigner
 
 PLUGIN_HOOKS = [
     "recon.post",
@@ -26,113 +26,113 @@ _PLUGIN_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
 
 
 class PluginManager:
-    """Load plugins only when their manifest has a valid HMAC signature.
-
-    Supply a unique signing key of at least 32 characters, or set
-    SHADOW313_PLUGIN_SIGNING_KEY. There is intentionally no built-in key.
-    """
+    """Discover signed legacy plugin metadata without importing plugin code."""
 
     def __init__(
         self,
         plugin_dir: str = "shadow313/plugins",
-        secret: str | None = None,
+        secret: bytes | str | None = None,
+        signer: PluginArtifactSigner | None = None,
     ) -> None:
-        configured_secret = secret or os.environ.get("SHADOW313_PLUGIN_SIGNING_KEY", "")
-        if len(configured_secret) < 32:
-            raise ValueError(
-                "Set SHADOW313_PLUGIN_SIGNING_KEY to a unique secret of at least 32 characters"
-            )
-        self.plugin_dir = Path(plugin_dir).expanduser().resolve()
-        self.secret = configured_secret.encode("utf-8")
+        self.plugin_dir = Path(plugin_dir).expanduser()
+        self.plugin_dir.mkdir(parents=True, exist_ok=True)
+        self.plugin_dir = self.plugin_dir.resolve()
+        if signer is not None and secret is not None:
+            raise ValueError("Pass either a signer or a secret, not both")
+        self.signer = signer or PluginArtifactSigner(key=secret)
         self._plugins: dict[str, Any] = {}
-        self._hooks: dict[str, list[Callable]] = {hook: [] for hook in PLUGIN_HOOKS}
+        self._hooks: dict[str, list[str]] = {hook: [] for hook in PLUGIN_HOOKS}
 
     def _plugin_path(self, plugin_name: str) -> Path | None:
         if not _PLUGIN_NAME.fullmatch(plugin_name):
             return None
-        candidate = (self.plugin_dir / plugin_name).resolve()
-        if candidate.parent != self.plugin_dir:
+        candidate = self.plugin_dir / plugin_name
+        if candidate.is_symlink():
             return None
-        return candidate
+        resolved = candidate.resolve()
+        if resolved.parent != self.plugin_dir:
+            return None
+        return resolved
 
     def load_all(self) -> int:
-        if not self.plugin_dir.is_dir():
-            return 0
+        """Load metadata only for signed, valid plugin directories."""
         count = 0
         for directory in self.plugin_dir.iterdir():
-            if directory.is_dir() and (directory / "plugin.json").is_file():
-                if self.load(directory.name):
-                    count += 1
+            if directory.is_symlink() or not directory.is_dir():
+                continue
+            if self.load(directory.name):
+                count += 1
         return count
 
     def load(self, plugin_name: str) -> bool:
+        """Verify the complete artifact and load its metadata; never import code."""
         if plugin_name in self._plugins:
             return True
         plugin_path = self._plugin_path(plugin_name)
         if plugin_path is None:
             return False
         manifest_path = plugin_path / "plugin.json"
-        sig_path = plugin_path / "plugin.shadow313sig"
-        if not manifest_path.is_file() or not sig_path.is_file():
+        if not manifest_path.is_file() or manifest_path.is_symlink():
             return False
+
+        verification = self.signer.verify(plugin_path)
+        if not verification.get("valid"):
+            return False
+
         try:
-            manifest_bytes = manifest_path.read_bytes()
-            manifest = json.loads(manifest_bytes)
-            if not isinstance(manifest, dict):
-                return False
-            signature = sig_path.read_text(encoding="utf-8").strip()
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError):
             return False
-
-        expected = hmac.new(self.secret, manifest_bytes, hashlib.sha256).hexdigest()
-        if not hmac.compare_digest(signature, expected):
+        if not isinstance(manifest, dict):
             return False
 
-        for hook in manifest.get("hooks", []):
-            if hook in self._hooks:
-                self._hooks[hook].append(
-                    lambda data, name=plugin_name, selected_hook=hook:
-                    self._dispatch(name, selected_hook, data)
-                )
+        hooks = manifest.get("hooks", [])
+        if not isinstance(hooks, list) or any(
+            not isinstance(hook, str) or hook not in self._hooks
+            for hook in hooks
+        ):
+            return False
+
+        for hook in hooks:
+            if plugin_name not in self._hooks[hook]:
+                self._hooks[hook].append(plugin_name)
         self._plugins[plugin_name] = manifest
         return True
 
-    def fire(self, hook: str, data: dict[str, Any]) -> list[Any]:
-        """Dispatch each registered hook exactly once and retain falsey results."""
-        results = []
-        for callback in self._hooks.get(hook, []):
-            result = callback(data)
-            if result is not None:
-                results.append(result)
-        return results
+    def fire(self, hook: str, data: dict[str, Any]) -> list[dict[str, Any]]:
+        """Return explicit disabled statuses; never import legacy plugin code."""
+        if hook not in self._hooks:
+            return []
+        return [
+            self._dispatch(plugin_name, hook, data)
+            for plugin_name in self._hooks[hook]
+        ]
 
-    def _dispatch(self, plugin_name: str, hook: str, data: dict) -> dict | None:
-        try:
-            module = importlib.import_module(
-                f"shadow313.plugins.{plugin_name}.analyzer"
-            )
-            handler = getattr(module, "handle", None)
-            if callable(handler):
-                return handler(hook, data)
-        except Exception:
-            # Plugin failures are isolated from the host application.
-            return None
-        return None
+    def _dispatch(
+        self,
+        plugin_name: str,
+        hook: str,
+        data: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "plugin": plugin_name,
+            "hook": hook,
+            "status": "sandbox_unavailable",
+            "reason": (
+                "Legacy in-process plugin execution is disabled. "
+                "Use the canonical sandboxed plugin runner."
+            ),
+        }
 
     def sign_plugin(self, plugin_name: str) -> str:
+        """Sign the complete plugin artifact, not only plugin.json."""
         plugin_path = self._plugin_path(plugin_name)
         if plugin_path is None:
             raise ValueError("Invalid plugin name")
         manifest_path = plugin_path / "plugin.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(manifest_path)
-        signature = hmac.new(
-            self.secret, manifest_path.read_bytes(), hashlib.sha256
-        ).hexdigest()
-        (plugin_path / "plugin.shadow313sig").write_text(
-            signature, encoding="utf-8"
-        )
-        return signature
+        return str(self.signer.sign(plugin_path)["signature"])
 
     def list_plugins(self) -> list[dict[str, Any]]:
         return [

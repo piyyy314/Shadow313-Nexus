@@ -9,7 +9,7 @@ description     = "Shadow313 NEXUS — Local-First AI-Powered Security Intellige
 readme          = "README.md"
 license         = "MIT"
 requires-python = ">=3.11"
-authors         = [{name = "Shadow313 Core Team / mohamad", email = "ops@shadow313.dev"}]
+authors         = [{name = "Shadow313 Core Team / mohamad", email = "pitty313@proton.me"}]
 keywords        = ["security","pentest","cli","ai","vulnerability","recon","quantum","nexus","pqc"]
 classifiers     = [
     "Environment :: Console",

@@ -27,10 +27,11 @@ ENV http_proxy=${HTTP_PROXY} https_proxy=${HTTPS_PROXY}
 WORKDIR /build
 
 # Install build deps with retry on network failure
+# hadolint ignore=DL3008
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
-        gcc=4:14.2.0-1 g++=4:14.2.0-1 \
-        libssl-dev=3.5.7-1~deb13u3 libffi-dev=3.4.8-2 git=1:2.47.3-0+deb13u1 \
+        gcc g++ \
+        libssl-dev libffi-dev git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md ./
@@ -61,9 +62,10 @@ LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.url="https://shadow313.dev"
 
 # Install runtime deps with retry
+# hadolint ignore=DL3008
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
-        libssl3t64=3.5.7-1~deb13u3 \
+        libssl3t64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Apply the latest Debian security fixes to base-image packages
