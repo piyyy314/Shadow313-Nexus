@@ -31,12 +31,15 @@ class PluginManager:
     def __init__(
         self,
         plugin_dir: str = "shadow313/plugins",
+        secret: bytes | str | None = None,
         signer: PluginArtifactSigner | None = None,
     ) -> None:
         self.plugin_dir = Path(plugin_dir).expanduser()
         self.plugin_dir.mkdir(parents=True, exist_ok=True)
         self.plugin_dir = self.plugin_dir.resolve()
-        self.signer = signer or PluginArtifactSigner()
+        if signer is not None and secret is not None:
+            raise ValueError("Pass either a signer or a secret, not both")
+        self.signer = signer or PluginArtifactSigner(key=secret)
         self._plugins: dict[str, Any] = {}
         self._hooks: dict[str, list[str]] = {hook: [] for hook in PLUGIN_HOOKS}
 
