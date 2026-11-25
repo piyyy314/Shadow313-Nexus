@@ -25,7 +25,7 @@ Week 1–2: Appoint a Security Officer
 
 Designate yourself or a co-founder as Information Security Officer
 Document this in writing (even a simple email to yourself counts)
-Create security@shadow313.dev email alias
+Use pitty313@proton.me as the security contact; do not create a separate alias
 Week 3–4: Write Your Security Policy Suite The following policies must exist in writing before the audit clock starts:
 
 policies/
@@ -248,7 +248,7 @@ WHAT TO DO THIS WEEK
 These actions cost nothing and start the clock:
 
 Day 1 (Today)
- Create security@shadow313.dev email alias in Zoho
+ Use pitty313@proton.me as the security contact; do not create a separate alias
  Enable MFA on: GitHub, domain registrar, Vercel, Auth0, Zoho
  Create a private GitHub repo: shadow313-compliance
  Create folder structure: policies/, evidence/, risk-register/
@@ -262,7 +262,7 @@ Key controls: MFA, encryption, access control, incident response
  Write your Incident Response Policy (1 page)
 
 Detection → Containment → Eradication → Recovery → Post-mortem
-Contact: security@shadow313.dev
+Contact: pitty313@proton.me
 Escalation: [Your phone number]
 Notification timeline: Customers notified within 72 hours of confirmed breach
 Day 4–5
