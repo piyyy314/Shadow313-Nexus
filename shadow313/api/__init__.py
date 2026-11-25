@@ -31,7 +31,10 @@ def create_app(api_key: str | None = None):
         route
         for route in app.router.routes
         if not (
-            getattr(route, "path", None) == "/api/events"
+            getattr(route, "path", None) in {
+                "/api/events",
+                "/api/attck/coverage",
+            }
             and "GET" in getattr(route, "methods", set())
         )
     ]
@@ -99,6 +102,27 @@ def create_app(api_key: str | None = None):
     async def event_stats() -> dict[str, Any]:
         return get_event_bus().stats()
 
+    async def attck_coverage() -> dict[str, Any]:
+        return {
+            "status": "unavailable",
+            "overall_pct": None,
+            "techniques_covered": None,
+            "techniques_total": None,
+            "tactics": {},
+            "source": "active_detector_registry",
+            "message": (
+                "Coverage is not calculated from the active detector registry; "
+                "static estimates are disabled."
+            ),
+        }
+
+    app.add_api_route(
+        "/api/attck/coverage",
+        attck_coverage,
+        methods=["GET"],
+        dependencies=[Depends(verify_event_access)],
+        name="attck_coverage_unavailable",
+    )
     app.add_api_route(
         "/api/events",
         list_events,
