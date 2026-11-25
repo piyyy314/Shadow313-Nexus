@@ -5,6 +5,11 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .manager import HookDispatcher, PluginRegistry, PluginScaffolder
+from .manifest import MANIFEST_TEMPLATE, PLUGIN_ENTRY_TEMPLATE, VALID_HOOKS, PluginManifest
+from .runner import PluginRunner
+
+# Backward-compatible name retained for callers of the previous v4 facade.
+PluginExecutor = PluginRunner
 
 
 def _now() -> str:
