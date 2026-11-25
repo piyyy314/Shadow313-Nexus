@@ -7,7 +7,8 @@ import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 from .event_bus import FASTAPI_AVAILABLE, EventPublisher, PlatformEvent
 
@@ -184,7 +185,7 @@ class SecureEventPublisher(EventPublisher):
             version="4.0.0",
         )
 
-        async def require_api_key(request: Request) -> None:
+        async def require_api_key(request: Request) -> bool:
             expected = os.environ.get("SHADOW313_EVENT_BUS_API_KEY", "")
             provided = request.headers.get("x-api-key", "")
             if not expected:
@@ -194,16 +195,20 @@ class SecureEventPublisher(EventPublisher):
                 )
             if not provided or not hmac.compare_digest(provided, expected):
                 raise HTTPException(status_code=401, detail="Invalid event bus API key")
+            return True
 
         @app.get("/api/events")
         async def get_events(
             event_type: str | None = None,
             severity: str | None = None,
             limit: int = Query(default=100, ge=1, le=1000),
-            _: None = Depends(require_api_key),
+            _: bool = Depends(require_api_key),
         ):
             events = self.get_events(event_type, severity, limit)
-            return {"events": [event.to_dict() for event in events], "count": len(events)}
+            return {
+                "events": [event.to_dict() for event in events],
+                "count": len(events),
+            }
 
         @app.get("/api/events/stats")
         async def get_stats(
@@ -217,7 +222,10 @@ class SecureEventPublisher(EventPublisher):
             _: None = __import__("fastapi").Depends(require_api_key),
         ):
             if len(json.dumps(body, default=str).encode("utf-8")) > 64 * 1024:
-                raise HTTPException(status_code=413, detail="Event payload exceeds 64 KiB")
+                raise HTTPException(
+                    status_code=413,
+                    detail="Event payload exceeds 64 KiB",
+                )
             event_type = body.get("event_type", "generic")
             source = body.get("source", "api")
             severity = str(body.get("severity", "INFO")).upper()
@@ -229,7 +237,10 @@ class SecureEventPublisher(EventPublisher):
             if severity not in VALID_SEVERITIES:
                 raise HTTPException(status_code=422, detail="Invalid severity")
             if not isinstance(payload, dict):
-                raise HTTPException(status_code=422, detail="Event payload must be an object")
+                raise HTTPException(
+                    status_code=422,
+                    detail="Event payload must be an object",
+                )
 
             event = PlatformEvent(
                 event_type=event_type,
