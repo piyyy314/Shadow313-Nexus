@@ -19,8 +19,8 @@ This Incident Response Plan defines procedures for detecting, containing, eradic
 | Role | Individual | Contact | Backup |
 |------|-----------|---------|--------|
 | Incident Commander | mohamad | pitty313@proton.me | N/A (sole operator) |
-| Technical Lead | mohamad | baalbek.313@gmail.com | N/A |
-| Communications Lead | mohamad | baalbek.313@gmail.com | N/A |
+| Technical Lead | mohamad | pitty313@proton.me | N/A |
+| Communications Lead | mohamad | pitty313@proton.me | N/A |
 
 *Note: As a sole-operator system, all IR roles are fulfilled by mohamad. For FedRAMP authorization, a designated backup contact should be identified prior to 3PAO assessment.*
 
