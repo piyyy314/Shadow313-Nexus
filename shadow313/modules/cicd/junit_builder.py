@@ -28,8 +28,7 @@ def _xml_escape(value: object) -> str:
 def build_junit_xml(findings: list[dict], suite_name: str = "shadow313") -> str:
     """Build escaped JUnit XML; untrusted XML parsing is a separate concern."""
     failures = sum(
-        str(finding.get("severity", "")).lower() in ("critical", "high")
-        for finding in findings
+        str(finding.get("severity", "")).lower() in ("critical", "high") for finding in findings
     )
     parts = [
         '<?xml version="1.0" encoding="UTF-8"?>',
