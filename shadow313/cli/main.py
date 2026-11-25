@@ -626,7 +626,10 @@ def _required_namespaces(args) -> list[str]:
             ) if getattr(args, flag, False)
         )
     elif command == "plugin":
-        required.append("plugins")
+        required.append("plugin_sign" if (
+            getattr(args, "sign", None) or getattr(args, "verify", None)
+            or getattr(args, "verify_all", False)
+        ) else "plugins")
     elif command == "update":
         required = []
         if args.db in ("cve", "all"):
@@ -756,20 +759,22 @@ def _dispatch(kernel, args, parser) -> int:
                         report      = args.report)
 
     elif cmd == "plugin":
-        kernel.dispatch(
-            "plugins",
-            list_plugins=args.list_plugins,
-            install=getattr(args, "install", "") or "",
-            enable=getattr(args, "enable", "") or "",
-            disable=getattr(args, "disable", "") or "",
-            remove=getattr(args, "remove", "") or "",
-            new=getattr(args, "new", "") or "",
-            hook=getattr(args, "hook", "") or "",
-            new_author=getattr(args, "new_author", "") or "",
-            sign=getattr(args, "sign", "") or "",
-            verify=getattr(args, "verify", "") or "",
-            verify_all=args.verify_all,
-        )
+        if getattr(args,"sign",None):
+            kernel.dispatch("plugin_sign", sign=args.sign)
+        elif getattr(args,"verify",None):
+            kernel.dispatch("plugin_sign", verify=args.verify)
+        elif args.verify_all:
+            kernel.dispatch("plugin_sign", verify_all=True)
+        else:
+            kernel.dispatch("plugins",
+                            list_plugins = args.list_plugins,
+                            install      = getattr(args,"install","") or "",
+                            enable       = getattr(args,"enable","") or "",
+                            disable      = getattr(args,"disable","") or "",
+                            remove       = getattr(args,"remove","") or "",
+                            new          = getattr(args,"new","") or "",
+                            hook         = getattr(args,"hook","") or "",
+                            new_author   = getattr(args,"new_author","") or "")
 
     elif cmd == "cicd":
         kernel.dispatch("cicd",
