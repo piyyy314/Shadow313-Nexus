@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 class PlaybookAction(Enum):
@@ -216,7 +217,7 @@ class SOAREngine:
             "actions": results,
             "status": overall_status,
             "duration_ms": round((time.monotonic() - started) * 1000, 1),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "dry_run": self.dry_run,
         }
         self._log.append(entry)
@@ -235,7 +236,10 @@ class SOAREngine:
 
     def get_log(self) -> list[dict[str, Any]]:
         """Return a copy of the execution log."""
-        return [dict(entry, actions=[dict(action) for action in entry["actions"]]) for entry in self._log]
+        return [
+            dict(entry, actions=[dict(action) for action in entry["actions"]])
+            for entry in self._log
+        ]
 
     def get_stats(self) -> dict[str, Any]:
         if not self._log:
