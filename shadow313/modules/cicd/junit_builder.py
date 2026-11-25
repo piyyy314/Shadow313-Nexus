@@ -1,4 +1,5 @@
 """JUnit XML builder for CI ingestion without XML parser dependencies."""
+
 from __future__ import annotations
 
 import html
@@ -47,9 +48,8 @@ def build_junit_xml(findings: list[dict], suite_name: str = "shadow313") -> str:
         if str(finding.get("severity", "")).lower() in ("critical", "high"):
             parts.append(
                 f'<failure message="{_xml_escape(finding.get("desc", ""))}">'
+                f'{_xml_escape(finding.get("content", ""))}</failure>'
             )
-            parts.append(_xml_escape(finding.get("content", "")))
-            parts.append("</failure>")
         parts.append("</testcase>")
 
     parts.append("</testsuite>")
