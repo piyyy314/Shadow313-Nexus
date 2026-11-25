@@ -31,6 +31,7 @@ def test_main_api_event_routes_use_persistent_authenticated_store(
     )
     queried = client.get("/api/events", headers=headers)
     stats = client.get("/api/events/stats", headers=headers)
+    coverage = client.get("/api/attck/coverage", headers=headers)
 
     assert unauthenticated.status_code == 401
     assert published.status_code == 200
@@ -40,3 +41,6 @@ def test_main_api_event_routes_use_persistent_authenticated_store(
     assert queried.json()["count"] == 1
     assert stats.status_code == 200
     assert stats.json()["total_events"] == 1
+    assert coverage.status_code == 200
+    assert coverage.json()["status"] == "unavailable"
+    assert coverage.json()["overall_pct"] is None
