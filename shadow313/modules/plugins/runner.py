@@ -26,6 +26,8 @@ class PluginRunner:
         self.manifest = manifest
 
     def _sandbox_command(self) -> list[str] | None:
+        if not sys.platform.startswith("linux"):
+            return None
         bwrap = shutil.which("bwrap")
         if bwrap is None:
             return None
@@ -134,6 +136,7 @@ class PluginRunner:
                 text=True,
                 timeout=TIMEOUT,
                 check=False,
+                preexec_fn=self._set_resource_limits,
                 env={
                     "HOME": "/tmp",
                     "LANG": "C.UTF-8",
@@ -185,6 +188,16 @@ class PluginRunner:
                 "status": "error",
                 "error": f"{type(exc).__name__}: {exc}",
             }
+
+    @staticmethod
+    def _set_resource_limits() -> None:
+        """Apply process, memory, CPU, file-size, and descriptor limits in Linux."""
+        import resource
+
+        resource.setrlimit(resource.RLIMIT_CPU, (20, 25))
+        resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (10 * 1024 * 1024, 10 * 1024 * 1024))
+        resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
 
     @staticmethod
     def _build_scoped_context(context: dict) -> dict:
