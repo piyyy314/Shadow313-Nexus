@@ -55,3 +55,12 @@ A valid signature proves that the artifact matches the trusted local signing
 key. It does not prove that the plugin is benign. Review plugin source,
 dependencies, and permissions before signing it. Sandbox status and plugin
 execution results must be treated separately from signature verification.
+
+## Legacy compatibility modules
+
+The active kernel `plugin_sign` command and plugin registry use the canonical
+full-artifact signer in `shadow313.modules.plugins.signing`. The older
+`shadow313.v2.plugin_signing.PluginSigner` implementation is legacy-only and
+must not be used as the trust authority for new installations. The separate
+`shadow313.core.plugin_manager.PluginManager` compatibility loader verifies
+full artifacts but deliberately does not import or execute plugin code.
