@@ -192,3 +192,26 @@ def test_plugin_runner_rejects_unsigned_artifact_before_execution(
     result = PluginRunner(plugin).execute({"session_id": "test"})
 
     assert result["status"] == "signature_invalid"
+
+
+
+def test_discovery_evicts_plugin_after_artifact_tampering(tmp_path):
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+    registry = PluginRegistry(
+        str(tmp_path / "installed"),
+        require_signed=True,
+        signer=signer,
+    )
+    source = _plugin(tmp_path / "source")
+    signer.sign(source)
+    ok, _ = registry.install(str(source))
+    assert ok is True
+    assert [item.name for item in registry.discover()] == ["safe-plugin"]
+    assert registry.enable("safe-plugin") is True
+
+    installed_entry = registry.plugins_dir / "safe-plugin" / "plugin.py"
+    installed_entry.write_text("print('tampered')\\n", encoding="utf-8")
+
+    assert registry.discover() == []
+    assert registry.get_enabled() == []
+    assert registry.list_all() == []
