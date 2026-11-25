@@ -111,7 +111,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   <div><span class="node">Hetzner VPS</span> <span class="arrow">──runs──▶</span> <span class="label">Docker: API + Telegram Bot + PostgreSQL + Nginx</span></div>
   <div><span class="node">Ollama</span> <span class="arrow">──localhost:11434──▶</span> <span class="node">Open WebUI</span> <span class="label">(:3000) + Shadow313 CLI</span></div>
   <div><span class="node">Telegram Bot</span> <span class="arrow">──alerts──▶</span> <span class="node">Your Phone</span> <span class="label">(HIGH/CRITICAL events)</span></div>
-  <div><span class="node">Zoho/Google</span> <span class="arrow">──email──▶</span> <span class="label">pitty313@proton.me · security@ · support@</span></div>
+  <div><span class="node">Proton Mail</span> <span class="arrow">──email──▶</span> <span class="label">pitty313@proton.me (single contact address)</span></div>
   <div><span class="node">313-BIND</span> <span class="arrow">──anchors──▶</span> <span class="node">IPFS</span> <span class="label">(public tamper-evidence)</span></div>
 </div>
 
@@ -329,23 +329,16 @@ Invoke-WebRequest -Uri "https://api.ipify.org" -UseBasicParsing | Select-Object 
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Add DNS records in Vercel/Cloudflare <span class="badge-today">PLANNED</span></div>
       <div class="step-cmd"># Add these MX records to shadow313.dev DNS:
-MX  @  ASPMX.L.GOOGLE.COM       priority: 1
-MX  @  ALT1.ASPMX.L.GOOGLE.COM  priority: 5
-MX  @  ALT2.ASPMX.L.GOOGLE.COM  priority: 5
-TXT @  "v=spf1 include:_spf.google.com ~all"
+No custom-domain mail aliases are configured. Use pitty313@proton.me as the contact address; configure Proton custom-domain MX records only if that service is intentionally adopted.
 # Also add DKIM record from Google Admin Console</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Create email addresses <span class="badge-today">PLANNED</span></div>
-      <div class="step-cmd">pitty313@proton.me      # Primary — you
-security@shadow313.dev     # Security disclosures; no paid bounty program
-support@shadow313.dev      # Customer support
-billing@shadow313.dev      # License / payment
-noreply@shadow313.dev      # Automated emails</div>
+      <div class="step-cmd">pitty313@proton.me      # Single contact for security, support, billing, and notices</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Update contact info across all pages <span class="badge-today">PLANNED</span></div>
-      <div class="step-desc">Update contact.html, security-policy.html, privacy.html, footer — replace pitty313@proton.me with pitty313@proton.me</div>
+      <div class="step-desc">Verify all contact links and footers use pitty313@proton.me</div>
     </div></div>
   </div>
 </div>
@@ -382,7 +375,7 @@ Topics: cybersecurity, post-quantum, cli, python, mitre-attack, threat-detection
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
       <div class="step-title">Add SECURITY.md to repo root <span class="badge-today">PLANNED</span></div>
       <div class="step-desc">GitHub shows a "Security" tab when SECURITY.md exists — links to your security policy</div>
-      <div class="step-cmd">echo "# Security Policy\nSee https://shadow313.dev/security-policy for our responsible disclosure policy.\nReport vulnerabilities to: security@shadow313.dev" > SECURITY.md
+      <div class="step-cmd">echo "# Security Policy\nSee https://shadow313.dev/security-policy for our responsible disclosure policy.\nReport vulnerabilities to: pitty313@proton.me" > SECURITY.md
 git add SECURITY.md && git commit -m "docs: add SECURITY.md" && git push</div>
     </div></div>
     <div class="step"><div class="step-check" onclick="toggleStep(this)"></div><div class="step-content">
