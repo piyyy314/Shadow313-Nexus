@@ -283,7 +283,9 @@ class PluginScaffolder:
         manifest = MANIFEST_TEMPLATE.replace("my-plugin", name)
         if author:
             if len(author) > 128 or any(ord(character) < 32 for character in author):
-                raise ValueError("Plugin author must be at most 128 printable characters")
+                raise ValueError(
+                    "Plugin author must be at most 128 printable characters"
+                )
             manifest = manifest.replace(
                 "author: handle",
                 f"author: {json.dumps(author)}",
