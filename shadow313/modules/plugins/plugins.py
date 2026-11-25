@@ -5,7 +5,12 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .manager import HookDispatcher, PluginRegistry, PluginScaffolder
-from .manifest import MANIFEST_TEMPLATE, PLUGIN_ENTRY_TEMPLATE, VALID_HOOKS, PluginManifest
+from .manifest import (
+    MANIFEST_TEMPLATE,
+    PLUGIN_ENTRY_TEMPLATE,
+    VALID_HOOKS,
+    PluginManifest,
+)
 from .runner import PluginRunner
 
 # Backward-compatible name retained for callers of the previous v4 facade.
@@ -24,7 +29,10 @@ class PluginManager:
         plugins_dir = config.get("dir", "~/.shadow313/plugins")
         self.out = kernel.out
         self.session = kernel.session
-        self.registry = PluginRegistry(plugins_dir)
+        self.registry = PluginRegistry(
+            plugins_dir,
+            require_signed=bool(config.get("require_signed", False)),
+        )
         self.dispatcher = HookDispatcher(self.registry, kernel.session.id)
         self.scaffolder = PluginScaffolder(plugins_dir)
 
@@ -45,11 +53,16 @@ class PluginManager:
         new: str = "",
         hook: str = "",
         new_author: str = "",
+        sign: str = "",
+        verify: str = "",
+        verify_all: bool = False,
     ) -> dict:
         self.out.section("PLUGIN MANAGER")
         result: dict[str, Any] = {"timestamp": _now()}
 
-        if list_plugins or not any((install, enable, disable, remove, new)):
+        if list_plugins or not any(
+            (install, enable, disable, remove, new, sign, verify, verify_all)
+        ):
             plugins = self.registry.list_all()
             result["plugins"] = plugins
             if plugins:
@@ -72,6 +85,32 @@ class PluginManager:
                 self.out.info(
                     "No plugins installed. Use: shadow313 plugin --install ./my-plugin/"
                 )
+
+        if sign:
+            ok, message = self.registry.sign(sign)
+            self.out.success(message) if ok else self.out.error(message)
+            if ok:
+                result["signed"] = sign
+
+        if verify:
+            verification = self.registry.verify(verify)
+            result["verification"] = verification
+            self.out.success("Plugin artifact signature verified.") if verification.get("valid") else self.out.error(
+                verification.get("reason", "Plugin artifact signature invalid")
+            )
+
+        if verify_all:
+            verifications = self.registry.verify_all()
+            result["verifications"] = verifications
+            for verification in verifications:
+                if verification.get("valid"):
+                    self.out.success(
+                        f"Verified plugin artifact: {verification.get('plugin', 'unknown')}"
+                    )
+                else:
+                    self.out.error(
+                        verification.get("reason", "Plugin artifact signature invalid")
+                    )
 
         if install:
             ok, message = self.registry.install(install)
