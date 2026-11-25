@@ -34,7 +34,7 @@ class PluginRegistry:
     def __init__(
         self,
         plugins_dir: str = "~/.shadow313/plugins",
-        require_signed: bool = False,
+        require_signed: bool = True,
         signer: PluginArtifactSigner | None = None,
     ) -> None:
         configured = Path(plugins_dir).expanduser()
