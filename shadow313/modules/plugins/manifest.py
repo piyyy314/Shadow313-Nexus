@@ -72,8 +72,15 @@ class PluginManifest:
         for name in ("plugin.yaml", "manifest.yaml"):
             manifest_file = self.path / name
             if manifest_file.is_file():
-                if manifest_file.is_symlink() or not manifest_file.resolve().is_relative_to(self.path):
-                    raise ValueError("Plugin manifest must be a regular file inside its plugin directory")
+                if (
+                    manifest_file.is_symlink()
+                    or not manifest_file.resolve().is_relative_to(self.path)
+                ):
+                    raise ValueError(
+                        "Plugin manifest must be a regular file inside its plugin directory"
+                    )
+                if manifest_file.stat().st_size > 64 * 1024:
+                    raise ValueError("Plugin manifest exceeds the 64 KiB size limit")
                 text = manifest_file.read_text(encoding="utf-8")
                 if yaml is not None:
                     data = yaml.safe_load(text) or {}
