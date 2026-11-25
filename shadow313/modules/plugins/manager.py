@@ -57,6 +57,7 @@ class PluginRegistry:
         return resolved
 
     def discover(self) -> list[PluginManifest]:
+        self._loaded.clear()
         manifests: list[PluginManifest] = []
         for entry in self.plugins_dir.iterdir():
             if entry.is_symlink() or not entry.is_dir():
@@ -80,6 +81,7 @@ class PluginRegistry:
                 self._loaded[manifest.name] = manifest
             except (OSError, ValueError, TypeError) as exc:
                 logger.warning("Ignoring plugin %s: %s", entry.name, exc)
+        self._enabled.intersection_update(self._loaded)
         return manifests
 
     def enable(self, name: str) -> bool:
