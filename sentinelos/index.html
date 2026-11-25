@@ -61,7 +61,7 @@
                 <a href="/dashboards" class="nav-item">NEXUS Dashboards</a>
                 <div class="nav-section-title">Core Systems</div>
                 <a href="#quantum" class="nav-item" data-view="quantum">
-                    <span class="nav-icon"><i class="fa-solid fa-atom"></i></span> Quantum Encryption
+                    <span class="nav-icon"><i class="fa-solid fa-atom"></i></span> PQC Concept Demo
                 </a>
                 <a href="#threat" class="nav-item" data-view="threat">
                     <span class="nav-icon"><i class="fa-solid fa-satellite-dish"></i></span> Neural Threat Intel
@@ -392,59 +392,59 @@
                 <!-- 2. QUANTUM ENCRYPTION -->
                 <section id="view-quantum" class="view-pane">
                     <div class="view-header">
-                        <h2>🧬 Quantum-Resistant Encryption Suite</h2>
-                        <p>Generate high-entropy key pairs and encrypt sensitive data using lattice-based parameters resilient to Shor's algorithm attacks.</p>
+                        <h2>🧬 Post-Quantum Cryptography Concept Demo</h2>
+                        <p>Browser-only demonstration of PQC terminology and a reversible toy string transform. No Kyber, NTRU, McEliece, secure entropy, or cryptographic protection is implemented; do not enter sensitive data.</p>
                     </div>
                     <div class="quantum-split-layout">
                         <div class="quantum-controls glass-card">
                             <h3>Key Parameters</h3>
                             <div class="form-group">
-                                <label for="quantum-algo">Cryptographic Engine</label>
+                                <label for="quantum-algo">Demo Profile (Algorithms Not Implemented)</label>
                                 <select id="quantum-algo" class="form-control">
-                                    <option value="kyber">Kyber-1024 (Lattice-MLWE Key Encapsulation)</option>
-                                    <option value="ntru">NTRU-HPS-4096 (Polynomial Lattice Cipher)</option>
-                                    <option value="mceliece">Classic McEliece-8192 (Goppa-Code Matrix)</option>
+                                    <option value="kyber">Kyber-1024 label only (not implemented)</option>
+                                    <option value="ntru">NTRU label only (not implemented)</option>
+                                    <option value="mceliece">Classic McEliece label only (not implemented)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Seed Quantum Entropy</label>
+                                <label>Sample Parameter (Not Entropy)</label>
                                 <div class="entropy-slider-container">
                                     <input type="range" min="128" max="1024" step="128" value="512" class="slider" id="quantum-seed-slider">
                                     <span class="slider-val" id="seed-slider-val">512 bits</span>
                                 </div>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-quantum-genkeys"><i class="fa-solid fa-key"></i> Generate Quantum Keypair</button>
+                            <button class="btn btn-primary btn-full" id="btn-quantum-genkeys"><i class="fa-solid fa-key"></i> Generate Demo Strings</button>
 
                             <div class="keypair-display">
                                 <div class="key-block">
-                                    <label>PUBLIC KEY (Apx)</label>
-                                    <textarea readonly id="txt-public-key" placeholder="Generate keypair to display..."></textarea>
+                                    <label>SAMPLE STRING (NOT A PUBLIC KEY)</label>
+                                    <textarea readonly id="txt-public-key" placeholder="Generate demo strings to display..."></textarea>
                                 </div>
                                 <div class="key-block">
-                                    <label>PRIVATE KEY (S)</label>
+                                    <label>SAMPLE STRING (NOT A PRIVATE KEY)</label>
                                     <textarea readonly id="txt-private-key" placeholder="Generate keypair to display..."></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <div class="quantum-payload-panel glass-card">
-                            <h3>Data Encapsulation</h3>
+                            <h3>Reversible Demo Transform</h3>
                             <div class="form-group">
-                                <label for="txt-quantum-plain">Cleartext Payload</label>
-                                <textarea id="txt-quantum-plain" class="form-control" placeholder="Enter sensitive intelligence to protect..."></textarea>
+                                <label for="txt-quantum-plain">Sample Input (Do Not Use Sensitive Data)</label>
+                                <textarea id="txt-quantum-plain" class="form-control" placeholder="Enter non-sensitive sample text for the demo transform..."></textarea>
                             </div>
                             <div class="payload-actions">
-                                <button class="btn btn-primary" id="btn-quantum-encrypt"><i class="fa-solid fa-lock"></i> Encrypt (Lattice Scramble)</button>
-                                <button class="btn btn-secondary" id="btn-quantum-decrypt"><i class="fa-solid fa-lock-open"></i> Decrypt (Lattice Solve)</button>
+                                <button class="btn btn-primary" id="btn-quantum-encrypt"><i class="fa-solid fa-lock"></i> Run Demo Transform (Not Secure)</button>
+                                <button class="btn btn-secondary" id="btn-quantum-decrypt"><i class="fa-solid fa-lock-open"></i> Reverse Demo Transform</button>
                             </div>
 
                             <div class="form-group margin-top-15">
-                                <label for="txt-quantum-cipher">Ciphertext Packet (Hex Encoded Matrix)</label>
-                                <textarea id="txt-quantum-cipher" class="form-control font-mono" placeholder="Scrambled quantum payload will appear here..."></textarea>
+                                <label for="txt-quantum-cipher">Demo Output (Not Secure Ciphertext)</label>
+                                <textarea id="txt-quantum-cipher" class="form-control font-mono" placeholder="Illustrative transformed string will appear here..."></textarea>
                             </div>
 
                             <div class="lattice-vis-box">
-                                <div class="lattice-title">Lattice Scramble Vector Grid</div>
+                                <div class="lattice-title">Illustrative Lattice Animation (Not Cryptographic)</div>
                                 <div class="lattice-canvas-container">
                                     <canvas id="lattice-canvas"></canvas>
                                 </div>
@@ -452,15 +452,15 @@
                         </div>
                     </div>
 
-                    <!-- Quantum Signal Interception Panel -->
+                    <!-- Browser-only signal animation; no real signal is intercepted. -->
                     <div class="quantum-interception-panel glass-card">
                         <div class="quantum-interception-header">
                             <div class="quantum-interception-title">
-                                <i class="fa-solid fa-microchip"></i> Quantum Signal Interceptor
+                                <i class="fa-solid fa-microchip"></i> Signal Animation (Not Connected)
                             </div>
                             <div class="quantum-interception-status">
                                 <div class="quantum-interception-indicator"></div>
-                                <span id="quantum-intercept-status-text">DECODING SIGNAL</span>
+                                <span id="quantum-intercept-status-text">DEMO SIGNAL</span>
                             </div>
                         </div>
                         <div class="quantum-signal-visualization" id="quantum-signal-viz">
@@ -469,23 +469,23 @@
                         </div>
                         <div class="quantum-controls">
                             <div class="quantum-control">
-                                <div class="quantum-control-label">Interception Rate</div>
+                                <div class="quantum-control-label">Sample Throughput (Not Measured)</div>
                                 <div class="quantum-control-value">
-                                    <span class="quantum-control-number" id="quantum-ctrl-rate">84.2</span>
-                                    <span class="quantum-control-unit">Gb/s</span>
+                                    <span class="quantum-control-number" id="quantum-ctrl-rate">N/A</span>
+                                    <span class="quantum-control-unit">Not Measured</span>
                                 </div>
                                 <div class="quantum-control-slider" id="quantum-slider-rate">
-                                    <div class="quantum-control-progress" style="width: 84.2%"></div>
+                                    <div class="quantum-control-progress" style="width: 0%"></div>
                                 </div>
                             </div>
                             <div class="quantum-control">
-                                <div class="quantum-control-label">Coherence Level</div>
+                                <div class="quantum-control-label">Sample Coherence (Not Measured)</div>
                                 <div class="quantum-control-value">
-                                    <span class="quantum-control-number" id="quantum-ctrl-coherence">99.9</span>
-                                    <span class="quantum-control-unit">%</span>
+                                    <span class="quantum-control-number" id="quantum-ctrl-coherence">N/A</span>
+                                    <span class="quantum-control-unit">Not Measured</span>
                                 </div>
                                 <div class="quantum-control-slider" id="quantum-slider-coherence">
-                                    <div class="quantum-control-progress" style="width: 99.9%"></div>
+                                    <div class="quantum-control-progress" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
@@ -1136,8 +1136,8 @@
                 <!-- 12. MALWARE SANDBOX -->
                 <section id="view-sandbox" class="view-pane">
                     <div class="view-header">
-                        <h2>🧪 Heuristic Malware Sandbox & AI Disassembler</h2>
-                        <p>Safely dissemble hostile payloads, trace assembly vectors, and compute threat severity indexes within zero-knowledge boxes.</p>
+                        <h2>🧪 Browser-Only Opcode Pattern Demo</h2>
+                        <p>Displays sample opcode patterns and simple string heuristics in the browser. No executable is run, no malware sandbox is created, and no security verdict is produced.</p>
                     </div>
                     <div class="sandbox-layout">
                         <div class="sb-controls glass-card">
@@ -1180,20 +1180,20 @@
                 <!-- 13. NEXT-GEN EXPERIMENTAL TOOLS -->
                 <section id="view-pqc" class="view-pane">
                     <div class="view-header">
-                        <h2>⬡ PQC Scanner</h2>
-                        <p>Review vulnerable cryptographic surfaces and simulate migration to post-quantum Kyber profiles.</p>
+                        <h2>⬡ PQC Migration Concept Demo</h2>
+                        <p>Illustrative interface only. No repository, host, application, or cryptographic inventory is scanned; migration buttons do not modify configuration.</p>
                     </div>
                     <div class="glass-card" style="padding:20px; min-height:340px;">
                         <canvas id="pqc-matrix-canvas" style="width:100%; height:220px; display:block; margin-bottom:20px;"></canvas>
                         <div class="tool-grid">
                             <div class="glass-card" style="padding:16px;">
                                 <strong>RSA-2048 Gateway</strong>
-                                <p>Estimated quantum crack window: <span class="crack-val text-red">8 HOURS</span></p>
-                                <button class="btn btn-primary btn-migrate">MIGRATE</button>
+                                <p>Unverified illustrative estimate: <span class="crack-val text-red">NOT MEASURED</span></p>
+                                <button class="btn btn-primary btn-migrate">Preview Demo</button>
                             </div>
                             <div class="glass-card" style="padding:16px;">
                                 <strong>ECC-P256 API Node</strong>
-                                <p>Estimated quantum crack window: <span class="crack-val text-red">3 HOURS</span></p>
+                                <p>Unverified illustrative estimate: <span class="crack-val text-red">NOT MEASURED</span></p>
                                 <button class="btn btn-primary btn-migrate">MIGRATE</button>
                             </div>
                         </div>
@@ -1263,8 +1263,8 @@
                 <!-- 14. SHADOW313 QUANTUM KERNEL -->
                 <section id="view-shadow313" class="view-pane">
                     <div class="view-header">
-                        <h2>⬡ Shadow313 — Quantum Kernel & Satellite Uplink</h2>
-                        <p>Your proprietary quantum kernel communicating through middleware to satellite constellation nodes. 313 temporal binding secures every transmission.</p>
+                        <h2>⬡ Shadow313 — Quantum Concept Demo & Simulated Link</h2>
+                        <p>Browser-only concept visualization. No QPU, satellite link, or hardware temporal-binding service is connected; no real transmission is secured.</p>
                     </div>
 
                     <div class="shadow313-layout">
@@ -1273,7 +1273,7 @@
                             <!-- Satellite Uplink Visualization -->
                             <div class="glass-card s313-uplink-panel">
                                 <div class="s313-panel-header">
-                                    <div class="s313-panel-title"><i class="fa-solid fa-satellite-dish"></i> Satellite Constellation Uplink</div>
+                                    <div class="s313-panel-title"><i class="fa-solid fa-satellite-dish"></i> Simulated Satellite Diagram</div>
                                     <div class="s313-panel-status">
                                         <span class="s313-status-dot" id="s313-uplink-dot"></span>
                                         <span id="s313-uplink-status">DEMO UPLINK — NOT CONNECTED</span>
@@ -1362,7 +1362,7 @@
                                     </div>
                                     <div class="s313-mw-connector">
                                         <div class="s313-mw-beam" id="s313-beam-1"></div>
-                                        <span class="s313-mw-proto">QKD-TLS</span>
+                                        <span class="s313-mw-proto">DEMO-LINK</span>
                                     </div>
                                     <div class="s313-mw-node">
                                         <div class="s313-mw-icon middleware"><i class="fa-solid fa-code"></i></div>
@@ -1380,11 +1380,11 @@
                                     </div>
                                 </div>
                                 <div class="s313-mw-throughput">
-                                    <span class="s313-mw-tp-label">Middleware Throughput</span>
+                                    <span class="s313-mw-tp-label">Sample Throughput (Not Measured)</span>
                                     <div class="s313-mw-tp-bar">
                                         <div class="s313-mw-tp-fill" id="s313-tp-fill" style="width: 78%"></div>
                                     </div>
-                                    <span class="s313-mw-tp-val" id="s313-tp-val">78%</span>
+                                    <span class="s313-mw-tp-val" id="s313-tp-val">N/A</span>
                                 </div>
                             </div>
 
