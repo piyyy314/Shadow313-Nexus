@@ -138,7 +138,10 @@ class PluginArtifactSigner:
     def verify(self, plugin_dir: str | Path) -> dict[str, Any]:
         requested_root = Path(plugin_dir).expanduser()
         if requested_root.is_symlink():
-            return {"valid": False, "reason": "Plugin artifact root must not be a symlink"}
+            return {
+                "valid": False,
+                "reason": "Plugin artifact root must not be a symlink",
+            }
         root = requested_root.resolve()
         signature_path = root / SIGNATURE_NAME
         if not signature_path.is_file() or signature_path.is_symlink():
