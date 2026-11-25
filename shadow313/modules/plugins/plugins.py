@@ -31,7 +31,7 @@ class PluginManager:
         self.session = kernel.session
         self.registry = PluginRegistry(
             plugins_dir,
-            require_signed=bool(config.get("require_signed", False)),
+            require_signed=bool(config.get("require_signed", True)),
         )
         self.dispatcher = HookDispatcher(self.registry, kernel.session.id)
         self.scaffolder = PluginScaffolder(plugins_dir)
