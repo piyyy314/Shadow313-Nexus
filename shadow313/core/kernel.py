@@ -177,7 +177,9 @@ class Kernel:
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
                 )
                 # Optional dependency missing — expected, log at verbose level
-                self.out.verbose_msg(f"[kernel] Module '{name}' skipped (missing dep): {exc}")
+                self.out.verbose_msg(
+                    f"[kernel] Module '{name}' skipped (missing dep): {exc}"
+                )
             except ImportError as exc:
                 self._load_errors.append(
                     {"module": name, "error": str(exc), "type": type(exc).__name__}
