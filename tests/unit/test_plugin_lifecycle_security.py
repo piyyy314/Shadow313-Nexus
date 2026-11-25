@@ -10,7 +10,10 @@ from shadow313.modules.plugins.runner import PluginRunner
 def _plugin(path: Path, *, name: str = "safe-plugin", entry: str = "plugin.py") -> Path:
     path.mkdir(parents=True, exist_ok=True)
     (path / "plugin.yaml").write_text(
-        f"name: {name}\nversion: 1.0.0\nhooks:\n  - recon.post\nentry: {entry}\nrequires: []\n",
+        (
+            f"name: {name}\nversion: 1.0.0\nhooks:\n  - recon.post\n"
+            f"entry: {entry}\nrequires: []\n"
+        ),
         encoding="utf-8",
     )
     (path / "plugin.py").write_text("print('{}')\n", encoding="utf-8")
