@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 from .manifest import PluginManifest
+from .signing import PluginArtifactSigner
 
 TIMEOUT = 30
 MAX_CONTEXT_BYTES = 64 * 1024
@@ -22,8 +23,15 @@ MAX_OUTPUT_BYTES = 64 * 1024
 class PluginRunner:
     """Execute plugin code only when the Linux bubblewrap sandbox is available."""
 
-    def __init__(self, manifest: PluginManifest) -> None:
+    def __init__(
+        self,
+        manifest: PluginManifest,
+        require_signed: bool = True,
+        signer: PluginArtifactSigner | None = None,
+    ) -> None:
         self.manifest = manifest
+        self.require_signed = require_signed
+        self.signer = signer or PluginArtifactSigner()
 
     def _sandbox_command(self) -> list[str] | None:
         if not sys.platform.startswith("linux"):
@@ -123,6 +131,17 @@ class PluginRunner:
     def execute(self, context: dict) -> dict:
         """Run a plugin with bounded input, isolated environment, and timeout."""
         try:
+            if self.require_signed:
+                verification = self.signer.verify(self.manifest.path)
+                if not verification.get("valid"):
+                    return {
+                        "plugin": self.manifest.name,
+                        "status": "signature_invalid",
+                        "reason": verification.get(
+                            "reason",
+                            "Plugin artifact signature is invalid",
+                        ),
+                    }
             entry_path = self.manifest.entry_path
             if not entry_path.is_file():
                 return {"plugin": self.manifest.name, "status": "invalid_entry"}
