@@ -237,9 +237,14 @@ def test_vuln_service_mapping_deduplicates_cves_and_adds_contextual_risk(kernel,
     module.checker.check.assert_called_once_with("CVE-TEST-1")
 
 
-def test_plugin_manager_scaffold_install_enable_disable_remove(kernel):
+def test_plugin_manager_scaffold_install_enable_disable_remove(kernel, monkeypatch):
     manager = PluginManager(kernel)
     scaffold = manager.run(new="sample")["scaffold_path"]
+    monkeypatch.setenv(
+        "SHADOW313_PLUGIN_SIGNING_KEY",
+        "unit-test-plugin-signing-key-at-least-32-bytes",
+    )
+    assert manager.registry.sign(scaffold)[0] is True
     # Install into a second manager's directory to keep source and destination separate.
     kernel.config.get.side_effect = None
     kernel.config.get.return_value = {"dir": scaffold + "-installed"}
