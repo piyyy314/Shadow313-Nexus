@@ -5,6 +5,7 @@ from pathlib import Path
 from shadow313.modules.plugins.manifest import PluginManifest
 from shadow313.modules.plugins.manager import PluginRegistry
 from shadow313.modules.plugins.runner import PluginRunner
+from shadow313.modules.plugins.signing import PluginArtifactSigner
 
 
 def _plugin(path: Path, *, name: str = "safe-plugin", entry: str = "plugin.py") -> Path:
@@ -108,3 +109,43 @@ def test_plugin_dependencies_are_not_installed_into_host_python(tmp_path):
 
     assert not ok
     assert "isolated plugin image" in message
+
+
+
+def test_plugin_artifact_signature_covers_all_files(tmp_path):
+    plugin = _plugin(tmp_path / "plugin")
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+
+    signed = signer.sign(plugin)
+    assert signed["valid"] is True
+    assert signer.verify(plugin)["valid"] is True
+
+    (plugin / "plugin.py").write_text("print('tampered')\\n", encoding="utf-8")
+    verification = signer.verify(plugin)
+
+    assert verification["valid"] is False
+    assert "content hash mismatch" in verification["reason"]
+
+
+def test_require_signed_registry_rejects_unsigned_plugin(tmp_path):
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=True, signer=signer)
+    source = _plugin(tmp_path / "source")
+
+    ok, message = registry.install(str(source))
+
+    assert not ok
+    assert "signature is missing or invalid" in message
+
+
+def test_require_signed_registry_installs_verified_artifact(tmp_path):
+    signer = PluginArtifactSigner(tmp_path / "signing.key")
+    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=True, signer=signer)
+    source = _plugin(tmp_path / "source")
+    signer.sign(source)
+
+    ok, message = registry.install(str(source))
+
+    assert ok
+    assert "installed" in message
+    assert signer.verify(tmp_path / "installed" / "safe-plugin")["valid"] is True
