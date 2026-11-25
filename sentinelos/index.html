@@ -317,7 +317,7 @@
                                 </div>
                             </div>
                             <div class="zkp-tabs">
-                                <button class="zkp-tab active" data-tab="active-proofs">Active Proofs</button>
+                                <button class="zkp-tab active" data-tab="active-proofs">Sample Proofs</button>
                                 <button class="zkp-tab" data-tab="zkp-parameters">Parameters</button>
                             </div>
                             <div class="zkp-content" id="zkp-panel-content">
@@ -491,16 +491,16 @@
                         </div>
                         <div class="quantum-interception-data">
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-scrambled">1,208,409</div>
-                                <div class="quantum-data-label">Packets Scrambled</div>
+                                <div class="quantum-data-value" id="quantum-data-scrambled">N/A</div>
+                                <div class="quantum-data-label">Packet Processing (Not Connected)</div>
                             </div>
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-keys">12,408</div>
-                                <div class="quantum-data-label">Quantum Keys Cycled</div>
+                                <div class="quantum-data-value" id="quantum-data-keys">N/A</div>
+                                <div class="quantum-data-label">Key Rotation (Not Connected)</div>
                             </div>
                             <div class="quantum-data-item">
-                                <div class="quantum-data-value" id="quantum-data-immunity">100%</div>
-                                <div class="quantum-data-label">Shor's Immunity</div>
+                                <div class="quantum-data-value" id="quantum-data-immunity">N/A</div>
+                                <div class="quantum-data-label">Shor Resistance (Not Verified)</div>
                             </div>
                         </div>
                     </div>
@@ -704,7 +704,7 @@
                 <section id="view-blockchain" class="view-pane">
                     <div class="view-header">
                         <h2>⛓️ Blockchain Evidence Verification System</h2>
-                        <p>Seal security incidents, credentials, and scan audits into blocks. Calculate cryptographic proofs to secure evidence chains.</p>
+                        <p>Demo-only hash-chain illustration. No cryptographic signature, HSM signing, or external evidence anchoring is performed.</p>
                     </div>
                     <div class="blockchain-layout">
                         <div class="bc-entry-panel glass-card">
@@ -874,7 +874,7 @@
                                     <option value="aggressive">Aggressive Injection Probe (Dynamic Deception Test)</option>
                                 </select>
                             </div>
-                            <button class="btn btn-primary btn-full" id="btn-vuln-scan"><i class="fa-solid fa-radar"></i> Run Assessment Routine</button>
+                            <button class="btn btn-primary btn-full" id="btn-vuln-scan"><i class="fa-solid fa-radar"></i> Run Demo Assessment</button>
 
                             <div class="scan-visuals-panel margin-top-20" id="scan-progress-box" style="display:none;">
                                 <div class="radial-scan-container">
@@ -891,7 +891,7 @@
                         <div class="vuln-scorecard-panel glass-card">
                             <h3>Audit Performance Scorecard</h3>
                             <div class="empty-scorecard" id="vuln-scorecard-empty">
-                                <span>No active audits run yet. Configure target node and start sweep.</span>
+                                <span>No live audits are connected. Use demo inputs only.</span>
                             </div>
                             <div class="scorecard-report" id="vuln-scorecard-report" style="display:none;">
                                 <div class="scorecard-header-row">
@@ -932,7 +932,7 @@
                 <section id="view-darkweb" class="view-pane">
                     <div class="view-header">
                         <h2>🧅 Dark Web Monitoring & Threat Intelligence</h2>
-                        <p>Scan tor repositories, leaked directories, Paste bins, and hacker chat rooms for database compromised entries.</p>
+                        <p>Demo search interface only; no external repositories, paste sites, or breach sources are queried.</p>
                     </div>
                     <div class="darkweb-layout">
                         <div class="dw-controls glass-card">
@@ -957,7 +957,7 @@
                             <h3>Threat Intel Breach Database</h3>
                             <div class="dw-results-scroller" id="dw-results-list">
                                 <div class="dw-empty-state" id="dw-empty">
-                                    <span>Configure query parameters above to scan decentralized dump indexes.</span>
+                                    <span>Demo interface only; no decentralized dump indexes are queried.</span>
                                 </div>
                             </div>
                         </div>
@@ -974,7 +974,7 @@
                         <div class="inc-configs glass-card">
                             <h3>Automation Orchestration</h3>
                             <div class="form-group">
-                                <label for="inc-playbook-select">Active Mitigation Playbook</label>
+                                <label for="inc-playbook-select">Sample Mitigation Scenario (No Execution)</label>
                                 <select id="inc-playbook-select" class="form-control">
                                     <option value="ransomware">Ransomware Containment & Memory Forensic Sweep</option>
                                     <option value="ddos">DDoS Mitigation & Honey-decoy Reroute</option>
@@ -1058,12 +1058,12 @@
                             <button class="btn btn-danger btn-full" id="btn-chaos-inject"><i class="fa-solid fa-burst"></i> Inject Chaos Event</button>
 
                             <div class="self-healing-stats margin-top-20">
-                                <h4>Self-Healing State</h4>
+                                <h4>Browser Demo State</h4>
                                 <div class="heal-bar-wrapper">
                                     <div class="heal-bar-container">
                                         <div class="heal-bar" id="chaos-heal-fill" style="width: 100%"></div>
                                     </div>
-                                    <span class="heal-percent" id="chaos-heal-text">100% HEALTHY</span>
+                                    <span class="heal-percent" id="chaos-heal-text">DEMO STATE</span>
                                 </div>
                             </div>
                         </div>
@@ -1089,7 +1089,7 @@
                 <section id="view-deception" class="view-pane">
                     <div class="view-header">
                         <h2>🕸️ Deception Network & Honey-Decoy Deployer</h2>
-                        <p>Set trap environments to ensnare active attackers and collect analytical telemetry profiles safely.</p>
+                        <p>Illustrative trap scenarios only; no network honeypots are created and no telemetry is collected.</p>
                     </div>
                     <div class="deception-layout">
                         <div class="dec-controls glass-card">
@@ -1115,7 +1115,7 @@
 
                         <div class="dec-monitor glass-card">
                             <div class="dec-monitor-header">
-                                <h3>📡 Active Trap Telemetry</h3>
+                                <h3>📡 Sample Trap Events (Demo)</h3>
                                 <div class="honeypots-active-counter"><span id="active-honeypots-count">3</span> Sample Honeypots (Not Deployed)</div>
                             </div>
                             <div class="deception-subnet-visualizer">
@@ -1151,7 +1151,7 @@
                                 <label>Or paste custom hexadecimal opcode arrays</label>
                                 <textarea id="txt-sb-binary" class="form-control font-mono" rows="5">89 E5 31 C0 50 68 2F 2F 73 68 68 2F 62 69 6E 89 E3 50 89 E2 53 89 E1 B0 0B CD 80</textarea>
                             </div>
-                            <button class="btn btn-danger btn-full" id="btn-sb-disassemble"><i class="fa-solid fa-flask"></i> Execute Heuristic Assembly Scan</button>
+                            <button class="btn btn-danger btn-full" id="btn-sb-disassemble"><i class="fa-solid fa-flask"></i> Run Heuristic Demo</button>
                         </div>
 
                         <div class="sb-analysis glass-card">
@@ -1295,7 +1295,7 @@
                                         <span class="s313-metric-value" id="s313-latency">42ms</span>
                                     </div>
                                     <div class="s313-metric">
-                                        <span class="s313-metric-label">Signal Str</span>
+                                        <span class="s313-metric-label">Sample Signal Strength</span>
                                         <span class="s313-metric-value" id="s313-signal">-67 dBm</span>
                                     </div>
                                     <div class="s313-metric">
