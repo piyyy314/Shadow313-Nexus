@@ -142,7 +142,9 @@ def test_require_signed_registry_rejects_unsigned_plugin(tmp_path):
 
 def test_require_signed_registry_installs_verified_artifact(tmp_path):
     signer = PluginArtifactSigner(tmp_path / "signing.key")
-    registry = PluginRegistry(str(tmp_path / "installed"), require_signed=True, signer=signer)
+    registry = PluginRegistry(
+        str(tmp_path / "installed"), require_signed=True, signer=signer
+    )
     source = _plugin(tmp_path / "source")
     signer.sign(source)
 
