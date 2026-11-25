@@ -1,165 +1,214 @@
-"""shadow313.modules.plugins.manager — Plugin registry and lifecycle manager."""
+"""Canonical plugin registry and lifecycle manager with path-safe installation."""
 from __future__ import annotations
+
+import logging
+import re
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .manifest import PluginManifest, MANIFEST_TEMPLATE, PLUGIN_ENTRY_TEMPLATE
+from .manifest import (
+    MANIFEST_TEMPLATE,
+    PLUGIN_ENTRY_TEMPLATE,
+    PLUGIN_NAME_RE,
+    VALID_HOOKS,
+    PluginManifest,
+)
+
+logger = logging.getLogger(__name__)
 
 
 def _now() -> str:
-    """Return the current UTC timestamp in ISO 8601 format."""
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
+
+
+def _safe_name(name: str) -> bool:
+    return bool(PLUGIN_NAME_RE.fullmatch(name)) and name not in {".", ".."}
 
 
 class PluginRegistry:
+    """Manage plugin directories without allowing manifest-controlled path escapes."""
+
     def __init__(self, plugins_dir: str = "~/.shadow313/plugins") -> None:
-        """Create the plugin directory and an empty in-memory registry; I/O errors propagate."""
-        self.plugins_dir = Path(plugins_dir).expanduser()
-        self.plugins_dir.mkdir(parents=True, exist_ok=True)
+        configured = Path(plugins_dir).expanduser()
+        configured.mkdir(parents=True, exist_ok=True)
+        self.plugins_dir = configured.resolve()
         self._loaded: dict[str, PluginManifest] = {}
         self._enabled: set[str] = set()
 
-    def discover(self) -> list[PluginManifest]:
-        """Load manifests from immediate subdirectories, retaining prior registry entries.
+    def _plugin_dir(self, name: str) -> Path | None:
+        if not _safe_name(name):
+            return None
+        candidate = self.plugins_dir / name
+        if candidate.is_symlink():
+            return None
+        resolved = candidate.resolve()
+        if resolved.parent != self.plugins_dir:
+            return None
+        return resolved
 
-        Skip individual manifest failures; listing the plugin directory can
-        raise OSError. Discovery does not validate or enable plugins.
-        """
-        manifests = []
+    def discover(self) -> list[PluginManifest]:
+        manifests: list[PluginManifest] = []
         for entry in self.plugins_dir.iterdir():
-            if entry.is_dir():
-                try:
-                    m = PluginManifest(entry)
-                    manifests.append(m)
-                    self._loaded[m.name] = m
-                except Exception:
-                    pass
+            if entry.is_symlink() or not entry.is_dir():
+                continue
+            try:
+                manifest = PluginManifest(entry)
+                errors = manifest.validate()
+                if errors:
+                    logger.warning("Ignoring invalid plugin %s: %s", entry.name, "; ".join(errors))
+                    continue
+                manifests.append(manifest)
+                self._loaded[manifest.name] = manifest
+            except (OSError, ValueError, TypeError) as exc:
+                logger.warning("Ignoring plugin %s: %s", entry.name, exc)
         return manifests
 
     def enable(self, name: str) -> bool:
-        """Enable a loaded plugin for this registry instance, returning False if unknown."""
         if name in self._loaded:
             self._enabled.add(name)
             return True
         return False
 
     def disable(self, name: str) -> bool:
-        """Disable a plugin for this instance and return True even if it was not enabled."""
         self._enabled.discard(name)
         return True
 
     def get_enabled(self) -> list[PluginManifest]:
-        """Return loaded manifests whose names are currently enabled."""
-        return [self._loaded[n] for n in self._enabled if n in self._loaded]
+        return [self._loaded[name] for name in self._enabled if name in self._loaded]
 
     def get_hooks(self, hook: str) -> list[PluginManifest]:
-        """Return enabled manifests that declare the requested hook."""
-        return [p for p in self.get_enabled() if hook in p.hooks]
+        return [plugin for plugin in self.get_enabled() if hook in plugin.hooks]
 
     def install(self, plugin_path: str) -> tuple[bool, str]:
-        """Validate and copy a local plugin, replacing any existing directory of its name.
+        """Install a validated local plugin without replacing an existing plugin."""
+        source = Path(plugin_path).expanduser()
+        if not source.is_dir() or source.is_symlink():
+            return False, "Plugin source must be an existing, non-symlink directory"
+        source = source.resolve()
 
-        Return (success, message). Missing sources, manifest load failures, and
-        reported validation errors return False; filesystem and post-copy loading
-        errors propagate.
-        Successful installation loads the manifest without enabling it.
-        """
-        src = Path(plugin_path).expanduser()
-        if not src.is_dir():
-            return False, f"Plugin directory not found: {src}"
         try:
-            m = PluginManifest(src)
-        except Exception as exc:
+            manifest = PluginManifest(source)
+        except (OSError, ValueError, TypeError) as exc:
             return False, f"Invalid plugin manifest: {exc}"
-        errors = m.validate()
+
+        errors = manifest.validate()
         if errors:
             return False, f"Validation errors: {'; '.join(errors)}"
-        dest = self.plugins_dir / m.name
-        if dest.exists():
-            shutil.rmtree(dest)
-        shutil.copytree(str(src), str(dest))
-        m2 = PluginManifest(dest)
-        self._loaded[m2.name] = m2
-        return True, f"Plugin '{m2.name}' installed → {dest}"
+
+        for item in source.rglob("*"):
+            if item.is_symlink():
+                return False, f"Plugin contains a symlink and cannot be installed: {item.relative_to(source)}"
+
+        destination = self._plugin_dir(manifest.name)
+        if destination is None:
+            return False, "Plugin name does not resolve to a safe plugin-local directory"
+        if destination.exists():
+            return False, f"Plugin '{manifest.name}' already exists; remove it explicitly before reinstalling"
+
+        try:
+            shutil.copytree(source, destination, symlinks=True)
+            installed = PluginManifest(destination)
+            installed_errors = installed.validate()
+            if installed_errors:
+                shutil.rmtree(destination)
+                return False, f"Installed plugin failed validation: {'; '.join(installed_errors)}"
+        except Exception as exc:
+            if destination.exists() and destination.parent == self.plugins_dir:
+                shutil.rmtree(destination, ignore_errors=True)
+            return False, f"Plugin installation failed: {type(exc).__name__}: {exc}"
+
+        self._loaded[installed.name] = installed
+        return True, f"Plugin '{installed.name}' installed → {destination}"
 
     def remove(self, name: str) -> tuple[bool, str]:
-        """Disable a plugin and remove its directory and loaded entry when the directory exists.
-
-        Return (success, message); an absent directory returns False.
-        Filesystem errors propagate.
-        """
+        """Remove only a validated, direct child directory of the plugin root."""
         self._enabled.discard(name)
-        plugin_dir = self.plugins_dir / name
-        if plugin_dir.exists():
-            shutil.rmtree(plugin_dir)
-            self._loaded.pop(name, None)
-            return True, f"Plugin '{name}' removed"
-        return False, f"Plugin '{name}' not found"
+        plugin_dir = self._plugin_dir(name)
+        if plugin_dir is None:
+            return False, "Invalid plugin name or unsafe plugin path"
+        if not plugin_dir.is_dir():
+            return False, f"Plugin '{name}' not found"
+        if plugin_dir.parent != self.plugins_dir:
+            return False, "Refusing to remove a path outside the plugin directory"
 
-    def list_all(self) -> list[dict]:
-        """Discover plugins and return manifest summaries with instance-local enabled flags."""
+        shutil.rmtree(plugin_dir)
+        self._loaded.pop(name, None)
+        return True, f"Plugin '{name}' removed"
+
+    def list_all(self) -> list[dict[str, Any]]:
         self.discover()
-        return [{**m.to_dict(), "enabled": m.name in self._enabled}
-                for m in self._loaded.values()]
+        return [
+            {**manifest.to_dict(), "enabled": manifest.name in self._enabled}
+            for manifest in self._loaded.values()
+        ]
 
 
 class HookDispatcher:
+    """Dispatch approved hooks through the sandbox-aware PluginRunner."""
+
     def __init__(self, registry: PluginRegistry, session_id: str) -> None:
-        """Bind hook dispatch to a plugin registry and session identifier."""
-        self.registry   = registry
+        self.registry = registry
         self.session_id = session_id
 
-    def fire(self, hook: str, module: str,
-             module_output: Any = None, target: str = "") -> list[dict]:
-        """Execute enabled plugins for a hook with session and module context.
-
-        Return one runner result per matching plugin, or [] if none match.
-        Context serialization errors propagate from the runner.
-        """
+    def fire(
+        self,
+        hook: str,
+        module: str,
+        module_output: Any = None,
+        target: str = "",
+    ) -> list[dict]:
         from .runner import PluginRunner
-        plugins = self.registry.get_hooks(hook)
-        if not plugins:
-            return []
-        results = []
-        ctx = {
-            "session_id":    self.session_id,
-            "hook":          hook,
-            "module":        module,
-            "target":        target,
+
+        context = {
+            "session_id": self.session_id,
+            "hook": hook,
+            "module": module,
+            "target": target,
             "module_output": module_output,
-            "timestamp":     _now(),
+            "timestamp": _now(),
         }
-        for plugin in plugins:
-            result = PluginRunner(plugin).execute(ctx)
-            results.append(result)
-        return results
+        return [
+            PluginRunner(plugin).execute(context)
+            for plugin in self.registry.get_hooks(hook)
+        ]
 
 
 class PluginScaffolder:
+    """Create new plugin scaffolds without overwriting existing paths."""
+
     def __init__(self, plugins_dir: str = "~/.shadow313/plugins") -> None:
-        """Select the expanded plugin directory for generated scaffolds."""
-        self.plugins_dir = Path(plugins_dir).expanduser()
+        self.plugins_dir = Path(plugins_dir).expanduser().resolve()
 
     def create(self, name: str, hook: str = "recon.post", author: str = "") -> Path:
-        """Create a plugin directory and write its manifest, entry script, and README.
+        if not _safe_name(name):
+            raise ValueError("Plugin name must be a simple 1-64 character identifier")
+        if hook not in VALID_HOOKS:
+            raise ValueError(f"Unsupported plugin hook: {hook}")
+        self.plugins_dir.mkdir(parents=True, exist_ok=True)
+        destination = (self.plugins_dir / name).resolve()
+        if destination.parent != self.plugins_dir:
+            raise ValueError("Plugin scaffold path escapes the plugin directory")
+        if destination.exists():
+            raise FileExistsError(f"Plugin scaffold already exists: {destination}")
 
-        hook labels the entry script and README; the manifest retains its
-        template hook. Existing files are replaced. I/O errors propagate.
-        """
-        dest = self.plugins_dir / name
-        dest.mkdir(parents=True, exist_ok=True)
+        destination.mkdir()
         manifest = MANIFEST_TEMPLATE.replace("my-plugin", name)
         if author:
             manifest = manifest.replace("author: handle", f"author: {author}")
-        (dest / "plugin.yaml").write_text(manifest)
-        (dest / "plugin.py").write_text(PLUGIN_ENTRY_TEMPLATE.format(name=name, hook=hook))
-        (dest / "README.md").write_text(
+        (destination / "plugin.yaml").write_text(manifest, encoding="utf-8")
+        (destination / "plugin.py").write_text(
+            PLUGIN_ENTRY_TEMPLATE.format(name=name, hook=hook),
+            encoding="utf-8",
+        )
+        (destination / "README.md").write_text(
             f"# {name}\n\nA Shadow313 plugin.\n\n"
             f"## Hook\n`{hook}`\n\n"
             "## Usage\n```bash\n"
-            f"shadow313 plugins --install ./{name}/\n"
-            f"shadow313 plugins --enable {name}\n```\n"
+            f"shadow313 plugin --install ./{name}/\n"
+            f"shadow313 plugin --enable {name}\n"
+            "```\n",
+            encoding="utf-8",
         )
-        return dest
+        return destination
